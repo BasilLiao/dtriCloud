@@ -1,0 +1,87 @@
+<div id="nav_logout" class="d-none fixed-top col m-0 p-0 row justify-content-center " role="alert" style="top: 43px; height: 100%; background: #00000020;">
+	<div class="mt-5 pt-5">
+		<div class="spinner-border mt-5" style="width: 15rem; height: 15rem; background: #d8d8d833;" role="status"></div>
+		<div id="timeout" class="text-center rounded-pill mt-3" style="font-size: 30px; font-weight: 900; background: #dadada80">Logout....30</div>
+	</div>
+</div>
+<script type="text/javascript">
+//宣告
+console.log("logout.html(init)");
+main.web_html.logout = {
+	//資料
+	date:{
+		
+	},	
+	//方法
+	methods:{
+		create(){
+			//初始化
+			console.log("logout.html(create)");
+		},
+		destroy() {
+			//銷毀
+			 console.log("logout.html(destroy)");
+		},
+	},	
+};
+
+	//控制端
+	/*t_logout = new Vue({
+		el : "#nav_logout",
+		//資料區
+		data : {
+			test : 5400,
+			//倒數計時(物件/倒數/多久登出)
+			countDownId : "",countDownSecond : 0,countMaxSecond:5400,
+		},
+		//初始化
+		created() {
+			console.log("nav_logout.html(created)");
+			//動態監聽顯示Table 物件 查看開關
+			$(document).on("click", "#nav_logout", function(event) {
+				$("#nav_logout").addClass("d-none");
+			});
+		},
+		//可呼叫方法
+		methods : {
+			//timeOut 到計時 登出(提醒失效)
+			countDown() {
+				t_logout.countDownSecond -= 1;
+				//console.log("倒數:"+t_logout.countDownSecond);
+				$('#timeout').text("Logout...."+t_logout.countDownSecond);
+				$('#show_timeout').text("T.O.:"+t_logout.countDownSecond+"/s");
+				
+				if (t_logout.countDownSecond == 30) {
+					$("#nav_logout").removeClass("d-none");
+				}
+				if(t_logout.countDownSecond <= 30){
+					$('title').text("DTR_MES(製程系統) T.O.:"+t_logout.countDownSecond+"/s");
+				}
+				if (t_logout.countDownSecond < 0) {
+					clearInterval(t_logout.countDownId);
+					$("#nav_logout").addClass("d-none");
+					$('title').text("DTR_MES(製程系統)");
+					$(location).attr('href', './login.basil');
+				}
+			},
+			timeOut(check) {
+				this.countDownSecond = this.countMaxSecond;
+				if (check) {
+					//開始計時
+					this.countDownId = setInterval(this.countDown, 1000); //每秒執行一次，賦值
+				} else {
+					//清除->啟動計時
+					clearInterval(this.countDownId);
+					this.countDownId = setInterval(this.countDown, 1000); //每秒執行一次，賦值
+					$("#nav_logout").addClass("d-none");
+				}
+			},
+			
+		},
+		//移除監聽事件
+		beforeDestroy() {
+			console.log("nav_logout.html(beforeDestroy)");
+			$(document).off("click", "#nav_logout");
+		}
+	});*/
+</script>

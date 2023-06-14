@@ -1,0 +1,125 @@
+<style>
+
+/*Table 寬度滾動*/
+#compare_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
+/*Table 自動隱藏*/
+#compare_c .table-responsive th, #compare_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+/*Table 表格固定*/
+#compare_c .fixed_cell_1 {
+	left: 0px;
+	position: sticky;
+}
+/*Table 每隔表格內_框線*/
+#compare_c .table-bordered td, #compare_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
+/*Table 表格外框線*/
+#compare_c #compare_c_result table {
+	min-height: 650px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+/*Table 表格外框線*/
+#compare_c #compare_c_result_detail table {
+	max-height: 650px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+/*Table 表格內 背景色*/
+#compare_c .table-white {
+	--bs-table-bg: #fff;
+}
+/*標題色彩*/
+#compare_c .title_color {
+	background-color: #cfe2ff;
+}
+/*直立式呈現邊字*/
+#compare_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
+
+/*checkbox_24*/
+#compare_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
+</style>
+<div id="compare_c">
+	<!-- 控制面板 -->
+	<div id="compare_c_controller" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#update_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse show" id="update_c_controller_open">
+			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+				<div class="col-md-2 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Check different</div>
+						<div class="row m-0">
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+								<b>Compare<br>(*)
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Clear<br>all()
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 比對結果 -->
+	<div id="compare_c_result" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#compare_c_result_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div id="compare_c_result_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
+			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary">
+					<tr>
+						<th>VS</th>
+						<th class="fixed_cell_1">工單號</th>
+						<th>訂單號</th>
+						<th>產品號</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr>
+						<td class="p-1">
+							<div>
+								<input type="radio" name="compare_c_radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</td>
+						<td class="p-1 fixed_cell_1">A511-123456789</td>
+						<td>DR1000</td>
+						<td>313TY</td>
+					</tr>
+					<tr>
+						<td class="p-1">
+							<div>
+								<input type="radio" name="compare_c_radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</td>
+						<td class="p-1 fixed_cell_1">A521-987654321</td>
+						<td class="p-1">DR1000</td>
+						<td class="p-1">212DT</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

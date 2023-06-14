@@ -1,0 +1,57 @@
+<div id="loading" class="fixed-top col m-0 p-0 row justify-content-center d-none" role="alert" style="top: 43px; height: 100%; background: #00000020;">
+	<div class="mt-5 pt-5">
+		<div class="spinner-border mt-5" style="width: 15rem; height: 15rem; background: #d8d8d833;" role="status"></div>
+		<div class="text-center rounded-pill mt-3" style="font-size: 30px; font-weight: 900; background: #dadada80">Loading....</div>
+	</div>
+</div>
+<script type="text/javascript">
+//宣告
+console.log("loading.html(init)");
+main.web_html.loading = {
+	//資料
+	date:{
+		
+	},	
+	//方法
+	methods:{
+		create(){
+			//初始化
+			console.log("loading.html(created)");
+		},
+		destroy() {
+			//銷毀
+			 console.log("loading.html(destroy)");
+		},
+	},	
+};
+
+
+
+	//控制端
+	/*t_loading = new Vue({
+		el : "#nav_loading",
+		//資料區
+		data : {
+			test : 300,
+		},
+		//初始化
+		created() {
+			console.log("nav_loading.html(created)");
+			//動態監聽顯示Table 物件 查看開關
+			$(document).on("click", "#nav_loading", function(event) {
+				$("#nav_loading").addClass("d-none");
+			});
+			
+		},
+		//可呼叫方法
+		methods : {
+			
+			
+		},
+		//移除監聽事件
+		beforeDestroy() {
+			console.log("nav_loading.html(beforeDestroy)");
+			$(document).off("click", "#nav_loading");
+		}
+	});*/
+</script>

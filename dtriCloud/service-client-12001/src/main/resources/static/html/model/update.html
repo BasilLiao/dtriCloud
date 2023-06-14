@@ -1,0 +1,404 @@
+<style>
+/*Table 寬度滾動*/
+#update_c .table-responsive {
+	display: block;
+	width: 1px;
+	overflow-x: auto;
+}
+/*Table 表格固定*/
+#update_c .fixed_cell_1 {
+	left: 0px;
+	position: sticky;
+}
+/*Table 自動換行*/
+#update_c .table-responsive th, #update_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+/*Table 每隔表格內_框線*/
+#update_c .table-bordered td, #update_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
+
+/*Table 表格外框線*/
+#update_c #update_c_batch_revision table {
+	min-height: 95px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+/*Table 表格外框線*/
+#update_c #update_c_list table {
+	min-height: 95px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+/*Table 表格內 背景色*/
+#update_c .table-white {
+	--bs-table-bg: #fff;
+}
+/*直立式呈現邊字*/
+#update_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
+/*標題色彩*/
+#update_c .title_color {
+	background-color: #cfe2ff;
+}
+/*checkbox_33*/
+#update_c .checkbox_33 {
+	width: 33px;
+	height: 33px;
+}
+</style>
+
+<div id="update_c">
+	<!-- 批次修正 -->
+	<div id="update_c_batch_revision" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#update_c_batch_revision_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse show" id="update_c_batch_revision_open">
+			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision </b>
+			<div class="col border border-primary m-0 p-0 shadow-sm">
+				<div class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Header </b>
+					<!-- 範例內容 -->
+					<table id="update_c_ex" class="d-none">
+						<tbody class="">
+							<tr>
+								<th style="max-width: 200px;"><div id="update_c_ex_key" class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea id="update_c_ex_tt" class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input id="update_c_ex_it" class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_in" class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_id" class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_idt" class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_icb" class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_ic" class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input id="update_c_ex_ip" class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img id="update_c_ex_ii" class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select id="update_c_ex_st" class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- 表頭批次處理 -->
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-primary">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-md-12 p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Body </b>
+					<!-- 表身批次處理 -->
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-primary">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-md-12 p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"> Replace </b>
+					<!-- 取代批次處理 -->
+					<table class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-danger">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 控制面板 -->
+	<div id="update_c_controller" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#update_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse show" id="update_c_controller_open">
+			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+				<div class="col-md-4 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Batch</div>
+						<div class="row m-0">
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+								<b>Overwrite<br>header()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+								<b>Replace<br>header()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+								<b>Overwrite<br>body()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+								<b>Replace<br>body()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Clear<br>all()
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">State</div>
+						<div id="update_c_state" class="p-1 m-0 h3 fw-bold text-center text-danger">＞＞Modify＜＜</div>
+					</div>
+				</div>
+				<div class="col-md-2 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Execution</div>
+						<div class="row m-0">
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+								<b>Save<br>(*)
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Cancel<br>all()
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 一般多筆修正 -->
+	<div id="update_c_list" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1  text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#update_c_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse show" id="update_c_list_open">
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Modify list </b>
+			<div class="col border border-primary m-0 p-0 shadow-sm">
+				<!-- 表頭修正 -->
+				<div class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Header </b>
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-primary">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- 表身批次處理 -->
+				<div class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Body </b>
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-primary">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- 隔一筆資料-分隔線 -->
+				<div class="col-md-12 p-0 m-0 mt-1 mb-1 bg-info text-center fw-bold text-white" style="font-size: 12px">Next one</div>
+				<!-- 表頭修正 -->
+				<div class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Header </b>
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead class="table-primary">
+							<tr>
+								<th class="fixed_cell_1" style="min-width: 200px;">Key</th>
+								<th style="min-width: 200px;">Textarea_text</th>
+								<th style="min-width: 200px;">Input_text</th>
+								<th style="min-width: 200px;">Input_number</th>
+								<th style="min-width: 200px;">Input_date</th>
+								<th style="min-width: 200px;">Input_datetime</th>
+								<th style="min-width: 200px;">Input_checkbox</th>
+								<th style="min-width: 200px;">Input_password</th>
+								<th style="min-width: 200px;">Input_file</th>
+								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Select_text</th>
+							</tr>
+						</thead>
+						<tbody class="table-white">
+							<tr>
+								<th class="fixed_cell_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
+								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
+								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option value="">請選擇(N/A)</option>
+								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

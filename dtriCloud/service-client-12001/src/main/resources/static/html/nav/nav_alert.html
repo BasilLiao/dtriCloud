@@ -1,0 +1,137 @@
+<div id="nav_alert" class="d-none">
+	<!-- 成功聲音 -->
+	<audio id="sound_success_pass" src="./sound/yisell_sound_success.mp3" preload="auto"></audio>
+	<!-- 過站重複聲音 -->
+	<audio id="sound_success_replace" src="./sound/yisell_sound_replace.mp3" preload="auto"></audio>
+	<!-- 工單已關閉 -->
+	<audio id="sound_warning_sound_end" src="./sound/yisell_sound_end.mp3" preload="auto"></audio>
+	<!-- 錯誤聲音 -->
+	<audio id="sound_warning_all" src="./sound/yisell_sound_warning.mp3" preload="auto"></audio>
+	<!-- 重複檢查聲音 -->
+	<audio id="sound_success_re_check" src="./sound/yisell_sound_re_check.mp3" preload="auto"></audio>
+</div>
+<script type="text/javascript">
+//宣告
+console.log("nav_alert.html(init)");
+main.web_html.nav_alert = {
+	//資料
+	date:{
+		
+	},	
+	//方法
+	methods:{
+		create(){
+			//初始化
+			console.log("nav_alert.html(create)");
+		},
+		destroy() {
+			//銷毀
+			 console.log("nav_alert.html(destroy)");
+		},
+	},	
+};
+
+//控制端
+/*t_alert = new Vue({
+	el : "#alert",
+	//資料區
+	data : {
+		show_alert:"",
+		test : 300,
+		sound_warning:false,
+	},
+	//初始化
+	created() {
+		console.log("alert.html(created)");
+		//動態監聽顯示Table 物件 查看開關
+		$(document).on("click", "#alert button", function(event) {
+	   		t_alert.alertSoundClose();
+		});
+	},
+	//可呼叫方法
+	methods : {
+		//顯示: 資訊/警訊/錯誤
+		alertshow(color,info) {
+			clearTimeout(t_alert.show_alert);
+			$("#alert").removeClass("alert-warning");
+			$("#alert").removeClass("alert-danger");
+			$("#alert").removeClass("alert-success");
+			switch (color) {
+			  case 'danger':
+				//danger
+				$("#alert").addClass("alert-danger");
+				if(this.sound_warning){
+					$('#warning_all').get(0).play(); 	
+				}
+			  break;
+			  case 'warning':
+				//warning
+				$("#alert").addClass("alert-warning");
+				//t_alert.alertSoundClose();
+				
+				//工單 已關閉?
+				if(info.search("WK016")>0){
+					$('#warning_sound_end').get(0).play(); 	
+				}else if(this.sound_warning){
+					$('#warning_all').get(0).play(); 	
+				}
+			  break;
+			  case 'success':
+				//success
+				$("#alert").addClass("alert-success");
+				//t_alert.alertSoundClose();
+				//過站成功[音效]?
+				if(info.search("WK020")>0 && $('#set_success').is(":checked")){
+					$('#success_pass_workstation').get(0).play(); 
+				}
+				if(info.search("WK021")>0 && $('#set_replace').is(":checked")){
+					$('#success_replace_workstation').get(0).play(); 
+				}
+				if(info.search("WK022")>0 && $('#set_check_replace').is(":checked")){
+					$('#success_re_check_workstation').get(0).play(); 
+				}
+				
+			  break;
+			  case 'close':
+				//close
+				//t_alert.alertSoundClose();
+				$("#alert").addClass("d-none");
+				$("#alert_message").text("");
+				
+				return;
+			break;
+			  default:
+			}
+			
+			//關閉以外
+			if(color!='close'){
+				$("#alert_message").text("INFO : " + info);
+				$("#alert").removeClass("d-none");
+				t_alert.show_alert = setTimeout(function() {
+					t_alert.alertSoundClose();
+				}, 6000);
+			}
+		},
+		alertSoundClose(){
+			$("#alert").addClass("d-none");
+			$("#alert_message").text("");
+			$("#warning_all").get(0).pause();
+	   		$("#warning_all").get(0).currentTime = 0;
+	   		
+	   		$("#warning_sound_end").get(0).pause();
+	   		$("#warning_sound_end").get(0).currentTime = 0;
+	   		
+	   		$("#success_pass_workstation").get(0).pause();
+	   		$("#success_pass_workstation").get(0).currentTime = 0;
+	   		
+	   		$("#success_replace_workstation").get(0).pause();
+	   		$("#success_replace_workstation").get(0).currentTime = 0;
+		}
+	},
+	//移除監聽事件
+	beforeDestroy() {
+		console.log("alert.html(beforeDestroy)");
+		$(document).off("click", "#alert button");
+	}
+});*/
+</script>
