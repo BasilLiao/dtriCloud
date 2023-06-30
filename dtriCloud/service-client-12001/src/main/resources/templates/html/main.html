@@ -35,7 +35,6 @@ body {
 
 </body>
 <script type="text/javascript" th:inline="javascript">
-	console.log("main.html(init)");
 	//====Step1.初始化====
 	var main={};
 	//各類-網頁面位置(需註冊-頭/身/底/覽/警/讀取中/出)
@@ -47,7 +46,7 @@ body {
 	//資料-傳送(位置/請求類型[POST/GET/PUT/DELETE]/資料內容)
 	main.req_data={url:"index.basil",type:"POST",data:{}};
 	//資料-接收(回傳呼叫對象,資料內容,指定模板,回饋訊息(顏色,資訊))
-	main.resq_data={call_bk_fn:"",data:{},html_body:"",message:{color:"",message:""}};
+	main.resq_data={callBackFunction:"",callBackValue:"",data:{},htmlBody:"",message:{color:"",message:""}};
 	//查詢請求-分頁設定(請求總筆數/第幾批次)
 	main.search_req_page={total:1000,batch:0};
 	//查詢顯示-分頁設定(目前所在分頁/每分頁數量/此次得到資料總筆數/本次批次)
@@ -63,17 +62,18 @@ body {
 			//console.log("Cell ajax to send:"+req_data);
 			$.ajax({
 				url :"ajax/"+req_data.url,//位置
-				type : "JSON",
-				dataType : req_data.dataType,//POST/GET/PUT/DELETE
-				contentType : "application/json; charset=utf-8",
+				type : req_data.type,//POST/GET/PUT/DELETE
+				contentType : "application/json;charset=UTF-8",
+				dataType: 'json',
 				data : req_data.data,//資料內容
 				success(event) {
+					//console.log(event);
 					//console.log("Step1.顯示訊息資訊:ajax to success:");
 					var mainAlertM=main.web_html.nav_alert.methods;
-					if(event['message']['color']=="success"){
-						mainAlertM.alertshow(event['message']['color'],event['message']['info']);
-					}else if(event['message']['color']=="warning"){
-						mainAlertM.alertshow(event['message']['color'],event['message']['info']);
+					if(event['infoColor']=="success"){
+						mainAlertM.alertshow(event['infoColor'],event['info']);
+					}else if(event['infoColor']=="warning"){ 
+						mainAlertM.alertshow(event['infoColor'],event['info']);
 						return null;
 					}else{
 						mainAlertM.alertshow("danger", "[777] The command was executed [ERROR]!!");
@@ -82,8 +82,8 @@ body {
 					//console.log("Step2.取得所有資料");
 					main.resq_data = event;
 					//console.log("Step3.是否 轉跳畫面");
-					if(event['html_body']!=""){
-						//console.log("Step3-1.清除上一模版監聽:轉跳畫面:刷新_模板:"+event['html_body']);
+					if(event['htmlBody']!=""){
+						//console.log("Step3-1.清除上一模版監聽:轉跳畫面:刷新_模板:"+event['htmlBody']);
 						//body 內資料->清除
 						main.web_body.home.methods.destroy();main.web_body.home={};
 						main.web_body.search.methods.destroy();main.web_body.search={};
@@ -93,12 +93,17 @@ body {
 						main.web_body.compare.methods.destroy();main.web_body.compare={};
 						main.web_body.special.methods.destroy();main.web_body.special={};
 						//body 內本體->清除
-						main.web_html.body_index={};
+						main.web_html.body_index.methods.destroy();main.web_html.body_index={};
 						//body 掛載新頁面->註冊
-						$("#body_page").load("./html/body/"+main.allData['html_body'],function(){});							
-					}else if(event['call_bk_fn']!=""){
+						$("#body_page").load("./html/body/"+main.resq_data['htmlBody'],function(){
+							//創立單元
+							main.web_html.body_index.methods.create();
+							//更換-單元名稱
+							$('#nav_functional_unit').text(event['htmlBodyUnitName']);
+						});							
+					}else if(event['callBackFunction']!=""){
 						//console.log("Step3-2.非轉跳畫面(更新資料/新增資料/查詢資料)");
-						 switch (event['call_bk_fn']) {
+						 switch (event['callBackFunction']) {
                                case "search":main.web_body.search.methods.searchReturn();break;
                                case "modify":main.web_body.modify.methods.modifyReturn();break;
                                case "report":main.web_body.report.methods.reportReturn();break;
@@ -146,15 +151,20 @@ body {
 	console.log("main.html(created)");
 	//資料-接收
 	main.resq_data=JSON.parse(/*[[${initMain}]]*/+"");
+	//console.log(main.resq_data);
+	//console.log(JSON.parse(main.resq_data.entityJson));
 	//模板-家
 	$("#header_page").load("./html/header/header_index.html",function(){});
 	//模板-聲音資訊
 	$("#nav_alert").load("./html/nav/nav_alert.html",function(){});
 	//模板-導覽
-	$("#nav_page").load("./html/nav/nav_index.html", function(){});
+	$("#nav_page").load("./html/nav/nav_index.html", function(){
+		main.web_html.nav_index.methods.create();
+		main.web_html.nav_alert.methods.create();
+	});
 	//模板-主體
 	$("#body_page").load("./html/body/body_index.html",function(){
-		main.web_html.body.methods.create();
+		main.web_html.body_index.methods.create();
 	});
 	//模板-網站宣告
 	$("#footer_page").load("./html/footer/footer_index.html",function(){});
@@ -165,7 +175,7 @@ body {
 	//是否為手機格式
 	let check = false;
 	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-	console.log(check);
+	console.log("手機格式? : "+check);
 		
 </script>
 </html>

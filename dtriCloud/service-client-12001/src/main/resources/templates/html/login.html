@@ -22,7 +22,8 @@ select {
 /**輸入框*/
 .rainbow-box {
 	border: 2px solid transparent;
-	border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);
+	border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%,
+		#fec837 75%, #fd1892 100%);
 	border-image-slice: 1;
 	border-radius: 10px;
 }
@@ -54,14 +55,15 @@ select {
 					<span class="text-danger" id="status" th:text="${status}"></span>
 				</div>
 				<div class="mt-3">
-					<input class="col-12" type="text" id="username" name="username" placeholder="Account" required autofocus>
+					<input class="col-12 p-1" type="text" id="username" name="username" placeholder="Account" required autofocus>
 				</div>
 				<div class="mt-3">
-					<input class="col-12" type="password" id="password" name="password" placeholder="Password" required>
+					<input class="col-12 p-1" type="password" id="password" name="password" placeholder="Password" required>
 				</div>
 				<div class="mt-3">
-					<select id="" name="" class="col-12">
-						<option value="zh-TW" selected>中文-繁(zh-TW)-Language</option>
+					<select id="" name="" class="col-12 p-1">
+						<option value="auto-language" selected>依用戶(auto)-Language</option>
+						<option value="zh-TW">中文-繁(zh-TW)</option>
 						<option value="zh-CN">中文-简(zh-CN)</option>
 						<option value="en-US">English(en-US)</option>
 						<option value="vi-VN">Tiếng Việt(vi-VN)</option>

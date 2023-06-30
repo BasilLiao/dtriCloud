@@ -1,11 +1,8 @@
 package dtri.com.tw.db.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,42 +10,52 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
- * @see 功能權限<br>
- *      sp_id : 單元ID<br>
- *      sp_name : 單元名稱<br>
- *      sp_g_id : 單元群組ID<br>
- *      sp_g_name : 單元群組名稱<br>
- *      sp_control : 單元控制名稱<br>
- *      sp_permission : 權限<br>
- *      sp_type:功能類型<br>
+ * 
+ * @see ---共用型---<br>
+ *      sys_c_date : 創建時間<br>
+ *      sys_c_user : 創建人名<br>
+ *      sys_m_date : 修改時間<br>
+ *      sys_m_user : 修改人名<br>
+ *      sys_ver : 修改版本<br>
+ *      sys_note : 備註<br>
+ *      sys_status : 資料狀態<br>
+ *      sys_sort : 自訂排序<br>
+ *      ---參數設定---<br>
+ *      sc_id : 主key <br>
+ *      sc_g_id : 群組主key <br>
+ *      sc_name : 參數名稱<br>
+ *      sc_g_name : 參數群組名稱<br>
+ *      sc_value : 值<br>
+ * 
  */
 @Entity
-@Table(name = "system_permission")
+@Table(name = "system_config")
 @EntityListeners(AuditingEntityListener.class)
-public class SystemPermission {
-	public SystemPermission() {
+public class SystemConfig {
+
+	public SystemConfig() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
 		this.sysmdate = new Date();
 		this.sysmuser = "system";
-		this.sysnote = "";
-		this.syssort = 0;
-		this.sysstatus = 0;
-		this.sysheader = false;
+		this.sysodate = new Date();
+		this.sysouser = "system";
 
-		// 功能權限
-		this.spname = "";
-		this.spgname = "";
-		this.spcontrol = "";
-		this.sppermission = "111111111111";
-		this.sptype = 0;
+		this.sysheader = false;
+		this.sysstatus = 0;
+		this.syssort = 0;
+		this.sysnote = "";
+		// 主體型
+		this.scname = "";
+		this.scgname = "";
+		this.scvalue = "";
 	}
 
 	// 共用型
@@ -74,28 +81,26 @@ public class SystemPermission {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 功能權限
+	// 主體型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_permission_seq")
-	@SequenceGenerator(name = "system_permission_seq", sequenceName = "system_permission_seq", allocationSize = 1)
-	@Column(name = "sp_id")
-	private Long spid;
-	@Column(name = "sp_name", nullable = false, columnDefinition = "varchar(50)")
-	private String spname;
-	@Column(name = "sp_g_id", nullable = false)
-	private Long spgid;
-	@Column(name = "sp_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String spgname;
-	@Column(name = "sp_control", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String spcontrol;
-	@Column(name = "sp_permission", nullable = false, columnDefinition = "varchar(12) default '111111111111'")
-	private String sppermission;
-	@Column(name = "sp_type", nullable = false, columnDefinition = "int default 0")
-	private Integer sptype;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "systemPermission")
-	private List<SystemGroup> systemGroup;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_config_seq")
+	@SequenceGenerator(name = "system_config_seq", sequenceName = "system_config_seq", allocationSize = 1)
+	@Column(name = "sc_id")
+	private Long scid;
+	@Column(name = "sc_g_id", nullable = false)
+	private Long scgid;
+	@Column(name = "sc_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String scname;
+	@Column(name = "sc_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String scgname;
+	@Column(name = "sc_value", nullable = false, columnDefinition = "text default ''")
+	private String scvalue;
+	
+	//前端格式-修改/查詢用
+	@Transient
+	private Date sysmdatestart;
+	@Transient
+	private Date sysmdateend;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -177,67 +182,44 @@ public class SystemPermission {
 		this.sysnote = sysnote;
 	}
 
-	public Long getSpid() {
-		return spid;
+	public Long getScid() {
+		return scid;
 	}
 
-	public void setSpid(Long spid) {
-		this.spid = spid;
+	public void setScid(Long scid) {
+		this.scid = scid;
 	}
 
-	public String getSpname() {
-		return spname;
+	public Long getScgid() {
+		return scgid;
 	}
 
-	public void setSpname(String spname) {
-		this.spname = spname;
+	public void setScgid(Long scgid) {
+		this.scgid = scgid;
 	}
 
-	public Long getSpgid() {
-		return spgid;
+	public String getScname() {
+		return scname;
 	}
 
-	public void setSpgid(Long spgid) {
-		this.spgid = spgid;
+	public void setScname(String scname) {
+		this.scname = scname;
 	}
 
-	public String getSpgname() {
-		return spgname;
+	public String getScgname() {
+		return scgname;
 	}
 
-	public void setSpgname(String spgname) {
-		this.spgname = spgname;
+	public void setScgname(String scgname) {
+		this.scgname = scgname;
 	}
 
-	public String getSpcontrol() {
-		return spcontrol;
+	public String getScvalue() {
+		return scvalue;
 	}
 
-	public void setSpcontrol(String spcontrol) {
-		this.spcontrol = spcontrol;
+	public void setScvalue(String scvalue) {
+		this.scvalue = scvalue;
 	}
 
-	public String getSppermission() {
-		return sppermission;
-	}
-
-	public void setSppermission(String sppermission) {
-		this.sppermission = sppermission;
-	}
-
-	public Integer getSptype() {
-		return sptype;
-	}
-
-	public void setSptype(Integer sptype) {
-		this.sptype = sptype;
-	}
-
-	public List<SystemGroup> getSystemGroup() {
-		return systemGroup;
-	}
-
-	public void setSystemGroup(List<SystemGroup> systemGroup) {
-		this.systemGroup = systemGroup;
-	}
 }

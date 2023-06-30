@@ -50,7 +50,7 @@
 }
 </style>
 <div id="report_c" class="row m-0 p-0">
-	<div class="col-3 p-0">
+	<div class="col-lg-3 p-0">
 		<!-- 控制面板 -->
 		<div id="report_c_controller" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success  text-white">
@@ -104,7 +104,7 @@
 			<div class="row m-0 collapse show" id="report_c_item_open">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Step2.where? </b>
 				<div class="col border border-primary  row m-0 p-0 shadow-sm">
-					<div class="col-md-3 p-1">
+					<div class="col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Cell name</div>
 							<div class="p-1">
@@ -112,7 +112,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-3 p-1">
+					<div class="col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Where?</div>
 							<div class="p-1">
@@ -127,7 +127,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-2 p-1">
+					<div class="col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Value type?</div>
 							<div class="p-1">
@@ -139,7 +139,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-4 p-1">
+					<div class="col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Value?</div>
 							<div class="p-1">
@@ -150,58 +150,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- 控制面板 -->
-		<div id="report_c_controller" class="col-12 p-1 ">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			</div>
-			<div id="report_c_controller_open" class="row m-0 collapse show">
-				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="col-md-3 p-1">
-						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Conditions</div>
-							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-									<b>Add<br>query()
-									</b>
-								</button>
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
-									<b>Clear<br>query()
-									</b>
-								</button>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-3 p-1">
-						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Search</div>
-							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-									<b>Send<br>(AR)
-									</b>
-								</button>
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
-									<b>Clear<br>all()
-									</b>
-								</button>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-2 p-1">
-						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Report</div>
-							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
-									<b>Export<br>excel()
-									</b>
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		
 		<!-- 條件清單面板 -->
 		<div id="report_c_query_list" class="col-12 p-1 ">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
@@ -216,8 +165,60 @@
 				</div>
 			</div>
 		</div>
+		<!-- 控制面板 -->
+		<div id="report_c_controller" class="col-12 p-1 ">
+			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			</div>
+			<div id="report_c_controller_open" class="row m-0 collapse show">
+				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
+				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+					<div class="col-lg-4 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Conditions</div>
+							<div class="row m-0">
+								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Add<br>query()
+									</b>
+								</button>
+								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+									<b>Clear<br>query()
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Search</div>
+							<div class="row m-0">
+								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Send<br>(AR)
+									</b>
+								</button>
+								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+									<b>Clear<br>all()
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Report</div>
+							<div class="row m-0">
+								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
+									<b>Export<br>excel()
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="col-3 p-0">
+	<div class="col-6 col-lg-3 p-0">
 		<!-- 紀錄面板 -->
 		<div id="report_c_history" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
@@ -262,3 +263,26 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+//宣告
+//console.log("report.html(init)");
+main.web_body.report={
+	//資料
+	data:{
+		
+	},	
+	//方法
+	methods:{
+		create(){
+			//Step1.初始化
+			console.log("report.html(created)");
+			
+		},
+		destroy() {
+			//銷毀
+			console.log("report.html(destroy)");
+			
+		},
+	},	
+};
+</script>

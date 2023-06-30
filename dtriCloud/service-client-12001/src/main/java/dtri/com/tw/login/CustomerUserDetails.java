@@ -1,7 +1,7 @@
 package dtri.com.tw.login;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ public class CustomerUserDetails implements UserDetails {
 	 */
 	private static final long serialVersionUID = 1L;
 	private SystemUser user;
-	private List<SystemGroup> group;
+	private ArrayList<SystemGroup> group;
 	private Collection<? extends GrantedAuthority> authorities;
 	PasswordEncoder pwdEncoder;
 
@@ -25,7 +25,7 @@ public class CustomerUserDetails implements UserDetails {
 
 	}
 
-	public CustomerUserDetails(SystemUser user, List<SystemGroup> group, Collection<? extends GrantedAuthority> authorities) {
+	public CustomerUserDetails(SystemUser user, ArrayList<SystemGroup> group, Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.user = user;
 		this.group = group;
@@ -33,7 +33,7 @@ public class CustomerUserDetails implements UserDetails {
 		pwdEncoder = new BCryptPasswordEncoder();
 	}
 
-	public List<SystemGroup> getSystemGroup() {
+	public ArrayList<SystemGroup> getSystemGroup() {
 		return group;
 	}
 
@@ -87,7 +87,7 @@ public class CustomerUserDetails implements UserDetails {
 	/** 用戶是否禁用 **/
 	@Override
 	public boolean isEnabled() {
-		boolean check = user.getSysstatus() == 0;
+		boolean check = (user.getSysstatus() == 0) || (user.getSysstatus() == 3);
 		return check;
 	}
 

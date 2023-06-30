@@ -12,7 +12,7 @@
 	overflow: hidden;
 }
 /*Table 表格固定*/
-#search_c .fixed_cell_1 {
+#search_c .fixedC1 {
 	left: 0px;
 	position: sticky;
 }
@@ -23,19 +23,24 @@
 }
 /*Table 表格外框線*/
 #search_c #search_c_result table {
-	min-height: 650px;
+	min-height: 645px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
 #search_c #search_c_result_detail table {
-	max-height: 650px;
+	max-height: 645px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格內 背景色*/
 #search_c .table-white {
 	--bs-table-bg: #fff;
+}
+/*覆寫換色*/
+.table-hover>tbody>tr:hover>* {
+	--bs-table-accent-bg: #0d6efd40;
+	color: var(--bs-table-hover-color);
 }
 /*標題色彩*/
 #search_c .title_color {
@@ -70,11 +75,14 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-2 p-1">
+				<div class="col-md-1 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type="text" id="ex_id2" name="ex_name2" placeholder="Ex:123">
+							<select class="col-12 m-0 p-1 border border-dark form-select" id="ex_id2" name="ex_name2">
+								<option value="" selected="selected">select(請選擇)</option>
+								<option></option>
+							</select>
 						</div>
 					</div>
 				</div>
@@ -162,7 +170,7 @@
 								<b>＜＜<br>Page
 								</b>
 							</button>
-							<input class="lh-base col p-1 m-1" name="page" type="number" placeholder="1-100" />
+							<input id="numberPage" class="lh-base col p-1 m-1" name="page" type="number" placeholder="1-50" value="1" />
 							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
 								<b>＞＞<br>Page
 								</b>
@@ -183,62 +191,24 @@
 			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary">
 					<tr>
-						<th class="fixed_cell_1" style="min-width: 40px;">M</th>
-						<th style="min-width: 1000px;">First</th>
-						<th style="min-width: 1000px;">Last</th>
-						<th style="min-width: 1000px;">Handle</th>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button id="exTheadthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>M</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
 					</tr>
 				</thead>
 				<tbody class="table-white">
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
+					<tr class="exTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
-						<td style="max-width: 1000px">Mark</td>
-						<td style="max-width: 1000px">Otto</td>
-						<td style="max-width: 1000px">@mdo</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Thornton</td>
-						<td style="max-width: 1000px">@fat</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -254,65 +224,195 @@
 			<table class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary">
 					<tr>
-						<th class="fixed_cell_1" style="min-width: 40px;">M</th>
-						<th style="min-width: 1000px;">First</th>
-						<th style="min-width: 1000px;">Last</th>
-						<th style="min-width: 1000px;">Handle</th>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>M</b>
+								</button>
+							</div>
+						</th>
+						<th style="min-width: 100px;">N/A</th>
+
 					</tr>
 				</thead>
 				<tbody class="table-white">
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
+					<tr class="exDetailTbodyTr">
+						<th class="fixedC1 exDetailTbodyTh" style="max-width: 40px;">
 							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input type="checkbox" alt="row_x" title="IKey_GKey" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td style="max-width: 1000px">Mark</td>
-						<td style="max-width: 1000px">Otto</td>
-						<td style="max-width: 1000px">@mdo</td>
 					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Thornton</td>
-						<td style="max-width: 1000px">@fat</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
-					</tr>
-					<tr>
-						<th class="fixed_cell_1" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td style="max-width: 1000px">Jacob</td>
-						<td style="max-width: 1000px">Larry the Bird</td>
-						<td style="max-width: 1000px">@twitter</td>
-					</tr>
+
 				</tbody>
 			</table>
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+//宣告
+//console.log("search.html(init)");
+main.web_body.search={
+	//資料
+	data:{
+		marks:[],//有選取的IKeyGKey
+
+	},	
+	//方法
+	methods:{
+		create(){
+			//Step1.初始化
+			console.log("search.html(created)");
+			//查詢結果
+			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+			console.log(searchSetJson);
+			
+			//Step1.查詢結果標題-排序
+			var resultThead = searchSetJson['resultThead'];
+			resultThead = main.methods.orderedSort(resultThead);
+			
+			//Step2.查詢結果標題-資料
+			var check1=true;
+			Object.keys(resultThead).forEach(function(k){
+				//console.log(k + ' - ' + resultThead[k]);
+				//複製格式
+				var exTheadth = $($('.exTheadth').clone());
+				var exTbodytd = $($('.exTbodytd').clone());
+				exTheadth.removeClass('exTheadth');
+				exTheadth.removeClass('d-none')
+				exTheadth.addClass('titTheadth');
+				//
+				exTbodytd.removeClass('exTbodytd');
+				exTbodytd.removeClass('d-none')
+				exTbodytd.addClass('valTbodytd');
+				exTbodytd.addClass(resultThead[k].cellName);
+				//固定第一格式
+				if(check1 && resultThead[k].show==1){
+					check1=false;
+					exTheadth.addClass('fixedC1');
+					exTheadth.css('left',"40px");
+					exTbodytd.addClass('fixedC1');
+					exTbodytd.css('left',"40px");
+				}
+				//如果有翻譯
+				if(resultThead[k].cellLanguage!=''){
+					exTheadth.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+					exTheadth.css('minWidth',resultThead[k].width+"px");
+					exTbodytd.css('maxWidth',resultThead[k].width+"px");
+				}else{
+					exTheadth.text(resultThead[k].cellName);
+					exTheadth.css('minWidth',resultThead[k].width+"px");
+					exTbodytd.css('maxWidth',resultThead[k].width+"px");
+				}
+				//如果隱藏
+				if(resultThead[k].show==0){
+					exTheadth.addClass('d-none');
+					exTbodytd.addClass('d-none');
+				}
+				
+				
+				//添加
+				$('.exTheadth').before(exTheadth);
+				$('.exTbodytd').before(exTbodytd);
+			});
+			
+			//Step3.查詢內容-格式
+			for(var b=1;b<=20;b++){
+				var exTbodyTr = $($('.exTbodyTr').clone());
+				exTbodyTr.removeClass('exTbodyTr');
+				exTbodyTr.removeClass('d-none');
+				exTbodyTr.addClass('valTbodyTr_'+b);
+				exTbodyTr.find('input').attr("alt","row_"+b);
+				$('.exTbodyTr').before(exTbodyTr);
+			}
+			$('.exTbodyTr').addClass('d-none');
+			
+			//Step4.帶入資料
+			var entityJsons = JSON.parse(main.resq_data['entityJson']);
+			var entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+			var entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
+			var entityDateTime = main.resq_data['entityDateTime'];
+			console.log(entityJsons);
+			var x = 0;//起始戳記
+			var y= 20;//每頁數量
+			for(x;x<y;x++){
+				//筆數還夠
+				if(x< entityJsons.length){
+					var entity = entityJsons[x];
+					var iKey = "";
+					var gKey = "";
+					Object.keys(entity).forEach(function(k){
+						
+						$('.valTbodyTr_'+x+' input').removeAttr("disabled");
+						//是否IKEY?
+							if(entityIKey==k){iKey= entity[k];}	
+						//是否GKEY?
+							if(entityGKey==k){gKey= entity[k];}	
+						//是否時間格式?
+						if(entityDateTime.indexOf(k)>=0){
+							 var dF = new Date(entity[k]);
+							 var dateF = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							$('.valTbodyTr_'+x+' .'+k).text(dateF);
+						}else{
+							$('.valTbodyTr_'+x+' .'+k).text(entity[k]);
+						}
+						$('.valTbodyTr_'+x+' input').attr("title",iKey+"_"+gKey);
+					});
+				}
+			}
+			
+			//監聽-換頁數
+			$(document).off("change", "#numberPage");
+			$(document).on("change", "#numberPage", function () {
+				 if ($(this).val() > 50){$(this).val(50);}
+		         else if ($(this).val() < 1){ $(this).val(1);}      
+			});
+			//監聽-選取資料
+			$(document).off("change", ".exTbodyTh input");
+			$(document).on("change", ".exTbodyTh input", function (event) {
+				var Ikey_Gkey = event.target.title;
+				var check = event.target.checked;
+				var mark = {};
+				//標記-選取|解除
+				if(check==true){
+					mark['Ikey_Gkey'] = Ikey_Gkey;
+					main.web_body.search.data.marks.push(mark);
+				}else{
+					for(var k in main.web_body.search.data.marks) {
+						if( main.web_body.search.data.marks[k]['Ikey_Gkey'] == Ikey_Gkey){
+							main.web_body.search.data.marks.splice(k, 1);
+							break;
+						};
+					}
+				}
+				console.log(main.web_body.search.data.marks);				
+			});
+			//監聽-全選資料
+			$(document).off("click", "#exTheadthAll");
+			$(document).on("click", "#exTheadthAll", function (event) {
+				//都有勾選?
+				var clickAll = true;
+				$(".exTbodyTh").each(function(){
+					if($(this).find("input").attr("disabled")!="disabled" && $(this).find("input").prop("checked")==false){
+						$(this).find("input").trigger("click");
+						clickAll = false;
+					}
+				});
+				//全部取消?
+				if(clickAll){
+					$(".exTbodyTh").find("input").trigger("click");
+				}
+			});
+		},
+		destroy() {
+			//銷毀
+			$(document).off("click", "#exTheadthAll");
+			$(document).off("change", "#numberPage");
+			$(document).off("change", ".exTbodyTh input");
+			console.log("search.html(destroy)");
+			
+		},
+	},	
+};
+</script>

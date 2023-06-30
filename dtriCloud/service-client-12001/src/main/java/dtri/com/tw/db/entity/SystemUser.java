@@ -1,15 +1,23 @@
 package dtri.com.tw.db.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -37,6 +45,7 @@ import jakarta.persistence.Table;
  *      su_password : 使用者密碼<br>
  *      su_email : 使用者E mail<br>
  *      su_sgid : 使用者權限群組<br>
+ *      su_language: 使用者語言<br>
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
  *          JPA提供的四種標準用法為TABLE，SEQUENCE，IDENTITY，AUTO。 <br>
@@ -76,45 +85,54 @@ import jakarta.persistence.Table;
 @EntityListeners(AuditingEntityListener.class)
 public class SystemUser {
 
+	
+
 	public SystemUser() {
+		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
 		this.sysmdate = new Date();
 		this.sysmuser = "system";
-		this.sysver = 0;
-		this.sysnote = "";
-		this.syssort = 0;
+		this.sysodate = new Date();
+		this.sysouser = "system";
+
+		this.sysheader = false;
 		this.sysstatus = 0;
-		this.sysgheader = false;
+		this.syssort = 0;
+		this.sysnote = "";
+		// 主體型
+		this.suname = "";
+		this.suename = "";
+		this.suposition = "";
+		this.suemail = "";
+		this.suaccount = "";
+		this.supassword = "";
+		this.systemgroups = new HashSet<>();
+		this.setSulanguage("");
 	}
 
 	// 共用型
 	@Column(name = "sys_c_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date syscdate;
-
 	@Column(name = "sys_c_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
 	private String syscuser;
-
 	@Column(name = "sys_m_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date sysmdate;
-
 	@Column(name = "sys_m_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
 	private String sysmuser;
+	@Column(name = "sys_o_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date sysodate;
+	@Column(name = "sys_o_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
+	private String sysouser;
 
-	@Column(name = "sys_ver", columnDefinition = "int default 0")
-	private Integer sysver;
-
-	@Column(name = "sys_note", columnDefinition = "text default ''")
-	private String sysnote;
-
-	@Column(name = "sys_status", columnDefinition = "int default 0")
+	@Column(name = "sys_header", nullable = false, columnDefinition = "boolean default false")
+	private Boolean sysheader;
+	@Column(name = "sys_status", nullable = false, columnDefinition = "int default 0")
 	private Integer sysstatus;
-
-	@Column(name = "sys_sort", columnDefinition = "int default 0")
+	@Column(name = "sys_sort", nullable = false, columnDefinition = "int default 0")
 	private Integer syssort;
-
-	@Column(name = "sys_g_header", nullable = false, columnDefinition = "boolean default false")
-	private Boolean sysgheader;
+	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
+	private String sysnote;
 
 	// 主體型
 	@Id
@@ -123,37 +141,26 @@ public class SystemUser {
 	@Column(name = "su_id")
 	private Long suid;
 
-	@Column(name = "su_sg_g_id")
-	private Long susggid;
-
-	@Column(name = "su_name", nullable = false, columnDefinition = "varchar(50)")
+	@Column(name = "su_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String suname;
-
-	@Column(name = "su_e_name", columnDefinition = "varchar(50)")
+	@Column(name = "su_e_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String suename;
-
-	@Column(name = "su_position", columnDefinition = "varchar(50)")
+	@Column(name = "su_position", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String suposition;
-
-	@Column(name = "su_template", nullable = false, columnDefinition = "varchar(50) default '一般職員'")
-	private String sutemplate;
-
-	@Column(name = "su_account", nullable = false, unique = true, columnDefinition = "varchar(50)")
-	private String suaccount;
-
-	@Column(name = "su_password", nullable = false, columnDefinition = "varchar(256)")
-	private String supassword;
-
-	@Column(name = "su_email", columnDefinition = "varchar(200) default ''")
+	@Column(name = "su_email", nullable = false, unique = true, columnDefinition = "varchar(100) default ''")
 	private String suemail;
+	@Column(name = "su_account", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String suaccount;
+	@JsonIgnore
+	@Column(name = "su_password", nullable = false, columnDefinition = "varchar(300) default ''")
+	private String supassword;
+	
+	@Column(name = "su_language", nullable = false, columnDefinition = "varchar(10) default 'zh-TW'")
+	private String sulanguage;
 
-	public Boolean getSysgheader() {
-		return sysgheader;
-	}
-
-	public void setSysgheader(Boolean sysgheader) {
-		this.sysgheader = sysgheader;
-	}
+	@ManyToMany(targetEntity = SystemGroup.class, fetch = FetchType.EAGER)
+	@JoinTable(name = "su_sg_list", joinColumns = @JoinColumn(name = "su_id_fk"), inverseJoinColumns = @JoinColumn(name = "sg_id_fk"))
+	private Set<SystemGroup> systemgroups;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -187,20 +194,28 @@ public class SystemUser {
 		this.sysmuser = sysmuser;
 	}
 
-	public Integer getSysver() {
-		return sysver;
+	public Date getSysodate() {
+		return sysodate;
 	}
 
-	public void setSysver(Integer sysver) {
-		this.sysver = sysver;
+	public void setSysodate(Date sysodate) {
+		this.sysodate = sysodate;
 	}
 
-	public String getSysnote() {
-		return sysnote;
+	public String getSysouser() {
+		return sysouser;
 	}
 
-	public void setSysnote(String sysnote) {
-		this.sysnote = sysnote;
+	public void setSysouser(String sysouser) {
+		this.sysouser = sysouser;
+	}
+
+	public Boolean getSysheader() {
+		return sysheader;
+	}
+
+	public void setSysheader(Boolean sysheader) {
+		this.sysheader = sysheader;
 	}
 
 	public Integer getSysstatus() {
@@ -219,6 +234,14 @@ public class SystemUser {
 		this.syssort = syssort;
 	}
 
+	public String getSysnote() {
+		return sysnote;
+	}
+
+	public void setSysnote(String sysnote) {
+		this.sysnote = sysnote;
+	}
+
 	public Long getSuid() {
 		return suid;
 	}
@@ -227,12 +250,12 @@ public class SystemUser {
 		this.suid = suid;
 	}
 
-	public Long getSusggid() {
-		return susggid;
+	public Set<SystemGroup> getSystemgroups() {
+		return systemgroups;
 	}
 
-	public void setSusggid(Long susggid) {
-		this.susggid = susggid;
+	public void setSystemgroups(Set<SystemGroup> systemgroups) {
+		this.systemgroups = systemgroups;
 	}
 
 	public String getSuname() {
@@ -259,6 +282,14 @@ public class SystemUser {
 		this.suposition = suposition;
 	}
 
+	public String getSuemail() {
+		return suemail;
+	}
+
+	public void setSuemail(String suemail) {
+		this.suemail = suemail;
+	}
+
 	public String getSuaccount() {
 		return suaccount;
 	}
@@ -275,19 +306,11 @@ public class SystemUser {
 		this.supassword = supassword;
 	}
 
-	public String getSuemail() {
-		return suemail;
+	public String getSulanguage() {
+		return sulanguage;
 	}
 
-	public void setSuemail(String suemail) {
-		this.suemail = suemail;
-	}
-
-	public String getSutemplate() {
-		return sutemplate;
-	}
-
-	public void setSutemplate(String sutemplate) {
-		this.sutemplate = sutemplate;
+	public void setSulanguage(String sulanguage) {
+		this.sulanguage = sulanguage;
 	}
 }

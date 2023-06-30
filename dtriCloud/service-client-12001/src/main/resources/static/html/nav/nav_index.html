@@ -13,156 +13,96 @@
 	<div class="col-12 p-0 bg-light border border-primary rounded-bottom row m-0 p-1 shadow-sm">
 		<div class="col-1 p-0">
 			<button class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse" aria-controls="nav_functional_menu" data-bs-target="#nav_functional_menu">
-				<i class="bi bi-menu-down"></i> <b class="d-none d-md-inline">Menu</b>
+				<i class="bi bi-menu-down"></i> <b class="d-none d-lg-inline">Menu</b>
 			</button>
 		</div>
 		<div class="col-10 p-0 row m-0">
 			<div id="nav_functional_unit" class="col-3 p-1 m-0 h4 fw-bold text-center">單元名稱</div>
-			<div class="col-9 p-1 pt-0 pb-0 m-0">
+			<div class="col-9 p-1 pt-0 pb-0 m-0 fw-bold">
 				<div id="nav_message_color" class="alert alert-primary p-1 m-0 d-flex justify-content-between" role="alert">
-					<div id="nav_message_info" class="">[代碼]提示訊息:</div>
+					<div id="nav_message_info_def" class="">[Code]Message :</div>
+					<div id="nav_message_info" class="d-none">[Code]Message :</div>
 					<button id="nav_message_close" type="button" class="btn-close" aria-label="Close"></button>
 				</div>
 			</div>
 		</div>
 		<div class="col-1 p-0">
 			<button id="nav_user" class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse" aria-controls="nav_user_menu" data-bs-target="#nav_user_menu">
-				<i class="bi bi-person-circle"></i> <b class="d-none d-md-inline">User</b>
+				<i class="bi bi-person-circle"></i> <b class="d-none d-lg-inline">User</b>
 			</button>
 		</div>
 	</div>
 	<!-- 動態選單 -->
 	<div class="col-12 p-1 pt-0">
 		<!-- Menu -->
-		<div class="menu_css collapse float-start col-lg-2 col-md-3 border border-primary rounded-bottom bg-white shadow pt-0" id="nav_functional_menu">
+		<div class="menu_css collapse float-start col-5 col-md-3 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0" id="nav_functional_menu">
 			<div class="row m-0 p-0">
-				<div class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
-					<div class="pt-2">
+				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
+					<div id="menu_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
-								<i class="bi bi-tags"></i> 功能
+								<i class="bi bi-tags"></i> Class
 							</div>
-							<div>系統管理</div>
+							<div class="menu_l_name">範例功能</div>
 						</button>
 					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>業務管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>產品管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>生產管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>物料管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>採購管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>倉儲管理</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-tags"></i> 功能
-							</div>
-							<div>製造管理</div>
-						</button>
-					</div>
+
 				</div>
 				<!-- Menu-item -->
-				<div class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
-					<div class="pt-2">
+				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
+					<div id="menu_i_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-gear"></i> 設定
+							<div class="sptype_0 d-none ">
+								<i class="bi bi-box-arrow-down-right"></i> General
 							</div>
-							<div>系統參數</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-gear"></i> 設定
+							<div class="sptype_1 d-none ">
+								<i class="bi bi-gear"></i> Setting
 							</div>
-							<div>系統單元</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-gear"></i> 設定
-							</div>
-							<div>系統群組</div>
-						</button>
-					</div>
-					<div class="pt-2">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-							<div>
-								<i class="bi bi-gear"></i> 設定
-							</div>
-							<div>系統用戶</div>
+							<div class="menu_i_name">範例項目功能</div>
 						</button>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- User -->
-		<div class="menu_css collapse float-end col-md-1 border border-primary rounded-bottom bg-white shadow" id="nav_user_menu">
+		<div class="menu_css collapse float-end col-3 col-md-2 col-lg-1 border border-primary rounded-bottom bg-white shadow" id="nav_user_menu">
 			<div class="p-1 text-center fw-bold fw-normal h6 m-0 text-primary">
 				<div class="col-12">
-					<div>Name</div>
-					<div>Apple</div>
+					<div class="pb-2">
+						<i class="bi bi-bookmark"></i> Name
+					</div>
+					<div class="h3" id="menu_login_name">Apple</div>
 				</div>
 				<div class="pt-1 pb-1">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
 				<div class="col-12">
-					<div>Login time</div>
-					<div>yyyy-MM-dd 24h:mm:ss</div>
+					<div class="pb-2">
+						<i class="bi bi-bookmark"></i> Language
+					</div>
+					<div class="h6" id="menu_login_language" style="word-break: keep-all;"></div>
+				</div>
+				<div class="pt-1 pb-1">
+					<div class="col-12 p-0 m-0 border border-primary"></div>
+				</div>
+				<div class="col-12">
+					<div class="pb-2">
+						<i class="bi bi-bookmark"></i> Login time
+					</div>
+					<div class="h6" id="menu_login_datetime" style="word-break: keep-all;">yyyy-MM-dd 24h:mm:ss</div>
 				</div>
 				<div class="pt-1 pb-1">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
 				<div class="pt-2">
-					<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
-						<div>
-							<i class="bi bi-house-heart"></i>
-						</div>
-						<div>Home</div>
-					</button>
+					<a id="home_index" href="#">
+						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
+							<div>
+								<i class="bi bi-house-heart"></i>
+							</div>
+							<div>Home</div>
+						</button>
+					</a>
 				</div>
 				<div class="pt-2">
 					<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
@@ -176,12 +116,14 @@
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
 				<div class="pt-2">
-					<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-warning shadow-sm">
-						<div>
-							<i class="bi bi-outlet"></i>
-						</div>
-						<div>Logout</div>
-					</button>
+					<a id="logout" href="./logout.basil">
+						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-danger shadow-sm">
+							<div>
+								<i class="bi bi-outlet"></i>
+							</div>
+							<div>Logout</div>
+						</button>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -190,142 +132,161 @@
 
 <script type="text/javascript">
 //宣告
-console.log("nav_index.html(init)");
+
+main.web_html.nav_alert = {
+	data:{
+		alertTimeout:""
+		
+	},
+	//方法
+	methods:{
+		alertshow(color,ms){
+			$("#nav_message_info").removeClass("d-none");
+			$("#nav_message_info_def").addClass("d-none");
+			$("#nav_message_info").text("[Code]Message : "+ms);
+			$("#nav_message_color").removeClass("alert-primary");
+			$("#nav_message_color").removeClass("alert-success");
+			$("#nav_message_color").removeClass("alert-warning");
+			$("#nav_message_color").removeClass("alert-danger");
+			clearTimeout(main.web_html.nav_alert.data.alertTimeout);
+			switch(color){
+			case "success":
+				$("#nav_message_color").addClass("alert-success");
+				break;
+			case "warning":
+				$("#nav_message_color").addClass("alert-warning");
+				break;
+			case "danger":
+				$("#nav_message_color").addClass("alert-danger");
+				break;
+			}
+			//自動還原
+			main.web_html.nav_alert.data.alertTimeout = setTimeout(function() { 
+				$("#nav_message_info_def").removeClass("d-none");
+				$("#nav_message_info").addClass("d-none");
+				$("#nav_message_info").text("[Code]Message : ");
+				//color
+				$("#nav_message_color").addClass("alert-primary");
+				$("#nav_message_color").removeClass("alert-success");
+				$("#nav_message_color").removeClass("alert-warning");
+				$("#nav_message_color").removeClass("alert-danger");
+			}, 7000);
+		},
+		create(){
+			//初始化
+			console.log("nav_alert.html(create)");
+			//建立監聽(關閉異常)
+			$(document).off("click", "#nav_message_close");
+			$(document).on("click", "#nav_message_close", function(event) {
+				$("#nav_message_info_def").removeClass("d-none");
+				$("#nav_message_info").addClass("d-none");
+				$("#nav_message_info").text("[Code]Message : ");
+				//color
+				$("#nav_message_color").addClass("alert-primary");
+				$("#nav_message_color").removeClass("alert-success");
+				$("#nav_message_color").removeClass("alert-warning");
+				$("#nav_message_color").removeClass("alert-danger");
+			});
+		}
+	}		
+}
+
 main.web_html.nav_index = {
 	//資料
 	date:{
-		
+		menuJson:{},
+		menuUnitJson:{},
 	},	
 	//方法
 	methods:{
 		create(){
 			//初始化
 			console.log("nav_index.html(create)");
+			var nav_index = main.web_html.nav_index;
+			var entityJson = JSON.parse(main.resq_data.entityJson);
+			var systemgroups = entityJson.systemgroups;
+			//console.log(entityJson);
+			$("#menu_login_name").text(entityJson.suname);
+			$("#menu_login_language").text(entityJson.sulanguage);
+			$("#menu_login_datetime").text(new Date());
+			//例遍->每項目->自動排序
+			for (var systemgroup of systemgroups) {
+				var systemPermission = systemgroup['systemPermission'];
+				nav_index.date.menuJson[systemPermission['syssort']] = systemPermission;
+				
+			}
+			//例遍->群組功能
+			var spgname = "";
+			var menuJson = nav_index.date.menuJson;
+			for (var key in menuJson) {
+				//不同群組->則添加
+				if(spgname != menuJson[key].spgname){
+					spgname = menuJson[key].spgname;
+					var menu_ex = $($("#menu_ex").clone());
+					menu_ex.attr("id","spgid_"+menuJson[key].spgid);
+					menu_ex.removeClass("d-none");
+					menu_ex.addClass("menu_list_open");
+					menu_ex.find(".menu_l_name").text(menuJson[key].spgname);
+					menu_ex.appendTo( "#menu_list");
+				}
+				//放入轉跳頁面
+				nav_index.date.menuUnitJson[menuJson[key].spid] = menuJson[key].spcontrol;
+			}
+			//建立監聽(開啟細項)
+			$(document).off("mouseenter", "#menu_list .menu_list_open");
+			$(document).on("mouseenter", "#menu_list .menu_list_open", function (event) {
+				//console.log(event.currentTarget.id);
+				//清除-上次細項資料
+				$(".menu_list_item").remove();
+				for (var key in menuJson) {
+					var spgid = Number(event.currentTarget.id.replace("spgid_",""));
+					if(spgid == menuJson[key].spgid){
+						var menu_i_ex = $($("#menu_i_ex").clone());
+						//是否為一般類別
+						if(menuJson[key].sptype==0){
+							menu_i_ex.find(".sptype_0").removeClass("d-none");
+						}else{
+							menu_i_ex.find(".sptype_1").removeClass("d-none");
+							menu_i_ex.find(".btn-outline-primary").addClass("btn-outline-danger");
+							menu_i_ex.find(".btn-outline-primary").removeClass("btn-outline-primary");
+						}
+						menu_i_ex.attr("id","spid_"+menuJson[key].spid);
+						menu_i_ex.removeClass("d-none");
+						menu_i_ex.addClass("menu_list_item");
+						menu_i_ex.find(".menu_i_name").text(menuJson[key].spname);
+						menu_i_ex.appendTo("#menu_item");
+					}
+				}
+				
+			});
+			//建立監聽(轉跳單元)
+			$(document).off("click", "#menu_item .menu_list_item");
+			$(document).on("click", "#menu_item .menu_list_item", function(event) {
+				//轉跳對象
+				var spid = event.currentTarget.id.replace("spid_","");
+				var url = nav_index.date.menuUnitJson[spid];
+				var req_data = {};
+				var data = {};
+				data['htmlBody'] = ("body_"+url).replace("basil","html");
+				data['htmlBodyUnitName'] =  $('#'+event.currentTarget.id).find('.menu_i_name').text();
+				//關閉選單
+				$('#nav_functional_menu').removeClass("show");
+				$('#nav_user_menu').removeClass("show");
+				
+				//準備轉跳
+				req_data.url = url;
+				req_data.type = "POST";
+				req_data.data = data;
+				main.methods.ajaxSend(req_data);
+			});
+			//console.log(nav_index.date.menuUnitJson);
 		},
 		destroy() {
 			//銷毀
 			 console.log("nav_index.html(destroy)");
+			 $(document).off("mouseenter", "#menu_list .menu_list_open");
+			 $(document).off("click", "#menu_item .menu_list_item");
 		},
 	},	
 };
-
-	//控制端
-	/*	t_nav = new Vue({
-	 el : "#nav",
-	 //資料區
-	 data : {
-	 test : 300,
-	 nb : 1, //編號(0 是 樣式)
-	 nav_list:{},
-	 },
-	 //初始化前
-	 created() {
-	 console.log("nav.html(created)");
-	 $("#solTitle a").click(function() {})
-	 },
-	 //初始化後
-	 mounted() {
-
-	 },
-	 //可呼叫方法
-	 methods : {
-	 //t_nav.$destroy();
-	 //t_alert.$destroy();
-	 //t_body.$destroy();
-	
-	 //單元設定
-	 setMenu(list){
-	 var old_g_name="";//群組名稱
-	 this.nb = 1;//編號(0 是 樣式)
-	 var nav_m_g="nav_m_g_";//單元組ID
-	 var nav_m_g_n="nav_m_g_n"//單元組名
-	 var nav_m_l="nav_m_l";//單元組內容位置ID
-	 //建立選單-新增
-	 for(i=0;i<list.length;i++){
-	 var g_menu = $( "#nav_m_g_0" ).clone();//複製樣本
-	 //不同則新建(單元組)
-	 if(old_g_name!=list[i].g_name){
-	 old_g_name = list[i].g_name;
-	 nav_m_g = "nav_m_g_"+this.nb;
-	 nav_m_g_n = "nav_m_g_n_"+this.nb;
-	 nav_m_l = "nav_m_l_"+this.nb;
-	 g_menu.removeClass("nav_example");
-	 g_menu.attr("id",nav_m_g);
-	 g_menu.appendTo("#nav_ms");
-	 //修正內容
-	 $("#"+nav_m_g).attr("aria-controls",nav_m_l);
-	 $("#"+nav_m_g).attr("data-target","#"+nav_m_l);
-	 $("#"+nav_m_g+" #nav_m_l_0").attr("id",nav_m_l);
-	 $("#"+nav_m_g+" #nav_m_g_n_0").attr("id",nav_m_g_n);
-	 $("#"+nav_m_g_n+" b").text(old_g_name);
-	 //移除多餘的樣本單元
-	 $("#"+nav_m_l+" ul li").remove();
-	 this.nb += 1;
-	 }
-	 //個別新建單元
-	 var one_item = $("#nav_m_g_0 ul li").clone();//複製樣本
-	 one_item.appendTo("#"+nav_m_l+" ul");
-	 //修正內容
-	 $("#"+nav_m_l+" #item_m").attr("id","item_m_"+i);
-	 $("#item_m_"+i).attr("url",list[i].url);
-	 $("#item_m_"+i+" .item_n").text(list[i].i_name);
-	 //維修?
-	 if(list[i].sp_type==1){
-	 $("#item_m_"+i+" .bi-gear").removeClass('d-none');
-	 $("#item_m_"+i+" .bi-box-arrow-in-down-right").addClass('d-none');
-	 }
-	
-	 this.nav_list['body_'+(list[i].url).replace('.basil','')] = list[i].i_name;
-	 }
-	 //將預設單-移除
-	 $(".nav_example").remove();
-	
-	 //監聽-轉跳
-	 $(document).on("click", ".item_click", function(event) {
-	 t_nav.turnMenu(event);
-	 //event.preventDefault();
-	 });
-	 $('#name').text(main.info_user["name"]);
-	 },
-	 //關閉其他群組
-	 closeother(event){
-	 //console.log(event.id);
-	 for(var i =1;i<this.nb;i++){
-	 if("nav_m_g_n_"+i== event.id){
-	 continue;
-	 }
-	 if($("#nav_m_g_"+i).attr("aria-expanded")=="true"){
-	 console.log($("#nav_m_g_"+i));
-	 $("#nav_m_g_"+i).trigger('click');
-	 }
-	 }
-	 },
-	 //轉跳-單元
-	 turnMenu(event){
-	 main.loading(true);
-	 console.log("turnMenu:"+event.currentTarget.attributes.url.value);
-	 var s_url = event.currentTarget.attributes.url.value;
-	 var	s_type = "POST";
-	 var	s_data = {};
-	 var req = {};
-	 req.user=$('#name').text();
-	 req.date=new Date();
-	 req.action="AC";
-	 req.body={};
-	 req.page_total=main.page_total;
-	 req.page_batch=main.page_batch;
-	 req.page_now_nb=main.page_now_nb;
-	 req.html_body= "body_"+event.currentTarget.attributes.url.value.replace('basil', 'html');
-	 req.call_bk_fn="";
-	 req.call_bk_vals={};
-	 s_data.req_content = req;
-	 main.ajaxSend(s_url,s_type,s_data);
-	 }
-	 },
-	 //移除監聽事件
-	 beforeDestroy() {
-	 console.log("nav.html(beforeDestroy)");
-	 $(document).off("click", ".item_click");
-	 }
-	 });*/
 </script>

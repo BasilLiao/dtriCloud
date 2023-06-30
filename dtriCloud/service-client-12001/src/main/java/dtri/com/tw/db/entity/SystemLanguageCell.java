@@ -1,25 +1,18 @@
 package dtri.com.tw.db.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -32,18 +25,20 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---權限群組---<br>
- *      sg_id : 群組ID<br>
- *      sg_group_id : 權限群組ID<br>
- *      sg_name : 群組名稱<br>
- *      sg_sper_id : 功能權限ID<br>
- *      sg_permission : 功能權限驗證<br>
+ *      ---系統翻譯---<br>
+ *      sl_id : ID<br>
+ *      sl_sp_control : 單元 後台控制ID<br>
+ *      sl_target : 翻譯目標 名稱<br>
+ *      sl_class : 翻譯種類 0=Menu group(功能群組名稱) 1=Menu item(功能項目名稱) 2=Cell
+ *      name(欄位名稱) 3=訊息翻譯<br>
+ *      sl_language : 翻譯國家(使用底線分割) zh-TW_en-US_vi-VN <br>
+ *      sl_value : 翻譯內容(使用底線分割) 使用者權限_UserPermission_Quyền Người dùng<br>
  */
 @Entity
-@Table(name = "system_group")
+@Table(name = "system_language_cell")
 @EntityListeners(AuditingEntityListener.class)
-public class SystemGroup {
-	public SystemGroup() {
+public class SystemLanguageCell {
+	public SystemLanguageCell() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -54,13 +49,17 @@ public class SystemGroup {
 
 		this.sysheader = false;
 		this.sysstatus = 0;
-		this.syssort = 0;
+		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		// 群組型
-		this.sgname = "";
-		this.sgpermission = "000000000000";
-		this.systemusers = null;
-		this.systemPermission = new SystemPermission();
+
+		// 系統語言
+		this.slspcontrol = "";
+		this.sltarget = "";
+		this.slclass = 0;
+		this.sllanguage = "";
+		this.slcshow = 0;// 欄位?顯示
+		this.slcwidth = 100;// 欄位?寬度
+
 	}
 
 	// 共用型
@@ -86,28 +85,34 @@ public class SystemGroup {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 群組型
+	// 系統語言型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_group_seq")
-	@SequenceGenerator(name = "system_group_seq", sequenceName = "system_group_seq", allocationSize = 1)
-	@Column(name = "sg_id")
-	private Long sgid;
-	@Column(name = "sg_g_id", nullable = false)
-	private Long sggid;
-	@Column(name = "sg_name", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String sgname;
-	@Column(name = "sg_permission", nullable = false, columnDefinition = "varchar(12) default '000000000000'")
-	private String sgpermission;
-
-	//jackson[使用方式@JsonIgnore=忽略/@JsonInclude忽略特定值]
-	@JsonIgnore
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	@ManyToMany(mappedBy = "systemgroups")
-	Set<SystemUser> systemusers;
-
-	@ManyToOne(targetEntity = SystemPermission.class, fetch = FetchType.EAGER)
-	@JoinColumn(name = "sg_sp_id")
-	private SystemPermission systemPermission;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_language_cell_seq")
+	@SequenceGenerator(name = "system_language_cell_seq", sequenceName = "system_language_cell_seq", allocationSize = 1)
+	@Column(name = "sl_id")
+	private Long slid;
+	@Column(name = "sl_sp_control", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String slspcontrol;
+	@Column(name = "sl_target", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sltarget;
+	@Column(name = "sl_class", nullable = false, columnDefinition = "int default 0")
+	private Integer slclass;
+	@Column(name = "sl_language", nullable = false, columnDefinition = "text default ''")
+	private String sllanguage;
+	@Column(name = "sl_c_show", nullable = false, columnDefinition = "int default 0")
+	private Integer slcshow;
+	@Column(name = "sl_c_width", nullable = false, columnDefinition = "int default 100")
+	private Integer slcwidth;
+	
+	//前端格式-修改/查詢用
+	@Transient
+	private String sllanguage_zhTW;
+	@Transient
+	private String sllanguage_zhCN;
+	@Transient
+	private String sllanguage_enUS;
+	@Transient
+	private String sllanguage_viVN;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -189,51 +194,60 @@ public class SystemGroup {
 		this.sysnote = sysnote;
 	}
 
-	public Long getSgid() {
-		return sgid;
+	public Long getSlid() {
+		return slid;
 	}
 
-	public void setSgid(Long sgid) {
-		this.sgid = sgid;
+	public void setSlid(Long slid) {
+		this.slid = slid;
 	}
 
-	public Long getSggid() {
-		return sggid;
+	public String getSlspcontrol() {
+		return slspcontrol;
 	}
 
-	public void setSggid(Long sggid) {
-		this.sggid = sggid;
+	public void setSlspcontrol(String slspcontrol) {
+		this.slspcontrol = slspcontrol;
 	}
 
-	public String getSgname() {
-		return sgname;
+	public String getSltarget() {
+		return sltarget;
 	}
 
-	public void setSgname(String sgname) {
-		this.sgname = sgname;
+	public void setSltarget(String sltarget) {
+		this.sltarget = sltarget;
 	}
 
-	public String getSgpermission() {
-		return sgpermission;
+	public Integer getSlclass() {
+		return slclass;
 	}
 
-	public void setSgpermission(String sgpermission) {
-		this.sgpermission = sgpermission;
+	public void setSlclass(Integer slclass) {
+		this.slclass = slclass;
 	}
 
-	public Set<SystemUser> getSystemusers() {
-		return systemusers;
+	public String getSllanguage() {
+		return sllanguage;
 	}
 
-	public void setSystemusers(Set<SystemUser> systemusers) {
-		this.systemusers = systemusers;
+	public void setSllanguage(String sllanguage) {
+		this.sllanguage = sllanguage;
 	}
 
-	public SystemPermission getSystemPermission() {
-		return systemPermission;
+	public Integer getSlcshow() {
+		return slcshow;
 	}
 
-	public void setSystemPermission(SystemPermission systemPermission) {
-		this.systemPermission = systemPermission;
+	public void setSlcshow(Integer slcshow) {
+		this.slcshow = slcshow;
 	}
+
+	public Integer getSlcwidth() {
+		return slcwidth;
+	}
+
+	public void setSlcwidth(Integer slcwidth) {
+		this.slcwidth = slcwidth;
+	}
+
 }
