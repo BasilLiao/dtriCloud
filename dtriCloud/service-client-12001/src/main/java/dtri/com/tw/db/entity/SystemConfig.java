@@ -56,6 +56,9 @@ public class SystemConfig {
 		this.scname = "";
 		this.scgname = "";
 		this.scvalue = "";
+
+		this.setSysmdatestart(null);
+		this.setSysmdateend(null);
 	}
 
 	// 共用型
@@ -95,8 +98,8 @@ public class SystemConfig {
 	private String scgname;
 	@Column(name = "sc_value", nullable = false, columnDefinition = "text default ''")
 	private String scvalue;
-	
-	//前端格式-修改/查詢用
+
+	// 前端格式-修改/查詢用(翻譯與欄位)
 	@Transient
 	private Date sysmdatestart;
 	@Transient
@@ -220,6 +223,22 @@ public class SystemConfig {
 
 	public void setScvalue(String scvalue) {
 		this.scvalue = scvalue;
+	}
+
+	public Date getSysmdatestart() {
+		return sysmdatestart;
+	}
+
+	public void setSysmdatestart(Date sysmdatestart) {
+		this.sysmdatestart = sysmdatestart;
+	}
+
+	public Date getSysmdateend() {
+		return sysmdateend;
+	}
+
+	public void setSysmdateend(Date sysmdateend) {
+		this.sysmdateend = sysmdateend;
 	}
 
 }

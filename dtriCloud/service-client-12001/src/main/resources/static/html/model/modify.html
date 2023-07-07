@@ -71,17 +71,16 @@
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#modify_c_batch_revision_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="modify_c_batch_revision_open">
-			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision </b>
+			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Data </b>
 			<div class="col border border-primary m-0 p-0 shadow-sm">
-
-				<div class="col p-1 m-0 row">
+				<!-- 範例內容 -->
+				<div class="col p-1 m-0 row d-none">
 					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Ex </b>
-					<!-- 範例內容 -->
 					<table id="modify_c_ex" class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 						<thead class="table-primary">
 							<tr>
-								<th id="modify_c_ex_tm" class="f_c_1" style="min-width: 30px;">M</th>
-								<th id="modify_c_ex_tp" class="f_c_2" style="min-width: 30px;">P</th>
+								<th id="modify_c_ex_tm" class="f_c_1" style="min-width: 30px;">AD</th>
+								<th id="modify_c_ex_tp" class="f_c_2" style="min-width: 30px;">CP</th>
 								<th id="modify_c_ex_tkey" class="f_c_3" style="min-width: 200px;">Key</th>
 								<th id="modify_c_ex_th" style="min-width: 200px;">Textarea_text</th>
 								<th style="min-width: 200px;">Input_text</th>
@@ -91,7 +90,7 @@
 								<th style="min-width: 200px;">Input_checkbox</th>
 								<th style="min-width: 200px;">Input_password</th>
 								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
+								<th style="min-width: 200px;">Input_download</th>
 								<th style="min-width: 200px;">Select_text</th>
 							</tr>
 						</thead>
@@ -110,132 +109,85 @@
 									</div>
 								</th>
 								<th id="modify_c_ex_vkey" style="max-width: 200px;" class="f_c_3"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea id="modify_c_ex_tt" class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_it" class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_in" class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_id" class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_idt" class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_icb" class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_ic" class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input id="modify_c_ex_ip" class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img id="modify_c_ex_ii" class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select id="modify_c_ex_st" class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
+								<td style="max-width: 200px" id="modify_c_ex_tt"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="1"></textarea></td>
+								<td style="max-width: 200px" id="modify_c_ex_it"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_in"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_id"><input class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_t"><input class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time" type="text" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_icb"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_ic"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_ip"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
+								<td style="max-width: 200px" id="modify_c_ex_ii"><i class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
+								<td style="max-width: 200px" id="modify_c_ex_st"><select class="col-12 m-0 p-1 border border-dark form-select">
+										<option class="modify_st_ex" value="">請選擇(N/A)</option>
 								</select></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="col p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Header </b>
-					<!-- 表頭批次處理 -->
+				<!-- 表頭批次處理 -->
+				<div id="batchThAll" class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Data </b>
 					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-primary">
+						<thead id="batchThn" class="table-primary">
 							<tr>
-								<th class="f_c_1" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
 							</tr>
 						</thead>
-						<tbody class="table-white">
+						<tbody id="batchThv" class="table-white">
 							<tr>
-								<th class="f_c_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="col-md-12 p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Body </b>
-					<!-- 表身批次處理 -->
-					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-primary">
-							<tr>
-								<th class="f_c_1" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
-							</tr>
-						</thead>
-						<tbody class="table-white">
-							<tr>
-								<th class="f_c_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="col-md-12 p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"> Replace </b>
-					<!-- 取代批次處理 -->
+				<!-- 取代批次處理 -->
+				<div id="batchTrhAll" class="col-md-12 p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white" style="font-size: 12px">Replace Data</b>
 					<table class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-danger">
+						<thead id="batchTrhn" class="table-danger">
 							<tr>
-								<th class="f_c_1" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
 							</tr>
 						</thead>
-						<tbody class="table-white">
+						<tbody id="batchTrhv" class="table-white">
 							<tr>
-								<th class="f_c_1" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="modify_c_batch_revision" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#modify_c_batch_revision_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse" id="modify_c_batch_revision_open">
+			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Detail </b>
+			<div class="col border border-primary m-0 p-0 shadow-sm">
+				<!-- 表身批次處理 -->
+				<div id="batchTdAll" class="col-md-12 p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Detail </b>
+					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead id="batchTdn" class="table-primary">
+							<tr>
+							</tr>
+						</thead>
+						<tbody id="batchTdv" class="table-white">
+							<tr>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- 取代批次處理 -->
+				<div id="batchTrdAll" class="col-md-12 p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white" style="font-size: 12px">Replace Detail</b>
+					<table class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<thead id="batchTrdn" class="table-danger">
+							<tr>
+							</tr>
+						</thead>
+						<tbody id="batchTrdv" class="table-white">
+							<tr>
 							</tr>
 						</tbody>
 					</table>
@@ -251,24 +203,22 @@
 		<div class="row m-0 collapse show" id="modify_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-md-4 p-1">
+				<div class="col-md-3 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Batch</div>
+						<div class="title_color fw-bolder rounded-top">State</div>
+						<div id="modify_c_state" class="p-1 m-0 h2 fw-bold text-center text-danger">＞＞Create＜＜</div>
+					</div>
+				</div>
+				<div class="col-md-2 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Batch Data</div>
 						<div class="row m-0">
 							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-								<b>Overwrite<br>header()
+								<b>Overwrite<br>()
 								</b>
 							</button>
 							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
-								<b>Replace<br>header()
-								</b>
-							</button>
-							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-								<b>Overwrite<br>body()
-								</b>
-							</button>
-							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
-								<b>Replace<br>body()
+								<b>Replace<br>()
 								</b>
 							</button>
 							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
@@ -278,12 +228,26 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-4 p-1">
+				<div class="col-md-2 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">State</div>
-						<div id="modify_c_state" class="p-1 m-0 h2 fw-bold text-center text-danger">＞＞Modify＜＜</div>
+						<div class="title_color fw-bolder rounded-top">Batch Detail</div>
+						<div class="row m-0">
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+								<b>Overwrite<br>()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+								<b>Replace<br>()
+								</b>
+							</button>
+							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Clear<br>all()
+								</b>
+							</button>
+						</div>
 					</div>
 				</div>
+
 				<div class="col-md-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
@@ -309,192 +273,34 @@
 		</div>
 		<div class="row m-0 collapse show" id="modify_c_list_open">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Modify list </b>
-			<div class="col border border-primary m-0 p-0 shadow-sm">
+			<div id="modify_data" class="col border border-primary m-0 p-0 shadow-sm">
 				<!-- 表頭修正 -->
-				<div class="col p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Header </b>
+				<div id="modifyThAll" class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Data </b>
 					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-primary">
-							<tr>
-								<th class="f_c_1" style="min-width: 30px;">M</th>
-								<th class="f_c_2" style="min-width: 30px;">P</th>
-								<th class="f_c_3" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
-							</tr>
+						<thead id="modifyThn" class=" table-primary">
+
 						</thead>
-						<tbody class="table-white">
-							<tr>
-								<th class="f_c_1" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none" style="width: 24px; height: 24px;"></i>
-										<div class="d-none"></div>
-										<i class="btn btn-outline-success p-0 bi bi-plus-square" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_2" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-primary p-0 bi bi-stickies" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_3" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
-							</tr>
+						<tbody id="modifyThv" class="table-white">
+
 						</tbody>
 					</table>
 				</div>
 				<!-- 表身批次處理 -->
-				<div class="col p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Body </b>
+				<div id="modifyTdAll" class="col p-1 m-0 row">
+					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Detail </b>
 					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-primary">
-							<tr>
-								<th class="f_c_1" style="min-width: 30px;">M</th>
-								<th class="f_c_2" style="min-width: 30px;">P</th>
-								<th class="f_c_3" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
-							</tr>
+						<thead id="modifyTdn" class="table-primary">
+
 						</thead>
-						<tbody class="table-white">
-							<tr>
-								<th class="f_c_1" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none" style="width: 24px; height: 24px;"></i>
-										<div class="d-none"></div>
-										<i class="btn btn-outline-success p-0 bi bi-plus-square" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_2" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-primary p-0 bi bi-stickies" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_3" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
-							</tr>
-							<tr>
-								<th class="f_c_1" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none" style="width: 24px; height: 24px;"></i>
-										<div class="d-none"></div>
-										<i class="btn btn-outline-success p-0 bi bi-plus-square" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_2" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-primary p-0 bi bi-stickies" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_3" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
-							</tr>
+						<tbody id="modifyTdv" class="table-white">
+
 						</tbody>
 					</table>
 				</div>
-				<!-- 隔一筆資料-分隔線 -->
+				<!-- 隔一筆群組資料-分隔線 -->
 				<div class="col-md-12 p-0 m-0 mt-1 mb-1 bg-info text-center fw-bold text-white" style="font-size: 12px">Next one</div>
-				<!-- 表頭修正 -->
-				<div class="col p-1 m-0 row">
-					<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Header </b>
-					<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-						<thead class="table-primary">
-							<tr>
-								<th class="f_c_1" style="min-width: 30px;">M</th>
-								<th class="f_c_2" style="min-width: 30px;">P</th>
-								<th class="f_c_3" style="min-width: 200px;">Key</th>
-								<th style="min-width: 200px;">Textarea_text</th>
-								<th style="min-width: 200px;">Input_text</th>
-								<th style="min-width: 200px;">Input_number</th>
-								<th style="min-width: 200px;">Input_date</th>
-								<th style="min-width: 200px;">Input_datetime</th>
-								<th style="min-width: 200px;">Input_checkbox</th>
-								<th style="min-width: 200px;">Input_password</th>
-								<th style="min-width: 200px;">Input_file</th>
-								<th style="min-width: 200px;">Input_image</th>
-								<th style="min-width: 200px;">Select_text</th>
-							</tr>
-						</thead>
-						<tbody class="table-white">
-							<tr>
-								<th class="f_c_1" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none" style="width: 24px; height: 24px;"></i>
-										<div class="d-none"></div>
-										<i class="btn btn-outline-success p-0 bi bi-plus-square" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_2" style="max-width: 30px;">
-									<div class="col-12 m-0 p-0">
-										<i class="btn btn-outline-primary p-0 bi bi-stickies" style="width: 24px; height: 24px;"></i>
-									</div>
-								</th>
-								<th class="f_c_3" style="max-width: 200px;"><div class="col-12 m-0 p-1">Key</div></th>
-								<td style="max-width: 200px"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="2"></textarea></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="date" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="datetime-local" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-								<td style="max-width: 200px"><img class="col-12 m-0 p-1 border border-dark form-control" src="" /></td>
-								<td style="max-width: 200px"><select class="col-12 m-0 p-1 border border-dark form-select">
-										<option value="">請選擇(N/A)</option>
-								</select></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+
 			</div>
 		</div>
 	</div>
@@ -512,6 +318,414 @@ main.web_body.modify={
 		create(){
 			//Step1.初始化
 			console.log("modify.html(created)");
+			//修改項目 
+			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+			console.log(searchSetJson['resultDetailThead']);
+			console.log(searchSetJson['resultThead']);
+			//Step1.修改標題-排序
+			var searchSet = searchSetJson['searchSet'];
+			var resultThead = searchSetJson['resultThead'];
+			var resultDetailThead = searchSetJson['resultDetailThead'];
+			resultThead = main.methods.orderedSort(resultThead);
+			resultDetailThead = main.methods.orderedSort(resultDetailThead);
+			//Step2.修改標題-資料
+			//一般
+			var check1=true;
+			Object.keys(resultThead).forEach(function(k){
+				//如果有翻譯
+				var cloneBht = $($("#modify_c_ex_tkey").clone());
+				cloneBht.attr("id","");
+				cloneBht.removeClass("f_c_3");
+				//Step2-1.標題
+				cloneBht.css('minWidth',resultThead[k].width+"px");
+				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
+				if(resultThead[k].cellLanguage!=''){
+					cloneBht.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+				}else{
+					cloneBht.text(resultThead[k].cellName);
+				}
+				//Step2-3.欄位類型?
+				var cloneBhv = "";
+				switch(resultThead[k].m_type){
+					case"text":
+						cloneBhv = $($("#modify_c_ex_it").clone());
+						break;
+					case"textarea":
+						cloneBhv = $($("#modify_c_ex_tt").clone());
+						break;
+					case"number":
+						cloneBhv = $($("#modify_c_ex_in").clone());
+						break;
+					case"datetime":
+						cloneBhv = $($("#modify_c_ex_id").clone());
+						break;
+					case"time":
+						cloneBhv = $($("#modify_c_ex_t").clone());
+						break;
+					case"checkbox":
+						cloneBhv = $($("#modify_c_ex_icb").clone());
+						break;
+					case"password":
+						cloneBhv = $($("#modify_c_ex_ic").clone());
+					break;
+					case"file":
+						cloneBhv = $($("#modify_c_ex_ip").clone());
+					break;
+					case"select":
+						cloneBhv = $($("#modify_c_ex_st").clone());
+						//比對是否有匹配選項
+						for(var t=0;t<searchSet.length;t++){
+							if(searchSet[t].searchName==resultThead[k].cellName && searchSet[t].type == 'select'){
+								console.log(searchSet[t].select);
+								var select = searchSet[t];
+								//選項
+								for(var s = 0;s<select['select'].length;s++){
+									var key = select['select'][s].split("_")[0];
+									var val = select['select'][s].split("_")[1];
+									selectEx = $($('.modify_st_ex').clone());
+									selectEx.removeClass("modify_st_ex");
+									selectEx.removeAttr("selected");
+									selectEx.text(key);
+									selectEx.val(val);
+									selectEx.appendTo(cloneBhv.find('select'));
+								}	
+								cloneBhv.find('.modify_st_ex').removeClass("modify_st_ex");
+								break;
+							}
+						}
+						break;
+					default:
+						cloneBhv = $($("#modify_c_ex_it").clone());
+						break;
+				}
+				cloneBhv.attr("id","");
+				cloneBhv.removeClass("f_c_3");
+				//Step2-4.第一筆?
+				if(check1){
+					check1= false;
+					cloneBht.addClass("f_c_1");
+					cloneBhv.addClass("f_c_1");
+				}
+				//Step2-5.如果隱藏
+				if(resultThead[k].m_show==0){
+					cloneBht.addClass('d-none');
+					cloneBhv.addClass('d-none');
+				}
+				//Step2-6.如果固定?
+				if(resultThead[k].m_fixed==0){
+					cloneBhv.find("select").addClass('disabled');
+					cloneBhv.find("input").addClass('disabled');
+					cloneBhv.find("textarea").addClass('disabled');
+				}
+				//Step2-7.如果預設值?
+				cloneBhv.find("select").val(resultThead[k].m_defval);
+				cloneBhv.find("input").val(resultThead[k].m_defval);
+				cloneBhv.find("textarea").val(resultThead[k].m_defval);
+				//Step2-7.如果提示值?
+				cloneBhv.find("select").attr("placeholder",resultThead[k].m_placeholder);
+				cloneBhv.find("input").attr("placeholder",resultThead[k].m_placeholder);
+				cloneBhv.find("textarea").attr("placeholder",resultThead[k].m_placeholder);
+				//Step2-8.定義Class?
+				cloneBhv.find("select").addClass(resultThead[k].cellName);
+				cloneBhv.find("input").addClass(resultThead[k].cellName);
+				cloneBhv.find("textarea").addClass(resultThead[k].cellName);
+				cloneBhv.css('maxWidth',resultThead[k].width+"px");
+				//Step2-N.創建
+				cloneBht.appendTo($("#batchThn tr"));
+				cloneBhv.appendTo($("#batchThv tr"));
+			});
+			//細節
+			check1=true;
+			Object.keys(resultDetailThead).forEach(function(k){//如果有翻譯
+				var cloneBdt = $($("#modify_c_ex_tkey").clone());
+				cloneBdt.attr("id","");
+				cloneBdt.removeClass("f_c_3");
+				//Step2-1.標題
+				cloneBdt.css('minWidth',resultThead[k].width+"px");
+				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
+				if(resultThead[k].cellLanguage!=''){
+					cloneBdt.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+				}else{
+					cloneBdt.text(resultThead[k].cellName);
+				}
+				//Step2-3.欄位類型?
+				var cloneBdv = "";
+				switch(resultThead[k].m_type){
+					case"text":
+						cloneBdv = $($("#modify_c_ex_it").clone());
+						break;
+					case"textarea":
+						cloneBdv = $($("#modify_c_ex_tt").clone());
+						break;
+					case"number":
+						cloneBdv = $($("#modify_c_ex_in").clone());
+						break;
+					case"datetime":
+						cloneBdv = $($("#modify_c_ex_id").clone());
+						break;
+					case"time":
+						cloneBdv = $($("#modify_c_ex_t").clone());
+						break;
+					case"checkbox":
+						cloneBdv = $($("#modify_c_ex_icb").clone());
+						break;
+					case"password":
+						cloneBdv = $($("#modify_c_ex_ic").clone());
+					break;
+					case"file":
+						cloneBdv = $($("#modify_c_ex_ip").clone());
+					break;
+					case"select":
+						cloneBdv = $($("#modify_c_ex_st").clone());
+						//比對是否有匹配選項
+						for(var t=0;t<searchSet.length;t++){
+							if(searchSet[t].searchName==resultThead[k].cellName && searchSet[t].type == 'select'){
+								console.log(searchSet[t].select);
+								var select = searchSet[t];
+								//選項
+								for(var s = 0;s<select['select'].length;s++){
+									var key = select['select'][s].split("_")[0];
+									var val = select['select'][s].split("_")[1];
+									selectEx = $($('.modify_st_ex').clone());
+									selectEx.removeClass("modify_st_ex");
+									selectEx.removeAttr("selected");
+									selectEx.text(key);
+									selectEx.val(val);
+									selectEx.appendTo(cloneBdv.find('select'));
+								}	
+								cloneBdv.find('.modify_st_ex').removeClass("modify_st_ex");
+								break;
+							}
+						}
+						break;
+					default:
+						cloneBdv = $($("#modify_c_ex_it").clone());
+						break;
+				}
+				cloneBdv.attr("id","");
+				cloneBdv.removeClass("f_c_3");
+				//Step2-4.第一筆?
+				if(check1){
+					check1= false;
+					cloneBdt.addClass("f_c_1");
+					cloneBdv.addClass("f_c_1");
+				}
+				//Step2-5.如果隱藏
+				if(resultThead[k].m_show==0){
+					cloneBdt.addClass('d-none');
+					cloneBdv.addClass('d-none');
+				}
+				//Step2-6.如果固定?
+				if(resultThead[k].m_fixed==0){
+					cloneBdv.find("select").addClass('disabled');
+					cloneBdv.find("input").addClass('disabled');
+					cloneBdv.find("textarea").addClass('disabled');
+				}
+				//Step2-7.如果預設值?
+				cloneBdv.find("select").val(resultThead[k].m_defval);
+				cloneBdv.find("input").val(resultThead[k].m_defval);
+				cloneBdv.find("textarea").val(resultThead[k].m_defval);
+				//Step2-7.如果提示值?
+				cloneBdv.find("select").attr("placeholder",resultThead[k].m_placeholder);
+				cloneBdv.find("input").attr("placeholder",resultThead[k].m_placeholder);
+				cloneBdv.find("textarea").attr("placeholder",resultThead[k].m_placeholder);
+				//Step2-8.定義Class?
+				cloneBdv.find("select").addClass(resultThead[k].cellName);
+				cloneBdv.find("input").addClass(resultThead[k].cellName);
+				cloneBdv.find("textarea").addClass(resultThead[k].cellName);
+				cloneBdv.css('maxWidth',resultThead[k].width+"px");
+				//Step2-N.創建
+				cloneBdt.appendTo($("#batchTdn tr"));
+				cloneBdv.appendTo($("#batchTdv tr"));
+			});
+			
+			//複寫-Replace Data/Detail
+			$('#batchThn tr').clone().appendTo("#batchTrhn");
+			$('#batchThv tr').clone().appendTo("#batchTrhv");
+			$('#batchTdn tr').clone().appendTo("#batchTrdn");
+			$('#batchTdv tr').clone().appendTo("#batchTrdv");
+			
+			//修改-Modify list
+			$('#batchThn tr').clone().appendTo("#modifyThn");
+			$('#batchThv tr').clone().appendTo("#modifyThv");
+			$("#modifyThn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+			$("#modifyThv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+			$($('#modify_c_ex_tp').clone()).attr("id","").prependTo("#modifyThn tr");
+			$($('#modify_c_ex_tm').clone()).attr("id","").prependTo("#modifyThn tr");
+			$($('#modify_c_ex_vp').clone()).attr("id","").prependTo("#modifyThv tr");
+			$($('#modify_c_ex_vm').clone()).attr("id","").prependTo("#modifyThv tr");
+			$('#modifyThv tr').addClass('modifyThvEx');
+			
+			$('#batchTdn tr').clone().appendTo("#modifyTdn");
+			$('#batchTdv tr').clone().appendTo("#modifyTdv");
+			$("#modifyTdn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+			$("#modifyTdv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+			$($('#modify_c_ex_tp').clone()).attr("id","").prependTo("#modifyTdn tr");
+			$($('#modify_c_ex_tm').clone()).attr("id","").prependTo("#modifyTdn tr");
+			$($('#modify_c_ex_vp').clone()).attr("id","").prependTo("#modifyTdv tr");
+			$($('#modify_c_ex_vm').clone()).attr("id","").prependTo("#modifyTdv tr");
+			$('#modifyTdv tr').addClass('modifyTdvEx');
+			//時間格式
+			main.web_body.modify.methods.datetimepickerDate();
+
+			//監聽-Modify list
+			//Data
+			$(document).off("click", "#modifyThAll .bi-plus-square");//++
+			$(document).on("click", "#modifyThAll .bi-plus-square", function (event) {
+				console.log("modifyThAll bi-plus-square");
+				var modifyThvEx = $('.modifyThvEx').clone();
+				modifyThvEx.removeClass('modifyThvEx');
+				modifyThvEx.find(".bi-plus-square").addClass('d-none');
+				modifyThvEx.find(".bi-dash-square").removeClass('d-none');
+				modifyThvEx.addClass('modifyThvM');
+				modifyThvEx.appendTo("#modifyThv");
+				main.web_body.modify.methods.datetimepickerDate();
+				
+			});
+			$(document).off("click", "#modifyThAll .bi-dash-square");//--
+			$(document).on("click", "#modifyThAll .bi-dash-square", function (event) {
+				console.log("modifyThAll bi-dash-square");
+				$(event.target.parentElement.parentElement.parentElement).remove();
+			});
+			$(document).off("click", "#modifyThAll .bi-stickies");//copy
+			$(document).on("click", "#modifyThAll .bi-stickies", function (event) {
+				console.log("modifyThAll bi-stickies");
+				var copy = $(event.target.parentElement.parentElement.parentElement).clone();
+				copy.removeClass('modifyTdvEx');
+				copy.removeClass('modifyThvEx');
+				copy.find(".bi-plus-square").addClass('d-none');
+				copy.find(".bi-dash-square").removeClass('d-none');
+				copy.addClass('modifyThvM');
+				copy.appendTo("#modifyThv");
+				main.web_body.modify.methods.datetimepickerDate();
+				
+			});
+			//Detail
+			$(document).off("click", "#modifyTdAll .bi-plus-square");//++
+			$(document).on("click", "#modifyTdAll .bi-plus-square", function (event) {
+				console.log("modifyTdAll bi-plus-square");
+				var modifyTdvEx = $('.modifyTdvEx').clone();
+				modifyTdvEx.removeClass('modifyTdvEx');
+				modifyTdvEx.find(".bi-plus-square").addClass('d-none');
+				modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
+				modifyTdvEx.addClass('modifyThvM');
+				modifyTdvEx.appendTo("#modifyTdv");
+				main.web_body.modify.methods.datetimepickerDate();
+			});
+			$(document).off("click", "#modifyTdAll .bi-dash-square");//--
+			$(document).on("click", "#modifyTdAll .bi-dash-square", function (event) {
+				console.log("modifyTdAll bi-dash-square");
+				$(event.target.parentElement.parentElement.parentElement).remove();
+				
+			});
+			$(document).off("click", "#modifyTdAll .bi-stickies");//copy
+			$(document).on("click", "#modifyTdAll .bi-stickies", function (event) {
+				console.log("modifyTdAll bi-stickies");
+				var copy = $(event.target.parentElement.parentElement.parentElement).clone();
+				copy.removeClass('modifyTdvEx');
+				copy.find(".bi-plus-square").addClass('d-none');
+				copy.find(".bi-dash-square").removeClass('d-none');
+				copy.addClass('modifyThvM');
+				copy.appendTo("#modifyTdv");
+				main.web_body.modify.methods.datetimepickerDate();
+			});
+			
+		},
+		//==========================處理資料==========================
+		modify(order,datas,dataDetails,entityDateTime){
+			console.log("=====order:"+order+"=====");
+			console.log(datas);
+			console.log(dataDetails);
+			$('#modify_title').trigger('click');
+			$('#modify_c_state').text("＞＞Create＜＜");
+			switch(order){
+			case "create":
+				$('#modify_c_state').text("＞＞Create＜＜");
+				
+				break;
+			case "saveAs":
+				$('#modify_c_state').text("＞＞saveAs＜＜");
+				if(datas.length>0){
+					for(var d=0;d<datas.length;d++){
+						var modifyThvEx = $('.modifyThvEx').clone();
+						var dataOne =  datas[d];
+						//每個欄位 >對應< 資料
+						Object.keys(dataOne).forEach(function(k){
+							//是否時間格式?
+							var value = dataOne[k];
+							if(entityDateTime.indexOf(k)>=0){
+								 var dF = new Date(dataOne[k]);
+								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
+								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							}
+							modifyThvEx.find("."+k).val(value);
+						});
+						modifyThvEx.removeClass('modifyThvEx');
+						modifyThvEx.addClass('modifyThvM');
+						modifyThvEx.appendTo("#modifyThv");
+					}
+				}
+				if(dataDetails.length>0){
+					for(var d=0;d<dataDetails.length;d++){
+						var modifyTdvEx = $('.modifyTdvEx').clone();
+						var dataDetailOne =  dataDetails[d];
+						//每個欄位 >對應< 資料
+						Object.keys(dataDetailOne).forEach(function(k){
+							//是否時間格式?
+							var value = dataDetailOne[k];
+							if(entityDateTime.indexOf(k)>=0){
+								 var dF = new Date(dataDetailOne[k]);
+								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
+								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							}
+							modifyTdvEx.find("."+k).val(value);
+						});
+						modifyTdvEx.removeClass('modifyTdvEx');
+						modifyTdvEx.addClass('modifyTdvM');
+						modifyTdvEx.appendTo("#modifyTdv");
+					}
+				}
+				break;
+			case "modify":
+				$('#modify_c_state').text("＞＞Modify＜＜");
+				
+				break;
+			case "invalid":
+				$('#modify_c_state').text("＞＞Invalid＜＜");
+				
+				break;
+			case "delete":
+				$('#modify_c_state').text("＞＞Delete＜＜");
+				
+				break;
+			}
+			//時間格式
+			main.web_body.modify.methods.datetimepickerDate();
+		},
+		datetimepickerDate(){
+			//日期時間格式
+			$('#modify_c .datetimepicker_date').datetimepicker({
+				format: 'yyyy-mm-dd hh:ii:00',
+				pickerPosition: 'bottom-right',
+				//minView:1,
+				// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
+				minuteStep: 30,
+				autoclose: true,
+				endDate: '+1d',
+				datesDisabled: '+1d',
+				todayBtn: true,
+				bootcssVer:5,
+				//......可以同上項目代碼自定義設置
+			});
+			//時間格式
+            $('#modify_c .datetimepicker_time').datetimepicker({
+                format: 'hh:ii',
+                startView: 1,
+                minuteStep: 30,
+                pickDate: false,
+                autoclose: true,
+                timeFormat: 'hh:mm',
+            });
 			
 		},
 		destroy() {

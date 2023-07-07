@@ -1,8 +1,10 @@
 package dtri.com.tw.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,11 @@ import com.google.gson.JsonObject;
 
 import dtri.com.tw.bean.PackageBean;
 import dtri.com.tw.db.entity.SystemGroup;
+import dtri.com.tw.db.entity.SystemLanguageCell;
 import dtri.com.tw.db.entity.SystemUser;
 import dtri.com.tw.login.CustomerUserDetails;
 import dtri.com.tw.login.JwtUtilities;
+import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.service.CloudExceptionService.ErCode;
 import dtri.com.tw.service.CloudExceptionService.ErColor;
 import dtri.com.tw.service.CloudExceptionService.Lan;
@@ -31,9 +35,29 @@ public class IndexService {
 	@Autowired
 	private PackageService packageService;
 
+	@Autowired
+	private SystemLanguageCellDao languageDao;
+
 	/** 取得個人權限清單 */
 	public PackageBean getMenu(PackageBean packageBean, SystemUser systemUser) throws Exception {
-		// Step1.將使用者+群組功能權限=>放入
+
+		// Step1.取得翻譯(一般)
+		ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemUser(null, 1, null);
+		Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+		languages.forEach(x -> {
+			mapLanguages.put(x.getSltarget(), x);
+			System.out.println(x.getSltarget() + " : " + x.getSllanguage());
+		});
+		// Step2.放入翻譯(一般)
+		systemUser.getSystemgroups().forEach(group -> {
+			String spcontrol = group.getSystemPermission().getSpcontrol();
+			String spgroup = group.getSystemPermission().getSysheader() + "";
+			if ((mapLanguages.containsKey(spcontrol))) {
+				group.getSystemPermission().setLanguage(mapLanguages.get(spcontrol).getSllanguage());
+			}
+			System.out.println(spcontrol + " : " + spgroup + ":" + group.getSgname());
+		});
+		// Step3.將使用者+群組功能權限=>打包
 		String systemUserJson = packageService.beanToJson(systemUser);
 		packageBean.setEntityJson(systemUserJson);
 		return packageBean;

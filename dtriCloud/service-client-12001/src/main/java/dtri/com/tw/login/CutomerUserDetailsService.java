@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,7 +62,7 @@ public class CutomerUserDetailsService implements UserDetailsService {
 				// 如果有權限->建立通過
 				if (ch[i] == '1') {
 					int move_p = 11 - i;
-					double now_p = Math.pow(12, move_p);
+					double now_p = Math.pow(10, move_p);
 					String now_s = String.format("%012d", (int) now_p);
 					String role = systemGroup.getSystemPermission().getSpcontrol().replaceAll("\\.", "_") //
 							+ "_"//

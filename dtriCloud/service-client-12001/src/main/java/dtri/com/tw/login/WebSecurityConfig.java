@@ -68,6 +68,7 @@ public class WebSecurityConfig {
 				// ----請求-system_config-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_con).hasAuthority(actionRole(system_con, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, system_con + ".AR").hasAuthority(actionRole(system_con, "AR"))// (查詢)
+				//.requestMatchers(HttpMethod.POST, system_con + ".DAR").hasAuthority(actionRole(system_con, "AR"))// (細節查詢)
 				.requestMatchers(HttpMethod.POST, system_con + ".AC").hasAuthority(actionRole(system_con, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_con + ".AU").hasAuthority(actionRole(system_con, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_con + ".AD").hasAuthority(actionRole(system_con, "AD"))// (移除)

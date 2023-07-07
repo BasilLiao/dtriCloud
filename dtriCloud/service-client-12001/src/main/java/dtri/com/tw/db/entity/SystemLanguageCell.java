@@ -29,10 +29,17 @@ import jakarta.persistence.Transient;
  *      sl_id : ID<br>
  *      sl_sp_control : 單元 後台控制ID<br>
  *      sl_target : 翻譯目標 名稱<br>
- *      sl_class : 翻譯種類 0=Menu group(功能群組名稱) 1=Menu item(功能項目名稱) 2=Cell
- *      name(欄位名稱) 3=訊息翻譯<br>
+ *      sl_class : 翻譯種類 0=無作用 1=Menu item(功能項目名稱) 2=Cell(欄位名稱) 3=訊息翻譯<br>
  *      sl_language : 翻譯國家(使用底線分割) zh-TW_en-US_vi-VN <br>
- *      sl_value : 翻譯內容(使用底線分割) 使用者權限_UserPermission_Quyền Người dùng<br>
+ *      sl_c_show : 查詢-欄位顯示?<br>
+ *      sl_c_width: 查詢-欄位寬度?<br>
+ *      sl_cm_type: 修改-欄位類型<br>
+ *      sl_cm_select:修改-欄位選單<br>
+ *      sl_cm_placeholder:修改-欄位提示<br>
+ *      sl_cm_def_val:修改-欄位預設文字<br>
+ *      sl_cm_show:修改-欄位顯示?<br>
+ *      sl_cm_must:修改-欄位必填?<br>
+ *      sl_cm_fixed:修改-欄位固定?<br>
  */
 @Entity
 @Table(name = "system_language_cell")
@@ -59,7 +66,14 @@ public class SystemLanguageCell {
 		this.sllanguage = "";
 		this.slcshow = 0;// 欄位?顯示
 		this.slcwidth = 100;// 欄位?寬度
-
+		// 修改欄位設置
+		this.slcmtype="text";
+		this.slcmselect="[]";
+		this.slcmplaceholder="";
+		this.slcmdefval="";
+		this.slcmshow=1;
+		this.slcmmust=1;
+		this.slcmfixed=0;
 	}
 
 	// 共用型
@@ -99,12 +113,27 @@ public class SystemLanguageCell {
 	private Integer slclass;
 	@Column(name = "sl_language", nullable = false, columnDefinition = "text default ''")
 	private String sllanguage;
-	@Column(name = "sl_c_show", nullable = false, columnDefinition = "int default 0")
+	@Column(name = "sl_c_show", nullable = false, columnDefinition = "int default 1")
 	private Integer slcshow;
 	@Column(name = "sl_c_width", nullable = false, columnDefinition = "int default 100")
 	private Integer slcwidth;
-	
-	//前端格式-修改/查詢用
+
+	@Column(name = "sl_cm_type", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String slcmtype;
+	@Column(name = "sl_cm_select", nullable = false, columnDefinition = "varchar(200) default ''")
+	private String slcmselect;
+	@Column(name = "sl_cm_placeholder", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String slcmplaceholder;
+	@Column(name = "sl_cm_def_val", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String slcmdefval;
+	@Column(name = "sl_cm_show", nullable = false, columnDefinition = "int default 1")
+	private Integer slcmshow;
+	@Column(name = "sl_cm_must", nullable = false, columnDefinition = "int default 1")
+	private Integer slcmmust;
+	@Column(name = "sl_cm_fixed", nullable = false, columnDefinition = "int default 1")
+	private Integer slcmfixed;
+
+	// 前端格式-修改/查詢用
 	@Transient
 	private String sllanguage_zhTW;
 	@Transient
@@ -248,6 +277,62 @@ public class SystemLanguageCell {
 
 	public void setSlcwidth(Integer slcwidth) {
 		this.slcwidth = slcwidth;
+	}
+
+	public String getSlcmtype() {
+		return slcmtype;
+	}
+
+	public void setSlcmtype(String slcmtype) {
+		this.slcmtype = slcmtype;
+	}
+
+	public String getSlcmselect() {
+		return slcmselect;
+	}
+
+	public void setSlcmselect(String slcmselect) {
+		this.slcmselect = slcmselect;
+	}
+
+	public String getSlcmplaceholder() {
+		return slcmplaceholder;
+	}
+
+	public void setSlcmplaceholder(String slcmplaceholder) {
+		this.slcmplaceholder = slcmplaceholder;
+	}
+
+	public String getSlcmdefval() {
+		return slcmdefval;
+	}
+
+	public void setSlcmdefval(String slcmdefval) {
+		this.slcmdefval = slcmdefval;
+	}
+
+	public Integer getSlcmmust() {
+		return slcmmust;
+	}
+
+	public void setSlcmmust(Integer slcmmust) {
+		this.slcmmust = slcmmust;
+	}
+
+	public Integer getSlcmshow() {
+		return slcmshow;
+	}
+
+	public void setSlcmshow(Integer slcmshow) {
+		this.slcmshow = slcmshow;
+	}
+
+	public Integer getSlcmfixed() {
+		return slcmfixed;
+	}
+
+	public void setSlcmfixed(Integer slcmfixed) {
+		this.slcmfixed = slcmfixed;
 	}
 
 }

@@ -99,7 +99,7 @@ public class SystemGroup {
 	@Column(name = "sg_permission", nullable = false, columnDefinition = "varchar(12) default '000000000000'")
 	private String sgpermission;
 
-	//jackson[使用方式@JsonIgnore=忽略/@JsonInclude忽略特定值]
+	// jackson[使用方式@JsonIgnore=忽略/@JsonInclude忽略特定值]
 	@JsonIgnore
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@ManyToMany(mappedBy = "systemgroups")
@@ -236,4 +236,5 @@ public class SystemGroup {
 	public void setSystemPermission(SystemPermission systemPermission) {
 		this.systemPermission = systemPermission;
 	}
+
 }

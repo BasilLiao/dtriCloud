@@ -39,9 +39,93 @@ public class SystemConfigService {
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean, SystemUser systemUser) throws Exception {
 		// 區分:訪問/查詢
-		if (packageBean.getEntityJson() == "") {
-			// 訪問
+		if (packageBean.getEntityJson() == "") {// 訪問
+			//==============取得資料&&格式&&翻譯==============
+			//Step1.查詢格式
+			String configFormatJson = packageService.beanToJson(new SystemConfig());
+			packageBean.setEntityFormatJson(configFormatJson);
+			//Step2.批次分頁
+			JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
+			int total = pageSetJson.get("total").getAsInt();
+			int batch = pageSetJson.get("batch").getAsInt();
+			//Step3.排序
+			List<Order> orders = new ArrayList<>();
+			orders.add(new Order(Direction.DESC, "scgid"));
+			orders.add(new Order(Direction.ASC, "scname"));
+			PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
+			///Step4.取得資料(一般/細節)
+			ArrayList<SystemConfig> systemConfigs = configDao.findAllByConfig(null, null, null, null, 0, pageable);
+			String configJson = packageService.beanToJson(systemConfigs);
+			packageBean.setEntityJson(configJson);
+
+			// (測是用)區分父子類別
+			ArrayList<SystemConfig> systemCDatas = new ArrayList<>();
+			ArrayList<SystemConfig> systemCDetails = new ArrayList<>();
+			systemConfigs.forEach(x -> {
+				if (x.getSysheader()) {
+					systemCDatas.add(x);
+				} else {
+					systemCDetails.add(x);
+				}
+			});
+			
+			String configJDatas = packageService.beanToJson(systemCDatas);
+			packageBean.setEntityJson(configJDatas);
+			String configJDetails = packageService.beanToJson(systemCDetails);
+			packageBean.setEntityDetailJson(configJDetails);
+
+			//Step6. 取得翻譯(一般/細節)
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemUser("system_config", 0, null);
+			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+			languages.forEach(x -> {
+				mapLanguages.put(x.getSltarget(), x);
+			});
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllBySystemUser("system_config", 0, null);
+			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
+			languagesDetail.forEach(x -> {
+				mapLanguagesDetail.put(x.getSltarget(), x);
+			});
+
+			//==============建立查詢欄位(涵蓋修改資料選項)==============
+			JsonObject searchSetJsonAll = new JsonObject();
+			JsonArray searchJsons = new JsonArray();// 查詢設定
+			JsonObject resultDataTJs = new JsonObject();// 一般回傳欄位-名稱
+			JsonObject resultDetailTJs = new JsonObject();// 一般回傳欄位-細節名稱
+
+			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
+			Field[] fields = SystemConfig.class.getDeclaredFields();
+			resultDataTJs = packageService.resultSet(resultDataTJs, fields, mapLanguages);
+			resultDetailTJs = packageService.resultSet(resultDetailTJs, fields, mapLanguagesDetail);
+
+			//Step7. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "scname", "Ex:DB_NAME",true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_1);
+			searchJsons = packageService.searchSet(searchJsons, null, "scgname", "Ex:DATA_BKUP",true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_1);
+			// 查詢項目-時間開始
+			searchJsons = packageService.searchSet(searchJsons, null, "sysmdatestart", "Ex:2011-01-02 12:12:00",true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_2);
+			// 查詢項目-時間結束
+			searchJsons = packageService.searchSet(searchJsons, null, "sysmdateend", "Ex:2011-01-02 12:12:00",true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_2);
+			// 查詢項目-狀態
+			JsonArray selectArr = new JsonArray();
+			selectArr.add("normal(正常)_0");
+			selectArr.add("completed(完成)_1");
+			selectArr.add("disabled(禁用)_2");
+			selectArr.add("onlyAdmin(特權)_3");
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "sysstatus", "",true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_2);
+			// 主KEY AND 群組KEY 名稱
+			packageBean.setEntityIKeyGKey("scid_scgid");
+			// 查詢包裝
+			searchSetJsonAll.add("searchSet", searchJsons);
+			searchSetJsonAll.add("resultThead", resultDataTJs);
+			searchSetJsonAll.add("resultDetailThead", resultDetailTJs);
+			packageBean.setSearchSet(searchSetJsonAll.toString());
+		} else {
+			// 查詢
 			// 批次分頁
 			JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
 			int total = pageSetJson.get("total").getAsInt();
@@ -53,55 +137,18 @@ public class SystemConfigService {
 			PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
 			// 取得資料(一般/細節)
-			ArrayList<SystemConfig> systemConfigs = configDao.findAllByConfig(null, null, 0, pageable);
+			SystemConfig systemConfig = packageService.jsonToBean(packageBean.getEntityJson(), SystemConfig.class);
+			ArrayList<SystemConfig> systemConfigs = configDao.findAllByConfig(//
+					systemConfig.getScname(), systemConfig.getScgname(), //
+					systemConfig.getSysmdatestart(), systemConfig.getSysmdateend(), 0, pageable);
+
 			String configJson = packageService.beanToJson(systemConfigs);
 			packageBean.setEntityJson(configJson);
-			packageBean.setEntityDetailJson("");
 
-			// 取得翻譯(一般/細節)
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemUser("system_config", null);
-			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
-			languages.forEach(x -> {
-				mapLanguages.put(x.getSltarget(), x);
-			});
-
-			ArrayList<SystemLanguageCell> languages_detail = languageDao.findAllBySystemUser("system_config_detail", null);
-			Map<String, SystemLanguageCell> mapLanguages_detail = new HashMap<>();
-			languages_detail.forEach(x -> {
-				mapLanguages_detail.put(x.getSltarget(), x);
-			});
-
-			// 查詢準備
-			JsonObject searchSetJsonAll = new JsonObject();
-			JsonArray searchJsons = new JsonArray();// 查詢設定
-			JsonObject resulTheadJsons = new JsonObject();// 一般回傳欄位-名稱
-			JsonObject resultDetailTheadJsons = new JsonObject();// 一般回傳欄位-細節名稱
-
-			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = SystemConfig.class.getDeclaredFields();
-			resulTheadJsons = packageService.resultSet(resulTheadJsons, fields, mapLanguages);
-
-			// 查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "scname", //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_2);
-			// 查詢項目-時間開始
-			searchJsons = packageService.searchSet(searchJsons, null, "sysmdatestart", //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_2);
-			// 查詢項目-時間結束
-			searchJsons = packageService.searchSet(searchJsons, null, "sysmdateend", //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_2);
 			// 主KEY AND 群組KEY 名稱
 			packageBean.setEntityIKeyGKey("scid_scgid");
-			// 查詢包裝
-			searchSetJsonAll.add("searchSet", searchJsons);
-			searchSetJsonAll.add("resultThead", resulTheadJsons);
-			searchSetJsonAll.add("resultDetailThead", resultDetailTheadJsons);
-			packageBean.setSearchSet(searchSetJsonAll.toString());
-		} else {
-			// 查詢
-
+			packageBean.setEntityDetailJson("");
 		}
-
 		return packageBean;
 	}
 

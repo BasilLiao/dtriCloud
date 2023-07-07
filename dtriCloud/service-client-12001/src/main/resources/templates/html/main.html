@@ -6,14 +6,22 @@
 <script src="./thirdparty/js/jquery-3.7.0.min.js"></script>
 <script src="./thirdparty/js/jquery-ui-1.13.2.min.js"></script>
 <script src="./thirdparty/js/bootstrap-5.2.3.min.js"></script>
+<script src="./thirdparty/js/bootstrap-datetimepicker.min.js"></script>
 
 <link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />
 <link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />
+<link rel="stylesheet" href="./thirdparty/css/bootstrap-datetimepicker.min.css" />
 <link rel="stylesheet" href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">
+
+
 <link rel="icon" type="img/svg" href="./img/icon.png">
 <style type="text/css">
 body {
 	background-color: #f8f9fc;
+}
+/*時間格式下移*/
+.datetimepicker {
+	margin-top: 25px;
 }
 </style>
 </head>
@@ -23,7 +31,7 @@ body {
 	<!-- 選單(nav) -->
 	<div id="nav_page"></div>
 	<!-- 聲音(nav_sound) -->
-	<div id="nav_alert"></div>
+	<div id="nav_index"></div>
 	<!-- 讀取中(nav_loading) -->
 	<div id="loading_page"></div>
 	<!-- 登出中(nav_logout) -->
@@ -51,12 +59,13 @@ body {
 	main.search_req_page={total:1000,batch:0};
 	//查詢顯示-分頁設定(目前所在分頁/每分頁數量/此次得到資料總筆數/本次批次)
 	main.search_show_page={index:1,size:100,total:1000,batch:0}
-	//監聽動作-清單
-	main.listener_list=[];
+	
+	
 	//共用-方法清單
 	main.methods={
 		ajaxSend(req_data) {
-		//模組-(傳送+接收)
+			$("#loading").removeClass("d-none");
+			//模組-(傳送+接收)
 			//排除{!=}/{複製上Tab}
 			req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "").replaceAll("\\t","");
 			//console.log("Cell ajax to send:"+req_data);
@@ -67,7 +76,7 @@ body {
 				dataType: 'json',
 				data : req_data.data,//資料內容
 				success(event) {
-					//console.log(event);
+					console.log(event);
 					//console.log("Step1.顯示訊息資訊:ajax to success:");
 					var mainAlertM=main.web_html.nav_alert.methods;
 					if(event['infoColor']=="success"){
@@ -115,6 +124,7 @@ body {
 						//console.log("Step3-3.異常請求尚未在範圍內");
 						mainAlertM.alertshow("danger", "[078] The command was executed [ERROR]!!");
 					}
+					$("#loading").addClass("d-none");
 				},
 				error(event) {
 					console.log("ajax to fail:" + JSON.stringify(event));
@@ -156,11 +166,12 @@ body {
 	//模板-家
 	$("#header_page").load("./html/header/header_index.html",function(){});
 	//模板-聲音資訊
-	$("#nav_alert").load("./html/nav/nav_alert.html",function(){});
+	$("#nav_alert").load("./html/nav/nav_alert.html",function(){
+	});
 	//模板-導覽
 	$("#nav_page").load("./html/nav/nav_index.html", function(){
+		main.web_html.nav_alert.methods.create();		
 		main.web_html.nav_index.methods.create();
-		main.web_html.nav_alert.methods.create();
 	});
 	//模板-主體
 	$("#body_page").load("./html/body/body_index.html",function(){
@@ -169,7 +180,9 @@ body {
 	//模板-網站宣告
 	$("#footer_page").load("./html/footer/footer_index.html",function(){});
 	//模板-讀取中...
-	$("#loading_page").load("./html/nav/loading.html",function(){});
+	$("#loading_page").load("./html/nav/loading.html",function(){
+		main.web_html.loading.methods.create();
+	});
 	//模板-登出中...
 	$("#logout_page").load("./html/nav/logout.html",function(){});
 	//是否為手機格式

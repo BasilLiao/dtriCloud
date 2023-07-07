@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -73,6 +74,10 @@ public class SystemPermission {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+
+	// 前端格式-翻譯
+	@Transient
+	private String language;
 
 	// 功能權限
 	@Id
@@ -239,5 +244,13 @@ public class SystemPermission {
 
 	public void setSystemGroup(List<SystemGroup> systemGroup) {
 		this.systemGroup = systemGroup;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 }

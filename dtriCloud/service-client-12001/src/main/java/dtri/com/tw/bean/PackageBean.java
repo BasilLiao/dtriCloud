@@ -13,6 +13,7 @@ public class PackageBean {
 	// 可能是任何的型別->先轉成JSON Array->ToString->依照不同單元所帶入
 	private String entityJson;
 	private String entityIKeyGKey;// Key名稱_GKey名稱Ex:suid_sugid
+	private String entityFormatJson;// 格式
 
 	// 可能是任何的型別->先轉成JSON Array->ToString->依照不同單元所帶入
 	private String entityDetailJson;
@@ -42,15 +43,6 @@ public class PackageBean {
 	/**
 	 * 查詢UI項目-設定 <br>
 	 * {searchSet:{ <br>
-	 * ___searchItem:[<br>
-	 * ______{name:XXX,<br>
-	 * ______inputType:(input/select/date/dateTime/number),<br>
-	 * ______select:[key_value,...],<br>
-	 * ______value:XXX<br>
-	 * ______}<br>
-	 * ___], <br>
-	 * ___notShowResult:[AAA,BBB,CCC], <br>
-	 * ___notShowDetailResult:[AAA,BBB,CCC],<br>
 	 * }<br>
 	 */
 	private String searchSet;
@@ -243,5 +235,13 @@ public class PackageBean {
 
 	public void setEntityDateTime(String entityDateTime) {
 		this.entityDateTime = entityDateTime;
+	}
+
+	public String getEntityFormatJson() {
+		return entityFormatJson;
+	}
+
+	public void setEntityFormatJson(String entityFormatJson) {
+		this.entityFormatJson = entityFormatJson;
 	}
 }

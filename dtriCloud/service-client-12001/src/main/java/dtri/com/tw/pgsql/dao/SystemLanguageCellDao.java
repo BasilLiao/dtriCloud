@@ -22,8 +22,9 @@ public interface SystemLanguageCellDao extends JpaRepository<SystemLanguageCell,
 
 	// 查詢全部含-頁數
 	@Query("SELECT c FROM SystemLanguageCell c "//
-			+ "WHERE (:slspcontrol is null or c.slspcontrol LIKE %:slspcontrol% )")
-	ArrayList<SystemLanguageCell> findAllBySystemUser(String slspcontrol, Pageable pageable);
+			+ "WHERE (:slspcontrol is null or c.slspcontrol LIKE %:slspcontrol% ) and"//
+			+ "(:slclass =0 or c.slclass =:slclass ) ")
+	ArrayList<SystemLanguageCell> findAllBySystemUser(String slspcontrol, Integer slclass, Pageable pageable);
 
 	// 移除
 	Long deleteBySlid(Long suid);

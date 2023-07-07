@@ -21,12 +21,12 @@ public class PackageService {
 
 	// 查詢欄位-格式
 	public enum SearchType {
-		text, select, datetime_local, datetime
+		text, select, time, datetime
 	};
 
 	// 寬度
 	public enum SearchWidth {
-		col_2, col_3, col_4
+		col_1, col_2, col_3, col_4
 	}
 
 	// Stirng to JSON(一般轉換)
@@ -65,13 +65,17 @@ public class PackageService {
 	 * @param name      標題名稱
 	 * @param type      類型 text/select/datetime/datetime_local
 	 * @param width     寬度 col_2, col_3, col_4
+	 * @param show      顯示 查詢用?(true)修改用?(如果查詢用不到:false)
 	 * 
 	 **/
-	public JsonArray searchSet(JsonArray arr, JsonArray selectArr, String name, SearchType type, SearchWidth width) {
+	public JsonArray searchSet(JsonArray arr, JsonArray selectArr, String name, String placeholder, Boolean show, SearchType type,
+			SearchWidth width) {
 		JsonObject Json = new JsonObject();// 查詢設定項目
 		Json.addProperty("searchName", name);
 		Json.addProperty("type", type + "");// text/select/datetime/datetime_local
 		Json.addProperty("width", width + "");
+		Json.addProperty("placeholder", placeholder + "");
+		Json.addProperty("show", show);
 		if (selectArr != null && selectArr.size() > 0) {
 			Json.add("select", selectArr);
 		}
@@ -90,18 +94,37 @@ public class PackageService {
 			resultJson.addProperty("cellName", field.getName());
 			String sort = "999";
 			if (mapLanguages.containsKey(field.getName())) {
+				// 查詢欄位
 				sort = String.format("%03d", mapLanguages.get(field.getName()).getSyssort());
 				resultJson.addProperty("sort", sort);
 				resultJson.addProperty("show", mapLanguages.get(field.getName()).getSlcshow());
 				resultJson.addProperty("width", mapLanguages.get(field.getName()).getSlcwidth());
 				resultJson.addProperty("cellLanguage", mapLanguages.get(field.getName()).getSllanguage());
 				sort_cellName = sort + "_" + field.getName();
+				// 修改欄位
+				resultJson.addProperty("m_show", mapLanguages.get(field.getName()).getSlcmshow());
+				resultJson.addProperty("m_type", mapLanguages.get(field.getName()).getSlcmtype());
+				resultJson.addProperty("m_placeholder", mapLanguages.get(field.getName()).getSlcmplaceholder());
+				resultJson.addProperty("m_defval", mapLanguages.get(field.getName()).getSlcmdefval());
+				resultJson.addProperty("m_must", mapLanguages.get(field.getName()).getSlcmmust());
+				resultJson.addProperty("m_select", "" + mapLanguages.get(field.getName()).getSlcmselect());
+				resultJson.addProperty("m_fixed", mapLanguages.get(field.getName()).getSlcmfixed());
 			} else {
+				// 查詢欄位
 				resultJson.addProperty("sort", "999");
 				resultJson.addProperty("show", 1);
 				resultJson.addProperty("width", 100);
 				resultJson.addProperty("cellLanguage", "");
 				sort_cellName = sort + "_" + field.getName();
+				// 修改欄位
+				resultJson.addProperty("m_show", 1);
+				resultJson.addProperty("m_type", "text");
+				resultJson.addProperty("m_placeholder", "Ex:");
+				resultJson.addProperty("m_defval", "");
+				resultJson.addProperty("m_must", 0);
+				resultJson.addProperty("m_select", "" + new JsonArray());
+				resultJson.addProperty("m_fixed", 0);
+
 			}
 			arr.add(sort_cellName, resultJson);
 		}

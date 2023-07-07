@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +18,11 @@ public interface SystemConfigDao extends JpaRepository<SystemConfig, Long> {
 	@Query("SELECT c FROM SystemConfig c WHERE "//
 			+ "(:scname is null or c.scname LIKE %:scname% ) and "//
 			+ "(:scgname is null or c.scgname LIKE %:scgname% ) and "//
+			+ "(coalesce(:sysmdatestart,null) is null or :sysmdatestart <= c.sysmdate ) and "//
+			+ "(coalesce(:sysmdateend,null) is null or :sysmdateend >= c.sysmdate ) and "//
 			+ "( c.sysstatus = :sysstatus ) ")
-	ArrayList<SystemConfig> findAllByConfig(String scname, String scgname, Integer sysstatus, Pageable pageable);
+	ArrayList<SystemConfig> findAllByConfig(String scname, String scgname, Date sysmdatestart, Date sysmdateend, Integer sysstatus,
+			Pageable pageable);
 
 	// 查詢是否重複 群組
 	@Query("SELECT c FROM SystemConfig c WHERE  (c.scgname = :scgname) ")

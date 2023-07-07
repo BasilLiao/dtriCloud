@@ -1,5 +1,5 @@
-<div id="loading" class="fixed-top col m-0 p-0 row justify-content-center d-none" role="alert" style="top: 43px; height: 100%; background: #00000020;">
-	<div class="mt-5 pt-5">
+<div id="loading" class="fixed-top col m-0 p-0 d-none" role="alert" style="top: 43px; height: 100%; background: #00000020;">
+	<div class="mt-5 pt-5 text-center">
 		<div class="spinner-border mt-5" style="width: 15rem; height: 15rem; background: #d8d8d833;" role="status"></div>
 		<div class="text-center rounded-pill mt-3" style="font-size: 30px; font-weight: 900; background: #dadada80">Loading....</div>
 	</div>
@@ -16,10 +16,15 @@ main.web_html.loading = {
 		create(){
 			//初始化
 			console.log("loading.html(created)");
+			$(document).off("click", "#loading");
+			$(document).on("click", "#loading", function(event) {
+				$("#loading").addClass("d-none");
+			});
 		},
 		destroy() {
 			//銷毀
 			 console.log("loading.html(destroy)");
+			 $(document).off("click", "#loading");
 		},
 	},	
 };

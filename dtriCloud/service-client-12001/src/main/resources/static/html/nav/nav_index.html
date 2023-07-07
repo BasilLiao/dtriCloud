@@ -132,7 +132,6 @@
 
 <script type="text/javascript">
 //宣告
-
 main.web_html.nav_alert = {
 	data:{
 		alertTimeout:""
@@ -174,7 +173,7 @@ main.web_html.nav_alert = {
 		},
 		create(){
 			//初始化
-			console.log("nav_alert.html(create)");
+			console.log("nav_index.html(create)");
 			//建立監聽(關閉異常)
 			$(document).off("click", "#nav_message_close");
 			$(document).on("click", "#nav_message_close", function(event) {
@@ -216,17 +215,21 @@ main.web_html.nav_index = {
 				
 			}
 			//例遍->群組功能
-			var spgname = "";
+			console.log(nav_index.date.menuJson);
 			var menuJson = nav_index.date.menuJson;
 			for (var key in menuJson) {
-				//不同群組->則添加
-				if(spgname != menuJson[key].spgname){
-					spgname = menuJson[key].spgname;
+				//群組開頭->則添加
+				if(menuJson[key].sysheader){
 					var menu_ex = $($("#menu_ex").clone());
 					menu_ex.attr("id","spgid_"+menuJson[key].spgid);
 					menu_ex.removeClass("d-none");
 					menu_ex.addClass("menu_list_open");
 					menu_ex.find(".menu_l_name").text(menuJson[key].spgname);
+					//如果語系有效
+					if(menuJson[key].language!=null && menuJson[key].language!=""){
+						var language = JSON.parse(menuJson[key].language);
+						menu_ex.find(".menu_l_name").text(language[$('#menu_login_language').text()]);
+					}
 					menu_ex.appendTo( "#menu_list");
 				}
 				//放入轉跳頁面
@@ -240,7 +243,7 @@ main.web_html.nav_index = {
 				$(".menu_list_item").remove();
 				for (var key in menuJson) {
 					var spgid = Number(event.currentTarget.id.replace("spgid_",""));
-					if(spgid == menuJson[key].spgid){
+					if(spgid == menuJson[key].spgid && (!menuJson[key].sysheader)){
 						var menu_i_ex = $($("#menu_i_ex").clone());
 						//是否為一般類別
 						if(menuJson[key].sptype==0){
@@ -254,6 +257,11 @@ main.web_html.nav_index = {
 						menu_i_ex.removeClass("d-none");
 						menu_i_ex.addClass("menu_list_item");
 						menu_i_ex.find(".menu_i_name").text(menuJson[key].spname);
+						//如果語系有效
+						if(menuJson[key].language!=null && menuJson[key].language!=""){
+							var language = JSON.parse(menuJson[key].language);
+							menu_i_ex.find(".menu_i_name").text(language[$('#menu_login_language').text()]);
+						}
 						menu_i_ex.appendTo("#menu_item");
 					}
 				}

@@ -99,7 +99,9 @@ main.web_html.body_index={
             	main.web_body.search.methods.create();
             });
             //編輯-模板
-            $("#body_system_config #modify_tab").load("./html/model/modify.html", function(){});
+            $("#body_system_config #modify_tab").load("./html/model/modify.html", function(){
+            	main.web_body.modify.methods.create();
+            });
             //列印-模板
             $("#body_system_config #print_tab").load("./html/model/print.html", function(){});
             //報告-模板
