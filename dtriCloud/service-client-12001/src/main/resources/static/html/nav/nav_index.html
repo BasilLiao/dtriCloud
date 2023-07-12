@@ -132,7 +132,7 @@
 
 <script type="text/javascript">
 //宣告
-main.web_html.nav_alert = {
+nav_alert = {
 	data:{
 		alertTimeout:""
 		
@@ -147,7 +147,7 @@ main.web_html.nav_alert = {
 			$("#nav_message_color").removeClass("alert-success");
 			$("#nav_message_color").removeClass("alert-warning");
 			$("#nav_message_color").removeClass("alert-danger");
-			clearTimeout(main.web_html.nav_alert.data.alertTimeout);
+			clearTimeout(nav_alert.data.alertTimeout);
 			switch(color){
 			case "success":
 				$("#nav_message_color").addClass("alert-success");
@@ -160,7 +160,7 @@ main.web_html.nav_alert = {
 				break;
 			}
 			//自動還原
-			main.web_html.nav_alert.data.alertTimeout = setTimeout(function() { 
+			nav_alert.data.alertTimeout = setTimeout(function() { 
 				$("#nav_message_info_def").removeClass("d-none");
 				$("#nav_message_info").addClass("d-none");
 				$("#nav_message_info").text("[Code]Message : ");
@@ -190,7 +190,7 @@ main.web_html.nav_alert = {
 	}		
 }
 
-main.web_html.nav_index = {
+nav_index = {
 	//資料
 	date:{
 		menuJson:{},
@@ -201,7 +201,7 @@ main.web_html.nav_index = {
 		create(){
 			//初始化
 			console.log("nav_index.html(create)");
-			var nav_index = main.web_html.nav_index;
+			//var nav_index = nav_index;
 			var entityJson = JSON.parse(main.resq_data.entityJson);
 			var systemgroups = entityJson.systemgroups;
 			//console.log(entityJson);

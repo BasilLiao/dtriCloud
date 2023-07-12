@@ -85,14 +85,52 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = { "/ajax/system_config.basil.AC" }, method = { RequestMethod.POST })
+	String add(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		// Step0.資料準備
+		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+			// Step2.執行=>服務項目
+			packageBean = configService.getSearch(null, null);
+			// Step3.打包=>(轉換 PackageBean)=>包裝=>Json
+			packageJson = packageService.beanToJson(null);
+		} catch (CloudExceptionService ex) {
+			// Step4-1. 已知-故障回報
+			loggerWarn(ex.toString());
+			ex.getErrorCodeMessage();
+		} catch (Exception e) {
+			// Step4-2. 未知-故障回報
+			loggerWarn(e.toString());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger);
+		}
+		return packageJson;
+	}
+
+	@ResponseBody
 	@RequestMapping(value = { "/ajax/system_config.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 		return null;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/system_config.basil.AU" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
 		return null;
 	}
+
 }

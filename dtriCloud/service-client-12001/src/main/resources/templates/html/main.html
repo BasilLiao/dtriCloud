@@ -45,10 +45,10 @@ body {
 <script type="text/javascript" th:inline="javascript">
 	//====Step1.初始化====
 	var main={};
-	//各類-網頁面位置(需註冊-頭/身/底/覽/警/讀取中/出)
-	main.web_html={header_index:{},body_index:{},footer_index:{},nav_index:{},nav_alert:{},loading:{},logout:{}};
-	//各類-身體模板(需註冊-家/查/修/印/報/比/特)
-	main.web_body={home:{},search:{},modify:{},print:{},report:{},compare:{},special:{}};
+	//main.web_html .=各類-網頁面位置(需註冊-頭/身/底/覽/警/讀取中/出)
+	var header_index={},body_index={},footer_index={},nav_index={},nav_alert={},loading={},logout={};
+	//main.web_body .=各類-身體模板(需註冊-家/查/修/印/報/比/特)
+	var home={},search={},modify={},print={},report={},compare={},special={};
 	//資料-個人基本資訊(暫存-名/態/職/登時)
 	main.web_user={name:"",status:"",position:"",login_time:""};
 	//資料-傳送(位置/請求類型[POST/GET/PUT/DELETE]/資料內容)
@@ -78,7 +78,7 @@ body {
 				success(event) {
 					console.log(event);
 					//console.log("Step1.顯示訊息資訊:ajax to success:");
-					var mainAlertM=main.web_html.nav_alert.methods;
+					var mainAlertM=nav_alert.methods;
 					if(event['infoColor']=="success"){
 						mainAlertM.alertshow(event['infoColor'],event['info']);
 					}else if(event['infoColor']=="warning"){ 
@@ -94,31 +94,31 @@ body {
 					if(event['htmlBody']!=""){
 						//console.log("Step3-1.清除上一模版監聽:轉跳畫面:刷新_模板:"+event['htmlBody']);
 						//body 內資料->清除
-						main.web_body.home.methods.destroy();main.web_body.home={};
-						main.web_body.search.methods.destroy();main.web_body.search={};
-						main.web_body.modify.methods.destroy();main.web_body.modify={};
-						main.web_body.print.methods.destroy();main.web_body.print={};
-						main.web_body.report.methods.destroy();main.web_body.report={};
-						main.web_body.compare.methods.destroy();main.web_body.compare={};
-						main.web_body.special.methods.destroy();main.web_body.special={};
+						home.methods.destroy();home={};
+						search.methods.destroy();search={};
+						modify.methods.destroy();modify={};
+						print.methods.destroy();print={};
+						report.methods.destroy();report={};
+						compare.methods.destroy();compare={};
+						special.methods.destroy();special={};
 						//body 內本體->清除
-						main.web_html.body_index.methods.destroy();main.web_html.body_index={};
+						body_index.methods.destroy();body_index={};
 						//body 掛載新頁面->註冊
 						$("#body_page").load("./html/body/"+main.resq_data['htmlBody'],function(){
 							//創立單元
-							main.web_html.body_index.methods.create();
+							body_index.methods.create();
 							//更換-單元名稱
 							$('#nav_functional_unit').text(event['htmlBodyUnitName']);
 						});							
 					}else if(event['callBackFunction']!=""){
 						//console.log("Step3-2.非轉跳畫面(更新資料/新增資料/查詢資料)");
 						 switch (event['callBackFunction']) {
-                               case "search":main.web_body.search.methods.searchReturn();break;
-                               case "modify":main.web_body.modify.methods.modifyReturn();break;
-                               case "report":main.web_body.report.methods.reportReturn();break;
-                               case "special_search":main.web_body.special.methods.special_searchReturn();break;
-                               case "special_modify":main.web_body.special.methods.methods.special_modifyReturn();break;
-                               case "special_other":main.web_body.special.methods.customized.special_otherReturn();break;
+                               case "search":search.methods.searchReturn();break;
+                               case "modify":modify.methods.modifyReturn();break;
+                               case "report":report.methods.reportReturn();break;
+                               case "special_search":special.methods.special_searchReturn();break;
+                               case "special_modify":special.methods.methods.special_modifyReturn();break;
+                               case "special_other":special.methods.customized.special_otherReturn();break;
                            }
 					}else{
 						//console.log("Step3-3.異常請求尚未在範圍內");
@@ -128,7 +128,7 @@ body {
 				},
 				error(event) {
 					console.log("ajax to fail:" + JSON.stringify(event));
-					var mainAlertM=main.web_html.nav_alert.methods;
+					var mainAlertM=nav_alert.methods;
 					if (event.status == 200) {//沒有session 拒絕
 						mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
 						window.location.replace("login.basil");
@@ -170,18 +170,18 @@ body {
 	});
 	//模板-導覽
 	$("#nav_page").load("./html/nav/nav_index.html", function(){
-		main.web_html.nav_alert.methods.create();		
-		main.web_html.nav_index.methods.create();
+		nav_alert.methods.create();		
+		nav_index.methods.create();
 	});
 	//模板-主體
 	$("#body_page").load("./html/body/body_index.html",function(){
-		main.web_html.body_index.methods.create();
+		body_index.methods.create();
 	});
 	//模板-網站宣告
 	$("#footer_page").load("./html/footer/footer_index.html",function(){});
 	//模板-讀取中...
 	$("#loading_page").load("./html/nav/loading.html",function(){
-		main.web_html.loading.methods.create();
+		loading.methods.create();
 	});
 	//模板-登出中...
 	$("#logout_page").load("./html/nav/logout.html",function(){});

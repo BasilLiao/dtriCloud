@@ -128,9 +128,9 @@ public class SystemLanguageCell {
 	private String slcmdefval;
 	@Column(name = "sl_cm_show", nullable = false, columnDefinition = "int default 1")
 	private Integer slcmshow;
-	@Column(name = "sl_cm_must", nullable = false, columnDefinition = "int default 1")
+	@Column(name = "sl_cm_must", nullable = false, columnDefinition = "int default 0")
 	private Integer slcmmust;
-	@Column(name = "sl_cm_fixed", nullable = false, columnDefinition = "int default 1")
+	@Column(name = "sl_cm_fixed", nullable = false, columnDefinition = "int default 0")
 	private Integer slcmfixed;
 
 	// 前端格式-修改/查詢用

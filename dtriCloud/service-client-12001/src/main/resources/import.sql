@@ -1,26 +1,23 @@
 --system_config
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (1, 1, 'E_MAIL_PROXY', 'E_MAIL_PROXY', '',true);
+INSERT INTO system_config(sc_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (1,  'E_MAIL_PROXY', 'E_MAIL_PROXY', '',true);
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (2, 1, 'E_MAIL_PROXY', '帳號', '123MES@gmail.com');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (3, 1, 'E_MAIL_PROXY', '密碼', '123MES');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (4, 1, 'E_MAIL_PROXY', '協定', 'POST');
 
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (5, 2, 'FTP_DATA_BKUP', 'FTP_DATA_BKUP', '',true);
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (6, 2, 'FTP_DATA_BKUP', 'IP', '10.1.90.10');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (7, 2, 'FTP_DATA_BKUP', 'FTP_PORT', '21');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (8, 2, 'FTP_DATA_BKUP', 'ACCOUNT', 'pm_bom_server');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (9, 2, 'FTP_DATA_BKUP', 'PASSWORD', '2fIlHs');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (10, 2, 'FTP_DATA_BKUP', 'PATH', '/PM_BOM_DBBackup/');
+INSERT INTO system_config(sc_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (5,  'FTP_DATA_BKUP', 'FTP_DATA_BKUP', '',true);
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (6, 5, 'FTP_DATA_BKUP', 'IP', '10.1.90.10');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (7, 5, 'FTP_DATA_BKUP', 'FTP_PORT', '21');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (8, 5, 'FTP_DATA_BKUP', 'ACCOUNT', 'pm_bom_server');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (9, 5, 'FTP_DATA_BKUP', 'PASSWORD', '2fIlHs');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (10, 5, 'FTP_DATA_BKUP', 'PATH', '/PM_BOM_DBBackup/');
 
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (11, 3, 'DATA_BKUP', 'DATA_BKUP', '',true);
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (12, 3, 'DATA_BKUP', 'FOLDER_NAME', '\WebAppBackupDatabase\');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (13, 3, 'DATA_BKUP', 'FILE_NAME', 'dtrimes_backup');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (14, 3, 'DATA_BKUP', 'PG_DUMP', 'C:\Program Files\PostgreSQL\10\bin\pg_dump.exe');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (15, 3, 'DATA_BKUP', 'DB_NAME', 'postgres://dbadmin:12345@localhost/dtrimes');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (16, 3, 'DATA_BKUP', 'DB_PORT', '5432');
-
+INSERT INTO system_config(sc_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (11,  'DATA_BKUP', 'DATA_BKUP', '',true);
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (12, 11, 'DATA_BKUP', 'FOLDER_NAME', '\WebAppBackupDatabase\');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (13, 11, 'DATA_BKUP', 'FILE_NAME', 'dtrimes_backup');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (14, 11, 'DATA_BKUP', 'PG_DUMP', 'C:\Program Files\PostgreSQL\10\bin\pg_dump.exe');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (15, 11, 'DATA_BKUP', 'DB_NAME', 'postgres://dbadmin:12345@localhost/dtrimes');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (16, 11, 'DATA_BKUP', 'DB_PORT', '5432');
 SELECT setval('public.system_config_seq', 17, true);
-DROP sequence IF EXISTS SYSTEM_CONFIG_G_SEQ CASCADE;
-create sequence SYSTEM_CONFIG_G_SEQ start with 4 increment by 1;
 
 --system_permission
 --關聯用
@@ -92,23 +89,23 @@ INSERT INTO su_sg_list(su_id_fk,sg_id_fk) VALUES(2,16);
 
 
 --system_language
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (1,2,100,1,1, '{"zh-TW":"建立時間","zh-CN":"建立时间","en-US":"Creation time","vi-VN":"xây dựng thời gian"}', 'system_config', 'syscdate','datetime');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (2,2,100,1,9, '{"zh-TW":"建立用戶","zh-CN":"建立用户","en-US":"Creation user","vi-VN":"xây dựng thời gian"}', 'system_config', 'syscuser','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (3,2,100,1,8, '{"zh-TW":"修改時間","zh-CN":"修改时间","en-US":"Modified time","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdate','datetime');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (4,2,100,1,7, '{"zh-TW":"修改用戶","zh-CN":"修改用户","en-US":"Modified user","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmuser','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (5,2,100,1,6, '{"zh-TW":"擁有時間","zh-CN":"拥有时间","en-US":"Own time","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysodate','datetime');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (6,2,100,1,5, '{"zh-TW":"擁有用戶","zh-CN":"拥有用户","en-US":"own user","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysouser','password');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (7,2,100,1,4, '{"zh-TW":"群組標記","zh-CN":"群组标记","en-US":"group tag","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysheader','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (8,2,100,1,3, '{"zh-TW":"狀態","zh-CN":"状态","en-US":"state","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysstatus','select');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (9,2,100,1,2, '{"zh-TW":"排序","zh-CN":"排序","en-US":"sort","vi-VN":"xây dựng thời gian"}', 'system_config', 'syssort','number');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (10,2,100,1,11, '{"zh-TW":"備註","zh-CN":"备注","en-US":"note","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysnote','textarea');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (11,2,100,0,0, '{"zh-TW":"主鍵","zh-CN":"主键","en-US":"key","vi-VN":"xây dựng thời gian"}', 'system_config', 'scid','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (12,2,100,1,13, '{"zh-TW":"群組鍵","zh-CN":"群组键","en-US":"group key","vi-VN":"xây dựng thời gian"}', 'system_config', 'scgid','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (13,2,200,1,14, '{"zh-TW":"設定名稱","zh-CN":"设定名称","en-US":"set name","vi-VN":"xây dựng thời gian"}', 'system_config', 'scname','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (14,2,200,1,15, '{"zh-TW":"設定群組名稱","zh-CN":"设定群组名称","en-US":"set group name","vi-VN":"xây dựng thời gian"}', 'system_config', 'scgname','time');
---INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (15,2,100,1,16, '{"zh-TW":"設定值","zh-CN":"设定值","en-US":"set value","vi-VN":"xây dựng thời gian"}', 'system_config', 'scvalue','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (16,2,100,0,17, '{"zh-TW":"修改時間起","zh-CN":"修改时间起","en-US":"Modified time S","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdatestart','text');
-INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type) VALUES (17,2,100,0,18, '{"zh-TW":"修改時間終","zh-CN":"修改时间终","en-US":"Modified time E","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdateend','text');
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (1,2,100,1,1, '{"zh-TW":"建立時間","zh-CN":"建立时间","en-US":"Creation time","vi-VN":"xây dựng thời gian"}', 'system_config', 'syscdate','datetime',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (2,2,100,1,9, '{"zh-TW":"建立用戶","zh-CN":"建立用户","en-US":"Creation user","vi-VN":"xây dựng thời gian"}', 'system_config', 'syscuser','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (3,2,100,1,8, '{"zh-TW":"修改時間","zh-CN":"修改时间","en-US":"Modified time","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdate','datetime',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (4,2,100,1,7, '{"zh-TW":"修改用戶","zh-CN":"修改用户","en-US":"Modified user","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmuser','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (5,2,100,1,6, '{"zh-TW":"擁有時間","zh-CN":"拥有时间","en-US":"Own time","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysodate','datetime',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (6,2,100,1,5, '{"zh-TW":"擁有用戶","zh-CN":"拥有用户","en-US":"own user","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysouser','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (7,2,100,1,4, '{"zh-TW":"群組標記","zh-CN":"群组标记","en-US":"group tag","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysheader','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (8,2,100,1,3, '{"zh-TW":"狀態","zh-CN":"状态","en-US":"state","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysstatus','select',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (9,2,100,1,2, '{"zh-TW":"排序","zh-CN":"排序","en-US":"sort","vi-VN":"xây dựng thời gian"}', 'system_config', 'syssort','number',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (10,2,100,1,11, '{"zh-TW":"備註","zh-CN":"备注","en-US":"note","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysnote','textarea',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (11,2,100,0,0, '{"zh-TW":"主鍵","zh-CN":"主键","en-US":"key","vi-VN":"xây dựng thời gian"}', 'system_config', 'scid','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (12,2,100,1,13, '{"zh-TW":"群組鍵","zh-CN":"群组键","en-US":"group key","vi-VN":"xây dựng thời gian"}', 'system_config', 'scgid','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (13,2,200,1,14, '{"zh-TW":"設定名稱","zh-CN":"设定名称","en-US":"set name","vi-VN":"xây dựng thời gian"}', 'system_config', 'scname','text',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (14,2,200,1,15, '{"zh-TW":"設定群組名稱","zh-CN":"设定群组名称","en-US":"set group name","vi-VN":"xây dựng thời gian"}', 'system_config', 'scgname','text',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (15,2,100,1,16, '{"zh-TW":"設定值","zh-CN":"设定值","en-US":"set value","vi-VN":"xây dựng thời gian"}', 'system_config', 'scvalue','text',0);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (16,2,100,0,17, '{"zh-TW":"修改時間起","zh-CN":"修改时间起","en-US":"Modified time S","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdatestart','text',1);
+INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_sp_control, sl_target,sl_cm_type,sl_cm_fixed) VALUES (17,2,100,0,18, '{"zh-TW":"修改時間終","zh-CN":"修改时间终","en-US":"Modified time E","vi-VN":"xây dựng thời gian"}', 'system_config', 'sysmdateend','text',1);
 
 --Menu翻譯
 INSERT INTO public.system_language_cell(sl_id, sl_class,sl_c_width,sl_c_show,sys_sort, sl_language, sl_target) VALUES (18,1,100,1,1, '{"zh-TW":"系統列表","zh-CN":"系统列表","en-US":"System list","vi-VN":""}','system_list');

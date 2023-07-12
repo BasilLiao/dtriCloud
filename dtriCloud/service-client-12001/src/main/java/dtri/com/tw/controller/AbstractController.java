@@ -54,6 +54,8 @@ public abstract class AbstractController {
 	abstract String access(@RequestBody String jsonObject);
 
 	abstract String search(@RequestBody String jsonObject);
+	
+	abstract String add(@RequestBody String jsonObject);
 
 	abstract String modify(@RequestBody String jsonObject);
 

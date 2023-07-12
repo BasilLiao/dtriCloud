@@ -116,6 +116,11 @@ public class IndexController extends AbstractController {
 	}
 
 	@Override
+	String add(String jsonObject) {
+		return null;
+	}
+
+	@Override
 	String modify(String jsonObject) {
 		return null;
 	}
@@ -124,4 +129,5 @@ public class IndexController extends AbstractController {
 	String delete(String jsonObject) {
 		return null;
 	}
+
 }

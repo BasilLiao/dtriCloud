@@ -69,7 +69,7 @@
 </div>
 <script type="text/javascript">
 //宣告
-main.web_html.body_index={
+body_index={
 	//資料
 	date:{
 		
@@ -96,11 +96,11 @@ main.web_html.body_index={
             $("#body_system_config #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
             $("#body_system_config #search_tab").load("./html/model/search.html", function(){
-            	main.web_body.search.methods.create();
+            	search.methods.create();
             });
             //編輯-模板
             $("#body_system_config #modify_tab").load("./html/model/modify.html", function(){
-            	main.web_body.modify.methods.create();
+            	modify.methods.create();
             });
             //列印-模板
             $("#body_system_config #print_tab").load("./html/model/print.html", function(){});
