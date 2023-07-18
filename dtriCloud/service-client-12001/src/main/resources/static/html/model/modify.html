@@ -254,7 +254,7 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
-							<button id="modify_c_save" type="submit" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+							<button id="modify_c_save" type="submit" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 								<b>Save<br>(*)
 								</b>
 							</button>
@@ -612,13 +612,19 @@ modify={
 			$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
 			$(document).on("click", "#modifyThAll .modifyThvM .bi-stickies", function (event) {
 				console.log("modifyThAll bi-stickies");
-				var copy = $(event.target.parentElement.parentElement.parentElement).clone();
+				var copyTarget = $(event.target.parentElement.parentElement.parentElement);
+				var copy = copyTarget.clone();
 				//Data : 將現有ID /GID 清除
 				var id = copy.find('.bi-stickies').attr('title').split("_")[0];
 				var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
 				if(id!=""){copy.find('.'+id).val("");}
 				if(gid!=""){copy.find('.'+gid).val("");}
-				
+				//select : 如果有選單複製
+				var select = copyTarget.find("select");
+				select.each(function( index ) {
+					console.log($(this).attr("title"));
+					copy.find('.'+$(this).attr("title")).val($(this).val());
+				})
 				copy.removeClass('modifyTdvEx');
 				copy.removeClass('modifyThvEx');
 				copy.find(".bi-plus-square").addClass('d-none');
@@ -652,12 +658,18 @@ modify={
 			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
 			$(document).on("click", "#modifyTdAll .modifyTdvM .bi-stickies", function (event) {
 				console.log("modifyTdAll bi-stickies");
-				var copy = $(event.target.parentElement.parentElement.parentElement).clone();
+				var copyTarget = $(event.target.parentElement.parentElement.parentElement);
+				var copy = copyTarget.clone();
 				//Detail : 將現有ID 
 				var id = copy.find('.bi-stickies').attr('title').split("_")[0];
 				var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
 				if(id!=""){copy.find('.'+id).val("");}
-				
+				//select : 如果有選單複製
+				var select = copyTarget.find("select");
+				select.each(function( index ) {
+					console.log($(this).attr("title"));
+					copy.find('.'+$(this).attr("title")).val($(this).val());
+				})
 				copy.removeClass('modifyTdvEx');
 				copy.find(".bi-plus-square").addClass('d-none');
 				copy.find(".bi-dash-square").removeClass('d-none');
@@ -762,7 +774,7 @@ modify={
 				$('.modifyTdvM').remove();
 				$('.nextOne').remove();
 				$('#modify_c_state').text("＞Create＜");
-				$('#modify_c_state').attr('title','AC');
+				$('#modify_c_state').attr('title','AC_POST');
 				 
 			});
 			
@@ -778,7 +790,7 @@ modify={
 			
 			$('#modify_title').trigger('click');
 			$('#modify_c_state').text("＞Create＜");
-			$('#modify_c_state').attr('title','AC');
+			$('#modify_c_state').attr('title','AC_POST');
 			
 			switch(order){
 			case "saveAs":
@@ -862,15 +874,15 @@ modify={
 			switch(order){
 			case "create":
 				$('#modify_c_state').text("＞Create＜");
-				$('#modify_c_state').attr('title','AC');
+				$('#modify_c_state').attr('title','AC_POST');
 				break;
 			case "saveAs":
 				$('#modify_c_state').text("＞saveAs＜");
-				$('#modify_c_state').attr('title','AC');
+				$('#modify_c_state').attr('title','AC_POST');
 				break;
 			case "modify":
 				$('#modify_c_state').text("＞Modify＜");
-				$('#modify_c_state').attr('title','AU');
+				$('#modify_c_state').attr('title','AU_PUT');
 				break;
 			case "invalid":
 				$('#modify_c_state').text("＞Invalid＜");
@@ -880,7 +892,7 @@ modify={
 				$('.modifyTdvM input').attr("disabled","disabled");
 				$('.modifyTdvM select').attr("disabled","disabled");
 				$('.modifyTdvM textarea').attr("disabled","disabled");
-				$('#modify_c_state').attr('title','AD');
+				$('#modify_c_state').attr('title','AD_DELETE');
 				break;
 			case "delete":
 				$('#modify_c_state').text("＞Delete＜");
@@ -890,7 +902,7 @@ modify={
 				$('.modifyTdvM input').attr("disabled","disabled");
 				$('.modifyTdvM select').attr("disabled","disabled");
 				$('.modifyTdvM textarea').attr("disabled","disabled");
-				$('#modify_c_state').attr('title','DD');
+				$('#modify_c_state').attr('title','DD_DELETE');
 				break;
 			}
 			//時間格式
@@ -905,7 +917,8 @@ modify={
 			var data={};
 			var req_data={};
 			var searchPageSet={};
-			var action = $('#modify_c_state').attr('title');
+			var action = $('#modify_c_state').attr('title').split("_")[0];
+			var type = $('#modify_c_state').attr('title').split("_")[1];
 			//一般資料->每一筆資料
 			$('.modifyThvM').each(function(index){ 
 				//每一格欄位
@@ -938,16 +951,22 @@ modify={
 			
 			data['entityJson'] = JSON.stringify(entityJsons);
 			data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
+			data['callBackFunction'] = "modify";
 			console.log(entityJsons);
 			console.log(entityDetailJsons);
 			
-			
 			//包裝
 			req_data['data'] = data;
-			req_data['url'] = "system_config.basil."+$('#modify_c_state').attr('title');
-			req_data['type'] = "POST";
+			req_data['url'] = "system_config.basil."+action;//AC/AD....
+			req_data['type'] = type;//POST/PUT/DELETE...
 			main.methods.ajaxSend(req_data);
 			
+		},
+		//修改後查詢
+		modifyReturn(){
+			console.log("modifyReturn");
+			$("#search_title").trigger('click');
+			$("#btn_send").trigger('click');
 		},
 		datetimepickerDate(){
 			//日期時間格式
@@ -977,7 +996,20 @@ modify={
 		destroy() {
 			//銷毀
 			console.log("modify.html(destroy)");
-			
+			$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
+			$(document).off("click", "#modifyThAll .modifyThvM .bi-dash-square");//--
+			$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
+			$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
+			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-dash-square");//--
+			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
+			$(document).off("click", "#modify_c_date_overwrite");
+			$(document).off("click", "#modify_c_date_replace");
+			$(document).off("click", "#modify_c_date_clearAll");
+			$(document).off("click", "#modify_c_detail_overwrite");
+			$(document).off("click", "#modify_c_detail_replace");
+			$(document).off("click", "#modify_c_detail_clearAll");
+			$(document).off("click", "#modify_c_save");
+			$(document).off("click", "#modify_c_cancelAll");
 		},
 	},	
 };

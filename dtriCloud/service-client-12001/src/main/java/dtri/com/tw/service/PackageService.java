@@ -35,6 +35,12 @@ public class PackageService {
 		return jsonObject;
 	}
 
+	// Stirng to JsonArray(一般轉換)
+	public JsonArray StringToAJson(String s) {
+		JsonArray jsonObject = JsonParser.parseString(s).getAsJsonArray();
+		return jsonObject;
+	}
+
 	// JSON to Bean(單一包裝)
 	public <T> T jsonToBean(String packageJson, Class<T> valueType) throws JsonMappingException, JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();

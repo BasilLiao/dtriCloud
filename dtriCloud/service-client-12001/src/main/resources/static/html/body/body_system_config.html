@@ -105,7 +105,9 @@ body_index={
             //列印-模板
             $("#body_system_config #print_tab").load("./html/model/print.html", function(){});
             //報告-模板
-            $("#body_system_config #report_tab").load("./html/model/report.html", function(){});
+            $("#body_system_config #report_tab").load("./html/model/report.html", function(){
+            	report.methods.create();
+            });
             //比對-模板
             $("#body_system_config #compare_tab").load("./html/model/compare.html", function(){});
             //其他-模板

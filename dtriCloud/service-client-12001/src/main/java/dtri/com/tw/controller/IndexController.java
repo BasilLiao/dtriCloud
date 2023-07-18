@@ -130,4 +130,9 @@ public class IndexController extends AbstractController {
 		return null;
 	}
 
+	@Override
+	String invalid(String jsonObject) {
+		return null;
+	}
+
 }

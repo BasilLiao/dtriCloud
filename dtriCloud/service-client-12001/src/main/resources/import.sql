@@ -1,23 +1,24 @@
 --system_config
-INSERT INTO system_config(sc_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (1,  'E_MAIL_PROXY', 'E_MAIL_PROXY', '',true);
+INSERT INTO system_config(sc_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (0, '', '', '',true);
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (1,0,  'E_MAIL_PROXY', 'E_MAIL_PROXY', '',true);
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (2, 1, 'E_MAIL_PROXY', '帳號', '123MES@gmail.com');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (3, 1, 'E_MAIL_PROXY', '密碼', '123MES');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (4, 1, 'E_MAIL_PROXY', '協定', 'POST');
 
-INSERT INTO system_config(sc_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (5,  'FTP_DATA_BKUP', 'FTP_DATA_BKUP', '',true);
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value ,sys_header)VALUES (5,0,  'FTP_DATA_BKUP', 'FTP_DATA_BKUP', '',true);
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (6, 5, 'FTP_DATA_BKUP', 'IP', '10.1.90.10');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (7, 5, 'FTP_DATA_BKUP', 'FTP_PORT', '21');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (8, 5, 'FTP_DATA_BKUP', 'ACCOUNT', 'pm_bom_server');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (9, 5, 'FTP_DATA_BKUP', 'PASSWORD', '2fIlHs');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (10, 5, 'FTP_DATA_BKUP', 'PATH', '/PM_BOM_DBBackup/');
 
-INSERT INTO system_config(sc_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (11,  'DATA_BKUP', 'DATA_BKUP', '',true);
+INSERT INTO system_config(sc_id, sc_g_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (11,0,  'DATA_BKUP', 'DATA_BKUP', '',true);
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (12, 11, 'DATA_BKUP', 'FOLDER_NAME', '\WebAppBackupDatabase\');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (13, 11, 'DATA_BKUP', 'FILE_NAME', 'dtrimes_backup');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (14, 11, 'DATA_BKUP', 'PG_DUMP', 'C:\Program Files\PostgreSQL\10\bin\pg_dump.exe');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (15, 11, 'DATA_BKUP', 'DB_NAME', 'postgres://dbadmin:12345@localhost/dtrimes');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (16, 11, 'DATA_BKUP', 'DB_PORT', '5432');
-SELECT setval('public.system_config_seq', 17, true);
+SELECT setval('public.system_config_seq', 16, true);
 
 --system_permission
 --關聯用
@@ -60,13 +61,13 @@ INSERT INTO system_group(sg_id, sg_g_id, sg_name, sg_permission, sg_sp_id,sys_so
 INSERT INTO system_group(sg_id, sg_g_id, sg_name, sg_permission, sg_sp_id,sys_sort) VALUES (15,2, '一般使用者', '000001000011', 10,1102);
 INSERT INTO system_group(sg_id, sg_g_id, sg_name, sg_permission, sg_sp_id,sys_sort) VALUES (16,2, '一般使用者', '000001000011', 11,1103);
 
-SELECT setval('public.system_group_seq', 15, true);
+SELECT setval('public.system_group_seq', 16, true);
 DROP sequence IF EXISTS SYSTEM_GROUP_G_SEQ CASCADE;
 create sequence SYSTEM_GROUP_G_SEQ start with 3 increment by 1;
 
 --system_user
-INSERT INTO system_user(su_id,su_account, su_e_name, su_email, su_name, su_password, su_position,sys_status) VALUES (1,'admin','Admin_en', 'admin@dtr.com', 'Admin', '$2a$10$1aTotRT77Ckuw0QjmFTmJ.Ar4v03HoFsZaFlJTtYG8dWAPN2V6U3O', '超級管理者',3);
-INSERT INTO system_user(su_id,su_account, su_e_name, su_email, su_name, su_password, su_position) VALUES (2,'user','User_en', 'user@dtr.com', 'User', '$2a$10$4Mm5IrG70VL8WNsIQ0IuuOzU/FXunpTEPLdq8HHpIUER76A5v6Lcq', '一般使用者');
+INSERT INTO system_user(su_id,su_account, su_e_name, su_email, su_name, su_password, su_position,sys_status,su_language) VALUES (1,'admin','Admin_en', 'admin@dtr.com', 'Admin', '$2a$10$1aTotRT77Ckuw0QjmFTmJ.Ar4v03HoFsZaFlJTtYG8dWAPN2V6U3O', '超級管理者',3,'zh-TW');
+INSERT INTO system_user(su_id,su_account, su_e_name, su_email, su_name, su_password, su_position,su_language) VALUES (2,'user','User_en', 'user@dtr.com', 'User', '$2a$10$4Mm5IrG70VL8WNsIQ0IuuOzU/FXunpTEPLdq8HHpIUER76A5v6Lcq', '一般使用者','en-US');
 SELECT setval('public.system_user_seq', 2, true);
 
 --su_sg_list

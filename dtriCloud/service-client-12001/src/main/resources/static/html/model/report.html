@@ -13,7 +13,7 @@
 	overflow: hidden;
 }
 /*Table 表格固定*/
-#report_c .fixed_cell_1 {
+#report_c .fixedC1 {
 	left: 0px;
 	position: sticky;
 }
@@ -23,8 +23,8 @@
 	padding: 2px;
 }
 /*Table 表格外框線*/
-#report_c #report_c_report_list table {
-	min-height: 650px;
+#report_c #rcReport table {
+	min-height: 100px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -34,7 +34,7 @@
 	--bs-table-bg: #fff;
 }
 /*標題色彩*/
-#report_c .title_color {
+#report_c .titleColor {
 	background-color: #cfe2ff;
 }
 /*直立式呈現邊字*/
@@ -52,151 +52,116 @@
 <div id="report_c" class="row m-0 p-0">
 	<div class="col-lg-3 p-0">
 		<!-- 控制面板 -->
-		<div id="report_c_controller" class="col-12 p-1">
+		<div id="rcCell" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_table_cell_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcCellOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div id="report_c_table_cell_open" class="row m-0 collapse show">
-				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Step1.choose table cell </b>
-				<div class="col border border-primary justify-content-around row m-0 p-1 overflow-auto" style="max-height: 80vh;">
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位1<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位2<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位3<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位4<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位5<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位6<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位7<br>()
-						</b>
-					</button>
-					<button type="button" class="lh-1 col-5 p-2 m-1 btn btn-sm btn-outline-primary">
-						<b>欄位8<br>()
-						</b>
+			<div id="rcCellOpen" class="row m-0 collapse show">
+				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Choose table cell </b>
+				<div id="exReportItemList" class="col border border-primary justify-content-around row m-0 p-1 overflow-auto" style="max-height: 80vh;">
+					<button type="button" class="exItemBtn lh-1 col-3 col-lg-5 p-2 m-1 btn btn-sm btn-outline-primary d-none">
+						<b class="itemBtnShow">Table cell1</b><br>
+						<div class="itemBtnCell">()</div>
 					</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-6 p-0">
+	<div class="col-lg-5 p-0">
 		<!-- 條件面板 -->
-		<div id="report_c_item" class="col-12 p-1">
+		<div id="rcItem" class="col-lg-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcItemOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div class="row m-0 collapse show" id="report_c_item_open">
-				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Step2.where? </b>
+			<div class="row m-0 collapse show" id="rcItemOpen">
+				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> where? </b>
 				<div class="col border border-primary  row m-0 p-0 shadow-sm">
-					<div class="col-lg-3 p-1">
+					<div class="col-4 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Cell name</div>
+							<div class="titleColor fw-bolder rounded-top">Cell name</div>
 							<div class="p-1">
-								<input disabled="disabled" class="col-12 m-0 p-1 border border-dark form-control" type="text" name="ex_name" placeholder="Ex:choose table cell" autofocus>
+								<input id="rcCellName" disabled="disabled" class="col-12 m-0 p-1 border border-dark form-control" type="text" name="ex_name" placeholder="Ex:choose table cell" autofocus>
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3 p-1">
-						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Where?</div>
+					<div class="col-4 p-1">
+						<div class="border border-secondary rounded">
+							<div class="titleColor fw-bolder rounded-top">Where?</div>
 							<div class="p-1">
-								<select class="col-12 m-0 p-1 border border-dark form-select">
-									<option value="">請選擇(N/A)</option>
-									<option value="">包含有(Like %..%)</option>
-									<option value="">完全相同(All same)</option>
-									<option value="">完全不同(Not same)</option>
-									<option value="">大於區間(More than)</option>
-									<option value="">小於區間(Less than)</option>
+								<select id="rcWhere" class="col-12 m-0 p-1 border border-dark form-select">
+									<option value="AllSame">All same(完全相同)</option>
+									<option value="NotSame">Not same(完全不同)</option>
+									<option value="Like">Like %..%(有包含)</option>
+									<option value="NotLike">Not Like %..%(不包含)</option>
+									<option value="MoreThan">More than(大於區間)</option>
+									<option value="LessThan">Less than(小於區間)</option>
 								</select>
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3 p-1">
+					<div class="col-4 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Value type?</div>
+							<div class="titleColor fw-bolder rounded-top">Value type?</div>
 							<div class="p-1">
-								<select class="col-12 m-0 p-1 border border-dark form-select">
-									<option value="">文字(Text)</option>
-									<option value="">數字(Number)</option>
-									<option value="">時間(Date time)</option>
+								<select id="rcValueType" class="col-12 m-0 p-1 border border-dark form-select">
+									<option value="text">Text(文字)</option>
+									<option value="number">Number(數字)</option>
+									<option value="dateTime">Date time(時間)</option>
 								</select>
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3 p-1">
+					<div class="col-12 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Value?</div>
+							<div class="titleColor fw-bolder rounded-top">Value?</div>
 							<div class="p-1">
-								<input class="col-12 m-0 p-1 border border-dark form-control" type="text" id="" name="ex_name2" placeholder="Ex:123">
+								<div>
+									<input id="rcValueText" class="rcValues col-12 m-0 p-1 border border-dark form-control" type="text" id="" name="ex_name2" placeholder="Ex:Search something">
+								</div>
+								<div>
+									<input id="rcValueNumber" class="rcValues col-12 m-0 p-1 border border-dark form-control d-none" type="number" id="" name="ex_name3" placeholder="Ex:123">
+								</div>
+								<div>
+									<input id="rcValueDateTime" class="rcValues col-12 m-0 p-1 border border-dark form-control datetimepicker_date d-none" type="text" id="" name="ex_name4" placeholder="Ex:1990-01-01 23:30:30">
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-		
-		<!-- 條件清單面板 -->
-		<div id="report_c_query_list" class="col-12 p-1 ">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_query_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			</div>
-			<div id="report_c_query_list_open" class="row m-0 collapse show">
-				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Query list </b>
-				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="m-0">XXXX 條件 XXXX</div>
-					<div class="m-0">XXXX 條件 XXXX</div>
-					<div class="m-0">XXXX 條件 XXXX</div>
 				</div>
 			</div>
 		</div>
 		<!-- 控制面板 -->
-		<div id="report_c_controller" class="col-12 p-1 ">
+		<div id="rcController" class="col-lg-12 p-1 ">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcControllerOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div id="report_c_controller_open" class="row m-0 collapse show">
+			<div id="rcControllerOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="col-lg-4 p-1">
+					<div class="col-5 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Conditions</div>
+							<div class="titleColor fw-bolder rounded-top">Conditions</div>
 							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+								<button id="rcAddQuery" type="button" disabled="disabled" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
 									<b>Add<br>query()
 									</b>
 								</button>
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<button id="rcClearQuery" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 									<b>Clear<br>query()
 									</b>
 								</button>
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-4 p-1">
+					<div class="col-5 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Search</div>
+							<div class="titleColor fw-bolder rounded-top">Search</div>
 							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+								<button id="rcSend" type="button" disabled="disabled" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 									<b>Send<br>(AR)
 									</b>
 								</button>
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<button id="rcClearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 									<b>Clear<br>all()
 									</b>
 								</button>
@@ -205,9 +170,9 @@
 					</div>
 					<div class="col-lg-2 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Report</div>
+							<div class="titleColor fw-bolder rounded-top">Report</div>
 							<div class="row m-0">
-								<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
+								<button id="rcExport" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
 									<b>Export<br>excel()
 									</b>
 								</button>
@@ -218,13 +183,28 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-6 col-lg-3 p-0">
-		<!-- 紀錄面板 -->
-		<div id="report_c_history" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_history_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+	<div class="col-lg-4 p-0">
+		<!-- 條件清單面板 -->
+		<div id="rcQueryList" class="col-12 p-1 ">
+			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcQueryListOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div id="report_c_history_open" class="row m-0 collapse show">
+			<div id="rcQueryListOpen" class="row m-0 collapse show">
+				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Query list </b>
+				<div class="col p-1 m-0 border border-primary shadow-sm justify-content-between">
+					<div id="rcQueryOneEx" class="d-none row m-0 p-1 border border-warning">
+						<div class="col-11 p-0 m-0">XXXX Where XXXX</div>
+						<i class="btn btn-outline-danger p-0 bi bi-x-lg" style="width: 24px; height: 24px;"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 紀錄面板 -->
+		<div id="rcHistory" class="col-12 p-1">
+			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcHistoryOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			</div>
+			<div id="rcHistoryOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> History </b>
 				<div class="col border border-primary justify-content-around row m-0 p-1 overflow-auto" style="max-height: 80vh;">
 					<button type="button" class="lh-1 col-11 p-1 m-1 btn btn-sm btn-outline-primary">
@@ -237,25 +217,22 @@
 	</div>
 	<div class="col-12 p-0">
 		<!-- 報告面板 -->
-		<div id="report_c_report_list" class="col-12 p-1">
+		<div id="rcReport" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#report_c_report_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcReportOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div id="report_c_report_list_open" class="row m-0 collapse show">
+			<div id="rcReportOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Report </b>
-				<table class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<table id="rcReportExcel" class=" col m-0 p-0 border border-primary  table table-striped table-hover 
+				table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 					<thead class="table-primary">
-						<tr>
-							<th class="fixed_cell_1" style="min-width: 1000px;">First</th>
-							<th style="min-width: 1000px;">Last</th>
-							<th style="min-width: 1000px;">Handle</th>
+						<tr id="reportTitleList">
+							<th class="exReportTitle d-none" style="min-width: 100px;">First</th>
 						</tr>
 					</thead>
 					<tbody class="table-white">
-						<tr>
-							<td class="fixed_cell_1" style="max-width: 1000px">Mark</td>
-							<td style="max-width: 1000px">Otto</td>
-							<td style="max-width: 1000px">@mdo</td>
+						<tr id="reportValueList" class="d-none">
+							<td class="exReportVal d-none" style="max-width: 100px">Mark</td>
 						</tr>
 					</tbody>
 				</table>
@@ -269,13 +246,310 @@
 report={
 	//資料
 	data:{
-		
+		searchSet:{},
+		rcQueryNumber:1,
+		entityJsons:[],
 	},	
 	//方法
 	methods:{
 		create(){
 			//Step1.初始化
 			console.log("report.html(created)");
+			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+			report.data.searchSet = searchSetJson['searchSet'];
+			report.data.entityDateTime = main.resq_data['entityDateTime'];
+			console.log(searchSetJson);
+			//Step1.查詢按鍵-排序
+			var resultThead = searchSetJson['resultThead'];
+			resultThead = main.methods.orderedSort(resultThead);
+			//choose table cell && 
+			var check1=true;
+			Object.keys(resultThead).forEach(function(k){
+				//如果隱藏
+				if(!resultThead[k].show==0){
+					//exReportTitle.addClass('d-none');
+					//exReportVal.addClass('d-none');
+					//複製格式
+					var itemBtn = $('#exReportItemList .exItemBtn').clone();
+					var exReportTitle =  $('#reportTitleList .exReportTitle').clone();
+					var exReportVal =  $('#reportValueList .exReportVal').clone();
+					//條件按鈕
+					itemBtn.addClass("itemBtn");
+					itemBtn.removeClass("exItemBtn");
+					itemBtn.removeClass("d-none");
+					itemBtn.find(".itemBtnCell").text("("+resultThead[k].cellName+")");
+					itemBtn.attr('title',resultThead[k].cellName);
+					//報表欄位
+					exReportTitle.removeClass("exReportTitle");
+					exReportTitle.removeClass("d-none");
+					exReportVal.removeClass("exReportVal");
+					exReportVal.removeClass("d-none");
+					
+					//固定第一格式
+					if(check1 && resultThead[k].show==1){
+						check1=false;
+						exReportTitle.addClass('fixedC1');
+						exReportVal.addClass('fixedC1');
+					}
+					
+					//如果有翻譯
+					if(resultThead[k].cellLanguage!=''){
+						itemBtn.find(".itemBtnShow").text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						exReportTitle.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						exReportTitle.css('minWidth',resultThead[k].width+"px");
+						exReportVal.text("");
+						exReportVal.css('maxWidth',resultThead[k].width+"px");
+					}else{
+						itemBtn.find(".itemBtnShow").text(resultThead[k].cellName);
+						exReportTitle.find(".itemBtnShow").text(resultThead[k].cellName);
+						exReportTitle.css('minWidth',resultThead[k].width+"px");
+						exReportVal.css('maxWidth',resultThead[k].width+"px");
+					}
+					
+						
+					itemBtn.appendTo('#exReportItemList');
+					exReportVal.addClass(resultThead[k].cellName);
+					exReportVal.appendTo('#reportValueList');
+					exReportTitle.addClass(resultThead[k].cellName);
+					exReportTitle.appendTo('#reportTitleList');
+				}
+			});
+			//==========================監聽==========================
+			//選擇欄位
+			$(document).off("click", "#rcCellOpen button");
+			$(document).on("click", "#rcCellOpen button", function () {
+				//console.log( $(this).attr('title'));
+				$('#rcCellName').attr('title',$(this).attr('title'));
+				$('#rcCellName').val($(this).find('.itemBtnShow').text());
+				$('#rcAddQuery').removeAttr('disabled');
+			});
+			//選擇類型
+			$(document).off("change", "#rcValueType");
+			$(document).on("change", "#rcValueType", function () {
+				// console.log( $(this).val());
+				 $('.rcValues').addClass('d-none');
+				 $('.rcValues').val('');
+				 switch($(this).val()){ 
+				 case 'text':
+					 $('#rcValueText').removeClass('d-none');
+					 break;
+				 case 'number':
+					 $('#rcValueNumber').removeClass('d-none');
+					 break;
+				 case 'dateTime':
+					 $('#rcValueDateTime').removeClass('d-none');
+					 break;
+				 }
+			//時間格式
+		    report.methods.datetimepickerDate(); 
+			});
+			//添加條件
+			$(document).off("click", "#rcAddQuery");
+			$(document).on("click", "#rcAddQuery", function () {
+				//console.log( $(this).val());
+				if($('#rcCellName').val()!=""){
+					var rcCellTitle = $('#rcCellName').attr('title');
+					var rcCellName = $('#rcCellName').val();
+					var rcWhereTitle = $( "#rcWhere option:selected" ).text();
+					var rcWhereValue = $( "#rcWhere option:selected" ).val();
+					var rcValue = "";
+					//Value type?
+					if(!$('#rcValueText').hasClass('d-none')){
+						rcValue = $('#rcValueText').val();
+					}else if(!$('#rcValueNumber').hasClass('d-none')){
+						rcValue = $('#rcValueNumber').val();
+					}else if(!$('#rcValueDateTime').hasClass('d-none')){
+						rcValue = $('#rcValueDateTime').val();
+					}
+					//查詢條件
+					var queryList = rcCellName+' '+rcWhereTitle+' '+rcValue;
+					var queryListValue = rcCellTitle+'<_>'+rcWhereValue+'<_>'+rcValue;
+					//KEY
+					report.data.rcQueryNumber++;
+					var rcQueryNumber = report.data.rcQueryNumber;
+					rcQueryOneEx = $('#rcQueryOneEx').clone();
+					rcQueryOneEx.removeClass('d-none');
+					rcQueryOneEx.attr("id","rcQueryOne_"+rcQueryNumber);
+					rcQueryOneEx.find(".bi-x-lg").attr('title',"rcQueryOne_"+rcQueryNumber);
+					rcQueryOneEx.find("div").text(queryList);
+					rcQueryOneEx.find("div").addClass("rcQuerySend");
+					rcQueryOneEx.find("div").attr('title',queryListValue);
+					rcQueryOneEx.insertAfter('#rcQueryOneEx');
+					//還原
+					$('#rcCellName').val('');
+					$('#rcValueText').val('');
+					//開放
+					$('#rcAddQuery').attr('disabled','disabled');
+					$('#rcSend').removeAttr('disabled');
+				}
+			});
+			//移除條件
+			$(document).off("click", "#rcClearQuery");
+			$(document).on("click", "#rcClearQuery", function () {
+				//console.log( $(this).val());
+				$('#rcQueryListOpen .bi-x-lg').trigger("click");				
+			});
+			//清除所有
+			$(document).off("click", "#rcClearAll");
+			$(document).on("click", "#rcClearAll", function () {
+				//console.log( $(this).val());
+				$('#rcQueryListOpen .bi-x-lg').trigger("click");	
+				$('#rcAddQuery').attr('disabled','disabled');
+				$('#rcSend').attr('disabled','disabled');
+				$('.rcRe').remove();
+				$('#rcCellName').text('').attr('title','');
+				$('#rcValueText').text('');
+			});
+			//清除特定
+			$(document).off("click", "#rcQueryList .bi-x-lg");
+			$(document).on("click", "#rcQueryList .bi-x-lg", function () {
+				//console.log( $(this).attr('title'));
+				$('#'+$(this).attr('title')).remove();
+			});
+			//監聽-查詢(促發)
+			$(document).off("keyup", ".rcValues ");
+			$(document).on("keyup", ".rcValues ", function (e) {
+				 if (e.key === 'Enter' || e.keyCode === 13) {
+					 $(e.currentTarget).select();
+					 $("#rcAddQuery").trigger( "click" );
+				 }
+			});
+			//傳送條件
+			$(document).off("click", "#rcSend");
+			$(document).on("click", "#rcSend", function () {
+				//console.log( $(this).val());
+				report.methods.reportSend();
+			});
+			//資料匯出
+			$(document).off("click", "#rcExport");
+			$(document).on("click", "#rcExport", function () {
+				//https://github.com/JackGit/table2excel.js
+				//設置
+				var options = {
+					workbook: {
+						views: [{
+							x: 0, y: 0, width: 10000, height: 20000,
+							firstSheet: 0, activeTab: 1, visibility: 'visible'
+						}]
+					},
+					widthRatio: .14,//寬度比例
+						plugins: [
+							Table2Excel.plugins.fontPlugin,
+							Table2Excel.plugins.fillPlugin,
+							Table2Excel.plugins.formPlugin,
+							Table2Excel.plugins.alignmentPlugin,
+							Table2Excel.plugins.hyperlinkPlugin,
+							Table2Excel.plugins.autoWidthPlugin,
+							{
+								workbookCreated ({ workbook, tables }) {
+									//創建時(Excel)
+								},worksheetCreated ({ workbook, tables, worksheet, table }) {
+									//創建時(分頁簿)
+									//console.log(tables);
+								},workcellCreated ({ workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange }) {
+						  			//創建時(每一格欄位)-呼叫
+						  			//console.log(cell);
+						  		},worksheetCompleted ({ workbook, tables, worksheet, table }) {
+							    	//完成時-呼叫
+								    //worksheet.getRow(1).hidden = true//隱藏第一筆
+								    worksheet.getColumn(1).hidden = true//隱藏第一行
+						    	}
+						  	},
+						]
+					}
+				
+				const table2Excel = new Table2Excel('#rcReportExcel',options);//id or class or table
+				table2Excel.export($('#nav_functional_unit').text(), 'xlsx');//檔案名稱+副檔名
+			
+			});
+			
+			
+			//時間格式
+            report.methods.datetimepickerDate();
+		},
+		datetimepickerDate(){
+			//日期時間格式
+			$('#report_c .datetimepicker_date').datetimepicker({
+				format: 'yyyy-mm-dd hh:ii:00',
+				pickerPosition: 'bottom-right',
+				//minView:1,
+				// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
+				minuteStep: 30,
+				autoclose: true,
+				endDate: '+1d',
+				datesDisabled: '+1d',
+				todayBtn: true,
+				bootcssVer:5,
+				//......可以同上項目代碼自定義設置
+			});
+			//時間格式
+            $('#report_c .datetimepicker_time').datetimepicker({
+                format: 'hh:ii',
+                startView: 1,
+                minuteStep: 30,
+                pickDate: false,
+                autoclose: true,
+                timeFormat: 'hh:mm',
+            });
+		},
+		//==========================傳送資料==========================
+		reportSend(){
+			var data={};
+			var req_data={};
+			var entityJson=[];
+			//查詢
+			if($("#rcQueryListOpen .rcQuerySend").length>0){
+				$("#rcQueryListOpen .rcQuerySend").each(function( index ) {
+					console.log(index+" : "+$(this).attr("title"));
+					entityJson.push($(this).attr("title"));
+				});
+				data['entityReportJson'] = JSON.stringify(entityJson);
+				data['callBackFunction'] = "report";
+				//包裝
+				req_data['data'] = data;
+				req_data['url'] = "system_config.basil.ARR";
+				req_data['type'] = "POST";
+				main.methods.ajaxSend(req_data);				
+			}
+		},
+		reportReturn(){
+			//查詢回傳
+			console.log("reportReturn");
+			console.log()
+			//Step5.帶入資料
+			if(main.resq_data['entityJson']!=""){
+				report.data.entityJsons = JSON.parse(main.resq_data['entityJson']);
+				console.log(report.data.entityJsons);
+				report.methods.reportReLoad();
+			}
+		},
+		reportReLoad(){
+			//資料處理
+			$('.rcRe').remove();
+			var entityJsons = report.data.entityJsons;
+			for(var x = 0 ; x < entityJsons.length ;x++){
+				var entity = entityJsons[x];//1筆資料
+				var entityDateTime =  report.data.entityDateTime;
+				var reportValueList = $('#reportValueList').clone();
+				reportValueList.attr('id','');
+				reportValueList.removeClass("d-none");
+				reportValueList.addClass("rcRe");
+				//每個資料欄位
+				Object.keys(entity).forEach(function(k){
+					//是否時間格式?
+					if(entityDateTime.indexOf(k)>=0){
+						var dF = new Date(entity[k]);
+						var dateF = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+						reportValueList.find('.'+k).text(dateF);
+					}else{
+						reportValueList.find('.'+k).text(entity[k]);
+					}
+				});
+				$('#reportValueList').before(reportValueList);
+				
+				
+			}
+			
 			
 		},
 		destroy() {

@@ -18,6 +18,8 @@ public class PackageBean {
 	// 可能是任何的型別->先轉成JSON Array->ToString->依照不同單元所帶入
 	private String entityDetailJson;
 	private String entityDetailIKeyGKey;// Key名稱_GKey名稱Ex:suid_sugid
+	// 報告用
+	private String entityReportJson;
 	// 可能是時間格式
 	private String entityDateTime;
 
@@ -243,5 +245,13 @@ public class PackageBean {
 
 	public void setEntityFormatJson(String entityFormatJson) {
 		this.entityFormatJson = entityFormatJson;
+	}
+
+	public String getEntityReportJson() {
+		return entityReportJson;
+	}
+
+	public void setEntityReportJson(String entityReportJson) {
+		this.entityReportJson = entityReportJson;
 	}
 }

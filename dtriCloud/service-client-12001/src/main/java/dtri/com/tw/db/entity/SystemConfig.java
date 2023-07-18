@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -65,9 +63,10 @@ public class SystemConfig {
 		this.scname = "";
 		this.scgname = "";
 		this.scvalue = "";
-
+		// 前端格式-修改/查詢用(翻譯與欄位)
 		this.setSysmdatestart(null);
 		this.setSysmdateend(null);
+		this.scgid = null;
 	}
 
 	// 共用型
@@ -99,8 +98,6 @@ public class SystemConfig {
 	@SequenceGenerator(name = "system_config_seq", sequenceName = "system_config_seq", allocationSize = 1)
 	@Column(name = "sc_id")
 	private Long scid;
-
-
 	@Column(name = "sc_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String scname;
 	@Column(name = "sc_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -108,16 +105,13 @@ public class SystemConfig {
 	@Column(name = "sc_value", nullable = false, columnDefinition = "text default ''")
 	private String scvalue;
 
-	@JsonManagedReference
 	@JsonIgnore
 	@OneToMany(mappedBy = "systemConfig")
 	private List<SystemConfig> systemConfigs;
-	
-	@JsonBackReference
-	@ManyToOne(targetEntity = SystemConfig.class, fetch = FetchType.EAGER)
+
+	@ManyToOne(targetEntity = SystemConfig.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "sc_g_id")
 	private SystemConfig systemConfig;
-
 
 	// 前端格式-修改/查詢用(翻譯與欄位)
 	@Transient
@@ -126,7 +120,7 @@ public class SystemConfig {
 	private Date sysmdateend;
 	@Transient
 	private Long scgid;
-	
+
 	public Date getSyscdate() {
 		return syscdate;
 	}

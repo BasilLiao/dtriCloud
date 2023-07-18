@@ -67,7 +67,7 @@
 		<div class="row m-0 collapse show" id="search_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
 			<div id="searchItem" class="col border border-primary  row m-0 p-0 shadow-sm">
-				<div class="searchTextEx col-md-1 p-1 d-none">
+				<div class="col-6 searchTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
@@ -75,7 +75,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="searchSelectEx col-md-1 p-1 d-none">
+				<div class="col-6 searchSelectEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
@@ -150,11 +150,11 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
-							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Send<br>(AR)
 								</b>
 							</button>
-							<button id="btn_clearAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+							<button id="btn_clearAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -262,7 +262,7 @@ search={
 			total:10,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:5,//每頁數量(1-20)
+			pageSize:20,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityIKey:"",//ID
@@ -281,7 +281,7 @@ search={
 			search.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 			//查詢項目 
 			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
-			console.log(searchSetJson);
+			//console.log(searchSetJson);
 			//資料內容
 			search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
 			search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
@@ -300,8 +300,8 @@ search={
 			Object.keys(resultThead).forEach(function(k){
 				//console.log(k + ' - ' + resultThead[k]);
 				//複製格式
-				var exTheadth = $($('#search_cr_open .exTheadth').clone());
-				var exTbodytd = $($('#search_cr_open .exTbodytd').clone());
+				var exTheadth = $('#search_cr_open .exTheadth').clone();
+				var exTbodytd = $('#search_cr_open .exTbodytd').clone();
 				exTheadth.removeClass('exTheadth');
 				exTheadth.removeClass('d-none')
 				exTheadth.addClass('titTheadth');
@@ -336,8 +336,9 @@ search={
 				//添加
 				$('#search_cr_open .exTheadth').before(exTheadth);
 				$('#search_cr_open .exTbodytd').before(exTbodytd);
-			});			
+			});		
 			//Step2.查詢結果標題(細節)-資料
+			check1=true;
 			if(JSON.stringify(resultDetailThead)=='{}'){
 				$('#btn_detail').addClass('disabled');
 				$('#search_dcr').addClass('d-none');
@@ -475,6 +476,8 @@ search={
 					break;
 				}
 			}
+			//時間格式
+            search.methods.datetimepickerDate();
 			//Step5.帶入資料
 			search.methods.searchReLoad();
 			
@@ -762,7 +765,11 @@ search={
 					search.methods.searchSend(batch+1);
 				}
 			});
+			//時間格式
+            search.methods.datetimepickerDate();
 			
+		},
+		datetimepickerDate(){
 			//日期時間格式
 			$('#search_c .datetimepicker_date').datetimepicker({
 				format: 'yyyy-mm-dd hh:ii:00',
@@ -858,6 +865,8 @@ search={
 			req_data['url'] = "system_config.basil.AR";
 			req_data['type'] = "POST";
 			main.methods.ajaxSend(req_data);
+			//時間格式
+            search.methods.datetimepickerDate();
 		},
 		//==========================資料載入==========================
 		searchReLoad(){
@@ -922,6 +931,8 @@ search={
 				search.data.searchPageSet.total = searchPageSet['total']
 				search.data.searchPageSet.batch = searchPageSet['batch'];
 				search.data.searchPageSet.pageNew=1; //單前頁碼(1-50)
+				search.data.marks={},//有選取的IKeyGKey
+				search.data.markDetails={},//有選取的IKeyGKey
 				$("#numberPage").val(1);
 				$('#btn_pageD').removeClass("disabled");
 				$('#btn_pageU').removeClass("disabled");

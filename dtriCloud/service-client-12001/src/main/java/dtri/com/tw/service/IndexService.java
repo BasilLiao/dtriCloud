@@ -120,7 +120,7 @@ public class IndexService {
 		});
 		// 異常錯誤
 		if (user2 != null) {
-			throw new CloudExceptionService(ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 		}
 		return packageBean;
 	}
