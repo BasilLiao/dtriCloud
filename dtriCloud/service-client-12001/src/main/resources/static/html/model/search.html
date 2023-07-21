@@ -96,7 +96,7 @@
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-md-4 p-1">
+				<div class="col-md-5 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
@@ -124,6 +124,10 @@
 								<b>Delete<br>(DD)
 								</b>
 							</button>
+							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Mark<br>cancel()
+								</b>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -131,10 +135,7 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Special</div>
 						<div class="row m-0">
-							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Mark<br>cancel()
-								</b>
-							</button>
+							
 							<button id="btn_printerForm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Printer<br>form()
 								</b>
@@ -528,8 +529,8 @@ search={
 						};
 					}
 				}
-				console.log(search.data.marks);	
-				console.log(search.data.markDetails);
+				//console.log(search.data.marks);	
+				//console.log(search.data.markDetails);
 			});
 			//監聽-選取資料
 			$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
@@ -549,7 +550,7 @@ search={
 						};
 					}
 				}
-				console.log(search.data.markDetails);				
+				//console.log(search.data.markDetails);				
 			});
 			//監聽-全選資料
 			$(document).off("click", "#search_c #exthAll");
@@ -600,7 +601,7 @@ search={
 					var entityIKey = search.data.entityIKey;
 					var entityGKey = search.data.entityGKey;
 					var entityDateTime =  search.data.entityDateTime;
-					console.log(entityDetailJsons);
+					//console.log(entityDetailJsons);
 					//Step1.查詢細節內容-格式
 					$(".valTbodyTrD").remove();
 					
@@ -690,12 +691,14 @@ search={
 			$(document).off("click", "#search_c #btn_printerForm");
 			$(document).on("click", "#search_c #btn_printerForm", function (event) {
 				console.log("btn_printerForm");
+				search.methods.searchToPrint(null);
 				
 			});
 			//監聽-比對
 			$(document).off("click", "#search_c #btn_compare");
 			$(document).on("click", "#search_c #btn_compare", function (event) {
 				console.log("btn_compare");
+				search.methods.searchToCompare(null);
 				
 			});
 			//監聽-查詢
@@ -837,7 +840,49 @@ search={
 				}
 			});
 			
-			modify.methods.modify(order,dataHeader,dataBody,entityDateTime,entityIKey,entityGKey); 
+			modify.methods.modify(order,dataHeader,dataBody); 
+		},
+		searchToPrint(order){
+			//打印資料
+			print.methods.print(order); 
+		},
+		searchToCompare(order){
+			//比對資料 
+			//是否marks?markDetails?
+			var entityJsons = search.data.searchPageSet.entityJsons;
+			var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
+			var marks = search.data.marks;
+			var markDetails = search.data.markDetails;
+			var entityIKey = search.data.entityIKey;
+			var entityGKey = search.data.entityGKey;
+			var entityDateTime = search.data.entityDateTime;
+			var dataHeader = [];
+			var dataBody =[];
+			console.log(JSON.stringify(marks)); 
+			if(JSON.stringify(marks)=="{}" && JSON.stringify(markDetails)=="{}"){
+				return null;
+			}
+			//Data
+			Object.keys(marks).forEach(function(ik){
+				var ikey = ik.split("_")[0];
+				var gkey = ik.split("_")[1];
+				for(var en=0;en<entityJsons.length;en++){
+					if(entityJsons[en][entityIKey]==ikey){
+						dataHeader.push(entityJsons[en]);
+					}
+				}
+			});
+			//Details
+			Object.keys(markDetails).forEach(function(dk){
+				var ikey = dk.split("_")[0];
+				var gkey = dk.split("_")[1];
+				for(var en=0;en<entityDetailJsons.length;en++){
+					if(entityDetailJsons[en][entityIKey]==ikey){
+						dataBody.push(entityDetailJsons[en]);
+					}
+				}
+			});
+			compare.methods.compare(dataHeader,dataBody,entityDateTime,entityIKey,entityGKey); 
 		},
 		//==========================傳送資料==========================
 		searchSend(batch){

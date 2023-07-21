@@ -13,7 +13,7 @@
 	overflow: hidden;
 }
 /*Table 表格固定*/
-#compare_c .fixed_cell_1 {
+#compare_c .fixedC1 {
 	left: 0px;
 	position: sticky;
 }
@@ -23,14 +23,14 @@
 	padding: 2px;
 }
 /*Table 表格外框線*/
-#compare_c #compare_c_result table {
-	min-height: 650px;
+#compare_c #cCompareData table {
+	min-height: 240px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
-#compare_c #compare_c_result_detail table {
-	max-height: 650px;
+#compare_c #cCompareDetail table {
+	min-height: 240px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -56,22 +56,30 @@
 </style>
 <div id="compare_c">
 	<!-- 控制面板 -->
-	<div id="compare_c_controller" class="col-12 p-1">
+	<div id="cCcontroller" class="col-12 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#update_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="update_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-md-2 p-1">
+				<div class="col-md-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Check different</div>
 						<div class="row m-0">
-							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Compare<br>(*)
+							<button id="compareData" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-info">
+								<b>Compare<br>Data(*)
 								</b>
 							</button>
-							<button type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+							<button id="compareDetail" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
+								<b>Compare<br>Detail(*)
+								</b>
+							</button>
+							<button id="compareClearColor" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Clear<br>color()
+								</b>
+							</button>
+							<button id="compareClearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -82,41 +90,54 @@
 		</div>
 	</div>
 	<!-- 比對結果 -->
-	<div id="compare_c_result" class="col-12 m-0 p-1">
+	<div id="cCompareData" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#compare_c_result_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#cCompareDataOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="compare_c_result_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
-			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+		<div id="cCompareDataOpen" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Compare Data </b>
+			<table id="cCompareDataList" class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary">
-					<tr>
-						<th>VS</th>
-						<th class="fixed_cell_1">工單號</th>
-						<th>訂單號</th>
-						<th>產品號</th>
+					<tr id="compareDataLT">
+						<th class="fixedC1" style="min-width: 40px; left: 0px">VS</th>
+						<th class="exCompareDataT d-none" style="min-width: 100px;">First</th>
 					</tr>
 				</thead>
 				<tbody class="table-white">
-					<tr>
-						<td class="p-1">
+					<tr class="d-none" id="exCDataVL">
+						<td class="fixedC1" style="min-width: 40px; left: 0px">
 							<div>
-								<input type="radio" name="compare_c_radio" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input type="radio" name="cCompareDataR" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</td>
-						<td class="p-1 fixed_cell_1">A511-123456789</td>
-						<td>DR1000</td>
-						<td>313TY</td>
+						<td class="exCompareDataV d-none"></td>
 					</tr>
-					<tr>
-						<td class="p-1">
-							<div>
-								<input type="radio" name="compare_c_radio" class="m-0 form-check-input checkbox_24 border border-dark">
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- 比對結果 -->
+	<div id="cCompareDetail" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#cCompareDetailOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div id="cCompareDetailOpen" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Compare Detail </b>
+			<table id="cCompareDetailList" class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary">
+					<tr id="compareDetailLT">
+						<th class="" style="min-width: 40px;">VS</th>
+						<th class="exCompareDetailT d-none m-0">
+							<div class="col p-0">
+								<input type="radio" name="cCompareDetailR" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
-						</td>
-						<td class="p-1 fixed_cell_1">A521-987654321</td>
-						<td class="p-1">DR1000</td>
-						<td class="p-1">212DT</td>
+							<div class="col p-0 titleName">First</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr id="compareDetailVL" class="">
+						<td colspan="5" class="fixedC1 exCDetailM" style="left: 0px;">M</td>
 					</tr>
 				</tbody>
 			</table>
@@ -129,19 +150,303 @@
 compare={
 	//資料
 	data:{
-		
+		searchSet:{},
+		entityDateTime:"",
+		datas:[],
+		details:[],
+		compareNb:0,
+		entityIKey:"",//ID
+		entityGKey:"",//GID
 	},	
 	//方法
 	methods:{
 		create(){
 			//Step1.初始化
 			console.log("compare.html(created)");
+			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+			compare.data.searchSet = searchSetJson['searchSet'];
+			compare.data.entityDateTime = main.resq_data['entityDateTime'];
+			compare.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+			compare.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 			
+			//console.log(searchSetJson);
+			//Step1.查詢按鍵-排序
+			var resultThead = searchSetJson['resultThead'];
+			var resultDetailThead = searchSetJson['resultDetailThead'];
+			resultThead = main.methods.orderedSort(resultThead);
+			resultDetailThead = main.methods.orderedSort(resultDetailThead);
+			//choose table cell && 
+			var check1=true;
+			Object.keys(resultThead).forEach(function(k){
+				//如果隱藏
+				if(!resultThead[k].show==0){
+					var exCompareDataT = $('#cCompareDataList .exCompareDataT').clone();
+					var exCompareDataV = $('#cCompareDataList .exCompareDataV').clone();
+					
+					//報表欄位
+					exCompareDataT.removeClass("exCompareDataT");
+					exCompareDataT.removeClass("d-none");
+					exCompareDataV.removeClass("exCompareDataV");
+					exCompareDataV.removeClass("d-none");
+					
+					//固定第一格式
+					if(check1 && resultThead[k].show==1){
+						check1=false;
+						exCompareDataT.addClass('fixedC1');
+						exCompareDataT.css('left','40px');
+						exCompareDataV.addClass('fixedC1');
+						exCompareDataV.css('left','40px');
+						
+					}
+					//如果有翻譯
+					if(resultThead[k].cellLanguage!=''){
+						exCompareDataT.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						exCompareDataT.css('minWidth',resultThead[k].width+"px");
+						exCompareDataV.css('minWidth',resultThead[k].width+"px");
+					}else{
+						exCompareDataT.find(".itemBtnShow").text(resultThead[k].cellName);
+						exCompareDataT.css('minWidth',resultThead[k].width+"px");
+						exCompareDataV.css('minWidth',resultThead[k].width+"px");
+					}
+					//串接添加
+					exCompareDataV.addClass(resultThead[k].cellName);
+					exCompareDataV.appendTo('#exCDataVL');
+					exCompareDataT.addClass(resultThead[k].cellName);
+					exCompareDataT.appendTo('#compareDataLT');
+				}
+			});
+			//Step2.標題(細節)-資料
+			Object.keys(resultDetailThead).forEach(function(k){
+				//如果隱藏
+				if(!resultThead[k].show==0){
+					//複製格式
+					var exCompareDetailT = $('#cCompareDetailList .exCompareDetailT').clone();
+					//報表欄位
+					exCompareDetailT.removeClass("exCompareDetailT");
+					exCompareDetailT.removeClass("d-none");
+					//如果有翻譯
+					if(resultDetailThead[k].cellLanguage!=''){
+						exCompareDetailT.find('.titleName').text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						exCompareDetailT.css('minWidth',resultThead[k].width+"px");
+					}else{
+						exCompareDetailT.find('.titleName').text(resultThead[k].cellName);
+						exCompareDetailT.css('minWidth',resultThead[k].width+"px");
+					}
+					//添加
+					//Detail
+					exCompareDetailT.addClass(resultThead[k].cellName);
+					exCompareDetailT.find('input').attr('title',resultThead[k].cellName);
+					exCompareDetailT.appendTo('#compareDetailLT');
+				}
+			});
+			//==========================監聽==========================
+			//compareData
+			$(document).off("click", "#compareData");
+			$(document).on("click", "#compareData", function (event) {
+				console.log("compareData");
+				$('#cCompareDataList td').removeClass('bg-warning');
+				//取得選取者
+				var compareM="";
+				$('#cCompareDataList input').each(function(){
+					if($(this).prop( "checked")==true){ 
+						compareM = $(this).attr('title');
+					}
+				});
+				console.log(compareM);
+				//比對其選取者
+				if(compareM!=""){
+					$('#cCompareDataList tbody tr').each(function(){
+						//不是比對者-之外
+						if(!$(this).hasClass(compareM)){ 
+							//每一格欄位
+							for(var pk =1;pk<$(this).find('td').length;pk++){
+								console.log($(this).find('td')[pk].innerText)
+								if($(this).find('td')[pk].innerText != $('#cCompareDataList .compareNb_'+compareM+' td')[pk].innerText){
+									$($(this).find('td')[pk]).addClass('bg-warning');
+								}
+							}
+						}
+					});
+				}
+			});
+			//compareDetail
+			$(document).off("click", "#compareDetail");
+			$(document).on("click", "#compareDetail", function (event) {
+				console.log("compareDetail");
+				//資料準備
+				var entityIKey = compare.data.entityIKey;
+				var entityGKey = compare.data.entityGKey;
+				var dateTime = compare.data.entityDateTime;
+				var compareM="";//主要選擇
+				var compareDM="";//次要比對欄位
+				//Data-選取者
+				$('#cCompareDataList input').each(function(){
+					if($(this).prop( "checked")==true){ 
+						compareM = $(this).attr('title');
+					}
+				});
+				//Detail-選取者
+				$('#compareDetailLT input').each(function(){
+					if($(this).prop( "checked")==true){ 
+						compareDM = $(this).attr('title');
+					}
+				});
+				
+				var ikeyM = compareM.split("_")[0];
+				var gkeyM = compareM.split("_")[1];
+				//Details-主要內容
+				if(compareDM!="" && compareM!=""){
+					$('.cDetailRVL').remove();
+					Object.keys(compare.data.details).forEach(function(dk){
+						if(compare.data.details[dk][entityGKey] == gkeyM){	
+							$('.cDetailO_'+gkeyM).addClass('d-none');				
+							var compareDetailVL = $('#compareDetailVL').clone();
+							compareDetailVL.find('td').text('');
+							compareDetailVL.removeClass('d-none');
+							compareDetailVL.attr('id','');
+							compareDetailVL.addClass('cDetailRVL');
+							//是否時間格式?
+							var value = compare.data.details[dk][compareDM];
+							if(dateTime.indexOf(compareDM)>=0){
+								 var dF = new Date(value);
+								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
+								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							}
+							//寫入資料
+							compareDetailVL.find('.exCDetailM').text(value);
+							compareDetailVL.find('.exCDetailM').removeClass('d-none');
+							compareDetailVL.insertAfter('#compareDetailVL');
+							//console.log(compare.data.details[dk]);
+						}else{
+							$('.cDetailO_'+compare.data.details[dk][entityGKey]).removeClass('d-none');
+						}
+					});
+					//Details-次要內容
+					Object.keys(compare.data.details).forEach(function(dk){
+						if(compare.data.details[dk][entityGKey] != gkeyM){	
+
+							var gkey = compare.data.details[dk][entityGKey];
+							var value = compare.data.details[dk][compareDM];
+							//是否時間格式?
+							var value = compare.data.details[dk][compareDM];
+							if(dateTime.indexOf(compareDM)>=0){
+								 var dF = new Date(value);
+								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
+								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							}
+							var textCheck = true;
+							//console.log(compare.data.details[dk]);
+							//看看是否欄位為空->空則填入
+							$('.cDetailRVL .cDetailO_'+gkey).each(function(){
+								if($(this).text()=="" && textCheck){ 
+									textCheck = false;
+									$(this).text(value);
+								}
+							});
+						}
+					});
+					//比對不同資料時
+					$('.cDetailRVL').each(function(){
+						var exCDetailM="";
+						$(this).find('td').each(function(){
+							if($(this).hasClass('exCDetailM')){
+								exCDetailM = $(this).text();
+							}else if(!$(this).hasClass('d-none')){
+								if( $(this).text() !=exCDetailM){
+									$(this).addClass('bg-warning');
+								}
+							}
+							
+						});
+					});
+				}
+			});
+			
+			//compareClearColor
+			$(document).off("click", "#compareClearColor");
+			$(document).on("click", "#compareClearColor", function (event) {
+				console.log("compareClearColor");
+				$('#cCompareDataList td').removeClass('bg-warning');
+				$('#cCompareDetailList td').removeClass('bg-warning');
+				
+			});
+			//compareClearAll
+			$(document).off("click", "#compareClearAll");
+			$(document).on("click", "#compareClearAll", function (event) {
+				console.log("compareClearAll");
+				$('.cDataVLM').remove();
+				$('.cDetailRVL').remove();
+				$('.cDetailOs').remove();
+
+				$('#cCompareDataList tbody td').removeClass('bg-warning');
+				$('#cCompareDetailList tbody td').removeClass('bg-warning');
+				compare.data.datas=[];
+				compare.data.details=[];
+				compare.data.compareNb=0;
+			});
+		},
+		//比對資料
+		compare(datas,details,dateTime){
+			$('#compare_title').trigger('click');
+			var entityIKey = compare.data.entityIKey;
+			var entityGKey = compare.data.entityGKey;
+			console.log(datas);
+			console.log(details);
+			//Data
+			if(datas.length>0){
+				for(var d=0;d<datas.length;d++){
+					var exCDataVL = $('#exCDataVL').clone();
+					exCDataVL.removeClass('d-none');
+					exCDataVL.addClass('cDataVLM');
+					exCDataVL.attr('id','');
+					var dataOne = datas[d];
+					var iKey = "";
+					var gKey = "";
+					compare.data.datas.push(dataOne);
+					//每個欄位 >對應< 資料
+					Object.keys(dataOne).forEach(function(k){
+						//是否IKEY?
+						if(entityIKey==k){iKey = dataOne[k];}	
+						//是否GKEY?
+						if(entityGKey==k){gKey = dataOne[k];}	
+						//是否時間格式?
+						var value = dataOne[k];
+						if(dateTime.indexOf(k)>=0){
+							 var dF = new Date(dataOne[k]);
+							 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
+							 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+						}
+						exCDataVL.find("."+k).text(value);
+					});
+					var compareNb = (compare.data.compareNb++);
+					exCDataVL.find('input').attr('title',iKey+"_"+gKey);
+					exCDataVL.addClass('compareNb_'+iKey+"_"+gKey);
+					exCDataVL.insertAfter("#exCDataVL");
+					//Detail
+					var exCDetailM = $('.exCDetailM').clone(); 
+					exCDetailM.removeClass('exCDetailM').removeClass('fixedC1').css('left','');
+					exCDetailM.addClass('cDetailO_'+gKey);
+					exCDetailM.addClass('cDetailOs');
+					exCDetailM.attr('title','cDetailO_'+gKey);
+					exCDetailM.text("GID:"+gKey);
+					exCDetailM.insertAfter(".exCDetailM");
+				}
+				
+			}
+			//Detail
+			if(details.length>0){
+				for(var d=0;d<details.length;d++){
+					var detailOne = details[d];
+					compare.data.details.push(detailOne);
+				}
+			}
 		},
 		destroy() {
 			//銷毀
 			console.log("compare.html(destroy)");
-			
+			$(document).off("click", "#compareData");
+			$(document).off("click", "#compareDetail");
+			$(document).off("click", "#compareClearAll");
 		},
 	},	
 };

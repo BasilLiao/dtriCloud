@@ -23,6 +23,10 @@ print={
 			console.log("print.html(created)");
 			
 		},
+		print(order){
+			$('#print_title').trigger('click');
+			
+		},
 		destroy() {
 			//銷毀
 			console.log("print.html(destroy)");

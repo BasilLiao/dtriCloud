@@ -13,15 +13,8 @@
 		<version>3.0.7</version>
 		<relativePath></relativePath>
 	</parent>
-	<!--<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-config-server</artifactId>
-		</dependency>
-	</dependencies>-->
 
-
-	<!-- 服務註冊與發現、配置管理、服務熔斷器、全鍊路監控、服務網關、負載均衡 -->
+	<!-- 全鍊路監控、配置管理、服務註冊與發現(Eureka)、服務熔斷器(Hystrix)、服務關聯(Zuul)、負載均衡(OpenFeign) -->
 	<!-- spring boot parent Java 17 + Spring Framework 6.0 + Spring Boot 3.0 +
 	Spring Cloud 2022 -->
 	<!-- 主體Spring Cloud 宣告聲明 統一微服務 -->
@@ -74,11 +67,15 @@
 	<modules>
 		<module>service-center-12000</module>
 		<module>service-client-12001</module>
-		<module>service-system-12010</module>
-		<module>service-system-12011</module>
-		<module>service-warehouse-12010</module>
-		<module>service-system-api-12011</module>
-		<module>service-system-dao-12012</module>
-		<module>service-system-tools-12013</module>
+		<module>service-system-class-12010</module>
+		<module>service-system-class-12011</module>
+		<module>service-client-openFeign-12002</module>
+		<module>service-loadBalance-12001</module>
+		<module>service-spring-loadBalance-12001</module>
+		<module>service-spring-center-12000</module>
+		<module>framework-center-eureka</module>
+		<module>framework-center-eureka-12000</module>
+		<module>framework-loadBalance-openFeign-120001</module>
+		<module>framework-loadBalance-openFeign-12001</module>
 	</modules>
 </project>

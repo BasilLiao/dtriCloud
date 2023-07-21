@@ -548,6 +548,7 @@ public class SystemConfigService {
 
 	/** 取得資料 */
 	// @Transactional
+	@SuppressWarnings("unchecked")
 	public PackageBean getReport(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
@@ -562,8 +563,8 @@ public class SystemConfigService {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("scg", "sc_g_");
 			cellName = cellName.replace("sc", "sc_");
+			cellName = cellName.replace("sc_g", "sc_g_");
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>").length == 2 ? "" : x.getAsString().split("<_>")[2];// 有可能空白
 
@@ -604,7 +605,7 @@ public class SystemConfigService {
 			if (key.indexOf("date") >= 0) {
 				// 時間格式?
 				query.setParameter(key, Fm_T.toDate(val));
-			} else if (key.indexOf("status") >= 0||key.indexOf("sort") >= 0) {
+			} else if (key.indexOf("status") >= 0 || key.indexOf("sort") >= 0) {
 				// 數字?
 				query.setParameter(key, Integer.parseInt(val));
 			} else {
@@ -615,8 +616,7 @@ public class SystemConfigService {
 		entitys = query.getResultList();
 		// 類別(細節模式)
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
-		ArrayList<SystemConfig> entityDetails = new ArrayList<>();
-		// 數量控管(細節模式)
+		// 修正資料
 		for (int s = 0; s < entitys.size(); s++) {
 			SystemConfig entityOne = entitys.get(s);
 			if (!entityOne.getSysheader()) {

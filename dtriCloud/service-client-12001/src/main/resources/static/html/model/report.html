@@ -24,7 +24,7 @@
 }
 /*Table 表格外框線*/
 #report_c #rcReport table {
-	min-height: 100px;
+	min-height: 210px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -172,7 +172,7 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Report</div>
 							<div class="row m-0">
-								<button id="rcExport" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
+								<button id="rcExport" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
 									<b>Export<br>excel()
 									</b>
 								</button>
@@ -249,6 +249,7 @@ report={
 		searchSet:{},
 		rcQueryNumber:1,
 		entityJsons:[],
+		entityDateTime:"",
 	},	
 	//方法
 	methods:{
@@ -258,7 +259,7 @@ report={
 			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
 			report.data.searchSet = searchSetJson['searchSet'];
 			report.data.entityDateTime = main.resq_data['entityDateTime'];
-			console.log(searchSetJson);
+			//console.log(searchSetJson);
 			//Step1.查詢按鍵-排序
 			var resultThead = searchSetJson['resultThead'];
 			resultThead = main.methods.orderedSort(resultThead);
@@ -305,8 +306,7 @@ report={
 						exReportTitle.css('minWidth',resultThead[k].width+"px");
 						exReportVal.css('maxWidth',resultThead[k].width+"px");
 					}
-					
-						
+					//串接添加
 					itemBtn.appendTo('#exReportItemList');
 					exReportVal.addClass(resultThead[k].cellName);
 					exReportVal.appendTo('#reportValueList');

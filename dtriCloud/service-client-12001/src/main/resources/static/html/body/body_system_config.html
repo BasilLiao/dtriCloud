@@ -103,13 +103,17 @@ body_index={
             	modify.methods.create();
             });
             //列印-模板
-            $("#body_system_config #print_tab").load("./html/model/print.html", function(){});
+            $("#body_system_config #print_tab").load("./html/model/print.html", function(){
+            	print.methods.create();
+            });
             //報告-模板
             $("#body_system_config #report_tab").load("./html/model/report.html", function(){
             	report.methods.create();
             });
             //比對-模板
-            $("#body_system_config #compare_tab").load("./html/model/compare.html", function(){});
+            $("#body_system_config #compare_tab").load("./html/model/compare.html", function(){
+            	compare.methods.create();
+            });
             //其他-模板
             $("#body_system_config #other_tab").load("./html/other/special.html", function(){});
 		},
