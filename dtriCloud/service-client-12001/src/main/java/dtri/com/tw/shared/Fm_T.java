@@ -1,4 +1,4 @@
-package dtri.com.tw.tools;
+package dtri.com.tw.shared;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

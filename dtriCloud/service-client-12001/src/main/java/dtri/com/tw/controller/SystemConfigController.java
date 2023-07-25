@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.SystemConfigService;
 import dtri.com.tw.service.feign.SystemConfigServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
@@ -22,8 +21,8 @@ public class SystemConfigController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
-	@Autowired
-	private SystemConfigService configService;
+//	@Autowired
+//	private SystemConfigService configService;
 	@Resource
 	SystemConfigServiceFeign configServiceFeign;
 
