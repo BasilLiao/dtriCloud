@@ -16,16 +16,18 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.bean.PackageBean;
 import dtri.com.tw.db.entity.SystemGroup;
 import dtri.com.tw.db.entity.SystemLanguageCell;
 import dtri.com.tw.db.entity.SystemUser;
 import dtri.com.tw.login.CustomerUserDetails;
 import dtri.com.tw.login.JwtUtilities;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
-import dtri.com.tw.service.CloudExceptionService.ErCode;
-import dtri.com.tw.service.CloudExceptionService.ErColor;
-import dtri.com.tw.service.CloudExceptionService.Lan;
+import dtri.com.tw.shared.CloudExceptionService;
+import dtri.com.tw.shared.CloudExceptionService.ErCode;
+import dtri.com.tw.shared.CloudExceptionService.ErColor;
+import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.PackageBean;
+import dtri.com.tw.shared.PackageService;
 
 @Service
 public class IndexService {

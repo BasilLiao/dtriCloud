@@ -317,6 +317,8 @@ modify={
 	data:{
 		entityDateTime:"",//時間欄位
 		entityFormatJson:"",//格式 
+		entityIKey:"",//KEY
+		entityGKey:"",//GKEY 
 	},	
 	//方法
 	methods:{
@@ -328,6 +330,8 @@ modify={
 			//console.log(searchSetJson['resultThead']);
 			modify.data.entityDateTime = main.resq_data['entityDateTime'];
 			modify.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
+			modify.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+			modify.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 			
 			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
 			var searchSet = searchSetJson['searchSet'];
@@ -780,7 +784,10 @@ modify={
 			
 		},
 		//==========================處理資料==========================
-		modify(order,datas,dataDetails,entityDateTime,ikey,gkey){
+		modify(order,datas,dataDetails,entityDateTime){
+			var entityDateTime = modify.data.entityDateTime;
+			var ikey = modify.data.entityIKey;
+			var gkey = modify.data.entityGKey;
 			console.log("=====order:"+order+"=====");
 			console.log(datas);
 			console.log(dataDetails);

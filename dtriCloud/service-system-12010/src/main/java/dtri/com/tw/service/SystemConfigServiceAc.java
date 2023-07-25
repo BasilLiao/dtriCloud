@@ -22,23 +22,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.shared.PackageBean;
-import dtri.com.tw.shared.PackageService;
 import dtri.com.tw.db.entity.SystemConfig;
 import dtri.com.tw.db.entity.SystemLanguageCell;
-import dtri.com.tw.db.entity.SystemUser;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.PackageBean;
+import dtri.com.tw.shared.PackageService;
 import dtri.com.tw.tools.Fm_T;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 @Service
-public class SystemConfigService {
+public class SystemConfigServiceAc {
 
 	@Autowired
 	private PackageService packageService;
@@ -53,7 +52,7 @@ public class SystemConfigService {
 	private EntityManager em;
 
 	/** 取得資料 */
-	public PackageBean getSearch(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean getSearch(PackageBean packageBean) throws Exception {
 		// ========================分頁設置========================
 		// Step1.批次分頁
 		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
@@ -61,6 +60,7 @@ public class SystemConfigService {
 		int batch = pageSetJson.get("batch").getAsInt();
 		int nbStart = total * batch;// 起始計數(細節模式)
 		int nbEnd = nbStart + total;// 終點計數(細節模式)
+		
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "systemConfig.scid"));
@@ -76,7 +76,7 @@ public class SystemConfigService {
 			ArrayList<SystemConfig> entitys = configDao.findAllByConfig(null, null, null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
-			if (detailMode) {
+			if (packageBean.getDetailMode()) {
 				// 類別(細節模式)
 				ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 				ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -116,7 +116,7 @@ public class SystemConfigService {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			if (detailMode) {
+			if (packageBean.getDetailMode()) {
 				ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllBySystemUser("system_config", 0, null);
 				languagesDetail.forEach(x -> {
 					mapLanguagesDetail.put(x.getSltarget(), x);
@@ -137,7 +137,7 @@ public class SystemConfigService {
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(resultDataTJsons, fields, exceptionCell, mapLanguages);
 			// 欄位翻譯(細節)
-			if (detailMode) {
+			if (packageBean.getDetailMode()) {
 				resultDetailTJsons = packageService.resultSet(resultDetailTJsons, fields, exceptionCell, mapLanguagesDetail);
 			}
 			// Step3-5. 建立查詢項目
@@ -173,7 +173,7 @@ public class SystemConfigService {
 					searchData.getScname(), searchData.getScgname(), //
 					searchData.getSysmdatestart(), searchData.getSysmdateend(), searchData.getSysstatus(), pageable);
 			// Step3-2.資料區分(一般/細節)
-			if (detailMode) {
+			if (packageBean.getDetailMode()) {
 				// 類別(細節模式)
 				ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 				ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -221,7 +221,7 @@ public class SystemConfigService {
 
 	/** 修改資料 */
 	@Transactional
-	public PackageBean setModify(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 		ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -268,7 +268,7 @@ public class SystemConfigService {
 			if (x.getScid() != null) {
 				SystemConfig entityDataOld = configDao.findAllByConfigByScgid(x.getScid()).get(0);
 				entityDataOld.setSyscdate(new Date());
-				entityDataOld.setSysmuser(systemUser.getSuaccount());
+				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysnote(x.getSysnote());
 				entityDataOld.setScgname(x.getScgname());
 				entityDataOld.setScname(x.getScgname());
@@ -279,11 +279,11 @@ public class SystemConfigService {
 					// 添加
 					if (y.getScgid() != null && y.getScid() == null) {
 						y.setSysmdate(new Date());
-						y.setSysmuser(systemUser.getSuaccount());
+						y.setSysmuser(packageBean.getUserAccount());
 						y.setSysodate(new Date());
-						y.setSysouser(systemUser.getSuaccount());
+						y.setSysouser(packageBean.getUserAccount());
 						y.setSyscdate(new Date());
-						y.setSyscuser(systemUser.getSuaccount());
+						y.setSyscuser(packageBean.getUserAccount());
 						y.setSysheader(false);
 						y.setSyssort(0);
 						y.setSystemConfig(entityDataOld);
@@ -294,7 +294,7 @@ public class SystemConfigService {
 						entityDataOld.getSystemConfigs().forEach(z -> {
 							if (y.getScid() == z.getScid()) {
 								z.setSysmdate(new Date());
-								z.setSysmuser(systemUser.getSuaccount());
+								z.setSysmuser(packageBean.getUserAccount());
 								z.setSysstatus(y.getSysstatus());
 								z.setSysnote(y.getSysnote());
 								z.setScgname(x.getScgname());
@@ -316,7 +316,7 @@ public class SystemConfigService {
 
 	/** 新增資料 */
 	// @Transactional
-	public PackageBean setAdd(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean setAdd(PackageBean packageBean) throws Exception {
 		// =======================資料準備=======================
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 		ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -353,11 +353,11 @@ public class SystemConfigService {
 		ArrayList<SystemConfig> details = entityDetails;
 		entityDatas.forEach(x -> {
 			x.setSysmdate(new Date());
-			x.setSysmuser(systemUser.getSuaccount());
+			x.setSysmuser(packageBean.getUserAccount());
 			x.setSysodate(new Date());
-			x.setSysouser(systemUser.getSuaccount());
+			x.setSysouser(packageBean.getUserAccount());
 			x.setSyscdate(new Date());
-			x.setSyscuser(systemUser.getSuaccount());
+			x.setSyscuser(packageBean.getUserAccount());
 			x.setScname(x.getScgname());
 			x.setSysheader(true);
 			x.setSyssort(0);
@@ -375,11 +375,11 @@ public class SystemConfigService {
 					y.setScgname(x.getScgname());
 					y.setSystemConfig(entityNewDatas.get(0));
 					y.setSysmdate(new Date());
-					y.setSysmuser(systemUser.getSuaccount());
+					y.setSysmuser(packageBean.getUserAccount());
 					y.setSysodate(new Date());
-					y.setSysouser(systemUser.getSuaccount());
+					y.setSysouser(packageBean.getUserAccount());
 					y.setSyscdate(new Date());
-					y.setSyscuser(systemUser.getSuaccount());
+					y.setSyscuser(packageBean.getUserAccount());
 					y.setSysheader(false);
 					y.setSyssort(0);
 					y.setScid(null);
@@ -389,11 +389,11 @@ public class SystemConfigService {
 					y.setScgname(x.getScgname());
 					y.setSystemConfig(entityNewDatas.get(0));
 					y.setSysmdate(new Date());
-					y.setSysmuser(systemUser.getSuaccount());
+					y.setSysmuser(packageBean.getUserAccount());
 					y.setSysodate(new Date());
-					y.setSysouser(systemUser.getSuaccount());
+					y.setSysouser(packageBean.getUserAccount());
 					y.setSyscdate(new Date());
-					y.setSyscuser(systemUser.getSuaccount());
+					y.setSyscuser(packageBean.getUserAccount());
 					y.setSysheader(false);
 					y.setSyssort(0);
 					y.setScid(null);
@@ -408,7 +408,7 @@ public class SystemConfigService {
 
 	/** 作廢資料 */
 	@Transactional
-	public PackageBean setInvalid(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 		ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -455,7 +455,7 @@ public class SystemConfigService {
 			if (x.getScid() != null) {
 				SystemConfig entityDataOld = configDao.findAllByConfigByScgid(x.getScid()).get(0);
 				entityDataOld.setSyscdate(new Date());
-				entityDataOld.setSysmuser(systemUser.getSuaccount());
+				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
 				saveDatas.add(entityDataOld);
 				// 細節-更新匹配內容
@@ -465,7 +465,7 @@ public class SystemConfigService {
 						entityDataOld.getSystemConfigs().forEach(z -> {
 							if (y.getScid() == z.getScid()) {
 								z.setSysmdate(new Date());
-								z.setSysmuser(systemUser.getSuaccount());
+								z.setSysmuser(packageBean.getUserAccount());
 								z.setSysstatus(2);
 							}
 						});
@@ -483,7 +483,7 @@ public class SystemConfigService {
 
 	/** 移除資料 */
 	@Transactional
-	public PackageBean setDetele(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean setDetele(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 		ArrayList<SystemConfig> entityDetails = new ArrayList<>();
@@ -551,7 +551,7 @@ public class SystemConfigService {
 	/** 取得資料 */
 	// @Transactional
 	@SuppressWarnings("unchecked")
-	public PackageBean getReport(PackageBean packageBean, SystemUser systemUser, Boolean detailMode) throws Exception {
+	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
 		List<SystemConfig> entitys = new ArrayList<>();
