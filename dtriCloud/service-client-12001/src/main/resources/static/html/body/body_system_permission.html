@@ -10,7 +10,7 @@
 }
 </style>
 
-<div class="text-center text-ms col-md pt-4 mt-4" id="body_system_config">
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_system_permission">
 	<div class="p-1">
 		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -50,7 +50,7 @@
 			</li>
 		</ul>
 		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
-			<!-- tab-home -->
+						<!-- tab-home -->
 			<div class="tab-pane fade" id="home_tab" role="tabpanel" aria-labelledby="tab-home">home_tab Loading...!!</div>
 			<!-- tab-search -->
 			<div class="tab-pane fade" id="search_tab" role="tabpanel" aria-labelledby="tab-search">search_tab Loading...!!</div>
@@ -78,48 +78,48 @@ body_index={
 	methods:{
 		create(){
 			//Step1.初始化
-			console.log("body_system_config.html(created)");
+			console.log("body_system_permission.html(created)");
 			//模板-鎖定-不需要的分頁 disabled
-			//$("#body_system_config #home_title").addClass("disabled");
-			//$("#body_system_config #search_title").addClass("disabled");
-			//$("#body_system_config #modify_title").addClass("disabled");
-			//$("#body_system_config #report_title").addClass("disabled");
-			//$("#body_system_config #print_title").addClass("disabled");
-			//$("#body_system_config #compare_title").addClass("disabled");
-			$("#body_system_config #other_title").addClass("disabled");
+			//$("#body_system_permission #home_title").addClass("disabled");
+			//$("#body_system_permission #search_title").addClass("disabled");
+			//$("#body_system_permission #modify_title").addClass("disabled");
+			//$("#body_system_permission #report_title").addClass("disabled");
+			//$("#body_system_permission #print_title").addClass("disabled");
+			//$("#body_system_permission #compare_title").addClass("disabled");
+			$("#body_system_permission #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_system_config #search_title").addClass("active");
-            $("#body_system_config #search_tab").addClass("show");
-            $("#body_system_config #search_tab").addClass("active");
+            $("#body_system_permission #search_title").addClass("active");
+            $("#body_system_permission #search_tab").addClass("show");
+            $("#body_system_permission #search_tab").addClass("active");
             
           	//Step2.模板
-            $("#body_system_config #home_tab").load("./html/model/home.html", function(){});
+            $("#body_system_permission #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_system_config #search_tab").load("./html/model/search.html", function(){
+            $("#body_system_permission #search_tab").load("./html/model/search.html", function(){
             	search.methods.create();
             });
             //編輯-模板
-            $("#body_system_config #modify_tab").load("./html/model/modify.html", function(){
+            $("#body_system_permission #modify_tab").load("./html/model/modify.html", function(){
             	modify.methods.create();
             });
             //列印-模板
-            $("#body_system_config #print_tab").load("./html/model/print.html", function(){
+            $("#body_system_permission #print_tab").load("./html/model/print.html", function(){
             	print.methods.create();
             });
             //報告-模板
-            $("#body_system_config #report_tab").load("./html/model/report.html", function(){
+            $("#body_system_permission #report_tab").load("./html/model/report.html", function(){
             	report.methods.create();
             });
             //比對-模板
-            $("#body_system_config #compare_tab").load("./html/model/compare.html", function(){
+            $("#body_system_permission #compare_tab").load("./html/model/compare.html", function(){
             	compare.methods.create();
             });
             //其他-模板
-            $("#body_system_config #other_tab").load("./html/other/special.html", function(){});
+            $("#body_system_permission #other_tab").load("./html/other/special.html", function(){});
 		},
 		destroy() {
 			//銷毀
-			 console.log("body_system_config.html(destroy)");
+			 console.log("body_system_permission.html(destroy)");
 		},
 	},	
 };

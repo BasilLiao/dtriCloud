@@ -60,7 +60,7 @@ public class SystemConfigServiceAc {
 		int batch = pageSetJson.get("batch").getAsInt();
 		int nbStart = total * batch;// 起始計數(細節模式)
 		int nbEnd = nbStart + total;// 終點計數(細節模式)
-		
+
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "systemConfig.scid"));
@@ -111,13 +111,13 @@ public class SystemConfigServiceAc {
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemUser("system_config", 0, null);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemLanguageCell("SystemConfig", null, 0, null);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
 			if (packageBean.getDetailMode()) {
-				ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllBySystemUser("system_config", 0, null);
+				ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllBySystemLanguageCell("SystemConfig", null, 0, null);
 				languagesDetail.forEach(x -> {
 					mapLanguagesDetail.put(x.getSltarget(), x);
 				});
@@ -135,22 +135,22 @@ public class SystemConfigServiceAc {
 			exceptionCell.add("systemConfig");
 			exceptionCell.add("systemConfigs");
 			// 欄位翻譯(一般)
-			resultDataTJsons = packageService.resultSet(resultDataTJsons, fields, exceptionCell, mapLanguages);
+			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 			// 欄位翻譯(細節)
 			if (packageBean.getDetailMode()) {
-				resultDetailTJsons = packageService.resultSet(resultDetailTJsons, fields, exceptionCell, mapLanguagesDetail);
+				resultDetailTJsons = packageService.resultSet(fields, exceptionCell, mapLanguagesDetail);
 			}
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "scname", "Ex:DB_NAME", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_md_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			searchJsons = packageService.searchSet(searchJsons, null, "scgname", "Ex:DATA_BKUP", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_md_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// 查詢項目-時間開始
 			searchJsons = packageService.searchSet(searchJsons, null, "sysmdatestart", "Ex:2011-01-02 12:12:00", true, //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_md_2);
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// 查詢項目-時間結束
 			searchJsons = packageService.searchSet(searchJsons, null, "sysmdateend", "Ex:2011-01-02 12:12:00", true, //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_md_2);
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// 查詢項目-狀態
 			JsonArray selectArr = new JsonArray();
 			selectArr.add("normal(正常)_0");
@@ -158,7 +158,7 @@ public class SystemConfigServiceAc {
 			selectArr.add("disabled(禁用)_2");
 			selectArr.add("onlyAdmin(特權)_3");
 			searchJsons = packageService.searchSet(searchJsons, selectArr, "sysstatus", "", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_md_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// KEY名稱Ikey_Gkey(主KEY/群組KEY)
 			packageBean.setEntityIKeyGKey("scid_scgid");
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -556,6 +556,7 @@ public class SystemConfigServiceAc {
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
 		List<SystemConfig> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
+		// =======================查詢語法=======================
 		// 拼湊SQL語法
 		String nativeQuery = "SELECT e.* FROM system_config e Where ";
 		for (JsonElement x : reportAry) {
@@ -569,31 +570,32 @@ public class SystemConfigServiceAc {
 			cellName = cellName.replace("sc_g", "sc_g_");
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>").length == 2 ? "" : x.getAsString().split("<_>")[2];// 有可能空白
+			String valueType = x.getAsString().split("<_>")[3];
 
 			switch (where) {
 			case "AllSame":
 				nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value);
+				sqlQuery.put(cellName, value + "<_>" + valueType);
 				break;
 			case "NotSame":
 				nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value);
+				sqlQuery.put(cellName, value + "<_>" + valueType);
 				break;
 			case "Like":
 				nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%");
+				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
 				break;
 			case "NotLike":
 				nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%");
+				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
 				break;
 			case "MoreThan":
 				nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value);
+				sqlQuery.put(cellName, value + "<_>" + valueType);
 				break;
 			case "LessThan":
 				nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value);
+				sqlQuery.put(cellName, value + "<_>" + valueType);
 				break;
 			}
 		}
@@ -602,12 +604,14 @@ public class SystemConfigServiceAc {
 		nativeQuery += " order by e.sc_g_id desc ";
 		nativeQuery += " LIMIT 25000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, SystemConfig.class);
-
-		sqlQuery.forEach((key, val) -> {
-			if (key.indexOf("date") >= 0) {
+		// =======================查詢參數=======================
+		sqlQuery.forEach((key, valAndType) -> {
+			String val = valAndType.split("<_>")[0];
+			String tp = valAndType.split("<_>")[1];
+			if (tp.equals("dateTime")) {
 				// 時間格式?
 				query.setParameter(key, Fm_T.toDate(val));
-			} else if (key.indexOf("status") >= 0 || key.indexOf("sort") >= 0) {
+			} else if (tp.equals("number")) {
 				// 數字?
 				query.setParameter(key, Integer.parseInt(val));
 			} else {

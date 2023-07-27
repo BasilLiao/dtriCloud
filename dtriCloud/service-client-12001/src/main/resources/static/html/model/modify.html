@@ -206,13 +206,8 @@
 		<div class="row m-0 collapse show" id="modify_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-md-3 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">State</div>
-						<div id="modify_c_state" title="AC" class="p-1 m-0 h2 fw-bold text-center text-danger">＞Create＜</div>
-					</div>
-				</div>
-				<div id="" class="col-md-3 p-1 ">
+
+				<div id="" class="col-6 col-lg-3 p-1 ">
 					<div class=" border border-secondary rounded modify_c_batch_revision_open collapse show">
 						<div class="title_color fw-bolder rounded-top">Batch Data</div>
 						<div class="row m-0">
@@ -231,7 +226,7 @@
 						</div>
 					</div>
 				</div>
-				<div id="" class="col-md-3 p-1 ">
+				<div id="" class="col-6 col-lg-3 p-1 ">
 					<div class=" border border-secondary rounded modify_c_batch_revision_open collapse">
 						<div class="title_color fw-bolder rounded-top">Batch Detail</div>
 						<div class="row m-0">
@@ -250,7 +245,13 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-2 p-1">
+				<div class="col-6 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">State</div>
+						<div id="modify_c_state" title="AC" class="p-1 m-0 h2 fw-bold text-center text-danger">＞Create＜</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
@@ -352,7 +353,8 @@ modify={
 				cloneBht.css('minWidth',resultThead[k].width+"px");
 				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
 				if(resultThead[k].cellLanguage!=''){
-					cloneBht.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+					var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+					cloneBht.text(cellName==""?resultThead[k].cellName:cellName);
 				}else{
 					cloneBht.text(resultThead[k].cellName);
 				}
@@ -386,25 +388,19 @@ modify={
 					case"select":
 						cloneBhv = $($("#modify_c_ex_st").clone());
 						//比對是否有匹配選項
-						for(var t=0;t<searchSet.length;t++){
-							if(searchSet[t].searchName==resultThead[k].cellName && searchSet[t].type == 'select'){
-								//console.log(searchSet[t].select);
-								var select = searchSet[t];
-								//選項
-								for(var s = 0;s<select['select'].length;s++){
-									var key = select['select'][s].split("_")[0];
-									var val = select['select'][s].split("_")[1];
-									selectEx = $($('.modify_st_ex').clone());
-									selectEx.removeClass("modify_st_ex");
-									selectEx.removeAttr("selected");
-									selectEx.text(key);
-									selectEx.val(val);
-									selectEx.appendTo(cloneBhv.find('select'));
-								}	
-								cloneBhv.find('.modify_st_ex').removeClass("modify_st_ex");
-								break;
-							}
-						}
+						var arrSelect = JSON.parse(resultThead[k].m_select);
+						//選項
+						for(var s = 0;s<arrSelect.length;s++){
+							var key = arrSelect[s].split("_")[0];
+							var val = arrSelect[s].split("_")[1];
+							selectEx = $($('.modify_st_ex').clone());
+							selectEx.removeClass("modify_st_ex");
+							selectEx.removeAttr("selected");
+							selectEx.text(key);
+							selectEx.val(val);
+							selectEx.appendTo(cloneBhv.find('select'));
+						}	
+						cloneBhv.find('.modify_st_ex').removeClass("modify_st_ex");
 						break;
 					default:
 						cloneBhv = $($("#modify_c_ex_it").clone());
@@ -461,7 +457,8 @@ modify={
 				cloneBdt.css('minWidth',resultThead[k].width+"px");
 				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
 				if(resultThead[k].cellLanguage!=''){
-					cloneBdt.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+					var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+					cloneBdt.text(cellName==""?resultThead[k].cellName:cellName);
 				}else{
 					cloneBdt.text(resultThead[k].cellName);
 				}
@@ -827,6 +824,16 @@ modify={
 								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
 							}
 							modifyThvEx.find("."+k).val(value);
+							//是否為	checkbox
+							//console.log(modifyThvEx.find("."+k).attr('type'));
+							if(modifyThvEx.find("."+k).attr('type')=="checkbox"){
+								if(value=true){
+									modifyThvEx.find('input').prop('checked', true);									
+								}else{
+									modifyThvEx.find('input').prop('checked', false);		
+								}
+							}
+							
 						});
 						modifyThvEx.appendTo("#modifyThv");						
 					}
@@ -863,6 +870,15 @@ modify={
 								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
 							}
 							modifyTdvEx.find("."+k).val(value);
+							//是否為	checkbox
+							//console.log(modifyThvEx.find("."+k).attr('type'));
+							if(modifyThvEx.find("."+k).attr('type')=="checkbox"){
+								if(value=true){
+									modifyThvEx.find('input').prop('checked', true);									
+								}else{
+									modifyThvEx.find('input').prop('checked', false);		
+								}
+							}
 						});
 						
 						//分隔資料線-中間
@@ -964,7 +980,7 @@ modify={
 			
 			//包裝
 			req_data['data'] = data;
-			req_data['url'] = "system_config.basil."+action;//AC/AD....
+			req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
 			req_data['type'] = type;//POST/PUT/DELETE...
 			main.methods.ajaxSend(req_data);
 			

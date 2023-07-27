@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.SystemConfigServiceAc;
+import dtri.com.tw.service.SystemLanguageCellServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class SystemConfigControllerAc extends AbstractControllerAc {
+public class SystemLanguageCellControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private SystemConfigServiceAc serviceAc;
+	private SystemLanguageCellServiceAc serviceAc;
 
-	@RequestMapping(value = { "/systemConfig/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -54,7 +54,7 @@ public class SystemConfigControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/systemConfig/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -86,7 +86,7 @@ public class SystemConfigControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/systemConfig/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -118,7 +118,7 @@ public class SystemConfigControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/systemConfig/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -150,7 +150,7 @@ public class SystemConfigControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/systemConfig/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -182,7 +182,7 @@ public class SystemConfigControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/systemConfig/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/systemLanguageCell/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {

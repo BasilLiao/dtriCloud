@@ -17,7 +17,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class SystemConfigController extends AbstractController {
+public class SystemPermissionController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -26,7 +26,7 @@ public class SystemConfigController extends AbstractController {
 	SystemServiceFeign systemServiceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_permission.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -45,7 +45,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
 			// packageBean = configService.getSearch(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -67,7 +67,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_permission.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -86,7 +86,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
 			// packageBean = configService.getSearch(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -108,7 +108,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_permission.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -127,7 +127,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigReport(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getPermissionReport(packageService.beanToJson(packageBean));
 			// packageBean = configService.getReport(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -149,7 +149,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/system_permission.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -168,7 +168,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigAdd(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setPermissionAdd(packageService.beanToJson(packageBean));
 			// packageBean = configService.setAdd(packageBean, loginUser().getSystemUser(),
 			// true);
 		} catch (Exception e) {
@@ -190,7 +190,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/system_permission.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -209,7 +209,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigModify(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setPermissionModify(packageService.beanToJson(packageBean));
 			// packageBean = configService.setModify(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -231,7 +231,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_permission.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -249,7 +249,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigInvalid(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setPermissionInvalid(packageService.beanToJson(packageBean));
 			// packageBean = configService.setInvalid(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -271,7 +271,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_permission.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -289,7 +289,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigDetele(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setPermissionDetele(packageService.beanToJson(packageBean));
 			// packageBean = configService.setDetele(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {

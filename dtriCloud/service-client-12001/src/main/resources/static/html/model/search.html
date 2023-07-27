@@ -96,7 +96,7 @@
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-md-5 p-1">
+				<div class="col-12 col-lg-5 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
@@ -131,11 +131,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-2 p-1">
+				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Special</div>
 						<div class="row m-0">
-							
+
 							<button id="btn_printerForm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Printer<br>form()
 								</b>
@@ -147,7 +147,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-2 p-1">
+				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
@@ -162,7 +162,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-2 p-1">
+				<div class="col-12 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Page</div>
 						<div class="row m-0">
@@ -170,7 +170,7 @@
 								<b>＜＜<br>Page
 								</b>
 							</button>
-							<input id="numberPage" class="lh-base col p-1 m-1 " name="page" type="number" placeholder="1-50" value="1" />
+							<input id="numberPage" class="lh-base col-4 p-1 m-1 " name="page" type="number" placeholder="1-50" value="1" />
 							<button id="btn_pageD" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
 								<b>＞＞<br>Page
 								</b>
@@ -260,7 +260,7 @@ search={
 		entityFormatJson:{},//查詢格式
 		//換頁設置
 		searchPageSet:{
-			total:10,//批次數量(1-1000)
+			total:1000,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
 			pageSize:20,//每頁數量(1-20)
@@ -321,7 +321,8 @@ search={
 				}
 				//如果有翻譯
 				if(resultThead[k].cellLanguage!=''){
-					exTheadth.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+					var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+					exTheadth.text(cellName==""?resultThead[k].cellName:cellName);//有可能內容是空的
 					exTheadth.css('minWidth',resultThead[k].width+"px");
 					exTbodytd.css('maxWidth',resultThead[k].width+"px");
 				}else{
@@ -367,7 +368,8 @@ search={
 				}
 				//如果有翻譯
 				if(resultDetailThead[k].cellLanguage!=''){
-					exTheadth.text(JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()]);
+					var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+					exTheadth.text(cellName==""?resultDetailThead[k].cellName:cellName);
 					exTheadth.css('minWidth',resultDetailThead[k].width+"px");
 					exTbodytd.css('maxWidth',resultDetailThead[k].width+"px");
 				}else{
@@ -421,7 +423,8 @@ search={
 						//如果有翻譯
 						if(k.indexOf(searchSet['searchName'])>=0){
 							if(resultThead[k].cellLanguage!=''){
-								searchTextEx.find('.searchTitle').text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+								var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+								searchTextEx.find('.searchTitle').text(cellName==""?searchSet['searchName']:cellName);
 							}else{
 								searchTextEx.find('.searchTitle').text(searchSet['searchName']);
 							}							
@@ -442,7 +445,8 @@ search={
 						//如果有翻譯
 						if(k.indexOf(searchSet['searchName'])>=0){
 							if(resultThead[k].cellLanguage!=''){
-								searchSelectEx.find('.searchTitle').text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+								var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+								searchSelectEx.find('.searchTitle').text(cellName==""?searchSet['searchName']:cellName);
 							}else{
 								searchSelectEx.find('.searchTitle').text(searchSet['searchName']);
 							}							
@@ -907,7 +911,7 @@ search={
 			data['callBackFunction'] = "search";
 			//包裝
 			req_data['data'] = data;
-			req_data['url'] = "system_config.basil.AR";
+			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.AR";
 			req_data['type'] = "POST";
 			main.methods.ajaxSend(req_data);
 			//時間格式

@@ -17,7 +17,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class SystemConfigController extends AbstractController {
+public class SystemLanguageCellController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -26,7 +26,7 @@ public class SystemConfigController extends AbstractController {
 	SystemServiceFeign systemServiceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_language_cell.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -42,10 +42,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
 			// packageBean = configService.getSearch(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -67,7 +67,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -83,10 +83,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
 			// packageBean = configService.getSearch(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -108,7 +108,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -124,10 +124,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigReport(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.getLanguageCellReport(packageService.beanToJson(packageBean));
 			// packageBean = configService.getReport(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -149,7 +149,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -165,10 +165,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigAdd(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setLanguageCellAdd(packageService.beanToJson(packageBean));
 			// packageBean = configService.setAdd(packageBean, loginUser().getSystemUser(),
 			// true);
 		} catch (Exception e) {
@@ -190,7 +190,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -206,10 +206,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigModify(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setLanguageCellModify(packageService.beanToJson(packageBean));
 			// packageBean = configService.setModify(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -231,7 +231,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -246,10 +246,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigInvalid(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setLanguageCellInvalid(packageService.beanToJson(packageBean));
 			// packageBean = configService.setInvalid(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {
@@ -271,7 +271,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_language_cell.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -286,10 +286,10 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setDetailMode(false);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigDetele(packageService.beanToJson(packageBean));
+			packageBean = systemServiceFeign.setLanguageCellDetele(packageService.beanToJson(packageBean));
 			// packageBean = configService.setDetele(packageBean,
 			// loginUser().getSystemUser(), true);
 		} catch (Exception e) {

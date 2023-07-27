@@ -67,13 +67,13 @@ public class SystemLanguageCell {
 		this.slcshow = 0;// 欄位?顯示
 		this.slcwidth = 100;// 欄位?寬度
 		// 修改欄位設置
-		this.slcmtype="text";
-		this.slcmselect="[]";
-		this.slcmplaceholder="";
-		this.slcmdefval="";
-		this.slcmshow=1;
-		this.slcmmust=1;
-		this.slcmfixed=0;
+		this.slcmtype = "text";
+		this.slcmselect = "[]";
+		this.slcmplaceholder = "";
+		this.slcmdefval = "";
+		this.slcmshow = 1;
+		this.slcmmust = 1;
+		this.slcmfixed = 0;
 	}
 
 	// 共用型
@@ -135,13 +135,13 @@ public class SystemLanguageCell {
 
 	// 前端格式-修改/查詢用
 	@Transient
-	private String sllanguage_zhTW;
+	private String sl_zhTW;
 	@Transient
-	private String sllanguage_zhCN;
+	private String sl_zhCN;
 	@Transient
-	private String sllanguage_enUS;
+	private String sl_enUS;
 	@Transient
-	private String sllanguage_viVN;
+	private String sl_viVN;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -333,6 +333,38 @@ public class SystemLanguageCell {
 
 	public void setSlcmfixed(Integer slcmfixed) {
 		this.slcmfixed = slcmfixed;
+	}
+
+	public String getSl_zhTW() {
+		return sl_zhTW;
+	}
+
+	public void setSl_zhTW(String sl_zhTW) {
+		this.sl_zhTW = sl_zhTW;
+	}
+
+	public String getSl_zhCN() {
+		return sl_zhCN;
+	}
+
+	public void setSl_zhCN(String sl_zhCN) {
+		this.sl_zhCN = sl_zhCN;
+	}
+
+	public String getSl_enUS() {
+		return sl_enUS;
+	}
+
+	public void setSl_enUS(String sl_enUS) {
+		this.sl_enUS = sl_enUS;
+	}
+
+	public String getSl_viVN() {
+		return sl_viVN;
+	}
+
+	public void setSl_viVN(String sl_viVN) {
+		this.sl_viVN = sl_viVN;
 	}
 
 }

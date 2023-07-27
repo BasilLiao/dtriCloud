@@ -44,7 +44,7 @@ public class IndexService {
 	public PackageBean getMenu(PackageBean packageBean, SystemUser systemUser) throws Exception {
 
 		// Step1.取得翻譯(一般)
-		ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemUser(null, 1, null);
+		ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemLanguageCell(null, null, 1, null);
 		Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 		languages.forEach(x -> {
 			mapLanguages.put(x.getSltarget(), x);

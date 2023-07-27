@@ -45,6 +45,7 @@ public class WebSecurityConfig {
 	private static final String system_per = "/ajax/system_permission.basil";
 	private static final String system_gro = "/ajax/system_group.basil";
 	private static final String system_use = "/ajax/system_user.basil";
+	private static final String system_lan = "/ajax/system_language_cell.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -73,6 +74,14 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, system_con + ".AU").hasAuthority(actionRole(system_con, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_con + ".AD").hasAuthority(actionRole(system_con, "AD"))// (移除)
 
+				// ----請求-system_langage-(訪問) ----
+				.requestMatchers(HttpMethod.POST, system_lan).hasAuthority(actionRole(system_lan, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, system_lan + ".AR").hasAuthority(actionRole(system_lan, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, system_lan + ".ARR").hasAuthority(actionRole(system_lan, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, system_lan + ".AC").hasAuthority(actionRole(system_lan, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, system_lan + ".AU").hasAuthority(actionRole(system_lan, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, system_lan + ".AD").hasAuthority(actionRole(system_lan, "AD"))// (移除)
+				
 				// ----請求-system_permission-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_per).hasAuthority(actionRole(system_per, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, system_per + ".AR").hasAuthority(actionRole(system_per, "AR"))// (查詢)

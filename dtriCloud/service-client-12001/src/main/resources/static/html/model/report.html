@@ -295,8 +295,9 @@ report={
 					
 					//如果有翻譯
 					if(resultThead[k].cellLanguage!=''){
-						itemBtn.find(".itemBtnShow").text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
-						exReportTitle.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						itemBtn.find(".itemBtnShow").text(cellName==""?resultThead[k].cellName:cellName);
+						exReportTitle.text(cellName==""?resultThead[k].cellName:cellName);
 						exReportTitle.css('minWidth',resultThead[k].width+"px");
 						exReportVal.text("");
 						exReportVal.css('maxWidth',resultThead[k].width+"px");
@@ -352,6 +353,9 @@ report={
 					var rcCellName = $('#rcCellName').val();
 					var rcWhereTitle = $( "#rcWhere option:selected" ).text();
 					var rcWhereValue = $( "#rcWhere option:selected" ).val();
+					var rcValueTypeTitle = $( "#rcValueType option:selected" ).text();
+					var rcValueTypeValue = $( "#rcValueType option:selected" ).val();
+					
 					var rcValue = "";
 					//Value type?
 					if(!$('#rcValueText').hasClass('d-none')){
@@ -362,8 +366,8 @@ report={
 						rcValue = $('#rcValueDateTime').val();
 					}
 					//查詢條件
-					var queryList = rcCellName+' '+rcWhereTitle+' '+rcValue;
-					var queryListValue = rcCellTitle+'<_>'+rcWhereValue+'<_>'+rcValue;
+					var queryList = rcCellName+' '+rcWhereTitle+' '+rcValue+' ['+rcValueTypeTitle+']';
+					var queryListValue = rcCellTitle+'<_>'+rcWhereValue+'<_>'+rcValue+'<_>'+rcValueTypeValue;
 					//KEY
 					report.data.rcQueryNumber++;
 					var rcQueryNumber = report.data.rcQueryNumber;
@@ -507,7 +511,7 @@ report={
 				data['callBackFunction'] = "report";
 				//包裝
 				req_data['data'] = data;
-				req_data['url'] = "system_config.basil.ARR";
+				req_data['url'] = $('#nav_functional_unit').attr('title')+".basil.ARR";
 				req_data['type'] = "POST";
 				main.methods.ajaxSend(req_data);				
 			}

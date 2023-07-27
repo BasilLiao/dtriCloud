@@ -26,19 +26,29 @@ public class PackageService {
 
 	// 寬度
 	public enum SearchWidth {
-		col_md_1, col_md_2, col_md_3, col_md_4, col_md_5
+		col_lg_1, col_lg_2, col_lg_3, col_lg_4, col_lg_5
 	}
 
 	// Stirng to JSON(一般轉換)
 	public JsonObject StringToJson(String s) {
-		JsonObject jsonObject = JsonParser.parseString(s).getAsJsonObject();
-		return jsonObject;
+		try {
+			JsonObject jsonObject = JsonParser.parseString(s).getAsJsonObject();
+			return jsonObject;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	// Stirng to JsonArray(一般轉換)
 	public JsonArray StringToAJson(String s) {
-		JsonArray jsonObject = JsonParser.parseString(s).getAsJsonArray();
-		return jsonObject;
+		try {
+			JsonArray jsonObject = JsonParser.parseString(s).getAsJsonArray();
+			return jsonObject;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	// JSON to Bean(單一包裝)
@@ -90,53 +100,59 @@ public class PackageService {
 	}
 
 	// 一般回傳資料(欄位)
-	public JsonObject resultSet(JsonObject arr, Field[] fields, ArrayList<String> exception, Map<String, SystemLanguageCell> mapLanguages) {
-		JsonObject resultJson = new JsonObject();// 每一格-名稱
+	public JsonObject resultSet(Field[] fields, ArrayList<String> exception, Map<String, SystemLanguageCell> mapLanguages) {
+		JsonObject returnArr = new JsonObject();
 		String sort_cellName = "";
+		String fieldName = "";
 		for (Field field : fields) {
+			JsonObject resultJson = new JsonObject();// 每一格-名稱
 			System.out.println(field.getName());
 			// 有比對到=>欄位資料 設定||沒比對到=>欄位資料 預設
 			String sort = "999";
 			// 欄位-例外不納入前端使用
-//			boolean check = exception.contains(field.getName());
-//			if (!check) {
-//			}
-			if (mapLanguages.containsKey(field.getName())) {
-				// 查詢欄位
-				sort = String.format("%03d", mapLanguages.get(field.getName()).getSyssort());
-				resultJson = new JsonObject();
-				resultJson.addProperty("cellName", field.getName());
-				resultJson.addProperty("sort", sort);
-				resultJson.addProperty("show", mapLanguages.get(field.getName()).getSlcshow());
-				resultJson.addProperty("width", mapLanguages.get(field.getName()).getSlcwidth());
-				resultJson.addProperty("cellLanguage", mapLanguages.get(field.getName()).getSllanguage());
-				sort_cellName = sort + "_" + field.getName();
-				// 修改欄位
-				resultJson.addProperty("m_show", mapLanguages.get(field.getName()).getSlcmshow());
-				resultJson.addProperty("m_type", mapLanguages.get(field.getName()).getSlcmtype());
-				resultJson.addProperty("m_placeholder", mapLanguages.get(field.getName()).getSlcmplaceholder());
-				resultJson.addProperty("m_defval", mapLanguages.get(field.getName()).getSlcmdefval());
-				resultJson.addProperty("m_must", mapLanguages.get(field.getName()).getSlcmmust());
-				resultJson.addProperty("m_select", "" + mapLanguages.get(field.getName()).getSlcmselect());
-				resultJson.addProperty("m_fixed", mapLanguages.get(field.getName()).getSlcmfixed());
-				arr.add(sort_cellName, resultJson);
-			} else {
-				// 查詢欄位
-//				resultJson.addProperty("sort", "999");
-//				resultJson.addProperty("show", 1);
-//				resultJson.addProperty("width", 100);
-//				resultJson.addProperty("cellLanguage", "");
-//				sort_cellName = sort + "_" + field.getName(); // 修改欄位
-//				resultJson.addProperty("m_show", 1);
-//				resultJson.addProperty("m_type", "text");
-//				resultJson.addProperty("m_placeholder", "Ex:");
-//				resultJson.addProperty("m_defval", "");
-//				resultJson.addProperty("m_must", 0);
-//				resultJson.addProperty("m_select", "" + new JsonArray());
-//				resultJson.addProperty("m_fixed", 0);
+			boolean check = exception.contains(field.getName());
+			if (!check) {
+				if (mapLanguages.containsKey(field.getName())) {
+					// 查詢欄位
+					sort = String.format("%03d", mapLanguages.get(field.getName()).getSyssort());
+					sort_cellName = sort + "_" + field.getName();
+					fieldName = field.getName() + "";
+					resultJson = new JsonObject();
+					resultJson.addProperty("cellName", fieldName);
+					resultJson.addProperty("sort", sort);
+					resultJson.addProperty("show", mapLanguages.get(field.getName()).getSlcshow());
+					resultJson.addProperty("width", mapLanguages.get(field.getName()).getSlcwidth());
+					resultJson.addProperty("cellLanguage", mapLanguages.get(field.getName()).getSllanguage());
+					// 修改欄位
+					resultJson.addProperty("m_show", mapLanguages.get(field.getName()).getSlcmshow());
+					resultJson.addProperty("m_type", mapLanguages.get(field.getName()).getSlcmtype());
+					resultJson.addProperty("m_placeholder", mapLanguages.get(field.getName()).getSlcmplaceholder());
+					resultJson.addProperty("m_defval", mapLanguages.get(field.getName()).getSlcmdefval());
+					resultJson.addProperty("m_must", mapLanguages.get(field.getName()).getSlcmmust());
+					resultJson.addProperty("m_select", "" + mapLanguages.get(field.getName()).getSlcmselect());
+					resultJson.addProperty("m_fixed", mapLanguages.get(field.getName()).getSlcmfixed());
+					returnArr.add(sort_cellName, resultJson);
+				} else {
+					// 查詢欄位
+					sort_cellName = sort + "_" + field.getName(); // 修改欄位
+					fieldName = field.getName() + "";
+					resultJson.addProperty("cellName", fieldName);
+					resultJson.addProperty("sort", "999");
+					resultJson.addProperty("show", 1);
+					resultJson.addProperty("width", 100);
+					resultJson.addProperty("cellLanguage", "");
+					resultJson.addProperty("m_show", 1);
+					resultJson.addProperty("m_type", "text");
+					resultJson.addProperty("m_placeholder", "Ex:");
+					resultJson.addProperty("m_defval", "");
+					resultJson.addProperty("m_must", 0);
+					resultJson.addProperty("m_select", "" + new JsonArray());
+					resultJson.addProperty("m_fixed", 0);
+					returnArr.add(sort_cellName, resultJson);
+				}
 			}
 		}
-		return arr;
+		return returnArr;
 	}
 
 	// 細節回傳資料

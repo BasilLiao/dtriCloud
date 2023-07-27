@@ -24,13 +24,13 @@
 }
 /*Table 表格外框線*/
 #compare_c #cCompareData table {
-	min-height: 240px;
+	min-height: 480px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
 #compare_c #cCompareDetail table {
-	min-height: 240px;
+	min-height: 480px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -67,19 +67,19 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Check different</div>
 						<div class="row m-0">
-							<button id="compareData" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-info">
+							<button id="compareData_btn" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-info">
 								<b>Compare<br>Data(*)
 								</b>
 							</button>
-							<button id="compareDetail" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
+							<button id="compareDetail_btn" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
 								<b>Compare<br>Detail(*)
 								</b>
 							</button>
-							<button id="compareClearColor" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+							<button id="compareClearColor_btn" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 								<b>Clear<br>color()
 								</b>
 							</button>
-							<button id="compareClearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+							<button id="compareClearAll_btn" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -169,6 +169,8 @@ compare={
 			compare.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
 			compare.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 			
+			
+			
 			//console.log(searchSetJson);
 			//Step1.查詢按鍵-排序
 			var resultThead = searchSetJson['resultThead'];
@@ -200,7 +202,8 @@ compare={
 					}
 					//如果有翻譯
 					if(resultThead[k].cellLanguage!=''){
-						exCompareDataT.text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						exCompareDataT.text(cellName==""?resultThead[k].cellName:cellName);
 						exCompareDataT.css('minWidth',resultThead[k].width+"px");
 						exCompareDataV.css('minWidth',resultThead[k].width+"px");
 					}else{
@@ -216,6 +219,11 @@ compare={
 				}
 			});
 			//Step2.標題(細節)-資料
+			//如果沒有細節
+			if(Object.keys(resultDetailThead).length==0){
+				$('#cCompareDetail').addClass('d-none');
+				$('#compareDetail_btn').addClass('disabled');
+			}
 			Object.keys(resultDetailThead).forEach(function(k){
 				//如果隱藏
 				if(!resultThead[k].show==0){
@@ -226,7 +234,9 @@ compare={
 					exCompareDetailT.removeClass("d-none");
 					//如果有翻譯
 					if(resultDetailThead[k].cellLanguage!=''){
-						exCompareDetailT.find('.titleName').text(JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()]);
+						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						
+						exCompareDetailT.find('.titleName').text(cellName==""?resultThead[k].cellName:cellName);
 						exCompareDetailT.css('minWidth',resultThead[k].width+"px");
 					}else{
 						exCompareDetailT.find('.titleName').text(resultThead[k].cellName);
@@ -240,10 +250,10 @@ compare={
 				}
 			});
 			//==========================監聽==========================
-			//compareData
-			$(document).off("click", "#compareData");
-			$(document).on("click", "#compareData", function (event) {
-				console.log("compareData");
+			//compareData_btn
+			$(document).off("click", "#compareData_btn");
+			$(document).on("click", "#compareData_btn", function (event) {
+				console.log("compareData_btn");
 				$('#cCompareDataList td').removeClass('bg-warning');
 				//取得選取者
 				var compareM="";
@@ -269,10 +279,10 @@ compare={
 					});
 				}
 			});
-			//compareDetail
-			$(document).off("click", "#compareDetail");
-			$(document).on("click", "#compareDetail", function (event) {
-				console.log("compareDetail");
+			//compareDetail_btn
+			$(document).off("click", "#compareDetail_btn");
+			$(document).on("click", "#compareDetail_btn", function (event) {
+				console.log("compareDetail_btn");
 				//資料準備
 				var entityIKey = compare.data.entityIKey;
 				var entityGKey = compare.data.entityGKey;
@@ -362,18 +372,18 @@ compare={
 				}
 			});
 			
-			//compareClearColor
-			$(document).off("click", "#compareClearColor");
-			$(document).on("click", "#compareClearColor", function (event) {
-				console.log("compareClearColor");
+			//compareClearColor_btn
+			$(document).off("click", "#compareClearColor_btn");
+			$(document).on("click", "#compareClearColor_btn", function (event) {
+				console.log("compareClearColor_btn");
 				$('#cCompareDataList td').removeClass('bg-warning');
 				$('#cCompareDetailList td').removeClass('bg-warning');
 				
 			});
-			//compareClearAll
-			$(document).off("click", "#compareClearAll");
-			$(document).on("click", "#compareClearAll", function (event) {
-				console.log("compareClearAll");
+			//compareClearAll_btn
+			$(document).off("click", "#compareClearAll_btn");
+			$(document).on("click", "#compareClearAll_btn", function (event) {
+				console.log("compareClearAll_btn");
 				$('.cDataVLM').remove();
 				$('.cDetailRVL').remove();
 				$('.cDetailOs').remove();
@@ -444,9 +454,9 @@ compare={
 		destroy() {
 			//銷毀
 			console.log("compare.html(destroy)");
-			$(document).off("click", "#compareData");
-			$(document).off("click", "#compareDetail");
-			$(document).off("click", "#compareClearAll");
+			$(document).off("click", "#compareData_btn");
+			$(document).off("click", "#compareDetail_btn");
+			$(document).off("click", "#compareClearAll_btn");
 		},
 	},	
 };
