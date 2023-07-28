@@ -46,8 +46,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
-			// packageBean = configService.getSearch(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -87,8 +86,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
-			// packageBean = configService.getSearch(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -128,8 +126,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellReport(packageService.beanToJson(packageBean));
-			// packageBean = configService.getReport(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -169,8 +166,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellAdd(packageService.beanToJson(packageBean));
-			// packageBean = configService.setAdd(packageBean, loginUser().getSystemUser(),
-			// true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -210,8 +206,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellModify(packageService.beanToJson(packageBean));
-			// packageBean = configService.setModify(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -250,8 +245,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellInvalid(packageService.beanToJson(packageBean));
-			// packageBean = configService.setInvalid(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -290,8 +284,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellDetele(packageService.beanToJson(packageBean));
-			// packageBean = configService.setDetele(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());

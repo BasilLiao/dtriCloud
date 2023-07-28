@@ -46,8 +46,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
-			// packageBean = configService.getSearch(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -87,8 +86,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
-			// packageBean = configService.getSearch(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -128,8 +126,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionReport(packageService.beanToJson(packageBean));
-			// packageBean = configService.getReport(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -169,8 +166,6 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionAdd(packageService.beanToJson(packageBean));
-			// packageBean = configService.setAdd(packageBean, loginUser().getSystemUser(),
-			// true);
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -210,8 +205,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionModify(packageService.beanToJson(packageBean));
-			// packageBean = configService.setModify(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -250,8 +244,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionInvalid(packageService.beanToJson(packageBean));
-			// packageBean = configService.setInvalid(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -290,8 +283,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionDetele(packageService.beanToJson(packageBean));
-			// packageBean = configService.setDetele(packageBean,
-			// loginUser().getSystemUser(), true);
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());

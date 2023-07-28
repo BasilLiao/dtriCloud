@@ -17,7 +17,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class SystemConfigController extends AbstractController {
+public class SystemUserController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -26,7 +26,7 @@ public class SystemConfigController extends AbstractController {
 	SystemServiceFeign systemServiceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_user.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -45,9 +45,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
-			// packageBean = configService.getSearch(packageBean,
-			// loginUser().getSystemUser(), true);
+			packageBean = systemServiceFeign.getUserSearch(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -67,7 +66,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_user.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -86,8 +85,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.getUserSearch(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -107,7 +106,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/system_user.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -126,8 +125,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.getConfigReport(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.getUserReport(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -147,7 +146,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/system_user.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -166,8 +165,7 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigAdd(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.setUserAdd(packageService.beanToJson(packageBean));
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -187,7 +185,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/system_user.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -206,8 +204,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigModify(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.setUserModify(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -227,7 +225,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_user.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -245,8 +243,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigInvalid(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.setUserInvalid(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -266,7 +264,7 @@ public class SystemConfigController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/system_config.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/system_user.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -284,8 +282,8 @@ public class SystemConfigController extends AbstractController {
 			packageBean.setDetailMode(true);// 細節模式?
 
 			// Step3.執行=>跨服->務執行
-			packageBean = systemServiceFeign.setConfigDetele(packageService.beanToJson(packageBean));
-
+			packageBean = systemServiceFeign.setUserDetele(packageService.beanToJson(packageBean));
+			
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());

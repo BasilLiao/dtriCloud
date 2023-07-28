@@ -54,7 +54,7 @@ public interface SystemServiceFeign {
 
 	@RequestMapping(value = { "/systemLanguageCell/setDetele" }, method = RequestMethod.POST)
 	PackageBean setLanguageCellDetele(@RequestBody String jsonPackageBean);
-	
+
 	// ================================系統權限================================
 	@RequestMapping(value = { "/systemPermission/getSearch" }, method = RequestMethod.POST)
 	PackageBean getPermissionSearch(@RequestBody String jsonPackageBean);
@@ -74,4 +74,42 @@ public interface SystemServiceFeign {
 	@RequestMapping(value = { "/systemPermission/setDetele" }, method = RequestMethod.POST)
 	PackageBean setPermissionDetele(@RequestBody String jsonPackageBean);
 
+	// ================================系統用戶================================
+	@RequestMapping(value = { "/systemUser/getSearch" }, method = RequestMethod.POST)
+	PackageBean getUserSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemUser/getReport" }, method = RequestMethod.POST)
+	PackageBean getUserReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemUser/setModify" }, method = RequestMethod.POST)
+	PackageBean setUserModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemUser/setAdd" }, method = RequestMethod.POST)
+	PackageBean setUserAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemUser/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setUserInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemUser/setDetele" }, method = RequestMethod.POST)
+	PackageBean setUserDetele(@RequestBody String jsonPackageBean);
+
+	// ================================系統群組================================
+	@RequestMapping(value = { "/systemGroup/getSearch" }, method = RequestMethod.POST)
+	PackageBean getGroupSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemGroup/getReport" }, method = RequestMethod.POST)
+	PackageBean getGroupReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemGroup/setModify" }, method = RequestMethod.POST)
+	PackageBean setGroupModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemGroup/setAdd" }, method = RequestMethod.POST)
+	PackageBean setGroupAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemGroup/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setGroupInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/systemGroup/setDetele" }, method = RequestMethod.POST)
+	PackageBean setGroupDetele(@RequestBody String jsonPackageBean);
+	
 }
