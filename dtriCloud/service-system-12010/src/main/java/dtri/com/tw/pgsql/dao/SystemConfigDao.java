@@ -42,9 +42,9 @@ public interface SystemConfigDao extends JpaRepository<SystemConfig, Long> {
 	// 查詢一部分(子類別)
 	@Query("SELECT c FROM SystemConfig c  WHERE "//
 			+ "(:scname is null or c.scname  =:scname ) and "//
-			+ "(:scgname is null or c.systemConfig.scname = scgname ) and "//
+			+ "(:scgname is null or c.scgname = :scgname ) and "//
 			+ "(c.systemConfig.scid !=0 )")
-	ArrayList<SystemConfig> findAllByConfigSonCheck(String scname, String scgname);
+	ArrayList<SystemConfig> findAllByConfigDetaailCheck(String scname, String scgname);
 
 	// 查詢一部分(父類別)
 	@Query("SELECT c.systemConfig FROM SystemConfig c  WHERE "//

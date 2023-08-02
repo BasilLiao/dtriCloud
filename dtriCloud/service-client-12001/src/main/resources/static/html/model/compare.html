@@ -226,7 +226,7 @@ compare={
 			}
 			Object.keys(resultDetailThead).forEach(function(k){
 				//如果隱藏
-				if(!resultThead[k].show==0){
+				if(!resultDetailThead[k].show==0){
 					//複製格式
 					var exCompareDetailT = $('#cCompareDetailList .exCompareDetailT').clone();
 					//報表欄位
@@ -234,18 +234,18 @@ compare={
 					exCompareDetailT.removeClass("d-none");
 					//如果有翻譯
 					if(resultDetailThead[k].cellLanguage!=''){
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
 						
-						exCompareDetailT.find('.titleName').text(cellName==""?resultThead[k].cellName:cellName);
-						exCompareDetailT.css('minWidth',resultThead[k].width+"px");
+						exCompareDetailT.find('.titleName').text(cellName==""?resultDetailThead[k].cellName:cellName);
+						exCompareDetailT.css('minWidth',resultDetailThead[k].width+"px");
 					}else{
-						exCompareDetailT.find('.titleName').text(resultThead[k].cellName);
-						exCompareDetailT.css('minWidth',resultThead[k].width+"px");
+						exCompareDetailT.find('.titleName').text(resultDetailThead[k].cellName);
+						exCompareDetailT.css('minWidth',resultDetailThead[k].width+"px");
 					}
 					//添加
 					//Detail
-					exCompareDetailT.addClass(resultThead[k].cellName);
-					exCompareDetailT.find('input').attr('title',resultThead[k].cellName);
+					exCompareDetailT.addClass(resultDetailThead[k].cellName);
+					exCompareDetailT.find('input').attr('title',resultDetailThead[k].cellName);
 					exCompareDetailT.appendTo('#compareDetailLT');
 				}
 			});

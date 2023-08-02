@@ -98,7 +98,7 @@ public class SystemConfig {
 	@SequenceGenerator(name = "system_config_seq", sequenceName = "system_config_seq", allocationSize = 1)
 	@Column(name = "sc_id")
 	private Long scid;
-	@Column(name = "sc_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	@Column(name = "sc_name", nullable = false,  columnDefinition = "varchar(50) default ''")
 	private String scname;
 	@Column(name = "sc_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String scgname;

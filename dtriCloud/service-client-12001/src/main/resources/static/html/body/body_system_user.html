@@ -2,7 +2,7 @@
 
 /*依照螢幕設置高度*/
 .tab-pane {
-	min-height: calc(100vh - 105px);
+	min-height: calc(100vh - 125px);
 }
 /*顯示_每個title_上陰影*/
 .nav-item .active {
@@ -95,18 +95,32 @@ body={
           	//Step2.模板
             $("#body_system_user #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_system_user #search_tab").load("./html/model/search.html", function(){});
+            $("#body_system_user #search_tab").load("./html/model/search.html", function(){
+            	search.methods.create();
+            	main.methods.reWindowsSize();
+            });
             //編輯-模板
-            $("#body_system_user #update_tab").load("./html/model/update.html", function(){});
+            $("#body_system_user #update_tab").load("./html/model/update.html", function(){
+            	modify.methods.create();
+            });
             //列印-模板
-            $("#body_system_user #print_tab").load("./html/model/print.html", function(){});
+            $("#body_system_user #print_tab").load("./html/model/print.html", function(){
+            	print.methods.create();
+            });
             //報告-模板
-            $("#body_system_user #report_tab").load("./html/model/report.html", function(){});
+            $("#body_system_user #report_tab").load("./html/model/report.html", function(){
+            	report.methods.create();
+            });
             //比對-模板
-            $("#body_system_user #compare_tab").load("./html/model/compare.html", function(){});
+            $("#body_system_user #compare_tab").load("./html/model/compare.html", function(){
+            	compare.methods.create();
+            });
             //其他-模板
-            //$("#body_system_user #other_tab").load("./html/other/other.html", function(){});
+            $("#body_system_user #other_tab").load("./html/other/other.html", function(){
+            	
+            });
 		},
+		
 		destroy() {
 			//銷毀
 			 console.log("body_system_user.html(destroy)");

@@ -27,7 +27,9 @@ import com.google.gson.JsonParser;
 
 import dtri.com.tw.db.entity.SystemConfig;
 import dtri.com.tw.db.entity.SystemLanguageCell;
+import dtri.com.tw.db.entity.SystemPermission;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.dao.SystemPermissionDao;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -46,6 +48,8 @@ public class SystemLanguageCellServiceAc {
 
 	@Autowired
 	private SystemLanguageCellDao languageDao;
+	@Autowired
+	private SystemPermissionDao permissionDao;
 
 	@Autowired
 	private EntityManager em;
@@ -70,158 +74,10 @@ public class SystemLanguageCellServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			// Step3-0. 事先檢查-Entity List ->取得package位置->取出Class->取出每個屬性名稱
-			// Prepare.
-			String packageName = "dtri.com.tw.db.entity";
-			URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
-			// Filter .class files.
-			File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".class");
-				}
-			});
-			// 基礎屬性
-			JsonArray sysstatusArr = new JsonArray();
-			sysstatusArr.add("normal(正常)_0");
-			sysstatusArr.add("completed(完成)_1");
-			sysstatusArr.add("disabled(禁用)_2");
-			sysstatusArr.add("onlyAdmin(特權)_3");
-			// Find classes implementing ICommand.
-			ArrayList<SystemLanguageCell> languageCells = new ArrayList<>();
-			for (File file : files) {
-				String className = file.getName().replaceAll(".class", "");
-				// String className = file.getName();
-				Class<?> cls = Class.forName(packageName + "." + className);
-				Field[] fields = cls.getDeclaredFields();
-				System.out.println(className);
-				// 每個欄位
-				for (Field fieldOne : fields) {
-					if (languageDao.findAllBySystemLanguageCell(className, fieldOne.getName(), 0, null).size() == 0) {
-						// 查詢比對後->自動建置->預設值
-						System.out.println(fieldOne.getName());
-						SystemLanguageCell languageCell = new SystemLanguageCell();
-						JsonObject languageJson = new JsonObject();
-						//
-						languageCell.setSlclass(2);// 類型?2=Table Cell 欄位
-						// 編輯
-						languageCell.setSlcmfixed(0);// 編輯?0=可編輯 1=固定值
-						languageCell.setSlcmmust(0);// 必填?0=不必填 1=必填
-						languageCell.setSlcmshow(1);// 顯示?0=不顯示 1=顯示
-						languageCell.setSlcmtype("text");// 編輯屬性
-						languageCell.setSlcmselect("[]");
-						// 查詢
-						languageCell.setSlcshow(1);// 顯示?0=不顯示 1=顯示
-						languageCell.setSlcwidth(100);// 顯示寬度?
-						languageCell.setSlspcontrol(className);// 對應Class
-						languageCell.setSltarget(fieldOne.getName());// 對應欄位
-						// 系統固定
-						switch (fieldOne.getName()) {
-						case "syssort":
-							languageJson.addProperty("zh-TW", "排序");
-							languageJson.addProperty("zh-CN", "排序");
-							languageJson.addProperty("en-US", "sort");
-							languageJson.addProperty("vi-VN", "xắp xếp");
-							languageCell.setSlcmtype("number");// 編輯屬性
-							languageCell.setSlcwidth(50);// 顯示寬度?
-							languageCell.setSyssort(990);
-							break;
-						case "sysstatus":
-							languageJson.addProperty("zh-TW", "狀態");
-							languageJson.addProperty("zh-CN", "状态");
-							languageJson.addProperty("en-US", "status");
-							languageJson.addProperty("vi-VN", "tình trạng");
-							languageCell.setSlcmtype("select");// 編輯屬性
-							languageCell.setSlcmselect(sysstatusArr.toString());
-							languageCell.setSyssort(991);
-							break;
-						case "sysheader":
-							languageJson.addProperty("zh-TW", "群組標記");
-							languageJson.addProperty("zh-CN", "群组标记");
-							languageJson.addProperty("en-US", "Group tag");
-							languageJson.addProperty("vi-VN", "thẻ nhóm");
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(992);
-							break;
-						case "sysodate":
-							languageJson.addProperty("zh-TW", "擁有時間");
-							languageJson.addProperty("zh-CN", "拥有时间");
-							languageJson.addProperty("en-US", "Own time");
-							languageJson.addProperty("vi-VN", "có thời gian");
-							languageCell.setSlcmtype("datetime");// 編輯屬性
-							languageCell.setSlcwidth(200);// 顯示寬度?
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(993);
-							break;
-						case "sysouser":
-							languageJson.addProperty("zh-TW", "擁有用戶");
-							languageJson.addProperty("zh-CN", "拥有用户");
-							languageJson.addProperty("en-US", "Own user");
-							languageJson.addProperty("vi-VN", "có người dùng");
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(994);
-							break;
-						case "syscdate":
-							languageJson.addProperty("zh-TW", "建立時間");
-							languageJson.addProperty("zh-CN", "建立时间");
-							languageJson.addProperty("en-US", "Creation time");
-							languageJson.addProperty("vi-VN", "xây dựng thời gian");
-							languageCell.setSlcmtype("datetime");// 編輯屬性
-							languageCell.setSlcwidth(200);// 顯示寬度?
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(995);
-							break;
-						case "syscuser":
-							languageJson.addProperty("zh-TW", "建立用戶");
-							languageJson.addProperty("zh-CN", "建立用户");
-							languageJson.addProperty("en-US", "Creation user");
-							languageJson.addProperty("vi-VN", "Tạo người dùng");
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(996);
-							break;
-						case "sysmdate":
-							languageJson.addProperty("zh-TW", "修改時間");
-							languageJson.addProperty("zh-CN", "修改时间");
-							languageJson.addProperty("en-US", "Modified time");
-							languageJson.addProperty("vi-VN", "Thay đổi thời gian");
-							languageCell.setSlcmtype("datetime");// 編輯屬性
-							languageCell.setSlcwidth(200);// 顯示寬度?
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(997);
-							break;
-						case "sysmuser":
-							languageJson.addProperty("zh-TW", "修改用戶");
-							languageJson.addProperty("zh-CN", "修改用户");
-							languageJson.addProperty("en-US", "Modified user");
-							languageJson.addProperty("vi-VN", "sửa đổi người dùng");
-							languageCell.setSlcmfixed(1);
-							languageCell.setSyssort(998);
-							break;
-						case "sysnote":
-							languageJson.addProperty("zh-TW", "備註");
-							languageJson.addProperty("zh-CN", "备注");
-							languageJson.addProperty("en-US", "Note");
-							languageJson.addProperty("vi-VN", "ghi chú");
-							languageCell.setSlcmtype("textarea");// 編輯屬性
-							languageCell.setSlcwidth(200);// 顯示寬度?
-							languageCell.setSyssort(999);
-							break;
-
-						default:
-							languageJson.addProperty("zh-TW", "");
-							languageJson.addProperty("zh-CN", "");
-							languageJson.addProperty("en-US", "");
-							languageJson.addProperty("vi-VN", "");
-							break;
-						}
-
-						languageCell.setSllanguage(languageJson.toString());
-						languageCells.add(languageCell);
-					}
-				}
-			}
-			languageDao.saveAll(languageCells);
+			languageCellCheckAll();
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySystemLanguageCell(null, null, 0, pageable);
+			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySysLCell(null, null, 0, pageable);
 			entitys.forEach(x -> {
 				if (!x.getSllanguage().equals("")) {
 					// {"zh-TW":"建立時間","zh-CN":"建立时间","en-US":"Creation time","vi-VN":"xây dựng thời
@@ -245,7 +101,7 @@ public class SystemLanguageCellServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySystemLanguageCell("SystemLanguageCell", null, 0, null);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySysLCell("SystemLanguageCell", null, 0, null);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -287,7 +143,7 @@ public class SystemLanguageCellServiceAc {
 		} else {
 			// Step4-1. 取得資料(一般/細節)
 			SystemLanguageCell searchData = packageService.jsonToBean(packageBean.getEntityJson(), SystemLanguageCell.class);
-			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySystemLanguageCell(searchData.getSlspcontrol(), searchData.getSltarget(),
+			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySysLCell(searchData.getSlspcontrol(), searchData.getSltarget(),
 					searchData.getSlclass(), pageable);
 			entitys.forEach(x -> {
 				if (!x.getSllanguage().equals("")) {
@@ -305,7 +161,7 @@ public class SystemLanguageCellServiceAc {
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
-			packageBean.setEntityDetailJson("");
+			packageBean.setEntityDetailJson("{}");
 
 		}
 		// ========================配置共用參數========================
@@ -336,10 +192,13 @@ public class SystemLanguageCellServiceAc {
 			// Step2.資料檢查
 			for (SystemLanguageCell entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllBySystemLanguageCell(entityData.getSlspcontrol(),
-						entityData.getSltarget(), null, null);
-				if (checkDatas.size() > 0 && checkDatas.get(0).getSlid() != entityData.getSlid()) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSltarget() });
+				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllByLanguageCellSame(entityData.getSlspcontrol(),
+						entityData.getSltarget(), null);
+				for (SystemLanguageCell checkData : checkDatas) {
+					if (checkData.getSlid().compareTo(entityData.getSlid()) != 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSltarget() });
+					}
 				}
 			}
 		}
@@ -400,9 +259,9 @@ public class SystemLanguageCellServiceAc {
 			// Step2.資料檢查
 			for (SystemLanguageCell entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllBySystemLanguageCell(entityData.getSlspcontrol(),
-						entityData.getSltarget(), null, null);
-				if (checkDatas.size() > 0 && checkDatas.get(0).getSlid() != entityData.getSlid()) {
+				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllByLanguageCellSame(entityData.getSlspcontrol(),
+						entityData.getSltarget(), null);
+				if (checkDatas.size() > 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSltarget() });
 				}
 			}
@@ -417,7 +276,6 @@ public class SystemLanguageCellServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			x.setSysheader(false);
-			x.setSyssort(1);
 			x.setSlid(null);
 			JsonObject language = new JsonObject();
 			language.addProperty("zh-TW", x.getSl_zhTW());
@@ -574,5 +432,194 @@ public class SystemLanguageCellServiceAc {
 		packageBean.setEntityJson(entityJsonDatas);
 
 		return packageBean;
+	}
+
+	@Transactional
+	private void languageCellCheckAll() throws ClassNotFoundException {
+		// Prepare.
+		String packageName = "dtri.com.tw.db.entity";
+		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
+		// Filter .class files.
+		File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".class");
+			}
+		});
+		// 基礎屬性
+		JsonArray sysstatusArr = new JsonArray();
+		sysstatusArr.add("normal(正常)_0");
+		sysstatusArr.add("completed(完成)_1");
+		sysstatusArr.add("disabled(禁用)_2");
+		sysstatusArr.add("onlyAdmin(特權)_3");
+		// Find classes implementing ICommand.
+		ArrayList<SystemLanguageCell> languageCells = new ArrayList<>();
+		for (File file : files) {
+			String className = file.getName().replaceAll(".class", "");
+			// String className = file.getName();
+			Class<?> cls = Class.forName(packageName + "." + className);
+			Field[] fields = cls.getDeclaredFields();
+			System.out.println(className);
+			// 每個欄位
+			for (Field fieldOne : fields) {
+				if (languageDao.findAllByLanguageCellSame(className, fieldOne.getName(), 0).size() == 0) {
+					// 查詢比對後->自動建置->預設值
+					// System.out.println(fieldOne.getName());
+					SystemLanguageCell languageCell = new SystemLanguageCell();
+					JsonObject languageJson = new JsonObject();
+					//
+					languageCell.setSlclass(2);// 類型?2=Table Cell 欄位
+					// 編輯
+					languageCell.setSlcmfixed(0);// 編輯?0=可編輯 1=固定值
+					languageCell.setSlcmmust(0);// 必填?0=不必填 1=必填
+					languageCell.setSlcmshow(1);// 顯示?0=不顯示 1=顯示
+					languageCell.setSlcmtype("text");// 編輯屬性
+					languageCell.setSlcmselect("[]");
+					// 查詢
+					languageCell.setSlcshow(1);// 顯示?0=不顯示 1=顯示
+					languageCell.setSlcwidth(100);// 顯示寬度?
+					languageCell.setSlspcontrol(className);// 對應Class
+					languageCell.setSltarget(fieldOne.getName());// 對應欄位
+					// 系統固定
+					switch (fieldOne.getName()) {
+					case "syssort":
+						languageJson.addProperty("zh-TW", "排序");
+						languageJson.addProperty("zh-CN", "排序");
+						languageJson.addProperty("en-US", "sort");
+						languageJson.addProperty("vi-VN", "xắp xếp");
+						languageCell.setSlcmtype("number");// 編輯屬性
+						languageCell.setSlcmdefval("0");
+						languageCell.setSlcwidth(80);// 顯示寬度?
+						languageCell.setSyssort(990);
+						break;
+					case "sysstatus":
+						languageJson.addProperty("zh-TW", "狀態");
+						languageJson.addProperty("zh-CN", "状态");
+						languageJson.addProperty("en-US", "status");
+						languageJson.addProperty("vi-VN", "tình trạng");
+						languageCell.setSlcmtype("select");// 編輯屬性
+						languageCell.setSlcmselect(sysstatusArr.toString());
+						languageCell.setSlcmdefval("0");
+						languageCell.setSyssort(991);
+						break;
+					case "sysheader":
+						languageJson.addProperty("zh-TW", "群組標記");
+						languageJson.addProperty("zh-CN", "群组标记");
+						languageJson.addProperty("en-US", "Group tag");
+						languageJson.addProperty("vi-VN", "thẻ nhóm");
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(992);
+						break;
+					case "sysodate":
+						languageJson.addProperty("zh-TW", "擁有時間");
+						languageJson.addProperty("zh-CN", "拥有时间");
+						languageJson.addProperty("en-US", "Own time");
+						languageJson.addProperty("vi-VN", "có thời gian");
+						languageCell.setSlcmtype("datetime");// 編輯屬性
+						languageCell.setSlcwidth(200);// 顯示寬度?
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(993);
+						break;
+					case "sysouser":
+						languageJson.addProperty("zh-TW", "擁有用戶");
+						languageJson.addProperty("zh-CN", "拥有用户");
+						languageJson.addProperty("en-US", "Own user");
+						languageJson.addProperty("vi-VN", "có người dùng");
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(994);
+						break;
+					case "syscdate":
+						languageJson.addProperty("zh-TW", "建立時間");
+						languageJson.addProperty("zh-CN", "建立时间");
+						languageJson.addProperty("en-US", "Creation time");
+						languageJson.addProperty("vi-VN", "xây dựng thời gian");
+						languageCell.setSlcmtype("datetime");// 編輯屬性
+						languageCell.setSlcwidth(200);// 顯示寬度?
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(995);
+						break;
+					case "syscuser":
+						languageJson.addProperty("zh-TW", "建立用戶");
+						languageJson.addProperty("zh-CN", "建立用户");
+						languageJson.addProperty("en-US", "Creation user");
+						languageJson.addProperty("vi-VN", "Tạo người dùng");
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(996);
+						break;
+					case "sysmdate":
+						languageJson.addProperty("zh-TW", "修改時間");
+						languageJson.addProperty("zh-CN", "修改时间");
+						languageJson.addProperty("en-US", "Modified time");
+						languageJson.addProperty("vi-VN", "Thay đổi thời gian");
+						languageCell.setSlcmtype("datetime");// 編輯屬性
+						languageCell.setSlcwidth(200);// 顯示寬度?
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(997);
+						break;
+					case "sysmuser":
+						languageJson.addProperty("zh-TW", "修改用戶");
+						languageJson.addProperty("zh-CN", "修改用户");
+						languageJson.addProperty("en-US", "Modified user");
+						languageJson.addProperty("vi-VN", "sửa đổi người dùng");
+						languageCell.setSlcmfixed(1);
+						languageCell.setSyssort(998);
+						break;
+					case "sysnote":
+						languageJson.addProperty("zh-TW", "備註");
+						languageJson.addProperty("zh-CN", "备注");
+						languageJson.addProperty("en-US", "Note");
+						languageJson.addProperty("vi-VN", "ghi chú");
+						languageCell.setSlcmtype("textarea");// 編輯屬性
+						languageCell.setSlcwidth(200);// 顯示寬度?
+						languageCell.setSyssort(999);
+						break;
+
+					default:
+						languageJson.addProperty("zh-TW", "");
+						languageJson.addProperty("zh-CN", "");
+						languageJson.addProperty("en-US", "");
+						languageJson.addProperty("vi-VN", "");
+						break;
+					}
+
+					languageCell.setSllanguage(languageJson.toString());
+					languageCells.add(languageCell);
+				}
+			}
+		}
+		// Step3-0. 事先檢查-Menu->清單->取出每個屬性名稱
+		List<SystemPermission> allPers = new ArrayList<>();
+		allPers = permissionDao.findAll();
+		allPers.forEach(p -> {
+			if (p.getSpid() != 0L) {
+				ArrayList<SystemLanguageCell> cells = new ArrayList<>();
+				cells = languageDao.findAllByLanguageCellSame(p.getSpcontrol(), null, 1);
+				// 查不到資料?新建 但是必須要有控制端
+				if (cells.size() == 0 && !p.getSpcontrol().equals("")) {
+					SystemLanguageCell languageCell = new SystemLanguageCell();
+					JsonObject languageJson = new JsonObject();
+					//
+					languageCell.setSlclass(1);// 類型?1=Menu 欄位
+					// 編輯
+					languageCell.setSlcmfixed(0);// 編輯?0=可編輯 1=固定值
+					languageCell.setSlcmmust(0);// 必填?0=不必填 1=必填
+					languageCell.setSlcmshow(1);// 顯示?0=不顯示 1=顯示
+					languageCell.setSlcmtype("");// 編輯屬性
+					languageCell.setSlcmselect("[]");
+					// 查詢
+					languageCell.setSyssort(0);
+					languageCell.setSlcshow(1);// 顯示?0=不顯示 1=顯示
+					languageCell.setSlcwidth(100);// 顯示寬度?
+					languageCell.setSlspcontrol(p.getSpcontrol());// 對應Class
+					languageCell.setSltarget(p.getSpcontrol());// 對應欄位
+					languageJson.addProperty("zh-TW", "");
+					languageJson.addProperty("zh-CN", "");
+					languageJson.addProperty("en-US", "");
+					languageJson.addProperty("vi-VN", "");
+					languageCell.setSllanguage(languageJson.toString());
+					languageCells.add(languageCell);
+				}
+			}
+		});
+		languageDao.saveAll(languageCells);
 	}
 }

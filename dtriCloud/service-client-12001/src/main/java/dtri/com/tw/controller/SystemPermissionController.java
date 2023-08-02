@@ -42,7 +42,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
@@ -82,7 +82,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionSearch(packageService.beanToJson(packageBean));
@@ -122,7 +122,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getPermissionReport(packageService.beanToJson(packageBean));
@@ -162,7 +162,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionAdd(packageService.beanToJson(packageBean));
@@ -201,7 +201,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionModify(packageService.beanToJson(packageBean));
@@ -240,7 +240,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionInvalid(packageService.beanToJson(packageBean));
@@ -279,7 +279,7 @@ public class SystemPermissionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(true);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setPermissionDetele(packageService.beanToJson(packageBean));

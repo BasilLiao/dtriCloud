@@ -16,12 +16,12 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002
+		E1000, W1000, W1001, W1002, W1003
 	};
 
 	// 故障語言
 	public enum Lan {
-		zh_TW, en_US, vi_VN;
+		zh_TW, zh_CH, en_US, vi_VN;
 	};
 
 	private String errorColor;
@@ -42,6 +42,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1002_zh_TW = "[W1002] Detail 找不到 Data 關聯!!";
 	public final static String W1002_en_US = "[W1002] Detail could not find Data association!!";
 	public final static String W1002_vi_VN = "[W1002] Không thể tìm thấy chi tiết Liên kết dữ liệu!!";
+	// 錯誤訊息-缺少 Data 資料
+	public final static String W1003_zh_TW = "[W1003] 資料缺少 : ${0} !!";
+	public final static String W1003_en_US = "[W1003] lack of data : ${0} !!";
+	public final static String W1003_vi_VN = "[W1003] thiếu dữ liệu : ${0} !!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {
@@ -58,9 +62,22 @@ public class CloudExceptionService extends Exception {
 		super("[" + errorColor + " " + errorCode + "]:" + language + " " + message);
 		this.setErrorColor(errorColor + "");
 		this.setErrorCode(errorCode + "");
+		String languageDef = language + "";
+		switch (packageBean.getUserLanguaue()) {
+		case "zh_TW":
+			languageDef = "zh_TW";
+			break;
+		case "en_US":
+			languageDef = "en_US";
+			break;
+		case "vi_VN":
+			languageDef = "vi_VN";
+			break;
+		}
+
 		try {
 			// 尋找-比對錯誤代碼
-			Field errorMessage = this.getClass().getDeclaredField(errorCode + "_" + language);
+			Field errorMessage = this.getClass().getDeclaredField(errorCode + "_" + languageDef);
 			this.setErrorCodeMessage((String) errorMessage.get(this.getClass()));
 			// 尋找-特殊標記取代
 			if (message != null) {

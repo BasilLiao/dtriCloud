@@ -57,6 +57,7 @@ public class IndexService {
 			if ((mapLanguages.containsKey(spcontrol))) {
 				group.getSystemPermission().setLanguage(mapLanguages.get(spcontrol).getSllanguage());
 			}
+			group.setSyscdate(null);
 			System.out.println(spcontrol + " : " + spgroup + ":" + group.getSgname());
 		});
 		// Step3.將使用者+群組功能權限=>打包

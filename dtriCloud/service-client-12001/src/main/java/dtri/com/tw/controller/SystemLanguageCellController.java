@@ -42,7 +42,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
@@ -82,7 +82,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellSearch(packageService.beanToJson(packageBean));
@@ -122,7 +122,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getLanguageCellReport(packageService.beanToJson(packageBean));
@@ -162,7 +162,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellAdd(packageService.beanToJson(packageBean));
@@ -202,7 +202,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellModify(packageService.beanToJson(packageBean));
@@ -241,7 +241,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellInvalid(packageService.beanToJson(packageBean));
@@ -280,7 +280,7 @@ public class SystemLanguageCellController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setDetailMode(false);// 細節模式?
+			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setLanguageCellDetele(packageService.beanToJson(packageBean));

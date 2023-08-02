@@ -9,8 +9,10 @@ import com.google.gson.JsonObject;
  */
 public class PackageBean {
 	// 使用者
+	private String userName;
 	private String userAccount;
 	private String userAgentAccount;// 代理人
+	private String userLanguaue;// 語言
 
 	// 模組
 	private Boolean detailMode;
@@ -110,6 +112,11 @@ public class PackageBean {
 		this.reportSet = "";
 		this.otherSet = "";
 		this.detailMode = false;
+		
+		this.setUserName("");
+		this.userAccount = "";
+		this.userAgentAccount = "";
+		this.userLanguaue = "zh-TW";
 
 	}
 
@@ -283,5 +290,21 @@ public class PackageBean {
 
 	public void setUserAgentAccount(String userAgentAccount) {
 		this.userAgentAccount = userAgentAccount;
+	}
+
+	public String getUserLanguaue() {
+		return userLanguaue;
+	}
+
+	public void setUserLanguaue(String userLanguaue) {
+		this.userLanguaue = userLanguaue;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

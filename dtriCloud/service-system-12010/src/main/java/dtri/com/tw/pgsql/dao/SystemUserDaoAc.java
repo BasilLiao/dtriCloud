@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import dtri.com.tw.db.entity.SystemUser;
 
-public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
+public interface SystemUserDaoAc extends JpaRepository<SystemUser, Long> {
 
 	// 帳號查詢
 	SystemUser findBySuaccount(String suaccount);

@@ -16,6 +16,12 @@
 	left: 0px;
 	position: sticky;
 }
+
+#search_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 /*Table 每隔表格內_框線*/
 #search_c .table-bordered td, #search_c .table-bordered th {
 	border: 1px solid #1b76fd;
@@ -23,13 +29,13 @@
 }
 /*Table 表格外框線*/
 #search_c #search_cr table {
-	min-height: 645px;
+	min-height: 200px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
 #search_c #search_dcr table {
-	max-height: 645px;
+	max-height: 200px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -189,7 +195,7 @@
 		<div id="search_cr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
 			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary">
+				<thead class="table-primary fixedCt">
 					<tr>
 						<th class="fixedC1" style="min-width: 40px;">
 							<div>
@@ -222,7 +228,7 @@
 		<div id="search_dcr_open" class="row m-0 collapse">
 			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
 			<table class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary">
+				<thead class="table-primary fixedCt">
 					<tr>
 						<th class="fixedC1" style="min-width: 40px;">
 							<div>
@@ -348,8 +354,8 @@ search={
 			Object.keys(resultDetailThead).forEach(function(k){
 				//console.log(k + ' - ' + resultDetailThead[k]);
 				//複製格式
-				var exTheadth = $($('#search_dcr_open .exTheadth').clone());
-				var exTbodytd = $($('#search_dcr_open .exTbodytd').clone());
+				var exTheadth = $('#search_dcr_open .exTheadth').clone();
+				var exTbodytd = $('#search_dcr_open .exTbodytd').clone();
 				exTheadth.removeClass('exTheadth');
 				exTheadth.removeClass('d-none')
 				exTheadth.addClass('titTheadth');
@@ -389,7 +395,7 @@ search={
 			
 			//Step3.查詢內容-格式
 			for(var b=1;b<=20;b++){
-				var exTbodyTr = $($('.exTbodyTr').clone());
+				var exTbodyTr = $('.exTbodyTr').clone();
 				exTbodyTr.removeClass('exTbodyTr');
 				exTbodyTr.removeClass('d-none');
 				exTbodyTr.addClass('valTbodyTr_'+b);
@@ -410,7 +416,7 @@ search={
 				}
 				if(searchSet['type'] != 'select'){
 					//一般文字
-					searchTextEx = $($('.searchTextEx').clone());
+					searchTextEx = $('.searchTextEx').clone();
 					searchTextEx.removeClass("searchTextEx");
 					searchTextEx.removeClass("col-md-1");
 					searchTextEx.removeClass("d-none");
@@ -432,7 +438,7 @@ search={
 					});
 				}else{
 					//選擇選單
-					searchSelectEx = $($('.searchSelectEx').clone());
+					searchSelectEx = $('.searchSelectEx').clone();
 					searchSelectEx.removeClass("searchSelectEx");
 					searchSelectEx.removeClass("col-md-1");
 					searchSelectEx.removeClass("d-none");
@@ -456,7 +462,7 @@ search={
 					for(var s = 0;s<searchSet['select'].length;s++){
 						var key = searchSet['select'][s].split("_")[0];
 						var val = searchSet['select'][s].split("_")[1];
-						selectEx = $($('.selectEx').clone());
+						selectEx = $('.selectEx').clone();
 						selectEx.removeClass("selectEx");
 						selectEx.removeAttr("selected");
 						selectEx.text(key);

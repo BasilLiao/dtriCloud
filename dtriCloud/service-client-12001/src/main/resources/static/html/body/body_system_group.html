@@ -2,7 +2,7 @@
 
 /*依照螢幕設置高度*/
 .tab-pane {
-	min-height: calc(100vh - 105px);
+	min-height: calc(100vh - 125px);
 }
 /*顯示_每個title_上陰影*/
 .nav-item .active {
@@ -50,7 +50,7 @@
 			</li>
 		</ul>
 		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
-						<!-- tab-home -->
+			<!-- tab-home -->
 			<div class="tab-pane fade" id="home_tab" role="tabpanel" aria-labelledby="tab-home">home_tab Loading...!!</div>
 			<!-- tab-search -->
 			<div class="tab-pane fade" id="search_tab" role="tabpanel" aria-labelledby="tab-search">search_tab Loading...!!</div>
@@ -101,6 +101,7 @@ body_index={
             //編輯-模板
             $("#body_system_group #modify_tab").load("./html/model/modify.html", function(){
             	modify.methods.create();
+            	main.methods.reWindowsSize();
             });
             //列印-模板
             $("#body_system_group #print_tab").load("./html/model/print.html", function(){
@@ -115,7 +116,9 @@ body_index={
             	compare.methods.create();
             });
             //其他-模板
-            $("#body_system_group #other_tab").load("./html/other/special.html", function(){});
+            $("#body_system_group #other_tab").load("./html/other/special.html", function(){
+            	
+            });
 		},
 		destroy() {
 			//銷毀

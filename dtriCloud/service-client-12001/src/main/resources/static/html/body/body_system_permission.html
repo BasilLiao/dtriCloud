@@ -2,7 +2,7 @@
 
 /*依照螢幕設置高度*/
 .tab-pane {
-	min-height: calc(100vh - 105px);
+	min-height: calc(100vh - 125px);
 }
 /*顯示_每個title_上陰影*/
 .nav-item .active {
@@ -97,6 +97,7 @@ body_index={
             //查詢-模板
             $("#body_system_permission #search_tab").load("./html/model/search.html", function(){
             	search.methods.create();
+            	main.methods.reWindowsSize();
             });
             //編輯-模板
             $("#body_system_permission #modify_tab").load("./html/model/modify.html", function(){
