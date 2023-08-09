@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -20,6 +18,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -85,8 +84,6 @@ import jakarta.persistence.Table;
 @EntityListeners(AuditingEntityListener.class)
 public class SystemUser {
 
-	
-
 	public SystemUser() {
 		// 共用型
 		this.syscdate = new Date();
@@ -106,9 +103,12 @@ public class SystemUser {
 		this.suposition = "";
 		this.suemail = "";
 		this.suaccount = "";
+		this.suaaccount = "";
 		this.supassword = "";
 		this.systemgroups = new HashSet<>();
 		this.setSulanguage("");
+		// UI
+		this.sugid = null;
 	}
 
 	// 共用型
@@ -151,16 +151,22 @@ public class SystemUser {
 	private String suemail;
 	@Column(name = "su_account", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String suaccount;
-	@JsonIgnore
+	@Column(name = "su_a_account", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String suaaccount;
+
 	@Column(name = "su_password", nullable = false, columnDefinition = "varchar(300) default ''")
 	private String supassword;
-	
+
 	@Column(name = "su_language", nullable = false, columnDefinition = "varchar(10) default 'zh-TW'")
 	private String sulanguage;
 
 	@ManyToMany(targetEntity = SystemGroup.class, fetch = FetchType.EAGER)
 	@JoinTable(name = "su_sg_list", joinColumns = @JoinColumn(name = "su_id_fk"), inverseJoinColumns = @JoinColumn(name = "sg_id_fk"))
 	private Set<SystemGroup> systemgroups;
+
+	// UI使用(群組ID)
+	@Transient
+	private Long sugid;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -312,5 +318,21 @@ public class SystemUser {
 
 	public void setSulanguage(String sulanguage) {
 		this.sulanguage = sulanguage;
+	}
+
+	public Long getSugid() {
+		return sugid;
+	}
+
+	public void setSugid(Long sugid) {
+		this.sugid = sugid;
+	}
+
+	public String getSuaaccount() {
+		return suaaccount;
+	}
+
+	public void setSuaaccount(String suaaccount) {
+		this.suaaccount = suaaccount;
 	}
 }

@@ -27,13 +27,14 @@ import dtri.com.tw.db.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.shared.CloudExceptionService;
-import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
@@ -58,43 +59,25 @@ public class SystemConfigServiceAc {
 		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
 		int total = pageSetJson.get("total").getAsInt();
 		int batch = pageSetJson.get("batch").getAsInt();
-		int nbStart = total * batch;// 起始計數(細節模式)
-		int nbEnd = nbStart + total;// 終點計數(細節模式)
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "systemConfig.scid"));
+		orders.add(new Order(Direction.ASC, "scgid"));
 		orders.add(new Order(Direction.ASC, "scname"));
 		// 一般模式
-		// PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 		// 細節模式
-		PageRequest pageable = PageRequest.of(0, 100000, Sort.by(orders));
+		PageRequest pageableDetail = PageRequest.of(0, 100000, Sort.by(orders));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<SystemConfig> entitys = configDao.findAllByConfig(null, null, null, null, 0, pageable);
-
+			ArrayList<SystemConfig> entitys = configDao.findAllByConfig(null, null, null, null, 0, true, pageable);
+			ArrayList<SystemConfig> entityDetails = configDao.findAllByConfig(null, null, null, null, 0, false, pageableDetail);
 			// Step3-2.資料區分(一般/細節)
-			// 類別(細節模式)
-			ArrayList<SystemConfig> entityDatas = new ArrayList<>();
-			ArrayList<SystemConfig> entityDetails = new ArrayList<>();
-			// 數量控管(細節模式)
-			for (int s = 0; s < entitys.size(); s++) {
-				if (s >= nbStart && s < nbEnd) {// 如果屬於此批次
-					SystemConfig entityOne = entitys.get(s);
-					entityOne.setScgid(entityOne.getScid());
-					entityOne.setSystemConfig(null);
-					entityDatas.add(entityOne);// 父類別
-					entityOne.getSystemConfigs().forEach(y -> {
-						y.setSystemConfig(null);
-						y.setScgid(entityOne.getScid());
-						entityDetails.add(y);// 子類別
-					});
-				}
-			}
+
 			// 資料包裝
-			String entityJsonDatas = packageService.beanToJson(entityDatas);
+			String entityJsonDatas = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJsonDatas);
 			String entityJsonDetails = packageService.beanToJson(entityDetails);
 			packageBean.setEntityDetailJson(entityJsonDetails);
@@ -159,29 +142,13 @@ public class SystemConfigServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			SystemConfig searchData = packageService.jsonToBean(packageBean.getEntityJson(), SystemConfig.class);
 			ArrayList<SystemConfig> entitys = configDao.findAllByConfig(//
-					searchData.getScname(), searchData.getScgname(), //
-					searchData.getSysmdatestart(), searchData.getSysmdateend(), searchData.getSysstatus(), pageable);
+					null, searchData.getScgname(), searchData.getSysmdatestart(), searchData.getSysmdateend(), searchData.getSysstatus(), true,
+					pageable);
+			ArrayList<SystemConfig> entityDetails = configDao.findAllByConfig(//
+					searchData.getScname(), null, null, null, null, false, pageableDetail);
 			// Step3-2.資料區分(一般/細節)
-
-			// 類別(細節模式)
-			ArrayList<SystemConfig> entityDatas = new ArrayList<>();
-			ArrayList<SystemConfig> entityDetails = new ArrayList<>();
-			// 數量控管(細節模式)
-			for (int s = 0; s < entitys.size(); s++) {
-				if (s >= nbStart && s < nbEnd) {// 如果屬於此批次
-					SystemConfig entityOne = entitys.get(s);
-					entityOne.setScgid(entityOne.getScid());
-					entityOne.setSystemConfig(null);
-					entityDatas.add(entityOne);// 父類別
-					entityOne.getSystemConfigs().forEach(y -> {
-						y.setSystemConfig(null);
-						y.setScgid(entityOne.getScid());
-						entityDetails.add(y);// 子類別
-					});
-				}
-			}
 			// 資料包裝
-			String entityJsonDatas = packageService.beanToJson(entityDatas);
+			String entityJsonDatas = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJsonDatas);
 			String entityJsonDetails = packageService.beanToJson(entityDetails);
 			packageBean.setEntityDetailJson(entityJsonDetails);
@@ -217,7 +184,7 @@ public class SystemConfigServiceAc {
 			// Step2.資料檢查
 			for (SystemConfig entityData : entityDatas) {
 				// 檢查-群組名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemConfig> checkDatas = configDao.findAllByConfigCheck(null, entityData.getScgname());
+				ArrayList<SystemConfig> checkDatas = configDao.findAllByConfigCheck(null, entityData.getScgname(), true);
 				for (SystemConfig checkData : checkDatas) {
 					if (checkData.getScid().compareTo(entityData.getScid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -233,7 +200,7 @@ public class SystemConfigServiceAc {
 			// Step2.資料檢查
 			for (SystemConfig entityDetail : entityDetails) {
 				// 檢查-名稱重複(有數量 && 不同資料有重疊)
-				ArrayList<SystemConfig> checkDatas = configDao.findAllByConfigDetaailCheck(entityDetail.getScname(), entityDetail.getScgname());
+				ArrayList<SystemConfig> checkDatas = configDao.findAllByConfigCheck(entityDetail.getScname(), entityDetail.getScgname(), false);
 				for (SystemConfig checkData : checkDatas) {
 					if (entityDetail.getScid() != null && checkData.getScid().compareTo(entityDetail.getScid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -260,8 +227,8 @@ public class SystemConfigServiceAc {
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getScid() != null) {
-				SystemConfig entityDataOld = configDao.findAllByConfigByScgid(x.getScid()).get(0);
-				entityDataOld.setSyscdate(new Date());
+				SystemConfig entityDataOld = configDao.findAllByConfigByScid(x.getScid()).get(0);
+				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysnote(x.getSysnote());
 				entityDataOld.setScgname(x.getScgname());
@@ -280,22 +247,19 @@ public class SystemConfigServiceAc {
 						y.setSyscuser(packageBean.getUserAccount());
 						y.setSysheader(false);
 						y.setSyssort(0);
-						y.setSystemConfig(entityDataOld);
 						y.setScgname(x.getScgname());
 						saveDetails.add(y);
-					} else if (y.getScid() != null) {
-						// 修改
-						entityDataOld.getSystemConfigs().forEach(z -> {
-							if (y.getScid() == z.getScid()) {
-								z.setSysmdate(new Date());
-								z.setSysmuser(packageBean.getUserAccount());
-								z.setSysstatus(y.getSysstatus());
-								z.setSysnote(y.getSysnote());
-								z.setScgname(x.getScgname());
-								z.setScname(y.getScname());
-								z.setScvalue(y.getScvalue());
-							}
-						});
+					} else if (y.getScid() != null && y.getScgid().compareTo(x.getScid()) == 0) {
+						// 同一群組
+						SystemConfig oldy = configDao.findAllByConfigByScid(y.getScid()).get(0);
+						oldy.setSysmdate(new Date());
+						oldy.setSysmuser(packageBean.getUserAccount());
+						oldy.setSysstatus(y.getSysstatus());
+						oldy.setSysnote(y.getSysnote());
+						oldy.setScgname(x.getScgname());
+						oldy.setScname(y.getScname());
+						oldy.setScvalue(y.getScvalue());
+						saveDetails.add(oldy);
 					}
 				});
 			}
@@ -323,7 +287,7 @@ public class SystemConfigServiceAc {
 			// Step2.資料檢查
 			for (SystemConfig entityData : entityDatas) {
 				// 檢查-群組名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemConfig> entityDataOlds = configDao.findAllByConfig(null, entityData.getScgname(), null, null, 0, null);
+				ArrayList<SystemConfig> entityDataOlds = configDao.findAllByConfigCheck(null, entityData.getScgname(), true);
 				if (entityDataOlds.size() > 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getScgname() });
 				}
@@ -336,7 +300,7 @@ public class SystemConfigServiceAc {
 			// Step2.資料檢查
 			for (SystemConfig entityDetail : entityDetails) {
 				// 檢查-名稱重複(有數量 && 不同資料有重疊)
-				ArrayList<SystemConfig> configs = configDao.findAllByConfigDetaailCheck(entityDetail.getScname(), null);
+				ArrayList<SystemConfig> configs = configDao.findAllByConfigCheck(entityDetail.getScname(), entityDetail.getScgname(), false);
 				if (configs.size() > 0 && configs.get(0).getScid() != entityDetail.getScid()) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityDetail.getScname() });
 				}
@@ -345,7 +309,10 @@ public class SystemConfigServiceAc {
 		// =======================資料整理=======================
 		// 資料Data
 		ArrayList<SystemConfig> details = entityDetails;
+		ArrayList<SystemConfig> entitySave = new ArrayList<>();
 		entityDatas.forEach(x -> {
+			Long gID = configDao.getSystemNextConfigGSeq();
+			Long oldGID = x.getScgid();
 			x.setSysmdate(new Date());
 			x.setSysmuser(packageBean.getUserAccount());
 			x.setSysodate(new Date());
@@ -357,17 +324,15 @@ public class SystemConfigServiceAc {
 			x.setSyssort(0);
 			x.setScvalue("");
 			x.setScid(null);
-			x.setSystemConfig(configDao.findAllByConfigByScgid(0L).get(0));
+			x.setScgid(gID);
 			// 資料Data
-			configDao.save(x);
+			entitySave.add(x);
 			// 資料細節-群組配對
 			details.forEach(y -> {
-				ArrayList<SystemConfig> entityNewDatas = new ArrayList<>();
-				if (x.getScgid() != null && x.getScgid() == y.getScgid()) {
+				if (oldGID != null && oldGID == y.getScgid()) {
 					// 複製的
-					entityNewDatas = configDao.findAllByConfigDefCheck(null, x.getScname());
 					y.setScgname(x.getScgname());
-					y.setSystemConfig(entityNewDatas.get(0));
+					y.setScgid(x.getScgid());
 					y.setSysmdate(new Date());
 					y.setSysmuser(packageBean.getUserAccount());
 					y.setSysodate(new Date());
@@ -377,11 +342,11 @@ public class SystemConfigServiceAc {
 					y.setSysheader(false);
 					y.setSyssort(0);
 					y.setScid(null);
-				} else if (x.getScgid() == null && y.getScgid() == null) {
+					entitySave.add(y);
+				} else if (oldGID == null) {
 					// 新增的
-					entityNewDatas = configDao.findAllByConfigDefCheck(null, x.getScname());
 					y.setScgname(x.getScgname());
-					y.setSystemConfig(entityNewDatas.get(0));
+					y.setScgid(x.getScgid());
 					y.setSysmdate(new Date());
 					y.setSysmuser(packageBean.getUserAccount());
 					y.setSysodate(new Date());
@@ -391,12 +356,13 @@ public class SystemConfigServiceAc {
 					y.setSysheader(false);
 					y.setSyssort(0);
 					y.setScid(null);
+					entitySave.add(y);
 				}
 			});
 		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		configDao.saveAll(entityDetails);
+		configDao.saveAll(entitySave);
 		return packageBean;
 	}
 
@@ -421,30 +387,28 @@ public class SystemConfigServiceAc {
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<SystemConfig> details = entityDetails;
 		ArrayList<SystemConfig> saveDatas = new ArrayList<>();
 		ArrayList<SystemConfig> saveDetails = new ArrayList<>();
 		entityDatas.forEach(x -> {
+			// 排除 沒有ID
+			if (x.getScid() != null) {
+				ArrayList<SystemConfig> entityDataOld = configDao.findAllByConfigByScgid(x.getScgid());
+				entityDataOld.forEach(t -> {
+					t.setSysmdate(new Date());
+					t.setSysmuser(packageBean.getUserAccount());
+					t.setSysstatus(2);
+					saveDatas.add(t);
+				});
+			}
+		});
+		entityDetails.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getScid() != null) {
 				SystemConfig entityDataOld = configDao.findAllByConfigByScgid(x.getScid()).get(0);
 				entityDataOld.setSyscdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
-				saveDatas.add(entityDataOld);
-				// 細節-更新匹配內容
-				details.forEach(y -> {
-					if (y.getScid() != null) {
-						// 修改
-						entityDataOld.getSystemConfigs().forEach(z -> {
-							if (y.getScid() == z.getScid()) {
-								z.setSysmdate(new Date());
-								z.setSysmuser(packageBean.getUserAccount());
-								z.setSysstatus(2);
-							}
-						});
-					}
-				});
+				saveDetails.add(entityDataOld);
 			}
 		});
 		// =======================資料儲存=======================
@@ -483,15 +447,17 @@ public class SystemConfigServiceAc {
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getScid() != null) {
-				SystemConfig entityDataOld = configDao.findAllByConfigByScgid(x.getScid()).get(0);
-				saveDatas.add(entityDataOld);
+				ArrayList<SystemConfig> entityDataOld = configDao.findAllByConfigByScgid(x.getScgid());
+				entityDataOld.forEach(t -> {
+					saveDetails.add(t);
+				});
 			}
 		});
 		// 細節-移除內容
 		entityDetails.forEach(y -> {
 			// 排除 沒有ID
 			if (y.getScid() != null) {
-				SystemConfig entityDetailOld = configDao.findAllByConfigSonByScgid(y.getScid()).get(0);
+				SystemConfig entityDetailOld = configDao.findAllByConfigByScid(y.getScid()).get(0);
 				saveDetails.add(entityDetailOld);
 			}
 		});
@@ -574,7 +540,12 @@ public class SystemConfigServiceAc {
 				query.setParameter(key, val);
 			}
 		});
-		entitys = query.getResultList();
+		try {
+			entitys = query.getResultList();
+		} catch (PersistenceException e) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
+		}
+
 		// 類別(細節模式)
 		ArrayList<SystemConfig> entityDatas = new ArrayList<>();
 		// 修正資料
@@ -582,8 +553,6 @@ public class SystemConfigServiceAc {
 			SystemConfig entityOne = entitys.get(s);
 			if (!entityOne.getSysheader()) {
 				entityOne.setScgid(entityOne.getScid());
-				entityOne.setSystemConfig(null);
-				entityOne.setSystemConfigs(null);
 				entityDatas.add(entityOne);// 父類別
 			}
 		}

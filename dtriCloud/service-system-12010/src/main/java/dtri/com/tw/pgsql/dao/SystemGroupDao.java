@@ -23,14 +23,15 @@ public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 	// 查詢群組名稱
 	@Query("SELECT c FROM SystemGroup c "//
 			+ "WHERE  (:sgname is null or c.sgname LIKE %:sgname%) and "// 指定-群組名稱
-			// + "((:sggid) is null or c.sggid in (:sggid)) and"///* List<Long> sggid, */
+			+ "(:spname is null or c.systemPermission.spname LIKE %:spname%) and "// 指定-權限名稱
 			+ "(:sggid=0L or c.sggid = :sggid) and"// 指定-群組ID
 			+ "(:notsggid=0L or c.sggid != :notsggid) and"// 排除-群組ID
 			+ "(:notsysstatus is null or c.sysstatus != :notsysstatus ) and "// 排除-一般查詢(特定排除 Admin(3))/登入-排除(2資料作廢)/沒有要排除 (4)
+			+ "(:header is null or c.sysheader = :header) and "//
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus ) "// 指定-顯示/沒有要指定 (4)
 			+ "order by c.sggid asc,c.sysheader desc,c.systemPermission.syssort asc")
-	List<SystemGroup> findAllBySystemGroup(String sgname, Long sggid, Long notsggid, //
-			Integer sysstatus, Integer notsysstatus, Pageable pageable);
+	List<SystemGroup> findAllBySystemGroup(String sgname, String spname, Long sggid, Long notsggid, //
+			Integer sysstatus, Integer notsysstatus, Boolean header, Pageable pageable);
 
 	// 查詢全部
 	ArrayList<SystemGroup> findAll();
@@ -39,8 +40,7 @@ public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 	@Query("SELECT c FROM SystemGroup c WHERE  "//
 			+ "(:sgname is null or c.sgname = :sgname) and "//
 			+ "(:header is null or c.sysheader = :header) and "//
-			+ "(:spname is null or c.systemPermission.spname = :spname)" //
-			+ " order by c.sgid desc")
+			+ "(:spname is null or c.systemPermission.spname = :spname)")
 	ArrayList<SystemGroup> findAllByGroupHeader(String sgname, String spname, Boolean header, Pageable pageable);
 
 	// 取得G_ID

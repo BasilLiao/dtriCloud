@@ -258,7 +258,7 @@
 				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">State</div>
-						<div id="modify_c_state" title="AC" class="p-1 m-0 h2 fw-bold text-center text-danger">＞Create＜</div>
+						<div id="modify_c_state" title="None_" class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜</div>
 					</div>
 				</div>
 				<div class="col-6 col-lg-2 p-1">
@@ -730,11 +730,19 @@ modify={
 			$(document).on("click", "#modify_c_date_overwrite", function (event) {
 				console.log("modify_c_date_overwrite");
 				$('#batchThv .entityVal').each(function( index ) {
-					  console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-					  //覆蓋內容
-					  if($( this ).attr('disabled')!='disabled' && $( this ).val()!='' && $( this ).val()!=null){
-						  $('#modifyThAll .'+$( this ).attr('title')).val($( this ).val());
-					  }
+					var tigger = $('#modifyThAll .modifyThvM .'+$( this ).attr('title'));
+					//過濾沒開啟的
+					if($(this).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
+						console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
+						//過濾沒資料的
+						if( $( this ).val()!='' && $( this ).val()!=null){
+							tigger.val($( this ).val());
+						}
+						//checkbox?
+						if($(this).attr('type')=="checkbox" && $(this).prop('checked')){
+							tigger.prop('checked',true);							
+						}
+					}
 				});
 			});
 			//複寫Date->取代->
@@ -742,27 +750,34 @@ modify={
 			$(document).on("click", "#modify_c_date_replace", function (event) {
 				console.log("modify_c_date_replace");
 				$('#batchThv .entityVal').each(function( index ) {
-					  console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-					  if($( this ).attr('disabled')!='disabled' && $( this ).val()!='' && $( this ).val()!=null){
-						  var batchVal = $( this ).val();
-						  var replaceVal = $('#batchTrhv .'+$( this ).attr('title')).val();
-						  //關鍵字取代
-						  if(replaceVal!="" &&replaceVal!=null){
-							  $('#modifyThAll .'+$( this ).attr('title')).each(function( indexCell ) {
-								  $( this ).val($( this ).val().replaceAll(replaceVal,batchVal));
-							  });				  
-						  }
-					  }
+					console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
+					var tigger = $('#modifyThAll .modifyThvM .'+$( this ).attr('title'));
+					var batchVal = $( this ).val();
+					var replaceVal = $('#batchTrhv .'+$( this ).attr('title')).val();
+					//過濾沒開啟的 
+					if($( this ).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
+						//過濾沒資料的
+						if(replaceVal!="" && replaceVal !=null && batchVal!='' && batchVal!=null){
+							//關鍵字取代
+							tigger.each(function( indexCell ) {
+								$( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  
+							});
+						}
+					}
 				});
 				$('#batchThv .entityVal').val('');
+				$('#batchThv .entityVal').prop('checked', false);
 				$('#batchTrhv .entityVal').val('');
+				$('#batchTrhv .entityVal').prop('checked', false);
 			});
 			//複寫Date->清除
 			$(document).off("click", "#modify_c_date_clearAll");
 			$(document).on("click", "#modify_c_date_clearAll", function (event) {
 				console.log("modify_c_date_clearAll");
 				$('#batchThv .entityVal').val('');
+				$('#batchThv .entityVal').prop('checked', false);
 				$('#batchTrhv .entityVal').val('');
+				$('#batchTrhv .entityVal').prop('checked', false);
 			});
 			
 			//複寫Detail
@@ -770,10 +785,17 @@ modify={
 			$(document).on("click", "#modify_c_detail_overwrite", function (event) {
 				console.log("modify_c_detail_overwrite");
 				$('#batchTdv .entityVal').each(function( index ) {
-				console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-				if($( this ).attr('disabled')!='disabled' && $( this ).val()!='' && $( this ).val()!=null){
-						if($( this ).attr('disabled')!='disabled'){
-							$('#modifyTdAll .'+$( this ).attr('title')).val($( this ).val());
+					//過濾沒開啟的
+					var tigger = $('#modifyTdAll .modifyTdvM .'+$( this ).attr('title'));
+					if($(this).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
+						console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
+						//過濾沒資料的
+						if( $( this ).val()!='' && $( this ).val()!=null){
+							tigger.val($( this ).val());
+						}
+						//checkbox?
+						if($(this).attr('type')=="checkbox" && $(this).prop('checked')){
+							tigger.prop('checked',true);							
 						}
 					}
 				});
@@ -783,29 +805,34 @@ modify={
 			$(document).on("click", "#modify_c_detail_replace", function (event) {
 				console.log("modify_c_detail_replace"); 
 				$('#batchTdv .entityVal').each(function( index ) { 
-					  console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-					  if($( this ).attr('disabled')!='disabled' && $( this ).val()!='' && $( this ).val()!=null){
-						  var batchVal = $( this ).val();
-						  var replaceVal = $('#batchTrdv .'+$( this ).attr('title')).val();
-						  //關鍵字取代
-						  if(replaceVal!="" &&replaceVal!=null){
-							  $('#modifyTdAll .'+$( this ).attr('title')).each(function( indexCell ) {
-								  if($( this ).attr('disabled')!='disabled'){
-									  $( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  
-								  }
-							  });
-						  }
-					  }
+					console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
+					var tigger = $('#modifyTdAll .modifyTdvM .'+$( this ).attr('title'));
+					var batchVal = $( this ).val();
+					var replaceVal = $('#batchTrdv .'+$( this ).attr('title')).val();
+					//過濾沒開啟的
+					if($( this ).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
+						//過濾沒資料的
+						if(replaceVal!="" && replaceVal !=null && batchVal!='' && batchVal!=null){
+							//關鍵字取代
+							tigger.each(function( indexCell ) {
+								$( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  
+							});
+						}
+					}
 				});
 				$('#batchTdv .entityVal').val('');
+				$('#batchTdv .entityVal').prop('checked', false);
 				$('#batchTrdv .entityVal').val('');
+				$('#batchTrdv .entityVal').prop('checked', false);
 			});
 			//複寫Detail->清除
 			$(document).off("click", "#modify_c_detail_clearAll");
 			$(document).on("click", "#modify_c_detail_clearAll", function (event) {
 				console.log("modify_c_detail_clearAll");
 				$('#batchTdv .entityVal').val('');
+				$('#batchTdv .entityVal').prop('checked', false);
 				$('#batchTrdv .entityVal').val('');
+				$('#batchTrdv .entityVal').prop('checked', false);
 			});
 			
 			//Execution
@@ -821,8 +848,8 @@ modify={
 				$('.modifyThvM').remove();
 				$('.modifyTdvM').remove();
 				$('.nextOne').remove();
-				$('#modify_c_state').text("＞Create＜");
-				$('#modify_c_state').attr('title','AC_POST');
+				$('#modify_c_state').text("＞None＜");
+				$('#modify_c_state').attr('title','None_');
 			});
 			//清除預設
 			$("#modify_c_date_clearAll").trigger('click');
@@ -842,8 +869,8 @@ modify={
 			$('.nextOne').remove();
 			
 			$('#modify_title').trigger('click');
-			$('#modify_c_state').text("＞Create＜");
-			$('#modify_c_state').attr('title','AC_POST');
+			$('#modify_c_state').text("＞None＜");
+			$('#modify_c_state').attr('title','None_');
 			
 			switch(order){
 			case "saveAs":
@@ -875,17 +902,21 @@ modify={
 							var value = dataOne[k];
 							if(entityDateTime.indexOf(k)>=0){
 								 var dF = new Date(dataOne[k]);
-								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
-								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+								 value = dF.getFullYear()+"-";
+								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 							}
 							modifyThvEx.find("."+k).val(value);
 							//是否為	checkbox
 							//console.log(modifyThvEx.find("."+k).attr('type'));
 							if(modifyThvEx.find("."+k).attr('type')=="checkbox"){
 								if(value==true){
-									modifyThvEx.find('input').prop('checked', true);									
+									modifyThvEx.find('.'+k).prop('checked', true);									
 								}else{
-									modifyThvEx.find('input').prop('checked', false);		
+									modifyThvEx.find('.'+k).prop('checked', false);		
 								}
 							}
 							
@@ -927,17 +958,21 @@ modify={
 							var value = dataDetailOne[k];
 							if(entityDateTime.indexOf(k)>=0){
 								 var dF = new Date(dataDetailOne[k]);
-								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
-								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+								 value = dF.getFullYear()+"-";
+								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 							}
 							modifyTdvEx.find("."+k).val(value);
 							//是否為	checkbox
 							//console.log(modifyThvEx.find("."+k).attr('type'));
 							if(modifyTdvEx.find("."+k).attr('type')=="checkbox"){
 								if(value==true){
-									modifyTdvEx.find('input').prop('checked', true);									
+									modifyTdvEx.find('.'+k).prop('checked', true);									
 								}else{
-									modifyTdvEx.find('input').prop('checked', false);		
+									modifyTdvEx.find('.'+k).prop('checked', false);		
 								}
 							}
 						});
@@ -1009,6 +1044,10 @@ modify={
 			var searchPageSet={};
 			var action = $('#modify_c_state').attr('title').split("_")[0];
 			var type = $('#modify_c_state').attr('title').split("_")[1];
+			//無效
+			if(action=="None"){
+				return false;
+			}
 			//一般資料->每一筆資料
 			$('.modifyThvM').each(function(index){ 
 				//每一格欄位
@@ -1037,6 +1076,10 @@ modify={
 					//可能是時間格式
 					if(entityDateTime.indexOf($(this).attr("title"))>=0){
 						val = new Date(val).getTime();	
+					}
+					//="checkbox"?
+					if($(this).attr("type")=='checkbox'){
+						val =$(this).is(':checked');
 					}
 					entityFormatJson[$(this).attr("title")] = val;
 				});

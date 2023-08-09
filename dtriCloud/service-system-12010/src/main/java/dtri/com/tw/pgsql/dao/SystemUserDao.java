@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import dtri.com.tw.db.entity.SystemUser;
 
-public interface SystemUserDaoAc extends JpaRepository<SystemUser, Long> {
+public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
 
 	// 帳號查詢
 	SystemUser findBySuaccount(String suaccount);
@@ -25,16 +25,16 @@ public interface SystemUserDaoAc extends JpaRepository<SystemUser, Long> {
 			+ "WHERE (:suname is null or c.suname LIKE %:suname% ) and "//
 			+ "(:suaccount is null or c.suaccount LIKE %:suaccount% ) and "//
 			+ "(:suposition is null or c.suposition LIKE %:suposition% ) and "//
-			+ "(:sysstatus=4 or c.sysstatus = :sysstatus )  ") // (4)不過濾
-	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, Integer sysstatus, Pageable pageable);
+			+ "(:admin is not null or c.sysstatus != 3 ) and "//
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus )  ") // (4)不過濾
+	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, String admin, Integer sysstatus, Pageable pageable);
 
-	// 查詢全部含-頁數 不含ADMIN
-	@Query("SELECT c FROM SystemUser c "//
-			+ "WHERE (:suname is null or c.suname LIKE %:suname% ) and "//
-			+ "(:suaccount is null or c.suaccount LIKE %:suaccount% ) and "//
-			+ "(:suposition is null or c.suposition LIKE %:suposition% ) and "//
-			+ "(:sysstatus=4 or c.sysstatus = :sysstatus ) and (c.sysstatus != 3) ") // (4)不過濾
-	ArrayList<SystemUser> findAllBySystemUserNotAdmin(String suname, String suaccount, String suposition, Integer sysstatus, Pageable pageable);
+	@Query("SELECT c FROM SystemUser c WHERE "//
+			+ "(:suaccount is null or c.suaccount =:suaccount) and"//
+			+ "(:suname is null or c.suname =:suname) and"//
+			+ "(:suename is null or c.suename =:suename) and"//
+			+ "(:suemail is null or c.suemail =:suemail)")
+	ArrayList<SystemUser> findAllBySystemUserCheck(String suaccount, String suemail, String suname, String suename);
 
 	// 多筆查詢範例
 	@Query(" SELECT i.suname FROM SystemUser i WHERE "//

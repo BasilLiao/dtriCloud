@@ -15,46 +15,37 @@ public interface SystemConfigDao extends JpaRepository<SystemConfig, Long> {
 	ArrayList<SystemConfig> findAll();
 
 	// 查詢一部分(一般用)
-	@Query("SELECT c.systemConfig FROM SystemConfig c  WHERE "//
+	@Query("SELECT c FROM SystemConfig c  WHERE "//
 			+ "(:scname is null or c.scname LIKE %:scname% ) and "//
-			+ "(:scgname is null or c.systemConfig.scname LIKE %:scgname% ) and "//
+			+ "(:scgname is null or c.scgname LIKE %:scgname% ) and "//
 			+ "(coalesce(:sysmdatestart,null) is null or :sysmdatestart <= c.sysmdate ) and "//
 			+ "(coalesce(:sysmdateend,null) is null or :sysmdateend >= c.sysmdate ) and "//
-			+ "(c.systemConfig.scid !=0 )and "//
+			+ "(c.scid !=0 )and "//
+			+ "(:sysheader is null or c.sysheader =:sysheader) and "//
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus ) ")
-	ArrayList<SystemConfig> findAllByConfig(String scname, String scgname, Date sysmdatestart, Date sysmdateend, Integer sysstatus,
+	ArrayList<SystemConfig> findAllByConfig(String scname, String scgname, Date sysmdatestart, Date sysmdateend, Integer sysstatus, Boolean sysheader,
 			Pageable pageable);
 
 	// 查詢一部分(根源類別)
 	@Query("SELECT c FROM SystemConfig c  WHERE "//
-			+ "(:scname is null or c.scname  =:scname ) and "//
-			+ "(:scgname is null or c.scgname = :scgname ) and "//
-			+ "(c.systemConfig.scid = 0 )")
-	ArrayList<SystemConfig> findAllByConfigDefCheck(String scname, String scgname);
+			+ "(c.scid = 0 )")
+	ArrayList<SystemConfig> findAllByConfigDefCheck();
 
-	// 查詢一部分(父類別)
-	@Query("SELECT c.systemConfig FROM SystemConfig c  WHERE "//
-			+ "(:scname is null or c.scname = :scname ) and "//
-			+ "(:scgname is null or c.systemConfig.scname = :scgname ) and "//
-			+ "(c.systemConfig.scid !=0 )") //
-	ArrayList<SystemConfig> findAllByConfigCheck(String scname, String scgname);
-
-	// 查詢一部分(子類別)
+	// 檢查一部分(父/子類別)
 	@Query("SELECT c FROM SystemConfig c  WHERE "//
-			+ "(:scname is null or c.scname  =:scname ) and "//
+			+ "(:scname is null or c.scname = :scname ) and "//
 			+ "(:scgname is null or c.scgname = :scgname ) and "//
-			+ "(c.systemConfig.scid !=0 )")
-	ArrayList<SystemConfig> findAllByConfigDetaailCheck(String scname, String scgname);
+			+ "(:sysheader is null or c.sysheader =:sysheader) and "//
+			+ "(c.scid !=0 )") //
+	ArrayList<SystemConfig> findAllByConfigCheck(String scname, String scgname, boolean sysheader);
 
-	// 查詢一部分(父類別)
-	@Query("SELECT c.systemConfig FROM SystemConfig c  WHERE "//
-			+ "( c.systemConfig.scid = :scgid ) ")
+	// 查詢一部分(ID)
+	@Query("SELECT c FROM SystemConfig c  WHERE ( c.scid = :scid ) ")
+	ArrayList<SystemConfig> findAllByConfigByScid(Long scid);
+
+	// 查詢一部分(GID)
+	@Query("SELECT c FROM SystemConfig c  WHERE ( c.scgid = :scgid ) ")
 	ArrayList<SystemConfig> findAllByConfigByScgid(Long scgid);
-	
-	// 查詢一部分(子類別)
-		@Query("SELECT c FROM SystemConfig c  WHERE "//
-				+ "( c.scid = :scid ) ")
-		ArrayList<SystemConfig> findAllByConfigSonByScgid(Long scid);
 
 	// 查詢是否重複 群組
 	@Query("SELECT c FROM SystemConfig c WHERE  (c.scgname = :scgname) ")
@@ -64,9 +55,9 @@ public interface SystemConfigDao extends JpaRepository<SystemConfig, Long> {
 	@Query(value = "SELECT CURRVAL('system_config_seq')", nativeQuery = true)
 	Long getSystemConfigSeq();
 
-	// 取得 下一個ID
-	@Query(value = "SELECT NEXTVAL('system_config_seq')", nativeQuery = true)
-	Long getSystemNextConfigSeq();
+	// 取得 下一個GID
+	@Query(value = "SELECT NEXTVAL('system_config_g_seq')", nativeQuery = true)
+	Long getSystemNextConfigGSeq();
 
 	// delete
 	Long deleteByScidAndSysheader(Long id, Boolean sysheader);

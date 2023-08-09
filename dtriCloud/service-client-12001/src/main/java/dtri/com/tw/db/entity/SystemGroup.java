@@ -64,25 +64,31 @@ public class SystemGroup {
 	}
 
 	// 共用型
+	@JsonIgnore
 	@Column(name = "sys_c_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date syscdate;
+	@JsonIgnore
 	@Column(name = "sys_c_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
 	private String syscuser;
+	@JsonIgnore
 	@Column(name = "sys_m_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date sysmdate;
+	@JsonIgnore
 	@Column(name = "sys_m_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
 	private String sysmuser;
+	@JsonIgnore
 	@Column(name = "sys_o_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date sysodate;
+	@JsonIgnore
 	@Column(name = "sys_o_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
 	private String sysouser;
-
 	@Column(name = "sys_header", nullable = false, columnDefinition = "boolean default false")
 	private Boolean sysheader;
 	@Column(name = "sys_status", nullable = false, columnDefinition = "int default 0")
 	private Integer sysstatus;
 	@Column(name = "sys_sort", nullable = false, columnDefinition = "int default 0")
 	private Integer syssort;
+	@JsonIgnore
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 

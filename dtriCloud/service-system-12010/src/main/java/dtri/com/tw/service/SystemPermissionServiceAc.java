@@ -35,6 +35,7 @@ import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
@@ -175,12 +176,19 @@ public class SystemPermissionServiceAc {
 			// Step2.資料檢查
 			for (SystemPermission entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemPermission> checkDatas = permissionDao.findAllByPermission(entityData.getSpname(), entityData.getSpgname(),
-						entityData.getSysstatus(), null, null);
+				ArrayList<SystemPermission> checkDatas = permissionDao.findAllByPCheck(entityData.getSpgname(), entityData.getSpname(), null);
 				for (SystemPermission checkData : checkDatas) {
 					if (checkData.getSpid().compareTo(entityData.getSpid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 								new String[] { entityData.getSpname() });
+					}
+				}
+				// 檢查-控制單位 重複(有資料 && 不是同一筆資料)
+				checkDatas = permissionDao.findAllByPCheck(null, null, entityData.getSpcontrol());
+				for (SystemPermission checkData : checkDatas) {
+					if (checkData.getSpid().compareTo(entityData.getSpid()) != 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSpcontrol() });
 					}
 				}
 			}
@@ -200,7 +208,7 @@ public class SystemPermissionServiceAc {
 						entityDataOld.setSpgid(newGid);
 					} else {
 						// 可能跟隨其他單元組
-						ArrayList<SystemPermission> entityGOld = permissionDao.findAllByPGNameCheck(x.getSpgname());
+						ArrayList<SystemPermission> entityGOld = permissionDao.findAllByPCheck(x.getSpgname(), null, null);
 						if (entityGOld.size() > 0) {
 							// 跟隨舊群組
 							entityDataOld.setSpgid(entityGOld.get(0).getSpgid());
@@ -231,7 +239,7 @@ public class SystemPermissionServiceAc {
 					});
 				}
 
-				entityDataOld.setSyscdate(new Date());
+				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysnote(x.getSysnote());
 				entityDataOld.setSysstatus(x.getSysstatus());
@@ -269,20 +277,31 @@ public class SystemPermissionServiceAc {
 				ArrayList<SystemPermission> checkDatas = new ArrayList<>();
 				ArrayList<SystemPermission> checkDataGroups = new ArrayList<>();
 				if (entityData.getSysheader()) {
-					entityData.setSpname(entityData.getSpgname());
-					checkDatas = permissionDao.findAllByPGNameCheck(entityData.getSpgname());
+					entityData.setSpgname(entityData.getSpname());
+					checkDatas = permissionDao.findAllByPCheck(entityData.getSpgname(), null, null);
+					if (checkDatas.size() > 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSpname() });
+					}
 				} else {
 					// 一般
-					checkDatas = permissionDao.findAllByPNameCheck(entityData.getSpname());
+					checkDatas = permissionDao.findAllByPCheck(null, entityData.getSpname(), null);
+					// 檢查-名稱重複(有資料 && 不是同一筆資料)
+					if (checkDatas.size() > 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSpname() });
+					}
 					// 是否有跟隨群組?
-					checkDataGroups = permissionDao.findAllByPGNameCheck(entityData.getSpgname());
+					checkDataGroups = permissionDao.findAllByPCheck(entityData.getSpgname(), null, null);
 					if (checkDataGroups.size() == 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1002, Lan.zh_TW, null);
 					}
 				}
-				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+				// 檢查-控制單位 重複(有資料 && 不是同一筆資料)
+				checkDatas = permissionDao.findAllByPCheck(null, null, entityData.getSpcontrol());
 				if (checkDatas.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSpname() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSpcontrol() });
 				}
 			}
 		}
@@ -353,11 +372,8 @@ public class SystemPermissionServiceAc {
 			// 排除 沒有ID
 			if (x.getSpid() != null) {
 				SystemPermission entityDataOld = permissionDao.findBySpid(x.getSpid()).get(0);
-				entityDataOld.setSyscdate(new Date());
+				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
-				entityDataOld.setSysnote(x.getSysnote());
-				entityDataOld.setSysstatus(x.getSysstatus());
-				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysstatus(2);
 				saveDatas.add(entityDataOld);
 			}
@@ -469,7 +485,11 @@ public class SystemPermissionServiceAc {
 				query.setParameter(key, val);
 			}
 		});
-		entitys = query.getResultList();
+		try {
+			entitys = query.getResultList();
+		} catch (PersistenceException e) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
+		}
 
 		// 資料包裝
 		String entityJsonDatas = packageService.beanToJson(entitys);

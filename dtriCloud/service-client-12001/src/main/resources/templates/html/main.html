@@ -165,6 +165,7 @@ body {
 		reWindowsSize(){
 			//視窗大小
 			var modifyHeight = 100;
+			var modifyDetailHeight = 100;
 			console.log($("#myTab li .active").attr("id"));
 			var title = $("#myTab li .active").attr("id");
 			switch(title){
@@ -177,7 +178,13 @@ body {
 				$('#modify_c_controller')[0].offsetHeight-
 				$('#footer_page')[0].offsetHeight-55;
 				if(modifyHeight>100){
-					$('#modify_c_list table').css('height',modifyHeight+'px');
+					//Data
+					$('#modifyThAll table').css('maxHeight',modifyHeight+'px');
+					//Detail
+					modifyDetailHeight = (modifyHeight*2) > 
+					(window.innerHeight-$('#nav_index')[0].offsetHeight-$('#myTab')[0].offsetHeight)?
+					(window.innerHeight-$('#nav_index')[0].offsetHeight-$('#myTab')[0].offsetHeight):(modifyHeight*2);
+					$('#modifyTdAll table').css('maxHeight',modifyDetailHeight+'px');					
 				}
 				break;
 			case "search_title":
@@ -189,7 +196,7 @@ body {
 				$('#search_dcr')[0].offsetHeight-
 				$('#footer_page')[0].offsetHeight-55;
 				if(modifyHeight>100){
-					$('#search_cr_open table').css('height',modifyHeight+'px');
+					$('#search_cr_open table').css('maxHeight',modifyHeight+'px');
 				}
 				break;
 			}

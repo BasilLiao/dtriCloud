@@ -63,8 +63,8 @@ public class SystemGroup {
 		this.systemusers = null;
 		this.systemPermission = new SystemPermission();
 		// 權限名稱
-		this.spname = null;
-		this.setSpid(null);
+		this.spname = "";
+		this.spid = null;
 	}
 
 	// 共用型

@@ -42,7 +42,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
@@ -83,7 +84,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getConfigSearch(packageService.beanToJson(packageBean));
@@ -123,7 +125,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.getConfigReport(packageService.beanToJson(packageBean));
@@ -163,7 +166,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setConfigAdd(packageService.beanToJson(packageBean));
@@ -203,7 +207,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setConfigModify(packageService.beanToJson(packageBean));
@@ -242,7 +247,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setConfigInvalid(packageService.beanToJson(packageBean));
@@ -281,7 +287,8 @@ public class SystemConfigController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserAccount(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = systemServiceFeign.setConfigDetele(packageService.beanToJson(packageBean));

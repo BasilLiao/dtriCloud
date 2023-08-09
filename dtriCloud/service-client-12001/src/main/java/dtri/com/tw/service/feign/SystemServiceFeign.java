@@ -111,5 +111,12 @@ public interface SystemServiceFeign {
 
 	@RequestMapping(value = { "/systemGroup/setDetele" }, method = RequestMethod.POST)
 	PackageBean setGroupDetele(@RequestBody String jsonPackageBean);
-	
+
+	// ================================自己用戶================================
+	@RequestMapping(value = { "/ownUser/getSearch" }, method = RequestMethod.POST)
+	PackageBean getOwnUserSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/ownUser/setModify" }, method = RequestMethod.POST)
+	PackageBean setOwnUserModify(@RequestBody String jsonPackageBean);
+
 }

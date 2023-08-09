@@ -296,7 +296,23 @@ search={
 			search.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 			search.data.entityDateTime = main.resq_data['entityDateTime'];
 			search.data.searchSet = searchSetJson['searchSet'];
+			//按鈕權限?
+			var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+			var ps = Array.from(p);
 			
+			if(ps[10] != 1){//查詢(AR)10
+				$("#btn_send").addClass("disabled");
+			}if(ps[9] != 1){//修改(AU)9
+				$("#btn_modify").addClass("disabled");
+			}if(ps[8] != 1){//新增(AC)8
+				$("#btn_create").addClass("disabled");
+				$("#btn_saveAs").addClass("disabled");
+			}if(ps[7] != 1){//作廢(AD)7
+				$("#btn_invalid").addClass("disabled");
+			}if(ps[6] != 1){//移除(DD)6
+				$("#btn_delete").addClass("disabled");
+			}
+
 			//Step1.查詢結果標題-排序
 			var resultThead = searchSetJson['resultThead'];
 			var resultDetailThead = searchSetJson['resultDetailThead'];
@@ -639,7 +655,12 @@ search={
 									//是否時間格式?
 									if(entityDateTime.indexOf(s)>=0){
 										 var dF = new Date(entity[s]);
-										 var dateF = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+										 var dateF = dF.getFullYear()+"-";
+										 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+										 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+										 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+										 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+										 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 										 exTbodyTr.find('.'+s).text(dateF); 
 									}else{
 										 exTbodyTr.find('.'+s).text(entity[s]);
@@ -694,6 +715,7 @@ search={
 			$(document).on("click", "#search_c #btn_markCancel", function (event) {
 				console.log("btn_markCancel");
 				search.data.marks=[];
+				search.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
 				
 			});
@@ -903,10 +925,10 @@ search={
 			//查詢
 			$("#searchItem .searchVal").each(function( index ) {
 				console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
-				if($(this).hasClass('datetimepicker_date') &&$(this).val()!=""){
+				if($(this).hasClass('datetimepicker_date') && $(this).val()!=""){
 					entityJson[$(this).attr("id")]=new Date($(this).val()).getTime();	
 				}else{
-					entityJson[$(this).attr("id")]=$(this).val();					
+					entityJson[$(this).attr("id")]=$(this).val()==""?null:$(this).val();					
 				}
 			});
 			data['entityJson'] = JSON.stringify(entityJson);
@@ -957,7 +979,12 @@ search={
 						//是否時間格式?
 						if(entityDateTime.indexOf(k)>=0){
 							 var dF = new Date(entity[k]);
-							 var dateF = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							 var dateF = dF.getFullYear()+"-";
+							 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+							 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+							 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+							 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+							 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 							$('.valTbodyTr_'+valTrNb+' .'+k).text(dateF);
 						}else{
 							$('.valTbodyTr_'+valTrNb+' .'+k).text(entity[k]);

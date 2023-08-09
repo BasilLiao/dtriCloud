@@ -68,36 +68,36 @@
 			</div>
 		</div>
 		<!-- User -->
-		<div class="menu_css collapse float-end col-4 col-md-3 col-lg-2 border border-primary rounded-bottom bg-white shadow" id="nav_user_menu">
+		<div class="menu_css collapse float-end col-4 col-md-3 col-lg-1 border border-primary rounded-bottom bg-white shadow" id="nav_user_menu">
 			<div class="p-1 row text-center fw-bold fw-normal h6 m-0 text-primary">
-				<div class="col-12">
+				<div class="col-12 p-0">
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Name
 					</div>
 					<div class="h3" id="menu_login_name">Apple</div>
 				</div>
-				<div class="pt-1 pb-1">
+				<div class="pt-1 pb-1 p-0">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
-				<div class="col-12">
+				<div class="col-12 p-0">
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Language
 					</div>
 					<div class="h6" id="menu_login_language" style="word-break: keep-all;"></div>
 				</div>
-				<div class="pt-1 pb-1">
+				<div class="pt-1 pb-1 p-0">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
-				<div class="col-12">
+				<div class="col-12 p-0">
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Login time
 					</div>
 					<div class="h6" id="menu_login_datetime" style="word-break: keep-all;">yyyy-MM-dd 24h:mm:ss</div>
 				</div>
-				<div class="pt-1 pb-1">
+				<div class="pt-1 pb-1 p-0">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
-				<div class="pt-2">
+				<div class="pt-2 p-0">
 					<a id="home_index" href="#">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
@@ -107,7 +107,7 @@
 						</button>
 					</a>
 				</div>
-				<div class="pt-2">
+				<div class="pt-2 p-0">
 					<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 						<div>
 							<i class="bi bi-person-square"></i>
@@ -115,10 +115,10 @@
 						<div>My profile</div>
 					</button>
 				</div>
-				<div class="pt-2">
+				<div class="pt-2 p-0 ">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
-				<div class="pt-2 pb-2">
+				<div class="pt-2 p-0">
 					<a id="logout" href="./logout.basil">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-danger shadow-sm">
 							<div>
@@ -231,12 +231,15 @@ nav_index = {
 					//如果語系有效
 					if(menuJson[key].language!=null && menuJson[key].language!=""){
 						var language = JSON.parse(menuJson[key].language);
-						menu_ex.find(".menu_l_name").text(language[$('#menu_login_language').text()]);
+						//如果翻譯不為空
+						if(language[$('#menu_login_language').text()]!=""){
+							menu_ex.find(".menu_l_name").text(language[$('#menu_login_language').text()]);
+						}
 					}
 					menu_ex.appendTo( "#menu_list");
 				}
 				//放入轉跳頁面
-				nav_index.date.menuUnitJson[menuJson[key].spid] = menuJson[key].spcontrol;
+				nav_index.date.menuUnitJson[menuJson[key].spid] = menuJson[key].spcontrol+"<_>"+menuJson[key].sppermission;
 			}
 			//建立監聽(開啟細項)
 			$(document).off("mouseenter", "#menu_list .menu_list_open");
@@ -263,7 +266,10 @@ nav_index = {
 						//如果語系有效
 						if(menuJson[key].language!=null && menuJson[key].language!=""){
 							var language = JSON.parse(menuJson[key].language);
-							menu_i_ex.find(".menu_i_name").text(language[$('#menu_login_language').text()]);
+							//如果翻譯不為空
+							if(language[$('#menu_login_language').text()]!=""){
+								menu_i_ex.find(".menu_i_name").text(language[$('#menu_login_language').text()]);							
+							}
 						}
 						menu_i_ex.appendTo("#menu_item");
 					}
@@ -275,7 +281,8 @@ nav_index = {
 			$(document).on("click", "#menu_item .menu_list_item", function(event) {
 				//轉跳對象
 				var spid = event.currentTarget.id.replace("spid_","");
-				var url = nav_index.date.menuUnitJson[spid];
+				var url = nav_index.date.menuUnitJson[spid].split("<_>")[0];
+				var sppermission = nav_index.date.menuUnitJson[spid].split("<_>")[1];
 				var req_data = {};
 				var data = {};
 				data['htmlBody'] = ("body_"+url).replace("basil","html");
@@ -283,6 +290,7 @@ nav_index = {
 				//關閉選單
 				$('#nav_functional_menu').removeClass("show");
 				$('#nav_user_menu').removeClass("show");
+				$('#nav_functional_unit').attr("alt",spid+"<_>"+url+"<_>"+sppermission);
 				
 				//準備轉跳
 				req_data.url = url;

@@ -1,22 +1,15 @@
 package dtri.com.tw.db.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -98,28 +91,20 @@ public class SystemConfig {
 	@SequenceGenerator(name = "system_config_seq", sequenceName = "system_config_seq", allocationSize = 1)
 	@Column(name = "sc_id")
 	private Long scid;
-	@Column(name = "sc_name", nullable = false,  columnDefinition = "varchar(50) default ''")
+	@Column(name = "sc_g_id", nullable = false, columnDefinition = "int default 0")
+	private Long scgid;
+	@Column(name = "sc_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String scname;
 	@Column(name = "sc_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String scgname;
 	@Column(name = "sc_value", nullable = false, columnDefinition = "text default ''")
 	private String scvalue;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "systemConfig")
-	private List<SystemConfig> systemConfigs;
-
-	@ManyToOne(targetEntity = SystemConfig.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "sc_g_id")
-	private SystemConfig systemConfig;
-
 	// 前端格式-修改/查詢用(翻譯與欄位)
 	@Transient
 	private Date sysmdatestart;
 	@Transient
 	private Date sysmdateend;
-	@Transient
-	private Long scgid;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -247,22 +232,6 @@ public class SystemConfig {
 
 	public void setSysmdateend(Date sysmdateend) {
 		this.sysmdateend = sysmdateend;
-	}
-
-	public SystemConfig getSystemConfig() {
-		return systemConfig;
-	}
-
-	public void setSystemConfig(SystemConfig systemConfig) {
-		this.systemConfig = systemConfig;
-	}
-
-	public List<SystemConfig> getSystemConfigs() {
-		return systemConfigs;
-	}
-
-	public void setSystemConfigs(List<SystemConfig> systemConfigs) {
-		this.systemConfigs = systemConfigs;
 	}
 
 	public Long getScgid() {

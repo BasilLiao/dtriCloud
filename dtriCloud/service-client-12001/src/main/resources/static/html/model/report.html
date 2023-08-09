@@ -543,8 +543,13 @@ report={
 					//是否時間格式?
 					if(entityDateTime.indexOf(k)>=0){
 						var dF = new Date(entity[k]);
-						var dateF = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
-						reportValueList.find('.'+k).text(dateF);
+						 var dateF = dF.getFullYear()+"-";
+						 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+						 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+						 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+						 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+						 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
+						 reportValueList.find('.'+k).text(dateF);
 					}else{
 						reportValueList.find('.'+k).text(entity[k]);
 					}

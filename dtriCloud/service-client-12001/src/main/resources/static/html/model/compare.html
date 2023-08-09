@@ -319,6 +319,13 @@ compare={
 							var value = compare.data.details[dk][compareDM];
 							if(dateTime.indexOf(compareDM)>=0){
 								 var dF = new Date(value);
+								 value = dF.getFullYear()+"-";
+								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
+								 
 								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
 								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
 							}
@@ -341,8 +348,12 @@ compare={
 							var value = compare.data.details[dk][compareDM];
 							if(dateTime.indexOf(compareDM)>=0){
 								 var dF = new Date(value);
-								 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
-								 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+								 value = dF.getFullYear()+"-";
+								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 							}
 							var textCheck = true;
 							//console.log(compare.data.details[dk]);
@@ -423,8 +434,12 @@ compare={
 						var value = dataOne[k];
 						if(dateTime.indexOf(k)>=0){
 							 var dF = new Date(dataOne[k]);
-							 value = dF.getFullYear()+"-"+(dF.getMonth()+1)+"-"+dF.getDate()+" "+
-							 dF.getHours()+":"+dF.getMinutes()+":"+dF.getSeconds();
+							 value = dF.getFullYear()+"-";
+							 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+							 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+							 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+							 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+							 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
 						}
 						exCDataVL.find("."+k).text(value);
 					});

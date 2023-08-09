@@ -16,7 +16,7 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002, W1003
+		E1000, W1000, W1001, W1002, W1003, W1004
 	};
 
 	// 故障語言
@@ -46,6 +46,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1003_zh_TW = "[W1003] 資料缺少 : ${0} !!";
 	public final static String W1003_en_US = "[W1003] lack of data : ${0} !!";
 	public final static String W1003_vi_VN = "[W1003] thiếu dữ liệu : ${0} !!";
+	// 錯誤訊息-缺少 Data 資料
+	public final static String W1004_zh_TW = "[W1004] 指令語法錯誤 請檢查 屬性/條件 內容 !!";
+	public final static String W1004_en_US = "[W1004] Instruction syntax error Please check attribute/condition content !!";
+	public final static String W1004_vi_VN = "[W1004] Lỗi cú pháp lệnh Vui lòng kiểm tra nội dung thuộc tính/điều kiện !!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {

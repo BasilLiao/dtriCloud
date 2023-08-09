@@ -46,6 +46,7 @@ public class WebSecurityConfig {
 	private static final String system_gro = "/ajax/system_group.basil";
 	private static final String system_use = "/ajax/system_user.basil";
 	private static final String system_lan = "/ajax/system_language_cell.basil";
+	private static final String own_use = "/ajax/own_user.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -102,6 +103,11 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_use + ".AC").hasAuthority(actionRole(system_use, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_use + ".AU").hasAuthority(actionRole(system_use, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_use + ".AD").hasAuthority(actionRole(system_use, "AD"))// (移除)
+				
+				// ----請求-sys_user-(訪問) ----
+				.requestMatchers(HttpMethod.POST, own_use).hasAuthority(actionRole(own_use, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, own_use + ".AR").hasAuthority(actionRole(own_use, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.PUT, own_use + ".AU").hasAuthority(actionRole(own_use, "AU"))// (修改)
 
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();

@@ -97,11 +97,11 @@ body_index={
             //查詢-模板
             $("#body_system_group #search_tab").load("./html/model/search.html", function(){
             	search.methods.create();
+            	main.methods.reWindowsSize();
             });
             //編輯-模板
             $("#body_system_group #modify_tab").load("./html/model/modify.html", function(){
             	modify.methods.create();
-            	main.methods.reWindowsSize();
             });
             //列印-模板
             $("#body_system_group #print_tab").load("./html/model/print.html", function(){

@@ -30,17 +30,13 @@ public interface SystemPermissionDao extends JpaRepository<SystemPermission, Lon
 			+ "order by c.spgid asc,c.syssort asc,c.sysmdate desc")
 	ArrayList<SystemPermission> findAllByPermission(String spname, String spgname, Integer sysstatus, String user, Pageable pageable);
 
-	// 查詢是否重複 名稱
+	// 查詢是否重複 名稱+群組+權限
 	@Query("SELECT c FROM SystemPermission c " //
-			+ "WHERE  (c.spname = :spname) " //
+			+ "WHERE  (:spgname is null or c.spgname = :spgname) and "//
+			+ " (:spname is null or c.spname = :spname) and " //
+			+ " (:spcontrol is null or c.spcontrol = :spcontrol)" //
 			+ "order by c.spgid desc")
-	ArrayList<SystemPermission> findAllByPNameCheck(String spname);
-
-	// 查詢是否重複 群組
-	@Query("SELECT c FROM SystemPermission c " //
-			+ "WHERE  (c.spgname = :spgname) " //
-			+ "order by c.spgid desc")
-	ArrayList<SystemPermission> findAllByPGNameCheck(String spgname);
+	ArrayList<SystemPermission> findAllByPCheck(String spgname, String spname, String spcontrol);
 
 	// 取得G_ID
 	@Query(value = "SELECT NEXTVAL('system_permission_g_seq')", nativeQuery = true)

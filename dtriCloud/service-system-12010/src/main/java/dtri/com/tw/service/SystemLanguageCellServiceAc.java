@@ -25,7 +25,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.db.entity.SystemConfig;
 import dtri.com.tw.db.entity.SystemLanguageCell;
 import dtri.com.tw.db.entity.SystemPermission;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
@@ -38,6 +37,7 @@ import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
@@ -209,7 +209,7 @@ public class SystemLanguageCellServiceAc {
 			// 排除 沒有ID
 			if (x.getSlid() != null) {
 				SystemLanguageCell entityDataOld = languageDao.findAllBySlid(x.getSlid()).get(0);
-				entityDataOld.setSyscdate(new Date());
+				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysnote(x.getSysnote());
 				entityDataOld.setSysstatus(x.getSysstatus());
@@ -309,11 +309,8 @@ public class SystemLanguageCellServiceAc {
 			// 排除 沒有ID
 			if (x.getSlid() != null) {
 				SystemLanguageCell entityDataOld = languageDao.findAllBySlid(x.getSlid()).get(0);
-				entityDataOld.setSyscdate(new Date());
+				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
-				entityDataOld.setSysnote(x.getSysnote());
-				entityDataOld.setSysstatus(x.getSysstatus());
-				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysstatus(2);
 				saveDatas.add(entityDataOld);
 			}
@@ -360,7 +357,7 @@ public class SystemLanguageCellServiceAc {
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<SystemConfig> entitys = new ArrayList<>();
+		List<SystemLanguageCell> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
@@ -425,7 +422,18 @@ public class SystemLanguageCellServiceAc {
 				query.setParameter(key, val);
 			}
 		});
-		entitys = query.getResultList();
+		try {
+			entitys = query.getResultList();
+			entitys.forEach(x -> {
+				JsonObject language = packageService.StringToJson(x.getSllanguage());
+				x.setSl_zhTW(language.get("zh-TW").getAsString());
+				x.setSl_zhCN(language.get("zh-CN").getAsString());
+				x.setSl_enUS(language.get("en-US").getAsString());
+				x.setSl_viVN(language.get("vi-VN").getAsString());
+			});
+		} catch (PersistenceException e) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
+		}
 
 		// 資料包裝
 		String entityJsonDatas = packageService.beanToJson(entitys);

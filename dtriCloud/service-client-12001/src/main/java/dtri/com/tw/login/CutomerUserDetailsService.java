@@ -52,6 +52,7 @@ public class CutomerUserDetailsService implements UserDetailsService {
 		for (SystemGroup systemGroup : systemGroups) {
 			systemGroup.getSystemPermission().getSpcontrol().replaceAll("\\.", "_");// index.basil=>index_basil
 			systemGroup.getSystemPermission().getSppermission();// 000000000001
+
 			// 將每一格 權限分析
 			char[] ch = systemGroup.getSgpermission().toCharArray();
 			for (int i = 11; i >= 0; i--) {

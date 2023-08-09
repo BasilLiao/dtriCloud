@@ -50,16 +50,24 @@ public class IndexService {
 			mapLanguages.put(x.getSltarget(), x);
 			System.out.println(x.getSltarget() + " : " + x.getSllanguage());
 		});
-		// Step2.放入翻譯(一般)
+		// Step2.放入翻譯(一般)->過濾不需要的(spid=1 無作用 只是用來關聯)
+		 Set<SystemGroup> newGroup = new HashSet<>();
 		systemUser.getSystemgroups().forEach(group -> {
 			String spcontrol = group.getSystemPermission().getSpcontrol();
 			String spgroup = group.getSystemPermission().getSysheader() + "";
+			String sgpermission = group.getSgpermission() + "";
 			if ((mapLanguages.containsKey(spcontrol))) {
 				group.getSystemPermission().setLanguage(mapLanguages.get(spcontrol).getSllanguage());
+				group.getSystemPermission().setSppermission(sgpermission);
 			}
 			group.setSyscdate(null);
-			System.out.println(spcontrol + " : " + spgroup + ":" + group.getSgname());
+			System.out.println(spcontrol + " : " + spgroup + ":" + group.getSgname()+":"+sgpermission);
+			
+			if(group.getSystemPermission().getSpid().compareTo(1L)!=0) {
+				newGroup.add(group);				
+			}
 		});
+		systemUser.setSystemgroups(newGroup);
 		// Step3.將使用者+群組功能權限=>打包
 		String systemUserJson = packageService.beanToJson(systemUser);
 		packageBean.setEntityJson(systemUserJson);
