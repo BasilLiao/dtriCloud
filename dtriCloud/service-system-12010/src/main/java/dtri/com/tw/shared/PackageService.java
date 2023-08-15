@@ -14,7 +14,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.db.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 
 @Service
 public class PackageService {

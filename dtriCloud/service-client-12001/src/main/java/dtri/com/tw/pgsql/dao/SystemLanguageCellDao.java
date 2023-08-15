@@ -6,13 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import dtri.com.tw.db.entity.SystemLanguageCell;
-import dtri.com.tw.db.entity.SystemUser;
+import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 
 public interface SystemLanguageCellDao extends JpaRepository<SystemLanguageCell, Long> {
-
-	// 帳號查詢
-	SystemUser findBySlspcontrol(String slspcontrol);
 
 	// 查詢全部
 	ArrayList<SystemLanguageCell> findAll();

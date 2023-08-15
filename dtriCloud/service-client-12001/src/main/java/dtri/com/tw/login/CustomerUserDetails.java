@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import dtri.com.tw.db.entity.SystemGroup;
-import dtri.com.tw.db.entity.SystemUser;
+import dtri.com.tw.pgsql.entity.SystemGroup;
+import dtri.com.tw.pgsql.entity.SystemUser;
 
 public class CustomerUserDetails implements UserDetails {
 	/**

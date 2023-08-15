@@ -13,9 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import dtri.com.tw.db.entity.SystemGroup;
-import dtri.com.tw.db.entity.SystemUser;
 import dtri.com.tw.pgsql.dao.SystemUserDao;
+import dtri.com.tw.pgsql.entity.SystemGroup;
+import dtri.com.tw.pgsql.entity.SystemUser;
 import lombok.RequiredArgsConstructor;
 
 //https://github.com/Ons-diweni/Spring-Security-6-JWT

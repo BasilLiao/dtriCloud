@@ -9,9 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import dtri.com.tw.db.entity.SystemGroup;
-import dtri.com.tw.db.entity.SystemPermission;
 import dtri.com.tw.login.CustomerUserDetails;
+import dtri.com.tw.pgsql.entity.SystemGroup;
+import dtri.com.tw.pgsql.entity.SystemPermission;
 
 public abstract class AbstractController {
 

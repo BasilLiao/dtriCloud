@@ -65,30 +65,9 @@
 		<defaultGoal>compile</defaultGoal>
 	</build>
 	<modules>
-		<module>service-center-12000</module>
-		<module>service-client-12001</module>
-		<module>service-system-class-12010</module>
-		<module>service-system-class-12011</module>
-		<module>service-client-openFeign-12002</module>
-		<module>service-loadBalance-12001</module>
-		<module>service-spring-loadBalance-12001</module>
-		<module>service-spring-center-12000</module>
-		<module>framework-center-eureka</module>
 		<module>framework-center-eureka-12000</module>
-		<module>framework-loadBalance-openFeign-120001</module>
-		<module>framework-loadBalance-openFeign-12001</module>
-		<module>controller-system-12010</module>
-		<module>system-controler</module>
-		<module>system-controller-12010</module>
-		<module>system-service-12011</module>
-		<module>class-system-controller-12010</module>
-		<module>class-system-controller-12011</module>
-		<module>class-system-service-12015</module>
-		<module>class-system-service-12016</module>
-		<module>framework-system-openFeign-12001</module>
-		<module>framework-center-openFeign-12001</module>
-		<module>client-feign-12000</module>
+		<module>service-client-12001</module>
 		<module>service-system-12010</module>
-		<module>service-system-12011</module>
+		<module>service-basic-12020</module>
 	</modules>
 </project>

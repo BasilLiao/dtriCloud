@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import dtri.com.tw.db.entity.SystemPermission;
+import dtri.com.tw.pgsql.entity.SystemPermission;
 
 @Repository
 public interface SystemPermissionDao extends JpaRepository<SystemPermission, Long> {

@@ -22,10 +22,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.db.entity.SystemConfig;
-import dtri.com.tw.db.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.SystemConfig;
+import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;

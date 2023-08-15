@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import dtri.com.tw.db.entity.SystemGroup;
+import dtri.com.tw.pgsql.entity.SystemGroup;
 
 public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 

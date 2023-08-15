@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import dtri.com.tw.db.entity.SystemUser;
+import dtri.com.tw.pgsql.entity.SystemUser;
 
 public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
 

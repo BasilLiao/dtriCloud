@@ -24,14 +24,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.db.entity.SystemGroup;
-import dtri.com.tw.db.entity.SystemLanguageCell;
-import dtri.com.tw.db.entity.SystemPermission;
-import dtri.com.tw.db.entity.SystemUser;
 import dtri.com.tw.pgsql.dao.SystemGroupDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.SystemPermissionDao;
 import dtri.com.tw.pgsql.dao.SystemUserDao;
+import dtri.com.tw.pgsql.entity.SystemGroup;
+import dtri.com.tw.pgsql.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.SystemPermission;
+import dtri.com.tw.pgsql.entity.SystemUser;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
