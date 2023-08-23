@@ -31,7 +31,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	INVMB.MB040, "// --補貨倍量
 			+ "	COALESCE(CMSMC.MC002,'') AS MC002, "// --倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
-			+ "	'製令單' AS TK000"//
+			+ "	'製令類' AS TK000"//
 			+ " FROM "//
 			+ "	[DTR_TW].[dbo].MOCTA AS MOCTA "// --製令單頭
 			+ "	LEFT JOIN "//
@@ -50,6 +50,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	(TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
 			+ "	AND (MOCTB.TB004) != 0 "// --數量不為0
 			+ "	AND MOCTB.TB018 = 'Y' "// --確認碼
+			+ " AND MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)"//
 			+ " ORDER BY "//
 			+ "	MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
 			+ "	INVMB.MB001 ASC,"// --物料

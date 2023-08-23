@@ -16,5 +16,10 @@ public interface BasicCommandListDao extends JpaRepository<BasicCommandList, Lon
 			+ "(:checksum is null or c.checksum=:checksum) "//
 			+ "order by c.bclclass asc, c.bclpnumber asc")
 	ArrayList<BasicCommandList> findAllByComList(String bclclass, String bclsn, String bclpnumber, String checksum);
+	
+	@Query("SELECT c FROM BasicCommandList c WHERE "//
+			+ "(:sysstatus is null or c.sysstatus=:sysstatus) "//
+			+ "order by c.bclclass asc, c.bclpnumber asc")
+	ArrayList<BasicCommandList> findAllByStatus(Integer sysstatus);
 
 }

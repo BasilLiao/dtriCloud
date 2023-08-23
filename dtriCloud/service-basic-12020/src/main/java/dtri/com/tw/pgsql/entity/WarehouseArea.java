@@ -7,9 +7,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -26,6 +29,7 @@ import jakarta.persistence.Table;
  *      sys_sort : 自訂排序<br>
  *      ---倉儲區域設置清單---<br>
  *      wawmpnb : 物料號<br>
+ *      wawmpnbalias : 物料號+倉儲<br>
  *      waerptqty : (帳務)此區域物料數量<br>
  *      watqty : (實際)此區域物料數量<br>
  *      waslocation :FF-FF-FF-FF位置<br>
@@ -53,12 +57,14 @@ public class WarehouseArea {
 		this.sysnote = "";
 		// 倉儲區域清單-清單
 		this.wawmpnb = "";
+		this.setWawmpnbalias("");
 		this.waerptqty = 0;
 		this.watqty = 0;
 		this.waslocation = "";
 		this.watype = false;
 		this.waalias = "";
 		this.waaname = "";
+		this.material = null;
 	}
 
 	// 共用型
@@ -90,20 +96,26 @@ public class WarehouseArea {
 	@SequenceGenerator(name = "warehouse_area_seq", sequenceName = "warehouse_area_seq", allocationSize = 1)
 	@Column(name = "wa_id")
 	private Long waid;
-	@Column(name = "wa_wm_p_nb", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	@Column(name = "wa_wm_p_nb", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String wawmpnb;
 	@Column(name = "wa_s_location", nullable = false, columnDefinition = "varchar(12) default ''")
 	private String waslocation;
+	@Column(name = "wa_wm_p_nb_alias", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String wawmpnbalias;
 	@Column(name = "wa_type", nullable = false, columnDefinition = "boolean default false")
 	private Boolean watype;
-	@Column(name = "wa_alias", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "wa_alias", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String waalias;
-	@Column(name = "wa_a_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "wa_a_name", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String waaname;
 	@Column(name = "wa_erp_t_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer waerptqty;
 	@Column(name = "wa_t_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer watqty;
+
+	@ManyToOne(targetEntity = WarehouseMaterial.class, fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private WarehouseMaterial material;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -248,4 +260,21 @@ public class WarehouseArea {
 	public void setWatqty(Integer watqty) {
 		this.watqty = watqty;
 	}
+
+	public WarehouseMaterial getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(WarehouseMaterial material) {
+		this.material = material;
+	}
+
+	public String getWawmpnbalias() {
+		return wawmpnbalias;
+	}
+
+	public void setWawmpnbalias(String wawmpnbalias) {
+		this.wawmpnbalias = wawmpnbalias;
+	}
+
 }

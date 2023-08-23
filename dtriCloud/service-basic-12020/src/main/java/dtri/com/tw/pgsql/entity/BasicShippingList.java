@@ -39,6 +39,7 @@ import jakarta.persistence.Table;
  *      bsl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bsl_p_specification:物料規格<br>
  *      bsl_pn_qty:數量<br>
+ *      bsl_pn_g_qty:已領數量<br>
  *      bsl_to_command:單據指令對象 json [] A511-123456....<br>
  *      bsl_from_command:單據指令來源 json [] A511-123456....<br>
  *      bsl_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
@@ -72,7 +73,7 @@ public class BasicShippingList {
 		this.sysnote = "";
 		// 入料單-清單
 		this.bslid = null;
-		this.bslnb = 0;
+		this.bslnb = "";
 		this.bslclass = "";
 		this.bslsn = "";
 		this.bsltype = "";
@@ -84,13 +85,14 @@ public class BasicShippingList {
 		this.bslpname = "";
 		this.bslpspecification = "";
 		this.bslpnqty = 0;
-		this.bsltocommand = "";
-		this.bsltowho = "";
-		this.bslfromcommand = "";
-		this.bslfromwho = "";
+		this.bslpngqty = 0;
+		this.bsltocommand = "[]";
+		this.bsltowho = "[]";
+		this.bslfromcommand = "[]";
+		this.bslfromwho = "[]";
 		this.bslstatus = 0;
-		this.bslfdate = new Date(253402271940000L);//9999-12-31 23:59:00
-		this.bsledate = new Date(253402271940000L);//9999-12-31 23:59:00
+		this.bslfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.bsledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 	}
 
 	// 共用型
@@ -122,8 +124,8 @@ public class BasicShippingList {
 	@SequenceGenerator(name = "basic_shipping_list_seq", sequenceName = "basic_shipping_list_seq", allocationSize = 1)
 	@Column(name = "bsl_id")
 	private Long bslid;
-	@Column(name = "bsl_nb", nullable = false, columnDefinition = "int default 0")
-	private Integer bslnb;
+	@Column(name = "bsl_nb", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bslnb;
 	@Column(name = "bsl_class", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslclass;
 	@Column(name = "bsl_sn", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -148,14 +150,18 @@ public class BasicShippingList {
 	private String bslpspecification;
 	@Column(name = "bsl_pn_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpnqty;
+	@Column(name = "bsl_pn_a_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bslpnaqty;
+	@Column(name = "bsl_pn_g_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bslpngqty;
 
-	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltocommand;
-	@Column(name = "bsl_from_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bsl_from_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bslfromcommand;
-	@Column(name = "bsl_to_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bsl_to_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltowho;
-	@Column(name = "bsl_from_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bsl_from_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bslfromwho;
 	@Column(name = "bsl_status", nullable = false, columnDefinition = "int default 0")
 	private Integer bslstatus;
@@ -164,6 +170,8 @@ public class BasicShippingList {
 	private Date bsledate;
 	@Column(name = "bsl_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bslfdate;
+	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
+	private String checksum;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -253,11 +261,11 @@ public class BasicShippingList {
 		this.bslid = bslid;
 	}
 
-	public Integer getBslnb() {
+	public String getBslnb() {
 		return bslnb;
 	}
 
-	public void setBslnb(Integer bslnb) {
+	public void setBslnb(String bslnb) {
 		this.bslnb = bslnb;
 	}
 
@@ -433,6 +441,30 @@ public class BasicShippingList {
 				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate) && Objects.equals(sysmuser, other.sysmuser)
 				&& Objects.equals(sysnote, other.sysnote) && Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
 				&& Objects.equals(syssort, other.syssort) && Objects.equals(sysstatus, other.sysstatus);
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
+	}
+
+	public Integer getBslpnaqty() {
+		return bslpnaqty;
+	}
+
+	public void setBslpnaqty(Integer bslpnaqty) {
+		this.bslpnaqty = bslpnaqty;
+	}
+
+	public Integer getBslpngqty() {
+		return bslpngqty;
+	}
+
+	public void setBslpngqty(Integer bslpngqty) {
+		this.bslpngqty = bslpngqty;
 	}
 
 }

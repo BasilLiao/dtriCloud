@@ -72,7 +72,7 @@ public class BasicCommandList {
 		this.sysnote = "";
 		// 入料單-清單
 		this.bclid = null;
-		this.bclnb = 0;
+		this.bclnb = "";
 		this.bclclass = "";
 		this.bclsn = "";
 		this.bcltype = "";
@@ -84,10 +84,11 @@ public class BasicCommandList {
 		this.bclpname = "";
 		this.bclpspecification = "";
 		this.bclpnqty = 0;
-		this.bcltocommand = "";
-		this.bcltowho = "";
-		this.bclfromcommand = "";
-		this.bclfromwho = "";
+		this.bclpnaqty = 0;
+		this.bcltocommand = "[]";
+		this.bcltowho = "[]";
+		this.bclfromcommand = "[]";
+		this.bclfromwho = "[]";
 		this.bclstatus = 0;
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
@@ -122,15 +123,14 @@ public class BasicCommandList {
 	@SequenceGenerator(name = "basic_command_list_seq", sequenceName = "basic_command_list_seq", allocationSize = 1)
 	@Column(name = "bcl_id")
 	private Long bclid;
-	@Column(name = "bcl_nb", nullable = false, columnDefinition = "int default 0")
-	private Integer bclnb;
+	@Column(name = "bcl_nb", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bclnb;
 	@Column(name = "bcl_class", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bclclass;
 	@Column(name = "bcl_sn", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bclsn;
 	@Column(name = "bcl_type", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bcltype;
-
 	@Column(name = "bcl_product", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclproduct;
 
@@ -151,14 +151,16 @@ public class BasicCommandList {
 	private String bclpspecification;
 	@Column(name = "bcl_pn_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bclpnqty;
+	@Column(name = "bcl_pn_a_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bclpnaqty;
 
-	@Column(name = "bcl_to_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bcl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bcltocommand;
-	@Column(name = "bcl_from_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bcl_from_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bclfromcommand;
-	@Column(name = "bcl_to_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bcl_to_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bcltowho;
-	@Column(name = "bcl_from_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bcl_from_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bclfromwho;
 	@Column(name = "bcl_status", nullable = false, columnDefinition = "int default 0")
 	private Integer bclstatus;
@@ -258,11 +260,11 @@ public class BasicCommandList {
 		this.bclid = bclid;
 	}
 
-	public Integer getBclnb() {
+	public String getBclnb() {
 		return bclnb;
 	}
 
-	public void setBclnb(Integer bclnb) {
+	public void setBclnb(String bclnb) {
 		this.bclnb = bclnb;
 	}
 
@@ -435,6 +437,14 @@ public class BasicCommandList {
 
 	public void setBclproduct(String bclproduct) {
 		this.bclproduct = bclproduct;
+	}
+
+	public Integer getBclpnaqty() {
+		return bclpnaqty;
+	}
+
+	public void setBclpnaqty(Integer bclpnaqty) {
+		this.bclpnaqty = bclpnaqty;
 	}
 
 }

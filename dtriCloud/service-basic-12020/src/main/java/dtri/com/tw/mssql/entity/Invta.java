@@ -10,37 +10,30 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * A511 廠內製令單<br>
- * A512 委外製令單<br>
- * A521 廠內重工單<br>
- * A522 委外領料單<br>
- * 
- * 
+ * 調撥/費用/A111-A112-A119-A121<br>
  */
 @Entity
-@Table(name = "MOCTA")
+@Table(name = "INVTA")
 @EntityListeners(AuditingEntityListener.class)
-public class Mocta {
+public class Invta {
 	@Id
-	@Column(name = "MOCTA_ID")
+	@Column(name = "INVTA_ID")
 	private Long mocid;
 
-	@Column(name = "TA026_TA027_TA028")
-	private String ta026_ta027_ta028;// 訂單
-	@Column(name = "TA001_TA002")
-	private String ta001_ta002;// 製令單
-	@Column(name = "TA006")
-	private String ta006;// 成品品號
-	@Column(name = "TA009")
-	private String ta009;// 預計開工日
-	@Column(name = "TA010")
-	private String ta010;// 預計完工日
-	@Column(name = "TB015")
-	private String tb015;// 預計領料日
-	@Column(name = "TB004")
-	private Integer tb004;// 需領用
-	@Column(name = "TB005")
-	private Integer tb005;// 已領用
+	@Column(name = "TB001_TB002_TB003")
+	private String tb001_tb002_tb003;// 調撥/費用/A111-A112-A119-A121
+
+	@Column(name = "TB007")
+	private Integer tb007;// 數量
+	@Column(name = "TB012")
+	private String tb012;// --轉出庫別
+	@Column(name = "TB013")
+	private String tb013;// --轉入庫別
+
+	@Column(name = "TB018")
+	private String tb018;// --確認碼
+	@Column(name = "TA016")
+	private String ta016;// --簽核狀態碼
 
 	@Column(name = "MB001")
 	private String mb001;// 品號
@@ -63,53 +56,66 @@ public class Mocta {
 	@Column(name = "MA002")
 	private String ma002;// 供應商名稱
 	@Column(name = "TK000")
-	private String tk000;// 製令單
+	private String tk000;// 入庫單
 
 	// 檢查新的?
 	@Transient
 	private boolean newone;
-	// 項次號?
-	@Transient
-	private String bslnb;
 
-	public String getTa001_ta002() {
-		return ta001_ta002;
+	public Long getMocid() {
+		return mocid;
 	}
 
-	public void setTa001_ta002(String ta001_ta002) {
-		this.ta001_ta002 = ta001_ta002;
+	public void setMocid(Long mocid) {
+		this.mocid = mocid;
 	}
 
-	public String getTa009() {
-		return ta009;
+	public String getTb001_tb002_tb003() {
+		return tb001_tb002_tb003;
 	}
 
-	public void setTa009(String ta009) {
-		this.ta009 = ta009;
+	public void setTb001_tb002_tb003(String tb001_tb002_tb003) {
+		this.tb001_tb002_tb003 = tb001_tb002_tb003;
 	}
 
-	public String getTa010() {
-		return ta010;
+	public Integer getTb007() {
+		return tb007;
 	}
 
-	public void setTa010(String ta010) {
-		this.ta010 = ta010;
+	public void setTb007(Integer tb007) {
+		this.tb007 = tb007;
 	}
 
-	public Integer getTb004() {
-		return tb004;
+	public String getTb012() {
+		return tb012;
 	}
 
-	public void setTb004(Integer tb004) {
-		this.tb004 = tb004;
+	public void setTb012(String tb012) {
+		this.tb012 = tb012;
 	}
 
-	public Integer getTb005() {
-		return tb005;
+	public String getTb013() {
+		return tb013;
 	}
 
-	public void setTb005(Integer tb005) {
-		this.tb005 = tb005;
+	public void setTb013(String tb013) {
+		this.tb013 = tb013;
+	}
+
+	public String getTb018() {
+		return tb018;
+	}
+
+	public void setTb018(String tb018) {
+		this.tb018 = tb018;
+	}
+
+	public String getTa016() {
+		return ta016;
+	}
+
+	public void setTa016(String ta016) {
+		this.ta016 = ta016;
 	}
 
 	public String getMb001() {
@@ -200,46 +206,6 @@ public class Mocta {
 		this.tk000 = tk000;
 	}
 
-	public Long getMocid() {
-		return mocid;
-	}
-
-	public void setMocid(Long mocid) {
-		this.mocid = mocid;
-	}
-
-	public String getTa026_ta027_ta028() {
-		return ta026_ta027_ta028;
-	}
-
-	public void setTa026_ta027_ta028(String ta026_ta027_ta028) {
-		this.ta026_ta027_ta028 = ta026_ta027_ta028;
-	}
-
-	public String getTb015() {
-		return tb015;
-	}
-
-	public void setTb015(String tb015) {
-		this.tb015 = tb015;
-	}
-
-	public String getTa006() {
-		return ta006;
-	}
-
-	public void setTa006(String ta006) {
-		this.ta006 = ta006;
-	}
-
-	@Override
-	public String toString() {
-		return "Mocta [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006 + ", ta009=" + ta009 + ", ta010="
-				+ ta010 + ", tb015=" + tb015 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003
-				+ ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
-				+ ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
-	}
-
 	public boolean isNewone() {
 		return newone;
 	}
@@ -248,12 +214,10 @@ public class Mocta {
 		this.newone = newone;
 	}
 
-	public String getBslnb() {
-		return bslnb;
+	@Override
+	public String toString() {
+		return "Invta [tb001_tb002_tb003=" + tb001_tb002_tb003 + ", tb007=" + tb007 + ", tb012=" + tb012 + ", tb013=" + tb013 + ", tb018=" + tb018
+				+ ", ta016=" + ta016 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032
+				+ ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
-
-	public void setBslnb(String bslnb) {
-		this.bslnb = bslnb;
-	}
-
 }

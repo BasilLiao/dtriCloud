@@ -39,6 +39,7 @@ import jakarta.persistence.Table;
  *      bil_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bil_p_specification:物料規格<br>
  *      bil_pn_qty:數量<br>
+ *      bil_pn_g_qty:已入數量<br>
  *      bil_to_command:單據指令對象 json [] A511-123456....<br>
  *      bil_from_command:單據指令來源 json [] A511-123456....<br>
  *      bil_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
@@ -72,7 +73,7 @@ public class BasicIncomingList {
 		this.sysnote = "";
 		// 入料單-清單
 		this.bilid = null;
-		this.bilnb = 0;
+		this.bilnb = "";
 		this.bilclass = "";
 		this.bilsn = "";
 		this.biltype = "";
@@ -84,13 +85,14 @@ public class BasicIncomingList {
 		this.bilpname = "";
 		this.bilpspecification = "";
 		this.bilpnqty = 0;
-		this.biltocommand = "";
-		this.biltowho = "";
-		this.bilfromcommand = "";
-		this.bilfromwho = "";
+		this.bilpngqty = 0;
+		this.biltocommand = "[]";
+		this.bilfromcommand = "[]";
+		this.biltowho = "[]";
+		this.bilfromwho = "[]";
 		this.bilstatus = 0;
-		this.bilfdate = new Date(253402271940000L);//9999-12-31 23:59:00
-		this.biledate = new Date(253402271940000L);//9999-12-31 23:59:00
+		this.bilfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.biledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 	}
 
 	// 共用型
@@ -122,8 +124,8 @@ public class BasicIncomingList {
 	@SequenceGenerator(name = "basic_incoming_list_seq", sequenceName = "basic_incoming_list_seq", allocationSize = 1)
 	@Column(name = "bil_id")
 	private Long bilid;
-	@Column(name = "bil_nb", nullable = false, columnDefinition = "int default 0")
-	private Integer bilnb;
+	@Column(name = "bil_nb", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bilnb;
 	@Column(name = "bil_class", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilclass;
 	@Column(name = "bil_sn", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -148,14 +150,18 @@ public class BasicIncomingList {
 	private String bilpspecification;
 	@Column(name = "bil_pn_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bilpnqty;
+	@Column(name = "bil_pn_a_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bilpnaqty;
+	@Column(name = "bil_pn_g_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bilpngqty;
 
-	@Column(name = "bil_to_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bil_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String biltocommand;
-	@Column(name = "bil_from_command", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bil_from_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bilfromcommand;
-	@Column(name = "bil_to_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bil_to_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String biltowho;
-	@Column(name = "bil_from_who", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bil_from_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bilfromwho;
 	@Column(name = "bil_status", nullable = false, columnDefinition = "int default 0")
 	private Integer bilstatus;
@@ -164,6 +170,9 @@ public class BasicIncomingList {
 	private Date biledate;
 	@Column(name = "bil_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bilfdate;
+
+	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
+	private String checksum;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -253,11 +262,11 @@ public class BasicIncomingList {
 		this.bilid = bilid;
 	}
 
-	public Integer getBilnb() {
+	public String getBilnb() {
 		return bilnb;
 	}
 
-	public void setBilnb(Integer bilnb) {
+	public void setBilnb(String bilnb) {
 		this.bilnb = bilnb;
 	}
 
@@ -433,6 +442,30 @@ public class BasicIncomingList {
 				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate) && Objects.equals(sysmuser, other.sysmuser)
 				&& Objects.equals(sysnote, other.sysnote) && Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
 				&& Objects.equals(syssort, other.syssort) && Objects.equals(sysstatus, other.sysstatus);
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
+	}
+
+	public Integer getBilpnaqty() {
+		return bilpnaqty;
+	}
+
+	public void setBilpnaqty(Integer bilpnaqty) {
+		this.bilpnaqty = bilpnaqty;
+	}
+
+	public Integer getBilpngqty() {
+		return bilpngqty;
+	}
+
+	public void setBilpngqty(Integer bilpngqty) {
+		this.bilpngqty = bilpngqty;
 	}
 
 }
