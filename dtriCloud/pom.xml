@@ -69,5 +69,6 @@
 		<module>service-client-12001</module>
 		<module>service-system-12010</module>
 		<module>service-basic-12020</module>
+		<module>service-warehouse-12030</module>
 	</modules>
 </project>
