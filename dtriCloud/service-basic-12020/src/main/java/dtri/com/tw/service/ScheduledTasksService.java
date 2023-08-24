@@ -33,35 +33,35 @@ public class ScheduledTasksService {
 	public void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		
-		synchronizeService.erpSynchronizeInvta();
-		synchronizeService.erpSynchronizeInvtb();
-		synchronizeService.erpSynchronizeInvtg();
-		synchronizeService.erpSynchronizeInvth();
-
-		synchronizeService.erpSynchronizeMocta();
-		synchronizeService.erpSynchronizeMocte();
-		synchronizeService.erpSynchronizeMoctf();
-		synchronizeService.erpSynchronizeMocth();
-
-		synchronizeService.erpSynchronizePurth();
+//		synchronizeService.erpSynchronizeInvta();
+//		synchronizeService.erpSynchronizeInvtb();
+//		synchronizeService.erpSynchronizeInvtg();
+//		synchronizeService.erpSynchronizeInvth();
+//
+//		synchronizeService.erpSynchronizeMocta();
+//		synchronizeService.erpSynchronizeMocte();
+//		synchronizeService.erpSynchronizeMoctf();
+//		synchronizeService.erpSynchronizeMocth();
+//
+//		synchronizeService.erpSynchronizePurth();
 	}
 
-	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
-	@Scheduled(fixedRate = 60000)
-	public void testFixedRate() {
-		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
-	}
-
-	// initialDelay = 180000 表示延遲 180000 (3秒) 執行第一次任務, 然後每 5000ms(5 秒) 再次呼叫該方法
-	@Scheduled(initialDelay = 180000, fixedRate = 5000)
-	public void testInitialDelay() {
-		logger.info("===initialDelay: 時間:{}", dateFormat.format(new Date()));
-	}
-
-	// cron接受cron表示式，根據cron表示式確定定時規則
-	@Scheduled(cron = "0 0/1 * * * ?")
-	public void testCron() {
-		logger.info("===cron: 時間:{}", dateFormat.format(new Date()));
-	}
+//	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
+//	@Scheduled(fixedRate = 60000)
+//	public void testFixedRate() {
+//		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
+//	}
+//
+//	// initialDelay = 180000 表示延遲 180000 (3秒) 執行第一次任務, 然後每 5000ms(5 秒) 再次呼叫該方法
+//	@Scheduled(initialDelay = 180000, fixedRate = 5000)
+//	public void testInitialDelay() {
+//		logger.info("===initialDelay: 時間:{}", dateFormat.format(new Date()));
+//	}
+//
+//	// cron接受cron表示式，根據cron表示式確定定時規則
+//	@Scheduled(cron = "0 0/1 * * * ?")
+//	public void testCron() {
+//		logger.info("===cron: 時間:{}", dateFormat.format(new Date()));
+//	}
 
 }

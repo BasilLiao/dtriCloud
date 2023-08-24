@@ -106,6 +106,8 @@ public class WarehouseMaterial {
 	private Boolean wmadqty;
 	@Column(name = "wm_a_i_qty", nullable = false, columnDefinition = "boolean default false")
 	private Boolean wmaiqty;
+	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
+	private String checksum;
 
 	@OneToMany(mappedBy = "material")
 	private List<WarehouseArea> warehouseAreas;
@@ -260,6 +262,14 @@ public class WarehouseMaterial {
 
 	public void setWarehouseAreas(List<WarehouseArea> warehouseAreas) {
 		this.warehouseAreas = warehouseAreas;
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
 	}
 
 }

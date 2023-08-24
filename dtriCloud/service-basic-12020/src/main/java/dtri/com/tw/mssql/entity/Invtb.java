@@ -175,7 +175,7 @@ public class Invtb {
 
 	@Override
 	public String toString() {
-		return "Invtb [mocid=" + mocid + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mc002=" + mc002 + ", cmc002=" + cmc002
+		return "Invtb [mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mc002=" + mc002 + ", cmc002=" + cmc002
 				+ ", mc003=" + mc003 + ", mc007=" + mc007 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039
 				+ ", mb040=" + mb040 + ", ma002=" + ma002 + "]";
 	}

@@ -93,7 +93,9 @@ public class ERPSynchronizeService {
 			String nKey = m.getTa001_ta002() + "-" + String.format("%04d", bslnb) + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setBslnb(String.format("%04d", bslnb));
+			m.setTa001_ta002(m.getTa001_ta002().replaceAll("\\s", ""));
 			bslnb += 1;
 			erpMaps.put(nKey, m);
 		}
@@ -110,8 +112,8 @@ public class ERPSynchronizeService {
 			if (erpMaps.containsKey(oKey)) {
 				String nChecksum = erpMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Mocta m = erpMaps.get(oKey);
@@ -185,6 +187,8 @@ public class ERPSynchronizeService {
 		for (Purth m : erpInEntitys) {
 			String nKey = m.getTh001_th002() + "-" + m.getTh003() + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setTh001_th002(m.getTh001_th002().replaceAll("\\s", ""));
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
 		}
@@ -201,8 +205,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Purth m = erpInMaps.get(oKey);
@@ -269,6 +273,8 @@ public class ERPSynchronizeService {
 			String nKey = m.getTa026_ta027_ta028() + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
 				m.setTk000("領料類");
@@ -294,8 +300,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Mocte m = erpInMaps.get(oKey);
@@ -331,8 +337,8 @@ public class ERPSynchronizeService {
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Mocte m = erpShMaps.get(oKey);
@@ -426,6 +432,8 @@ public class ERPSynchronizeService {
 		Map<String, Moctf> erpInMaps = new HashMap<>();
 		for (Moctf m : erpEntitys) {
 			String nKey = m.getTg001_tg002_tg003() + "-" + m.getMb001();
+			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
@@ -443,8 +451,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Moctf m = erpInMaps.get(oKey);
@@ -511,6 +519,8 @@ public class ERPSynchronizeService {
 		for (Mocth m : erpEntitys) {
 			String nKey = m.getTi001_ti002_ti003() + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
+			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
 		}
@@ -527,8 +537,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Mocth m = erpInMaps.get(oKey);
@@ -594,6 +604,8 @@ public class ERPSynchronizeService {
 		Map<String, Invtg> erpShMaps = new HashMap<>();
 		for (Invtg m : erpEntitys) {
 			String nKey = m.getTg001_tg002_tg003() + "-" + m.getMb001();
+			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 單據性質別:A131 庫存借出單/ A141 庫存借入單
@@ -621,8 +633,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invtg m = erpInMaps.get(oKey);
@@ -658,8 +670,8 @@ public class ERPSynchronizeService {
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invtg m = erpShMaps.get(oKey);
@@ -754,6 +766,8 @@ public class ERPSynchronizeService {
 		Map<String, Invth> erpShMaps = new HashMap<>();
 		for (Invth m : erpEntitys) {
 			String nKey = m.getTi001_ti002_ti003() + "-" + m.getMb001();
+			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 單據性質別:借出歸還A151+借入歸還單A161
@@ -781,8 +795,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invth m = erpInMaps.get(oKey);
@@ -818,8 +832,8 @@ public class ERPSynchronizeService {
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invth m = erpShMaps.get(oKey);
@@ -914,6 +928,8 @@ public class ERPSynchronizeService {
 		Map<String, Invta> erpShMaps = new HashMap<>();
 		for (Invta m : erpEntitys) {
 			String nKey = m.getTb001_tb002_tb003() + "-" + m.getMb001();
+			m.setTb001_tb002_tb003(m.getTb001_tb002_tb003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 單據性質別:借出歸還A151+借入歸還單A161
@@ -946,8 +962,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invta m = erpInMaps.get(oKey);
@@ -983,8 +999,8 @@ public class ERPSynchronizeService {
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				//System.out.println(nChecksum);
-				//System.out.println(o.getChecksum());
+				// System.out.println(nChecksum);
+				// System.out.println(o.getChecksum());
 				// 內容不同=>更新
 				if (!o.getChecksum().equals(nChecksum)) {
 					Invta m = erpShMaps.get(oKey);
@@ -1086,6 +1102,7 @@ public class ERPSynchronizeService {
 			String nKey = m.getMb001() + "_" + m.getMc002() + '_' + m.getMc003();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s", ""));
 			m.setMc002(m.getMc002().replaceAll("\\s", ""));
 			m.setNewone(true);
@@ -1115,17 +1132,22 @@ public class ERPSynchronizeService {
 				Invtb ov = erpListMaps.get(oKey);
 				erpListMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容更新(複寫)
-				o.setWmpnb(ov.getMb001());// 物料號
-				o.setWmname(ov.getMb002());// 物料名稱
-				o.setWmspecification(ov.getMb003());// 物料規格
-				saveLists.add(o);
+				String checkSum = ov.toString().replaceAll("\\s", "");
+				if (!checkSum.equals(o.getChecksum())) {
+					o.setWmpnb(ov.getMb001());// 物料號
+					o.setWmname(ov.getMb002());// 物料名稱
+					o.setWmspecification(ov.getMb003());// 物料規格
+					o.setChecksum(checkSum);
+					saveLists.add(o);
+				}
 			}
 		});
 		// Step4-2 [物料清單] 全新資料?
 		erpListMaps.forEach((key, v) -> {
 			if (v.isNewone()) {
-
 				WarehouseMaterial n = new WarehouseMaterial();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				n.setChecksum(checkSum);
 				n.setWmpnb(v.getMb001());// 物料號
 				n.setWmname(v.getMb002());// 物料名稱
 				n.setWmspecification(v.getMb003());// 物料規格
@@ -1141,17 +1163,21 @@ public class ERPSynchronizeService {
 			if (erpItemMaps.containsKey(aKey)) {
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
 				Invtb av = erpItemMaps.get(aKey);
-				// 正則表達式:FF-FF-FF-FF
-				Boolean checkloc = av.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
-				a.setWawmpnb(av.getMb001());// 物料號
-				a.setWaalias(av.getMc002());// 倉庫別
-				a.setWawmpnbalias(av.getMb001() + "_" + av.getMc002());// 物料號+倉庫別
-				a.setWaslocation(checkloc ? av.getMc003() : a.getWaslocation());// 物料位置
-				a.setWaaname(av.getCmc002());// 倉庫名稱
-				a.setWaerptqty(av.getMc007());// 倉儲數量
-				a.setWatqty(av.getMc007());// (實際)倉儲數量
-				a.setMaterial(materialDao.findAllByWmpnb(av.getMb001()).get(0));
-				saveItems.add(a);
+				String checkSum = av.toString().replaceAll("\\s", "");
+				if (!checkSum.equals(a.getChecksum())) {
+					// 正則表達式:FF-FF-FF-FF
+					Boolean checkloc = av.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
+					a.setWawmpnb(av.getMb001());// 物料號
+					a.setWaalias(av.getMc002());// 倉庫別
+					a.setWawmpnbalias(av.getMb001() + "_" + av.getMc002());// 物料號+倉庫別
+					a.setWaslocation(checkloc ? av.getMc003() : a.getWaslocation());// 物料位置
+					a.setWaaname(av.getCmc002());// 倉庫名稱
+					a.setWaerptqty(av.getMc007());// 倉儲數量
+					a.setWatqty(av.getMc007());// (實際)倉儲數量
+					a.setMaterial(materialDao.findAllByWmpnb(av.getMb001()).get(0));
+					a.setChecksum(checkSum);
+					saveItems.add(a);
+				}
 			}
 		});
 
@@ -1159,13 +1185,15 @@ public class ERPSynchronizeService {
 		erpItemMaps.forEach((key, v) -> {
 			if (v.isNewone()) {
 				// 可能重複?
-				ArrayList<WarehouseArea> areaSame = areaDao.findAllByWawmpnb(v.getMb001());
-				if (areaSame.size() > 0 && areaSame.get(0).getWawmpnbalias().equals(v.getMb001() + "_" + v.getMc002())) {
+				ArrayList<WarehouseArea> areaSame = areaDao.findAllByWawmpnbalias(v.getMb001() + "_" + v.getMc002());
+				if (areaSame.size() > 0) {
 					System.out.println(areaSame.get(0).getWawmpnb());
 				} else {
 					// 正則表達式:FF-FF-FF-FF
 					Boolean checkloc = v.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
 					WarehouseArea n = new WarehouseArea();
+					String checkSum = v.toString().replaceAll("\\s", "");
+					n.setChecksum(checkSum);
 					n.setWawmpnb(v.getMb001());// 物料號
 					n.setWaalias(v.getMc002());// 倉庫別
 					n.setWaslocation(checkloc ? v.getMc003() : "");// 物料位置

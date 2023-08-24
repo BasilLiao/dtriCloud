@@ -112,6 +112,8 @@ public class WarehouseArea {
 	private Integer waerptqty;
 	@Column(name = "wa_t_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer watqty;
+	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
+	private String checksum;
 
 	@ManyToOne(targetEntity = WarehouseMaterial.class, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
@@ -275,6 +277,14 @@ public class WarehouseArea {
 
 	public void setWawmpnbalias(String wawmpnbalias) {
 		this.wawmpnbalias = wawmpnbalias;
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
 	}
 
 }

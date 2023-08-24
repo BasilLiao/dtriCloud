@@ -445,7 +445,7 @@ public class SystemLanguageCellServiceAc {
 	@Transactional
 	private void languageCellCheckAll() throws ClassNotFoundException {
 		// Prepare.
-		String packageName = "dtri.com.tw.db.entity";
+		String packageName = "dtri.com.tw.pgsql.entity";
 		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
 		// Filter .class files.
 		File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
