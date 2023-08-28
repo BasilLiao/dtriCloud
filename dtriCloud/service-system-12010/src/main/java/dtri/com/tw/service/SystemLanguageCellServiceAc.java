@@ -163,6 +163,10 @@ public class SystemLanguageCellServiceAc {
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson("{}");
 
+			// 查不到資料
+			if (packageBean.getEntityJson().equals("[]")) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
 		}
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
@@ -171,10 +175,6 @@ public class SystemLanguageCellServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("slid_");
-		// 查不到資料
-		if (packageBean.getEntityJson().equals("[]")) {
-			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
-		}
 		return packageBean;
 	}
 

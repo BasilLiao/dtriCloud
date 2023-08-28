@@ -29,21 +29,21 @@ public class ScheduledTasksService {
 	ERPSynchronizeService synchronizeService;
 
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 180000)
 	public void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		
-//		synchronizeService.erpSynchronizeInvta();
-//		synchronizeService.erpSynchronizeInvtb();
-//		synchronizeService.erpSynchronizeInvtg();
-//		synchronizeService.erpSynchronizeInvth();
-//
-//		synchronizeService.erpSynchronizeMocta();
-//		synchronizeService.erpSynchronizeMocte();
-//		synchronizeService.erpSynchronizeMoctf();
-//		synchronizeService.erpSynchronizeMocth();
-//
-//		synchronizeService.erpSynchronizePurth();
+		synchronizeService.erpSynchronizeInvta();
+		synchronizeService.erpSynchronizeInvtb();
+		synchronizeService.erpSynchronizeInvtg();
+		synchronizeService.erpSynchronizeInvth();
+
+		synchronizeService.erpSynchronizeMocta();
+		synchronizeService.erpSynchronizeMocte();
+		synchronizeService.erpSynchronizeMoctf();
+		synchronizeService.erpSynchronizeMocth();
+
+		synchronizeService.erpSynchronizePurth();
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

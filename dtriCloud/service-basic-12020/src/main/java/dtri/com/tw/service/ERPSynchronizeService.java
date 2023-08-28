@@ -34,11 +34,14 @@ import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.dao.WarehouseConfigDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
+import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
+import dtri.com.tw.pgsql.entity.WarehouseConfig;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.shared.Fm_T;
 
@@ -72,10 +75,20 @@ public class ERPSynchronizeService {
 	@Autowired
 	WarehouseAreaDao areaDao;
 	@Autowired
+	WarehouseConfigDao configDao;
+	@Autowired
 	WarehouseMaterialDao materialDao;
+	@Autowired
+	WarehouseTypeFilterDao filterDao;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+	/**
+	 * KEY: wtf_code單據代號(開頭)Ex:A511 / A521<br>
+	 * Value: wtf_type單據類型0=入庫 / 1=出庫 / 2=轉移<br>
+	 */
+	private Map<String, String> wTypeFilter = new HashMap<>();
 
 	// ============ A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單 ============
 	public void erpSynchronizeMocta() {
@@ -1088,7 +1101,7 @@ public class ERPSynchronizeService {
 
 	}
 
-	// ============ 物料同步 ============
+	// ============ 物料+儲位同步 ============
 	public void erpSynchronizeInvtb() {
 		logger.info("===erpSynchronizeInvtb: 時間:{}", dateFormat.format(new Date()));
 
@@ -1096,6 +1109,7 @@ public class ERPSynchronizeService {
 		ArrayList<Invtb> erpEntitys = invtbDao.findAllByMoctb();
 		Map<String, Invtb> erpListMaps = new HashMap<>();
 		Map<String, Invtb> erpItemMaps = new HashMap<>();
+		Map<String, String> erpConfigMaps = new HashMap<>();// A1000+原物料倉
 		String checkSame = "";
 		for (Invtb m : erpEntitys) {
 			// 物料號+倉別號+位置
@@ -1113,18 +1127,19 @@ public class ERPSynchronizeService {
 			}
 			// item(所有項目)
 			erpItemMaps.put(nKey, m);
+			// config(倉別清單)
+			erpConfigMaps.put(m.getMc002(), m.getCmc002());
 		}
 
 		// Step2. 取得[Cloud] 有效 委外入料單 資料
-		List<WarehouseMaterial> listOlds = new ArrayList<>();
-		listOlds = materialDao.findAll();
-		List<WarehouseArea> areaOlds = new ArrayList<>();
-		areaOlds = areaDao.findAll();
+		List<WarehouseMaterial> listOlds = materialDao.findAll();
+		List<WarehouseArea> areaOlds = areaDao.findAll();
+		List<WarehouseConfig> configOlds = configDao.findAll();
 		// 存入資料物件
 		ArrayList<WarehouseMaterial> saveLists = new ArrayList<WarehouseMaterial>();
 		ArrayList<WarehouseArea> saveItems = new ArrayList<WarehouseArea>();
 
-		// Step4-1.[物料清單] 資料整理轉換
+		// Step3-1.[物料清單] 資料整理轉換
 		listOlds.forEach(o -> {
 			String oKey = o.getWmpnb();
 			// 同一筆資料?
@@ -1142,7 +1157,7 @@ public class ERPSynchronizeService {
 				}
 			}
 		});
-		// Step4-2 [物料清單] 全新資料?
+		// Step3-2 [物料清單] 全新資料?
 		erpListMaps.forEach((key, v) -> {
 			if (v.isNewone()) {
 				WarehouseMaterial n = new WarehouseMaterial();
@@ -1156,7 +1171,7 @@ public class ERPSynchronizeService {
 		});
 		materialDao.saveAll(saveLists);
 
-		// Step3-1. [物料位置] 資料整理轉換
+		// Step4-1. [物料位置] 資料整理轉換
 		areaOlds.forEach(a -> {
 			String aKey = a.getWawmpnb() + "_" + a.getWaalias() + "_" + a.getWaslocation();
 			// 同一筆?
@@ -1173,7 +1188,6 @@ public class ERPSynchronizeService {
 					a.setWaslocation(checkloc ? av.getMc003() : a.getWaslocation());// 物料位置
 					a.setWaaname(av.getCmc002());// 倉庫名稱
 					a.setWaerptqty(av.getMc007());// 倉儲數量
-					a.setWatqty(av.getMc007());// (實際)倉儲數量
 					a.setMaterial(materialDao.findAllByWmpnb(av.getMb001()).get(0));
 					a.setChecksum(checkSum);
 					saveItems.add(a);
@@ -1181,7 +1195,7 @@ public class ERPSynchronizeService {
 			}
 		});
 
-		// Step3-2. [物料位置] 全新資料?
+		// Step4-2. [物料位置] 全新資料?
 		erpItemMaps.forEach((key, v) -> {
 			if (v.isNewone()) {
 				// 可能重複?
@@ -1196,20 +1210,67 @@ public class ERPSynchronizeService {
 					n.setChecksum(checkSum);
 					n.setWawmpnb(v.getMb001());// 物料號
 					n.setWaalias(v.getMc002());// 倉庫別
-					n.setWaslocation(checkloc ? v.getMc003() : "");// 物料位置
 					n.setWawmpnbalias(v.getMb001() + "_" + v.getMc002());// 物料號+倉庫別
+					n.setWaslocation(checkloc ? v.getMc003() : "FF-FF-FF-FF");// 物料位置
 					n.setWaaname(v.getCmc002());// 倉庫名稱
 					n.setWaerptqty(v.getMc007());// 倉儲數量
-					n.setWatqty(v.getMc007());// (實際)倉儲數量
+					n.setWatqty(0);// (實際)倉儲數量
 					n.setMaterial(materialDao.findAllByWmpnb(v.getMb001()).get(0));
 					saveItems.add(n);
 				}
 			}
 		});
 		areaDao.saveAll(saveItems);
+		// Step5 儲位設定 全新資料?
+		erpSynchronizeWconfig(erpConfigMaps, configOlds);
 
-		// Step5 去除掉數量為0的儲位
+		// Step6 去除掉數量為0的儲位
 		List<WarehouseArea> areaRemove = areaDao.findAllByWaerptqty(0);
 		areaDao.deleteAll(areaRemove);
 	}
+
+	// ============ 儲位過濾設定 ============
+	public void erpSynchronizeWconfig(Map<String, String> erpConfigMaps, List<WarehouseConfig> configOlds) {
+		ArrayList<WarehouseConfig> saveConfig = new ArrayList<WarehouseConfig>();
+		erpConfigMaps.forEach((key, v) -> {
+			boolean checkNew = true;
+			// 是否重複?
+			for (WarehouseConfig c : configOlds) {
+				if (c.getWcalias().equals(key)) {
+					checkNew = false;
+					break;
+				}
+			}
+			if (checkNew) {
+				WarehouseConfig newC = new WarehouseConfig();
+				newC.setWcalias(key);
+				newC.setWcwkaname(v);
+				saveConfig.add(newC);
+			}
+		});
+		configDao.saveAll(saveConfig);
+	}
+
+	// ============ 單據過濾設定 ============
+	public void erpSynchronizeWtypeFilter(Map<String, String> erpConfigMaps, List<WarehouseConfig> configOlds) {
+		ArrayList<WarehouseConfig> saveConfig = new ArrayList<WarehouseConfig>();
+		erpConfigMaps.forEach((key, v) -> {
+			boolean checkNew = true;
+			// 是否重複?
+			for (WarehouseConfig c : configOlds) {
+				if (c.getWcalias().equals(key)) {
+					checkNew = false;
+					break;
+				}
+			}
+			if (checkNew) {
+				WarehouseConfig newC = new WarehouseConfig();
+				newC.setWcalias(key);
+				newC.setWcwkaname(v);
+				saveConfig.add(newC);
+			}
+		});
+		configDao.saveAll(saveConfig);
+	}
+
 }

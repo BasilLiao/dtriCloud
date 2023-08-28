@@ -22,10 +22,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
-import dtri.com.tw.pgsql.entity.BasicCommandList;
+import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -38,7 +38,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class BasicCommandListServiceAc {
+public class WarehouseAreaServiceAc {
 
 	@Autowired
 	private PackageService packageService;
@@ -47,7 +47,7 @@ public class BasicCommandListServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
-	private BasicCommandListDao commandListDao;
+	private WarehouseAreaDao areaDao;
 
 	@Autowired
 	private EntityManager em;
@@ -62,8 +62,8 @@ public class BasicCommandListServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.DESC, "bclclass"));// 單別
-		orders.add(new Order(Direction.DESC, "bclsn"));// 單號
+		orders.add(new Order(Direction.ASC, "wawmpnb"));// 物料號
+		orders.add(new Order(Direction.DESC, "waslocation"));// 物料位置
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -71,9 +71,12 @@ public class BasicCommandListServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, null, pageable);
+			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
+			entitys.forEach(t -> {
+				t.setMaterial(null);
+			});
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
@@ -85,7 +88,7 @@ public class BasicCommandListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicCommandList", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseArea", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -97,22 +100,22 @@ public class BasicCommandListServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = BasicCommandList.class.getDeclaredFields();
+			Field[] fields = WarehouseArea.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
-			exceptionCell.add("systemgroups");
+			exceptionCell.add("material");
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclclass", "Ex:單別?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wawmpnb", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclsn", "Ex:單號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "waslocation", "Ex:物料位置?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "waalias", "Ex:倉別?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -122,10 +125,10 @@ public class BasicCommandListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			BasicCommandList searchData = packageService.jsonToBean(packageBean.getEntityJson(), BasicCommandList.class);
+			WarehouseArea searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseArea.class);
 
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(searchData.getBclclass(), searchData.getBclsn(),
-					searchData.getBclpnumber(), pageable);
+			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(searchData.getWawmpnb(), searchData.getWaslocation(), searchData.getWaalias(),
+					pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -133,20 +136,20 @@ public class BasicCommandListServiceAc {
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson("");
+
 			// 查不到資料
 			if (packageBean.getEntityJson().equals("[]")) {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
-
 		}
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new BasicCommandList());
+		String entityFormatJson = packageService.beanToJson(new WarehouseArea());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("bclid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bcledate_bclfdate");
+		packageBean.setEntityIKeyGKey("waid_");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
 
@@ -154,34 +157,33 @@ public class BasicCommandListServiceAc {
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<BasicCommandList> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
 			});
 
 			// Step2.資料檢查
-			for (BasicCommandList entityData : entityDatas) {
+			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(), entityData.getBclsn(),
-						entityData.getBclpnumber(), null);
-				for (BasicCommandList checkData : checkDatas) {
-					if (checkData.getBclid().compareTo(entityData.getBclid()) != 0) {
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null, null);
+				for (WarehouseArea checkData : checkDatas) {
+					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getBclpnumber() });
+								new String[] { entityData.getWawmpnb() });
 					}
 				}
 			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<BasicCommandList> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getBclid() != null) {
-				BasicCommandList entityDataOld = new BasicCommandList();
-				entityDataOld = commandListDao.getReferenceById(x.getBclid());
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = new WarehouseArea();
+				entityDataOld = areaDao.getReferenceById(x.getWaid());
 
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
@@ -190,15 +192,21 @@ public class BasicCommandListServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
 				// 修改
-				entityDataOld.setBclpnqty(x.getBclpnqty());
-				entityDataOld.setBclpnaqty(x.getBclpnaqty());
+				entityDataOld.setWaslocation(x.getWaslocation());
+				entityDataOld.setWaalias(x.getWaalias());
+				entityDataOld.setWaaname(x.getWaaname());
+				entityDataOld.setWaerptqty(x.getWaerptqty());
+				entityDataOld.setWatqty(x.getWatqty());
+				entityDataOld.setWawmpnbalias(entityDataOld.getWawmpnb() + "_" + x.getWaalias());
+
+				entityDataOld.setChecksum(x.getChecksum());
 
 				saveDatas.add(entityDataOld);
 			}
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		commandListDao.saveAll(saveDatas);
+		areaDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -206,22 +214,21 @@ public class BasicCommandListServiceAc {
 	// @Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
 		// =======================資料準備=======================
-		ArrayList<BasicCommandList> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
 			});
 
 			// Step2.資料檢查
-			for (BasicCommandList entityData : entityDatas) {
+			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(), entityData.getBclsn(),
-						entityData.getBclpnumber(), null);
-				for (BasicCommandList checkData : checkDatas) {
-					if (checkData.getBclid().compareTo(entityData.getBclid()) != 0) {
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null, null);
+				for (WarehouseArea checkData : checkDatas) {
+					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getBclpnumber() });
+								new String[] { entityData.getWawmpnb() });
 					}
 				}
 			}
@@ -229,7 +236,7 @@ public class BasicCommandListServiceAc {
 
 		// =======================資料整理=======================
 		// 資料Data
-		ArrayList<BasicCommandList> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			x.setSysmdate(new Date());
 			x.setSysmuser(packageBean.getUserAccount());
@@ -238,12 +245,13 @@ public class BasicCommandListServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			// 新增
-			x.setBclid(null);
+			x.setWawmpnbalias(x.getWawmpnb() + "_" + x.getWaalias());
+			x.setWaid(null);
 			saveDatas.add(x);
 		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		commandListDao.saveAll(saveDatas);
+		areaDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -251,21 +259,21 @@ public class BasicCommandListServiceAc {
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<BasicCommandList> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
 			});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<BasicCommandList> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getBclid() != null) {
-				BasicCommandList entityDataOld = commandListDao.findById(x.getBclid()).get();
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = areaDao.findById(x.getWaid()).get();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
@@ -274,7 +282,7 @@ public class BasicCommandListServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		commandListDao.saveAll(saveDatas);
+		areaDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -282,29 +290,29 @@ public class BasicCommandListServiceAc {
 	@Transactional
 	public PackageBean setDetele(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<BasicCommandList> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
 			});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<BasicCommandList> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
 		// 一般-移除內容
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getBclid() != null) {
-				BasicCommandList entityDataOld = commandListDao.getReferenceById(x.getBclid());
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = areaDao.getReferenceById(x.getWaid());
 				saveDatas.add(entityDataOld);
 			}
 		});
 
 		// =======================資料儲存=======================
 		// 資料Data
-		commandListDao.deleteAll(saveDatas);
+		areaDao.deleteAll(saveDatas);
 		return packageBean;
 	}
 
@@ -314,11 +322,11 @@ public class BasicCommandListServiceAc {
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<BasicCommandList> entitys = new ArrayList<>();
+		List<WarehouseArea> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM basic_command_list e Where ";
+		String nativeQuery = "SELECT e.* FROM warehouse_area e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];
@@ -326,16 +334,14 @@ public class BasicCommandListServiceAc {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("bcl", "bcl_");
-			cellName = cellName.replace("bcl_class", "bcl_class");
-			cellName = cellName.replace("bcl_e", "bcl_e_");
-			cellName = cellName.replace("bcl_from", "bcl_from_");
-			cellName = cellName.replace("bcl_fdate", "bcl_f_date");
-			cellName = cellName.replace("bcl_pn", "bcl_pn_");
-			cellName = cellName.replace("bcl_pn_a", "bcl_pn_a_");
-			cellName = cellName.replace("bcl_pname", "bcl_p_name");
-			cellName = cellName.replace("bcl_pnumber", "bcl_p_number");
-			cellName = cellName.replace("bcl_to", "bcl_to_");
+			cellName = cellName.replace("wa", "wa_");
+			cellName = cellName.replace("wa_wmpnb", "wa_wm_p_nb");
+			cellName = cellName.replace("wa_wmpnbalias", "wa_wm_p_nb_alias");
+			cellName = cellName.replace("wa_slocation", "wa_s_location");
+			cellName = cellName.replace("wa_aname", "wa_a_name");
+			cellName = cellName.replace("wa_erptqty", "wa_erp_t_qty");
+			cellName = cellName.replace("wa_tqty", "wa_t_qty");
+
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
 			String valueType = x.getAsString().split("<_>")[3];
@@ -369,11 +375,9 @@ public class BasicCommandListServiceAc {
 		}
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.bcl_class asc";
-		nativeQuery += " , e.bcl_sn asc";
-		nativeQuery += " , e.bcl_p_number asc";
+		nativeQuery += " order by e.wa_wm_p_nb asc";
 		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, BasicCommandList.class);
+		Query query = em.createNativeQuery(nativeQuery, WarehouseArea.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {
 			String val = valAndType.split("<_>")[0];

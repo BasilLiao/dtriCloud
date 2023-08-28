@@ -134,6 +134,10 @@ public class BasicIncomingListServiceAc {
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson("");
+			// 查不到資料
+			if (packageBean.getEntityJson().equals("[]")) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
 
 		}
 		// ========================配置共用參數========================
@@ -144,10 +148,6 @@ public class BasicIncomingListServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("bilid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_biledate_bilfdate");
-		// 查不到資料
-		if (packageBean.getEntityJson().equals("[]")) {
-			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
-		}
 		return packageBean;
 	}
 

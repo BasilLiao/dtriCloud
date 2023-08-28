@@ -93,6 +93,7 @@ public class BasicShippingList {
 		this.bslstatus = 0;
 		this.bslfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.bsltfilter = false;
 	}
 
 	// 共用型
@@ -170,6 +171,8 @@ public class BasicShippingList {
 	private Date bsledate;
 	@Column(name = "bsl_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bslfdate;
+	@Column(name = "bsl_t_filter", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bsltfilter;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
 
@@ -465,6 +468,14 @@ public class BasicShippingList {
 
 	public void setBslpngqty(Integer bslpngqty) {
 		this.bslpngqty = bslpngqty;
+	}
+
+	public Boolean getBsltfilter() {
+		return bsltfilter;
+	}
+
+	public void setBsltfilter(Boolean bsltfilter) {
+		this.bsltfilter = bsltfilter;
 	}
 
 }

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
- * 系統核心服務
+ * 倉儲服務
  * 
  */
 @SpringBootApplication

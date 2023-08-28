@@ -153,6 +153,10 @@ public class SystemConfigServiceAc {
 			String entityJsonDetails = packageService.beanToJson(entityDetails);
 			packageBean.setEntityDetailJson(entityJsonDetails);
 
+			// 查不到資料
+			if (packageBean.getEntityJson().equals("[]")) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
 		}
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
@@ -161,10 +165,6 @@ public class SystemConfigServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("scid_scgid");
-		// 查不到資料
-		if (packageBean.getEntityJson().equals("[]")) {
-			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
-		}
 
 		return packageBean;
 	}

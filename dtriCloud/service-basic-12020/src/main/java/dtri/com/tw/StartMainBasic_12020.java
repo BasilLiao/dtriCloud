@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * 系統基本資料服務
+ * 基本資料服務
  * 
  */
 @EnableScheduling

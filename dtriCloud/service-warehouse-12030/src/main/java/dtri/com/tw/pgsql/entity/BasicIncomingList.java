@@ -93,6 +93,7 @@ public class BasicIncomingList {
 		this.bilstatus = 0;
 		this.bilfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.biledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.biltfilter = false;
 	}
 
 	// 共用型
@@ -170,6 +171,8 @@ public class BasicIncomingList {
 	private Date biledate;
 	@Column(name = "bil_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bilfdate;
+	@Column(name = "bil_t_filter", nullable = false, columnDefinition = "boolean default false")
+	private Boolean biltfilter;
 
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
@@ -466,6 +469,14 @@ public class BasicIncomingList {
 
 	public void setBilpngqty(Integer bilpngqty) {
 		this.bilpngqty = bilpngqty;
+	}
+
+	public Boolean getBiltfilter() {
+		return biltfilter;
+	}
+
+	public void setBiltfilter(Boolean biltfilter) {
+		this.biltfilter = biltfilter;
 	}
 
 }

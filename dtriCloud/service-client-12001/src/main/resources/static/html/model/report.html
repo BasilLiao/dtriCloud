@@ -297,6 +297,7 @@ report={
 					if(resultThead[k].cellLanguage!=''){
 						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						itemBtn.find(".itemBtnShow").text(cellName==""?resultThead[k].cellName:cellName);
+						//欄位
 						exReportTitle.text(cellName==""?resultThead[k].cellName:cellName);
 						exReportTitle.css('minWidth',resultThead[k].width+"px");
 						exReportVal.text("");
@@ -304,7 +305,10 @@ report={
 					}else{
 						itemBtn.find(".itemBtnShow").text(resultThead[k].cellName);
 						exReportTitle.find(".itemBtnShow").text(resultThead[k].cellName);
+						//藍位
+						exReportTitle.text(resultThead[k].cellName);
 						exReportTitle.css('minWidth',resultThead[k].width+"px");
+						exReportVal.text("");
 						exReportVal.css('maxWidth',resultThead[k].width+"px");
 					}
 					//串接添加
