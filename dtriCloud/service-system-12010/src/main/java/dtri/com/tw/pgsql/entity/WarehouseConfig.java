@@ -24,22 +24,20 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---物料異動-紀錄---<br>
- *      whwmpnb = "";物料號(品號)<br>
- *      whwmslocation = "";物料 主儲位位置 Ex:1F-GG-GG-GG<br>
- *      whtype = "";事件類型 入料/領料/轉料/清點/其他<br>
- *      whcontent = "";事件內容 Ex:XXX使用者_ 從位置XXXX_料號XXXX_ (入料/領料/轉料/清點/其他)的XX數量_
- *      來至於XXX單據<br>
- *      whmac = "";Mac位置 進行事件內容人<br>
- * 
+ *      ---倉儲設定-過濾器---<br>
+ *      wc_id <br>
+ *      wc_alias 倉庫別 Ex:A100<br>
+ *      wc_wk_a_name 倉庫別名 Ex:原物料倉<br>
+ *      wc_a_d_qty 該倉儲-單據是否 自動扣除數量<br>
+ *      wc_a_i_qty該倉儲-單據是否 自動增加數量<br>
  * 
  */
 
 @Entity
-@Table(name = "warehouse_history")
+@Table(name = "warehouse_config")
 @EntityListeners(AuditingEntityListener.class)
-public class WarehouseHistory {
-	public WarehouseHistory() {
+public class WarehouseConfig {
+	public WarehouseConfig() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -52,13 +50,11 @@ public class WarehouseHistory {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		// 倉儲單據過濾器-清單
-		this.whwmpnb = "";
-		this.whwmslocation = "";
-		this.whtype = "";
-		this.whcontent = "";
-		this.whmac = "";
-
+		// 倉儲設定-過濾器
+		this.wcalias = "";
+		this.wcwkaname = "";
+		this.wcadqty = false;
+		this.wcaiqty = false;
 	}
 
 	// 共用型
@@ -84,22 +80,20 @@ public class WarehouseHistory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 倉儲單據過濾器-清單
+	// 倉儲設定-過濾器
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_history_seq")
-	@SequenceGenerator(name = "warehouse_history_seq", sequenceName = "warehouse_history_seq", allocationSize = 1)
-	@Column(name = "wh_id")
-	private Long whid;
-	@Column(name = "wh_wm_p_nb", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whwmpnb;
-	@Column(name = "wh_wm_s_location", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whwmslocation;
-	@Column(name = "wh_type", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whtype;
-	@Column(name = "wh_content", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whcontent;
-	@Column(name = "wh_mac", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whmac;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_config_seq")
+	@SequenceGenerator(name = "warehouse_config_seq", sequenceName = "warehouse_config_seq", allocationSize = 1)
+	@Column(name = "wc_id")
+	private Long wcid;
+	@Column(name = "wc_alias", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String wcalias;
+	@Column(name = "wc_wk_a_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String wcwkaname;
+	@Column(name = "wc_a_d_qty", nullable = false, columnDefinition = "boolean default false")
+	private Boolean wcadqty;
+	@Column(name = "wc_a_i_qty", nullable = false, columnDefinition = "boolean default false")
+	private Boolean wcaiqty;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -180,4 +174,45 @@ public class WarehouseHistory {
 	public void setSysnote(String sysnote) {
 		this.sysnote = sysnote;
 	}
+
+	public Long getWcid() {
+		return wcid;
+	}
+
+	public void setWcid(Long wcid) {
+		this.wcid = wcid;
+	}
+
+	public String getWcalias() {
+		return wcalias;
+	}
+
+	public void setWcalias(String wcalias) {
+		this.wcalias = wcalias;
+	}
+
+	public String getWcwkaname() {
+		return wcwkaname;
+	}
+
+	public void setWcwkaname(String wcwkaname) {
+		this.wcwkaname = wcwkaname;
+	}
+
+	public Boolean getWcadqty() {
+		return wcadqty;
+	}
+
+	public void setWcadqty(Boolean wcadqty) {
+		this.wcadqty = wcadqty;
+	}
+
+	public Boolean getWcaiqty() {
+		return wcaiqty;
+	}
+
+	public void setWcaiqty(Boolean wcaiqty) {
+		this.wcaiqty = wcaiqty;
+	}
+
 }

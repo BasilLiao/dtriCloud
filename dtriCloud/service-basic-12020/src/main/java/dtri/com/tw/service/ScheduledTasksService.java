@@ -32,7 +32,7 @@ public class ScheduledTasksService {
 	@Scheduled(fixedDelay = 180000)
 	public void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
-		
+
 		synchronizeService.erpSynchronizeInvta();
 		synchronizeService.erpSynchronizeInvtb();
 		synchronizeService.erpSynchronizeInvtg();
@@ -44,6 +44,7 @@ public class ScheduledTasksService {
 		synchronizeService.erpSynchronizeMocth();
 
 		synchronizeService.erpSynchronizePurth();
+		synchronizeService.erpSynchronizeWtypeFilter();
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

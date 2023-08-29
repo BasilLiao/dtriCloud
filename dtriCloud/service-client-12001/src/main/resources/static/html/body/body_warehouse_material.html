@@ -10,7 +10,7 @@
 }
 </style>
 
-<div class="text-center text-ms col-md pt-4 mt-4" id="body_basic_command_list">
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_warehouse_material">
 	<div class="p-1">
 		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -78,52 +78,52 @@ body_index={
 	methods:{
 		create(){
 			//Step1.初始化
-			console.log("body_basic_command_list.html(created)");
+			console.log("body_warehouse_material.html(created)");
 			//模板-鎖定-不需要的分頁 disabled
-			//$("#body_basic_command_list #home_title").addClass("disabled");
-			//$("#body_basic_command_list #search_title").addClass("disabled");
-			//$("#body_basic_command_list #modify_title").addClass("disabled");
-			//$("#body_basic_command_list #report_title").addClass("disabled");
-			//$("#body_basic_command_list #print_title").addClass("disabled");
-			//$("#body_basic_command_list #compare_title").addClass("disabled");
-			$("#body_basic_command_list #other_title").addClass("disabled");
+			//$("#body_warehouse_material #home_title").addClass("disabled");
+			//$("#body_warehouse_material #search_title").addClass("disabled");
+			//$("#body_warehouse_material #modify_title").addClass("disabled");
+			//$("#body_warehouse_material #report_title").addClass("disabled");
+			$("#body_warehouse_material #print_title").addClass("disabled");
+			//$("#body_warehouse_material #compare_title").addClass("disabled");
+			$("#body_warehouse_material #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_basic_command_list #search_title").addClass("active");
-            $("#body_basic_command_list #search_tab").addClass("show");
-            $("#body_basic_command_list #search_tab").addClass("active");
+            $("#body_warehouse_material #search_title").addClass("active");
+            $("#body_warehouse_material #search_tab").addClass("show");
+            $("#body_warehouse_material #search_tab").addClass("active");
             
           	//Step2.模板
-            $("#body_basic_command_list #home_tab").load("./html/model/home.html", function(){});
+            $("#body_warehouse_material #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_basic_command_list #search_tab").load("./html/model/search.html", function(){
+            $("#body_warehouse_material #search_tab").load("./html/model/search.html", function(){
             	search.methods.create();
             	main.methods.reWindowsSize();
             });
             //編輯-模板
-            $("#body_basic_command_list #modify_tab").load("./html/model/modify.html", function(){
+            $("#body_warehouse_material #modify_tab").load("./html/model/modify.html", function(){
             	modify.methods.create();
             });
             //列印-模板
-            $("#body_basic_command_list #print_tab").load("./html/model/print.html", function(){
-            	print.methods.create();
-            });
+            //$("#body_warehouse_material #print_tab").load("./html/model/print.html", function(){
+            //	print.methods.create();
+            //});
             //報告-模板
-            $("#body_basic_command_list #report_tab").load("./html/model/report.html", function(){
+            $("#body_warehouse_material #report_tab").load("./html/model/report.html", function(){
             	report.methods.create();
             });
             //比對-模板
-            $("#body_basic_command_list #compare_tab").load("./html/model/compare.html", function(){
+            $("#body_warehouse_material #compare_tab").load("./html/model/compare.html", function(){
             	compare.methods.create();
             });
             //其他-模板
-            $("#body_basic_command_list #other_tab").load("./html/other/special.html", function(){
-            	
-            });
+            //$("#body_warehouse_material #other_tab").load("./html/other/special.html", function(){
+            //	
+            //});
 		},
 		
 		destroy() {
 			//銷毀
-			 console.log("body_basic_command_list.html(destroy)");
+			 console.log("body_warehouse_material.html(destroy)");
 		},
 	},	
 };

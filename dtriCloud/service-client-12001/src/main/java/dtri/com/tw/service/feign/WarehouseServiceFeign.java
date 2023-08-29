@@ -187,4 +187,5 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseMaterial/setDetele" }, method = RequestMethod.POST)
 	PackageBean setMaterialDetele(@RequestBody String jsonPackageBean);
+
 }

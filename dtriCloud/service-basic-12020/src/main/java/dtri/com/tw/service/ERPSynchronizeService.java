@@ -43,6 +43,7 @@ import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseConfig;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
+import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.Fm_T;
 
 @Service
@@ -86,9 +87,9 @@ public class ERPSynchronizeService {
 
 	/**
 	 * KEY: wtf_code單據代號(開頭)Ex:A511 / A521<br>
-	 * Value: wtf_type單據類型0=入庫 / 1=出庫 / 2=轉移<br>
+	 * Value: wtf_type單據類型0=入庫 / 1=出庫 / 2=轉移/3=無作用(製令單?)<br>
 	 */
-	private Map<String, String> wTypeFilter = new HashMap<>();
+	private Map<String, Integer> wTypeFilter = new HashMap<>();
 
 	// ============ A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單 ============
 	public void erpSynchronizeMocta() {
@@ -111,6 +112,7 @@ public class ERPSynchronizeService {
 			m.setTa001_ta002(m.getTa001_ta002().replaceAll("\\s", ""));
 			bslnb += 1;
 			erpMaps.put(nKey, m);
+			wTypeFilter.put(m.getTa001_ta002().replaceAll("\\s", "").split("-")[0], 3);
 		}
 		// Step2. 取得[Cloud] 有效製令單 資料
 		ArrayList<BasicCommandList> entityOlds = commandListDao.findAllByStatus(0);
@@ -204,6 +206,7 @@ public class ERPSynchronizeService {
 			m.setTh001_th002(m.getTh001_th002().replaceAll("\\s", ""));
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
+			wTypeFilter.put(m.getTh001_th002().replaceAll("\\s", "").split("-")[0], 0);
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);
@@ -292,9 +295,15 @@ public class ERPSynchronizeService {
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
+				wTypeFilter.put(m.getTa026_ta027_ta028().replaceAll("\\s", "").split("-")[0], 1);
 			} else {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
+				wTypeFilter.put(m.getTa026_ta027_ta028().replaceAll("\\s", "").split("-")[0], 0);
+			}
+			// 可能臨時修改
+			if (m.getTb004() == null) {
+				m.setTb004(0);
 			}
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
@@ -423,7 +432,6 @@ public class ERPSynchronizeService {
 				n.setBslpspecification(v.getMb003());// 規格
 				n.setBslpnqty(v.getTb004());// 需入量
 				n.setBslpnaqty(0);// 提前領用
-
 				n.setBslfromcommand("[" + v.getTa001_ta002() + "_製令單" + "]");// 製令單
 				n.setBslfromwho("[" + v.getMb017() + "_" + v.getMc002() + "]");// 倉別代號+倉別名稱
 				n.setBsltowho("[" + "_生產線" + "]");
@@ -450,6 +458,7 @@ public class ERPSynchronizeService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
+			wTypeFilter.put(m.getTg001_tg002_tg003().replaceAll("\\s", "").split("-")[0], 0);
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);
@@ -536,6 +545,7 @@ public class ERPSynchronizeService {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
+			wTypeFilter.put(m.getTi001_ti002_ti003().replaceAll("\\s", "").split("-")[0], 0);
 		}
 		// Step2. 取得[Cloud] 有效 委外入料單 資料
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);
@@ -625,9 +635,11 @@ public class ERPSynchronizeService {
 			if (m.getTg001_tg002_tg003().indexOf("A131") >= 0) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
+				wTypeFilter.put(m.getTg001_tg002_tg003().replaceAll("\\s", "").split("-")[0], 1);
 			} else {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
+				wTypeFilter.put(m.getTg001_tg002_tg003().replaceAll("\\s", "").split("-")[0], 0);
 			}
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
@@ -787,9 +799,11 @@ public class ERPSynchronizeService {
 			if (m.getTi001_ti002_ti003().indexOf("A161") >= 0) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
+				wTypeFilter.put(m.getTi001_ti002_ti003().replaceAll("\\s", "").split("-")[0], 1);
 			} else {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
+				wTypeFilter.put(m.getTi001_ti002_ti003().replaceAll("\\s", "").split("-")[0], 0);
 			}
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
@@ -949,14 +963,17 @@ public class ERPSynchronizeService {
 			if (m.getTb001_tb002_tb003().indexOf("A111") >= 0) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
+				wTypeFilter.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 1);
 			} else if (m.getTb001_tb002_tb003().indexOf("A112") >= 0) {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
+				wTypeFilter.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 0);
 			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {// 轉
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
+				wTypeFilter.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 2);
 			}
 		}
 		// Step2. 取得[Cloud] 有效入料單 資料
@@ -1214,7 +1231,7 @@ public class ERPSynchronizeService {
 					n.setWaslocation(checkloc ? v.getMc003() : "FF-FF-FF-FF");// 物料位置
 					n.setWaaname(v.getCmc002());// 倉庫名稱
 					n.setWaerptqty(v.getMc007());// 倉儲數量
-					n.setWatqty(0);// (實際)倉儲數量
+					n.setWatqty(v.getMc007());// (實際)倉儲數量
 					n.setMaterial(materialDao.findAllByWmpnb(v.getMb001()).get(0));
 					saveItems.add(n);
 				}
@@ -1252,25 +1269,24 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 單據過濾設定 ============
-	public void erpSynchronizeWtypeFilter(Map<String, String> erpConfigMaps, List<WarehouseConfig> configOlds) {
-		ArrayList<WarehouseConfig> saveConfig = new ArrayList<WarehouseConfig>();
-		erpConfigMaps.forEach((key, v) -> {
-			boolean checkNew = true;
-			// 是否重複?
-			for (WarehouseConfig c : configOlds) {
-				if (c.getWcalias().equals(key)) {
-					checkNew = false;
-					break;
-				}
-			}
-			if (checkNew) {
-				WarehouseConfig newC = new WarehouseConfig();
-				newC.setWcalias(key);
-				newC.setWcwkaname(v);
-				saveConfig.add(newC);
+	public void erpSynchronizeWtypeFilter() {
+		ArrayList<WarehouseTypeFilter> saveFilters = new ArrayList<WarehouseTypeFilter>();
+		ArrayList<WarehouseTypeFilter> filters = filterDao.findAllBySearch(null, null, null);
+		Map<String, WarehouseTypeFilter> oldEntity = new HashMap<>();
+		filters.forEach(f -> {
+			oldEntity.put(f.getWtfcode(), f);
+		});
+
+		wTypeFilter.forEach((key, val) -> {
+			// 如過舊資料沒有?->新增
+			if (!oldEntity.containsKey(key)) {
+				WarehouseTypeFilter newEntity = new WarehouseTypeFilter();
+				newEntity.setWtfcode(key);
+				newEntity.setWtftype(val);
+				saveFilters.add(newEntity);
 			}
 		});
-		configDao.saveAll(saveConfig);
-	}
 
+		filterDao.saveAll(saveFilters);
+	}
 }

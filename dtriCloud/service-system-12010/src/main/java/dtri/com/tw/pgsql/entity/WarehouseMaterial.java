@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -10,8 +11,10 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -24,22 +27,21 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---物料異動-紀錄---<br>
- *      whwmpnb = "";物料號(品號)<br>
- *      whwmslocation = "";物料 主儲位位置 Ex:1F-GG-GG-GG<br>
- *      whtype = "";事件類型 入料/領料/轉料/清點/其他<br>
- *      whcontent = "";事件內容 Ex:XXX使用者_ 從位置XXXX_料號XXXX_ (入料/領料/轉料/清點/其他)的XX數量_
- *      來至於XXX單據<br>
- *      whmac = "";Mac位置 進行事件內容人<br>
- * 
- * 
+ *      ---物料清單---<br>
+ *      wmpnb : 物料號<br>
+ *      wmname : 物料名稱<br>
+ *      wmspecification : 物料規格<br>
+ *      wmidate : new Date(253402271940000L);// 9999-12-31 23:59:00 最後盤點時間<br>
+ *      wmimg : 圖片<br>
+ *      wmadqty :自動減少<br>
+ *      wmaiqty :自動增加<br>
  */
 
 @Entity
-@Table(name = "warehouse_history")
+@Table(name = "warehouse_material")
 @EntityListeners(AuditingEntityListener.class)
-public class WarehouseHistory {
-	public WarehouseHistory() {
+public class WarehouseMaterial {
+	public WarehouseMaterial() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -52,13 +54,14 @@ public class WarehouseHistory {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		// 倉儲單據過濾器-清單
-		this.whwmpnb = "";
-		this.whwmslocation = "";
-		this.whtype = "";
-		this.whcontent = "";
-		this.whmac = "";
-
+		// 倉儲物料-清單
+		this.wmpnb = "";
+		this.wmname = "";
+		this.wmspecification = "";
+		this.wmidate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.wmimg = "";
+		this.wmadqty = false;
+		this.wmaiqty = false;
 	}
 
 	// 共用型
@@ -84,22 +87,32 @@ public class WarehouseHistory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 倉儲單據過濾器-清單
+	// 倉儲物料-清單
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_history_seq")
-	@SequenceGenerator(name = "warehouse_history_seq", sequenceName = "warehouse_history_seq", allocationSize = 1)
-	@Column(name = "wh_id")
-	private Long whid;
-	@Column(name = "wh_wm_p_nb", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whwmpnb;
-	@Column(name = "wh_wm_s_location", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whwmslocation;
-	@Column(name = "wh_type", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whtype;
-	@Column(name = "wh_content", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whcontent;
-	@Column(name = "wh_mac", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whmac;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_material_seq")
+	@SequenceGenerator(name = "warehouse_material_seq", sequenceName = "warehouse_material_seq", allocationSize = 1)
+	@Column(name = "wm_id")
+	private Long wmid;
+	@Column(name = "wm_p_nb", nullable = false, unique = true, columnDefinition = "varchar(150) default ''")
+	private String wmpnb;
+	@Column(name = "wm_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String wmname;
+	@Column(name = "wm_specification", nullable = false, columnDefinition = "varchar(250) default ''")
+	private String wmspecification;
+	@Column(name = "wm_i_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date wmidate;
+	@Column(name = "wm_img", nullable = false, columnDefinition = "text default ''")
+	private String wmimg;
+	@Column(name = "wm_a_d_qty", nullable = false, columnDefinition = "boolean default false")
+	private Boolean wmadqty;
+	@Column(name = "wm_a_i_qty", nullable = false, columnDefinition = "boolean default false")
+	private Boolean wmaiqty;
+	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
+	private String checksum;
+
+	@Transient
+	@OneToMany(mappedBy = "material")
+	private List<WarehouseArea> warehouseAreas;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -181,52 +194,84 @@ public class WarehouseHistory {
 		this.sysnote = sysnote;
 	}
 
-	public Long getWhid() {
-		return whid;
+	public Long getWmid() {
+		return wmid;
 	}
 
-	public void setWhid(Long whid) {
-		this.whid = whid;
+	public void setWmid(Long wmid) {
+		this.wmid = wmid;
 	}
 
-	public String getWhwmpnb() {
-		return whwmpnb;
+	public String getWmpnb() {
+		return wmpnb;
 	}
 
-	public void setWhwmpnb(String whwmpnb) {
-		this.whwmpnb = whwmpnb;
+	public void setWmpnb(String wmpnb) {
+		this.wmpnb = wmpnb;
 	}
 
-	public String getWhwmslocation() {
-		return whwmslocation;
+	public String getWmname() {
+		return wmname;
 	}
 
-	public void setWhwmslocation(String whwmslocation) {
-		this.whwmslocation = whwmslocation;
+	public void setWmname(String wmname) {
+		this.wmname = wmname;
 	}
 
-	public String getWhtype() {
-		return whtype;
+	public String getWmspecification() {
+		return wmspecification;
 	}
 
-	public void setWhtype(String whtype) {
-		this.whtype = whtype;
+	public void setWmspecification(String wmspecification) {
+		this.wmspecification = wmspecification;
 	}
 
-	public String getWhcontent() {
-		return whcontent;
+	public Date getWmidate() {
+		return wmidate;
 	}
 
-	public void setWhcontent(String whcontent) {
-		this.whcontent = whcontent;
+	public void setWmidate(Date wmidate) {
+		this.wmidate = wmidate;
 	}
 
-	public String getWhmac() {
-		return whmac;
+	public String getWmimg() {
+		return wmimg;
 	}
 
-	public void setWhmac(String whmac) {
-		this.whmac = whmac;
+	public void setWmimg(String wmimg) {
+		this.wmimg = wmimg;
+	}
+
+	public Boolean getWmadqty() {
+		return wmadqty;
+	}
+
+	public void setWmadqty(Boolean wmadqty) {
+		this.wmadqty = wmadqty;
+	}
+
+	public Boolean getWmaiqty() {
+		return wmaiqty;
+	}
+
+	public void setWmaiqty(Boolean wmaiqty) {
+		this.wmaiqty = wmaiqty;
+	}
+
+	public List<WarehouseArea> getWarehouseAreas() {
+		return warehouseAreas;
+	}
+
+	public void setWarehouseAreas(List<WarehouseArea> warehouseAreas) {
+		this.warehouseAreas = warehouseAreas;
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
 	}
 
 }

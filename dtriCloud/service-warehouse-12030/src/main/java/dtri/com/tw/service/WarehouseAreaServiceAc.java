@@ -225,11 +225,9 @@ public class WarehouseAreaServiceAc {
 			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
 				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null, null);
-				for (WarehouseArea checkData : checkDatas) {
-					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getWawmpnb() });
-					}
+
+				if (checkDatas.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWawmpnb() });
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +24,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
-import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
+import dtri.com.tw.pgsql.dao.SystemUserDao;
+import dtri.com.tw.pgsql.dao.WarehouseKeeperDao;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
-import dtri.com.tw.pgsql.entity.WarehouseMaterial;
+import dtri.com.tw.pgsql.entity.SystemUser;
+import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -38,7 +41,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class WarehouseMaterialServiceAc {
+public class WarehouseKeeperServiceAc {
 
 	@Autowired
 	private PackageService packageService;
@@ -47,7 +50,9 @@ public class WarehouseMaterialServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
-	private WarehouseMaterialDao materialDao;
+	private WarehouseKeeperDao keeperDao;
+	@Autowired
+	private SystemUserDao systemUserDao;
 
 	@Autowired
 	private EntityManager em;
@@ -62,8 +67,7 @@ public class WarehouseMaterialServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "wmpnb"));// 物料號
-		orders.add(new Order(Direction.DESC, "wmname"));// 物料名稱
+		orders.add(new Order(Direction.ASC, "wksuaccount"));// 帳號
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -71,11 +75,44 @@ public class WarehouseMaterialServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseMaterial> entitys = materialDao.findAllBySearch(null, null, null, pageable);
+			ArrayList<WarehouseKeeper> entitys = keeperDao.findAllBySearch(null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
-			entitys.forEach(t -> {
-				t.setWarehouseAreas(null);
+
+			entitys.forEach(k -> {
+				// wkwaslocation
+				String wString = "";
+				JsonArray wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkwaslocation());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkwaslocation(wString.trim());
+				// wkshsuaccount
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkshsuaccount());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkshsuaccount(wString.trim());
+				// wkinsuaccount
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkinsuaccount());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkinsuaccount(wString.trim());
+				// wkglist
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkglist());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkglist(wString.trim());
+
 			});
 
 			// 類別(一般模式)
@@ -88,11 +125,21 @@ public class WarehouseMaterialServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseMaterial", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseKeeper", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 動態->覆蓋寫入->修改UI選項
+			SystemLanguageCell wksuid = mapLanguages.get("wksuid");
+			List<SystemUser> pList = new ArrayList<>();
+			JsonArray pListArr = new JsonArray();
+			pList = systemUserDao.findAll();
+			pList.forEach(t -> {
+				pListArr.add(t.getSuaccount() + "_" + t.getSuid());
+			});
+			wksuid.setSlcmtype("select");
+			wksuid.setSlcmselect(pListArr.toString());
+			mapLanguages.put("wksuid", wksuid);
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
@@ -100,23 +147,19 @@ public class WarehouseMaterialServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseMaterial.class.getDeclaredFields();
+			Field[] fields = WarehouseKeeper.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
-			exceptionCell.add("warehouseAreas");
-			exceptionCell.add("wmidate");
+			// exceptionCell.add("material");
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wmpnb", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wksuaccount", "Ex:帳號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wmname", "Ex:物料名稱?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wmspecification", "Ex:物料規格?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wkwaslocation", "Ex:負責儲位歸屬?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -126,12 +169,45 @@ public class WarehouseMaterialServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseMaterial searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseMaterial.class);
+			WarehouseKeeper searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseKeeper.class);
 
-			ArrayList<WarehouseMaterial> entitys = materialDao.findAllBySearch(searchData.getWmpnb(), searchData.getWmname(),
-					searchData.getWmspecification(), pageable);
+			ArrayList<WarehouseKeeper> entitys = keeperDao.findAllBySearch(searchData.getWksuaccount(), searchData.getWkwaslocation(), pageable);
 			// Step4-2.資料區分(一般/細節)
+			entitys.forEach(k -> {
+				// wkwaslocation
+				String wString = "";
+				JsonArray wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkwaslocation());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkwaslocation(wString.trim());
+				// wkshsuaccount
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkshsuaccount());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkshsuaccount(wString.trim());
+				// wkinsuaccount
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkinsuaccount());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkinsuaccount(wString.trim());
+				// wkglist
+				wString = "";
+				wssaJson = new JsonArray();
+				wssaJson = (JsonArray) JsonParser.parseString(k.getWkglist());
+				for (JsonElement one : wssaJson) {
+					wString += one.getAsString();
+				}
+				k.setWkglist(wString.trim());
 
+			});
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
@@ -146,10 +222,10 @@ public class WarehouseMaterialServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseMaterial());
+		String entityFormatJson = packageService.beanToJson(new WarehouseKeeper());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("wmid_");
+		packageBean.setEntityIKeyGKey("wkid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
@@ -158,33 +234,33 @@ public class WarehouseMaterialServiceAc {
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<WarehouseMaterial> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseMaterial>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
 			});
 
 			// Step2.資料檢查
-			for (WarehouseMaterial entityData : entityDatas) {
+			for (WarehouseKeeper entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseMaterial> checkDatas = materialDao.findAllByCheck(entityData.getWmpnb(), null, null, null);
-				for (WarehouseMaterial checkData : checkDatas) {
-					if (checkData.getWmid().compareTo(entityData.getWmid()) != 0) {
+				ArrayList<WarehouseKeeper> checkDatas = keeperDao.findAllByCheck(entityData.getWksuid(), null, null, null);
+				for (WarehouseKeeper checkData : checkDatas) {
+					if (checkData.getWkid().compareTo(entityData.getWkid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getWmpnb() });
+								new String[] { checkData.getWksuaccount() + "" });
 					}
 				}
 			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<WarehouseMaterial> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getWmid() != null) {
-				WarehouseMaterial entityDataOld = new WarehouseMaterial();
-				entityDataOld = materialDao.getReferenceById(x.getWmid());
+			if (x.getWkid() != null) {
+				WarehouseKeeper entityDataOld = new WarehouseKeeper();
+				entityDataOld = keeperDao.getReferenceById(x.getWkid());
 
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
@@ -193,18 +269,56 @@ public class WarehouseMaterialServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
 				// 修改
-				entityDataOld.setWmname(x.getWmname());
-				entityDataOld.setWmspecification(x.getWmspecification());
-				entityDataOld.setWmadqty(x.getWmadqty());
-				entityDataOld.setWmaiqty(x.getWmaiqty());
-				entityDataOld.setChecksum(x.getChecksum());
-
+				// 使用倉儲清單 JSON Array:[]
+				JsonArray wkgJson = new JsonArray();
+				if (!x.getWkglist().equals("")) {
+					String wklist[] = x.getWkglist().split(" ");
+					List<String> list = Arrays.asList(wklist);
+					list.forEach(j -> {
+						wkgJson.add(j);
+					});
+				}
+				entityDataOld.setWkglist(wkgJson.toString());
+				// 物料 主儲位位置:關鍵字 JSON Array:[]Ex:1F-GG-GG-GG
+				JsonArray wwslJson = new JsonArray();
+				if (!x.getWkwaslocation().equals("")) {
+					String wklist[] = x.getWkwaslocation().split(" ");
+					List<String> list = Arrays.asList(wklist);
+					list.forEach(j -> {
+						wwslJson.add(j);
+					});
+				}
+				entityDataOld.setWkwaslocation(wwslJson.toString());
+				// 入料 共同負責人 JSON:[]
+				JsonArray wisaJson = new JsonArray();
+				if (!x.getWkinsuaccount().equals("")) {
+					String wklist[] = x.getWkinsuaccount().split(" ");
+					List<String> list = Arrays.asList(wklist);
+					list.forEach(j -> {
+						wisaJson.add(j);
+					});
+				}
+				entityDataOld.setWkinsuaccount(wisaJson.toString());
+				// 領料 共同負責人 JSON:[]
+				JsonArray wssaJson = new JsonArray();
+				if (!x.getWkshsuaccount().equals("")) {
+					String wklist[] = x.getWkshsuaccount().split(" ");
+					List<String> list = Arrays.asList(wklist);
+					list.forEach(j -> {
+						wssaJson.add(j);
+					});
+				}
+				entityDataOld.setWkshsuaccount(wssaJson.toString());
+				// user
+				SystemUser user = systemUserDao.getReferenceById(x.getWksuid());
+				entityDataOld.setWksuid(user.getSuid());
+				entityDataOld.setWksuaccount(user.getSuaccount());
 				saveDatas.add(entityDataOld);
 			}
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		materialDao.saveAll(saveDatas);
+		keeperDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -212,26 +326,28 @@ public class WarehouseMaterialServiceAc {
 	// @Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
 		// =======================資料準備=======================
-		ArrayList<WarehouseMaterial> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseMaterial>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
 			});
 
 			// Step2.資料檢查
-			for (WarehouseMaterial entityData : entityDatas) {
+			for (WarehouseKeeper entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseMaterial> checkDatas = materialDao.findAllByCheck(entityData.getWmpnb(), null, null, null);
+				ArrayList<WarehouseKeeper> checkDatas = keeperDao.findAllByCheck(entityData.getWksuid(), null, null, null);
 				if (checkDatas.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWmpnb() });
+					SystemUser user = systemUserDao.getReferenceById(entityData.getWksuid());
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { user.getSuaccount() + "" });
 				}
+
 			}
 		}
 
 		// =======================資料整理=======================
 		// 資料Data
-		ArrayList<WarehouseMaterial> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			x.setSysmdate(new Date());
 			x.setSysmuser(packageBean.getUserAccount());
@@ -240,12 +356,57 @@ public class WarehouseMaterialServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			// 新增
-			x.setWmid(null);
+			// 使用倉儲清單 JSON Array:[]
+			JsonArray wkgJson = new JsonArray();
+			if (!x.getWkglist().equals("")) {
+				String wklist[] = x.getWkglist().split(" ");
+				List<String> list = Arrays.asList(wklist);
+				list.forEach(j -> {
+					wkgJson.add(j);
+				});
+			}
+			x.setWkglist(wkgJson.toString());
+			// 物料 主儲位位置:關鍵字 JSON Array:[]Ex:1F-GG-GG-GG
+			JsonArray wwslJson = new JsonArray();
+			if (!x.getWkwaslocation().equals("")) {
+				String wklist[] = x.getWkwaslocation().split(" ");
+				List<String> list = Arrays.asList(wklist);
+				list.forEach(j -> {
+					wwslJson.add(j);
+				});
+			}
+			x.setWkwaslocation(wwslJson.toString());
+			// 入料 共同負責人 JSON:[]
+			JsonArray wisaJson = new JsonArray();
+			if (!x.getWkinsuaccount().equals("")) {
+				String wklist[] = x.getWkinsuaccount().split(" ");
+				List<String> list = Arrays.asList(wklist);
+				list.forEach(j -> {
+					wisaJson.add(j);
+				});
+			}
+			x.setWkinsuaccount(wisaJson.toString());
+			// 領料 共同負責人 JSON:[]
+			JsonArray wssaJson = new JsonArray();
+			if (!x.getWkshsuaccount().equals("")) {
+				String wklist[] = x.getWkshsuaccount().split(" ");
+				List<String> list = Arrays.asList(wklist);
+				list.forEach(j -> {
+					wssaJson.add(j);
+				});
+			}
+			x.setWkshsuaccount(wssaJson.toString());
+			// user
+			SystemUser user = systemUserDao.getReferenceById(x.getWksuid());
+			x.setWksuid(user.getSuid());
+			x.setWksuaccount(user.getSuaccount());
+
+			x.setWkid(null);
 			saveDatas.add(x);
 		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		materialDao.saveAll(saveDatas);
+		keeperDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -253,21 +414,21 @@ public class WarehouseMaterialServiceAc {
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<WarehouseMaterial> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseMaterial>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
 			});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<WarehouseMaterial> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getWmid() != null) {
-				WarehouseMaterial entityDataOld = materialDao.findById(x.getWmid()).get();
+			if (x.getWkid() != null) {
+				WarehouseKeeper entityDataOld = keeperDao.findById(x.getWkid()).get();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
@@ -276,7 +437,7 @@ public class WarehouseMaterialServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		materialDao.saveAll(saveDatas);
+		keeperDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -284,29 +445,29 @@ public class WarehouseMaterialServiceAc {
 	@Transactional
 	public PackageBean setDetele(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<WarehouseMaterial> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseMaterial>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
 			});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<WarehouseMaterial> saveDatas = new ArrayList<>();
+		ArrayList<WarehouseKeeper> saveDatas = new ArrayList<>();
 		// 一般-移除內容
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getWmid() != null) {
-				WarehouseMaterial entityDataOld = materialDao.getReferenceById(x.getWmid());
+			if (x.getWkid() != null) {
+				WarehouseKeeper entityDataOld = keeperDao.getReferenceById(x.getWkid());
 				saveDatas.add(entityDataOld);
 			}
 		});
 
 		// =======================資料儲存=======================
 		// 資料Data
-		materialDao.deleteAll(saveDatas);
+		keeperDao.deleteAll(saveDatas);
 		return packageBean;
 	}
 
@@ -316,11 +477,11 @@ public class WarehouseMaterialServiceAc {
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<WarehouseMaterial> entitys = new ArrayList<>();
+		List<WarehouseKeeper> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM warehouse_material e Where ";
+		String nativeQuery = "SELECT e.* FROM warehouse_keeper e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];
@@ -328,11 +489,15 @@ public class WarehouseMaterialServiceAc {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("wm", "wm_");
-			cellName = cellName.replace("wm_adqty", "wm_a_d_qty");
-			cellName = cellName.replace("wm_aiqty", "wm_a_i_qty");
-			cellName = cellName.replace("wm_idate", "wm_i_date");
-			cellName = cellName.replace("wm_pnb", "wm_p_nb");
+			cellName = cellName.replace("wk", "wk_");
+			
+			cellName = cellName.replace("wk_glist", "wk_g_list");
+			cellName = cellName.replace("wk_shsuaccount", "wk_sh_su_account");
+			cellName = cellName.replace("wk_insuaccount", "wk_in_su_account");
+			cellName = cellName.replace("wk_suaccount", "wk_su_account");
+			cellName = cellName.replace("wk_suid", "wk_su_id");
+			cellName = cellName.replace("wk_waslocation", "wk_wa_s_location");
+
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
 			String valueType = x.getAsString().split("<_>")[3];
@@ -366,9 +531,9 @@ public class WarehouseMaterialServiceAc {
 		}
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.wm_p_nb asc";
+		nativeQuery += " order by e.wk_su_account asc";
 		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, WarehouseMaterial.class);
+		Query query = em.createNativeQuery(nativeQuery, WarehouseKeeper.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {
 			String val = valAndType.split("<_>")[0];

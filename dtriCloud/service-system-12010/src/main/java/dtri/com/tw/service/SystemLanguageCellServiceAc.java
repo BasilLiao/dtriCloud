@@ -515,6 +515,7 @@ public class SystemLanguageCellServiceAc {
 						languageJson.addProperty("en-US", "Group tag");
 						languageJson.addProperty("vi-VN", "thẻ nhóm");
 						languageCell.setSlcmfixed(1);
+						languageCell.setSlcmdefval("false");
 						languageCell.setSyssort(992);
 						break;
 					case "sysodate":

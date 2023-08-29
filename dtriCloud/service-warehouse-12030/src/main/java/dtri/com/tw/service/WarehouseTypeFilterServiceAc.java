@@ -47,7 +47,7 @@ public class WarehouseTypeFilterServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
-	private WarehouseTypeFilterDao configDao;
+	private WarehouseTypeFilterDao filterDao;
 
 	@Autowired
 	private EntityManager em;
@@ -70,7 +70,7 @@ public class WarehouseTypeFilterServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseTypeFilter> entitys = configDao.findAllBySearch(null, null, pageable);
+			ArrayList<WarehouseTypeFilter> entitys = filterDao.findAllBySearch(null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -116,15 +116,11 @@ public class WarehouseTypeFilterServiceAc {
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
 			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
 			packageBean.setSearchSet(searchSetJsonAll.toString());
-			// 查不到資料
-			if (packageBean.getEntityJson().equals("[]")) {
-				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
-			}
 		} else {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseTypeFilter searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseTypeFilter.class);
 
-			ArrayList<WarehouseTypeFilter> entitys = configDao.findAllBySearch(searchData.getWtfcode(), searchData.getWtfname(), pageable);
+			ArrayList<WarehouseTypeFilter> entitys = filterDao.findAllBySearch(searchData.getWtfcode(), searchData.getWtfname(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -132,6 +128,10 @@ public class WarehouseTypeFilterServiceAc {
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson("");
+			// 查不到資料
+			if (packageBean.getEntityJson().equals("[]")) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
 		}
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
@@ -158,7 +158,7 @@ public class WarehouseTypeFilterServiceAc {
 			// Step2.資料檢查
 			for (WarehouseTypeFilter entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseTypeFilter> checkDatas = configDao.findAllByCheck(entityData.getWtfcode(), null, null);
+				ArrayList<WarehouseTypeFilter> checkDatas = filterDao.findAllByCheck(entityData.getWtfcode(), null, null);
 				for (WarehouseTypeFilter checkData : checkDatas) {
 					if (checkData.getWtfid().compareTo(entityData.getWtfid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -174,7 +174,7 @@ public class WarehouseTypeFilterServiceAc {
 			// 排除 沒有ID
 			if (x.getWtfid() != null) {
 				WarehouseTypeFilter entityDataOld = new WarehouseTypeFilter();
-				entityDataOld = configDao.getReferenceById(x.getWtfid());
+				entityDataOld = filterDao.getReferenceById(x.getWtfid());
 
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
@@ -199,7 +199,7 @@ public class WarehouseTypeFilterServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		configDao.saveAll(saveDatas);
+		filterDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -217,12 +217,9 @@ public class WarehouseTypeFilterServiceAc {
 			// Step2.資料檢查
 			for (WarehouseTypeFilter entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseTypeFilter> checkDatas = configDao.findAllByCheck(entityData.getWtfcode(), null, null);
-				for (WarehouseTypeFilter checkData : checkDatas) {
-					if (checkData.getWtfid().compareTo(entityData.getWtfid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getWtfcode() });
-					}
+				ArrayList<WarehouseTypeFilter> checkDatas = filterDao.findAllByCheck(entityData.getWtfcode(), null, null);
+				if (checkDatas.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWtfcode() });
 				}
 			}
 		}
@@ -243,7 +240,7 @@ public class WarehouseTypeFilterServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		configDao.saveAll(saveDatas);
+		filterDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -265,7 +262,7 @@ public class WarehouseTypeFilterServiceAc {
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getWtfid() != null) {
-				WarehouseTypeFilter entityDataOld = configDao.findById(x.getWtfid()).get();
+				WarehouseTypeFilter entityDataOld = filterDao.findById(x.getWtfid()).get();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
@@ -274,7 +271,7 @@ public class WarehouseTypeFilterServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		configDao.saveAll(saveDatas);
+		filterDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -297,14 +294,14 @@ public class WarehouseTypeFilterServiceAc {
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getWtfid() != null) {
-				WarehouseTypeFilter entityDataOld = configDao.getReferenceById(x.getWtfid());
+				WarehouseTypeFilter entityDataOld = filterDao.getReferenceById(x.getWtfid());
 				saveDatas.add(entityDataOld);
 			}
 		});
 
 		// =======================資料儲存=======================
 		// 資料Data
-		configDao.deleteAll(saveDatas);
+		filterDao.deleteAll(saveDatas);
 		return packageBean;
 	}
 
@@ -318,7 +315,7 @@ public class WarehouseTypeFilterServiceAc {
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM wtfrehouse_config e Where ";
+		String nativeQuery = "SELECT e.* FROM wtfrehouse_type_filter e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];

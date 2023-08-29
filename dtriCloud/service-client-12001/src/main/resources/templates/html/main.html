@@ -98,13 +98,13 @@ body {
 					if(event['htmlBody']!=""){
 						//console.log("Step3-1.清除上一模版監聽:轉跳畫面:刷新_模板:"+event['htmlBody']);
 						//body 內資料->清除
-						home.methods.destroy();home={};
-						search.methods.destroy();search={};
-						modify.methods.destroy();modify={};
-						print.methods.destroy();print={};
-						report.methods.destroy();report={};
-						compare.methods.destroy();compare={};
-						special.methods.destroy();special={};
+						if(home.methods!=null){home.methods.destroy();home={};}
+						if(search.methods!=null){search.methods.destroy();search={};}
+						if(modify.methods!=null){modify.methods.destroy();modify={};}
+						if(print.methods!=null){print.methods.destroy();print={};}
+						if(report.methods!=null){report.methods.destroy();report={};}
+						if(compare.methods!=null){compare.methods.destroy();compare={};}
+						if(special.methods!=null){special.methods.destroy();special={};}
 						//body 內本體->清除
 						body_index.methods.destroy();body_index={};
 						//body 掛載新頁面->註冊
