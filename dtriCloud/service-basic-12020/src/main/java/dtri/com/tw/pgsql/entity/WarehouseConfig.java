@@ -29,7 +29,7 @@ import jakarta.persistence.Table;
  *      wc_alias 倉庫別 Ex:A100<br>
  *      wc_wk_a_name 倉庫別名 Ex:原物料倉<br>
  *      wc_a_d_qty 該倉儲-單據是否 自動扣除數量<br>
- *      wc_a_i_qty該倉儲-單據是否 自動增加數量<br>
+ *      wc_a_i_qty 該倉儲-單據是否 自動增加數量<br>
  * 
  */
 

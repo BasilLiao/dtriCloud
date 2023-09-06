@@ -16,6 +16,16 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 	ArrayList<BasicIncomingList> findAllByStatus(Integer sysstatus);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
+			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and"//
+			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
+			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
+			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
+			+ "( c.bilcuser = '') and "// 核准人
+			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
+	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand, String biltype, Integer sysstatus,
+			Pageable pageable);
+
+	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass=:bilclass) and "//
 			+ "(:bilsn is null or c.bilsn=:bilsn) and "//
 			+ "(:bilpnumber is null or c.bilpnumber=:bilpnumber) ")

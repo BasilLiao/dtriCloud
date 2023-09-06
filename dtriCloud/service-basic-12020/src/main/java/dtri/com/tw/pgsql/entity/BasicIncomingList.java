@@ -34,17 +34,19 @@ import jakarta.persistence.Table;
  *      bil_checkin : 核單 / 核項目 0=未核單 1=已核單<br>
  *      bil_c_user: 核准人<br>
  *      bil_f_user: 完成人<br>
+ *      bil_m_user: 分配-負責人<br>
  *      bil_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
  *      bil_p_number:物料號 Ex:50-117-238132<br>
  *      bil_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bil_p_specification:物料規格<br>
  *      bil_pn_qty:數量<br>
  *      bil_pn_g_qty:已入數量<br>
+ *      bil_pn_a_qty:提前領用<br>
  *      bil_to_command:單據指令對象 json [] A511-123456....<br>
  *      bil_from_command:單據指令來源 json [] A511-123456....<br>
  *      bil_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
  *      bil_from_who:物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
- *      bil_status:單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
+ *      bil_status:單據狀態 3 = 取消 / 4=暫停 /5=全數歸還/ 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
  *      bil_e_date:預計時間(入料日) 指 單一項目 到齊時間 或是預定 入料時間<br>
  *      bil_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
  * 
@@ -80,12 +82,14 @@ public class BasicIncomingList {
 		this.bilcheckin = 0;
 		this.bilcuser = "";
 		this.bilfuser = "";
+		this.bilmuser = "";
 		this.bilacceptance = 0;
 		this.bilpnumber = "";
 		this.bilpname = "";
 		this.bilpspecification = "";
 		this.bilpnqty = 0;
 		this.bilpngqty = 0;
+		this.bilpnaqty = 0;
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";
@@ -140,6 +144,9 @@ public class BasicIncomingList {
 	private String bilcuser;
 	@Column(name = "bil_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilfuser;
+	@Column(name = "bil_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bilmuser;
+
 	@Column(name = "bil_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bilacceptance;
 
@@ -477,6 +484,14 @@ public class BasicIncomingList {
 
 	public void setBiltfilter(Boolean biltfilter) {
 		this.biltfilter = biltfilter;
+	}
+
+	public String getBilmuser() {
+		return bilmuser;
+	}
+
+	public void setBilmuser(String bilmuser) {
+		this.bilmuser = bilmuser;
 	}
 
 }

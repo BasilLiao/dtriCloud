@@ -2,7 +2,6 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,10 +22,8 @@ import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
-import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
-import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -76,10 +72,7 @@ public class WarehouseSynchronizeServiceAc {
 			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
-			entitys.forEach(t -> {
-				t.setMaterial(null);
-			});
-
+			
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝

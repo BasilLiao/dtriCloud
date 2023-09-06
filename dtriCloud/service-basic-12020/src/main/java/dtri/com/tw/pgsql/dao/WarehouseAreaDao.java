@@ -12,7 +12,7 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 	ArrayList<WarehouseArea> findAllByWawmpnb(String wawmpnb);
 
 	// 物料號+倉儲
-	ArrayList<WarehouseArea> findAllByWawmpnbalias(String wawmpnb);
+	ArrayList<WarehouseArea> findAllByWaaliasawmpnb(String wawmpnb);
 
 	// 物料號+物料不為0
 	ArrayList<WarehouseArea> findAllByWawmpnbAndWaerptqtyNot(String wawmpnb, Integer waerptqty);

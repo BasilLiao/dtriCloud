@@ -46,6 +46,8 @@ public class Mocte {
 	private Integer tb004;// 需領用
 	@Column(name = "TB005")
 	private Integer tb005;// 已領用
+	@Column(name = "TB009")
+	private String tb009;// 庫別
 
 	@Column(name = "TC008")
 	private String tc008;// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
@@ -55,6 +57,8 @@ public class Mocte {
 	private String te013;// 領料說明(可領用量)
 	@Column(name = "TE014")
 	private String te014;// 備註(來料時間 or 匹配進貨單)
+	@Column(name = "TE019")
+	private String te019;// --簽核確認碼 Y/N/V
 
 	@Column(name = "MB001")
 	private String mb001;// 品號
@@ -63,19 +67,19 @@ public class Mocte {
 	@Column(name = "MB003")
 	private String mb003;// 規格
 	@Column(name = "MB017")
-	private String mb017;// 倉別代號
+	private String mb017;// 主要-倉別代號
 	@Column(name = "MB032")
-	private String mb032;// 供應商代號
+	private String mb032;// 主要-供應商代號
 	@Column(name = "MB036")
-	private Integer mb036;// 固定前置天數
+	private Integer mb036;// 主要-固定前置天數
 	@Column(name = "MB039")
-	private Integer mb039;// 最低補量
+	private Integer mb039;// 主要-最低補量
 	@Column(name = "MB040")
-	private Integer mb040;// 補貨倍量
+	private Integer mb040;// 主要-補貨倍量
 	@Column(name = "MC002")
-	private String mc002;// 倉別名稱
+	private String mc002;// 主要-倉別名稱
 	@Column(name = "MA002")
-	private String ma002;// 供應商名稱
+	private String ma002;// 主要-供應商名稱
 	@Column(name = "TK000")
 	private String tk000;// 製令單
 
@@ -299,13 +303,29 @@ public class Mocte {
 		this.tc016 = tc016;
 	}
 
+	public String getTb009() {
+		return tb009;
+	}
+
+	public void setTb009(String tb009) {
+		this.tb009 = tb009;
+	}
+
+	public String getTe019() {
+		return te019;
+	}
+
+	public void setTe019(String te019) {
+		this.te019 = te019;
+	}
+
 	@Override
 	public String toString() {
 		return "Mocte [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006 + ", ta009=" + ta009 + ", ta015="
-				+ ta015 + ", ta021=" + ta021 + ", ta034=" + ta034 + ", ta035=" + ta035 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", tc008=" + tc008
-				+ ", tc016=" + tc016 + ", te013=" + te013 + ", te014=" + te014 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003
-				+ ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
-				+ ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+				+ ta015 + ", ta021=" + ta021 + ", ta034=" + ta034 + ", ta035=" + ta035 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", tb009=" + tb009
+				+ ", tc008=" + tc008 + ", tc016=" + tc016 + ", te013=" + te013 + ", te014=" + te014 + ", te019=" + te019 + ", mb001=" + mb001
+				+ ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039
+				+ ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
 
 }

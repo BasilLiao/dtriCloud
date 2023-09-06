@@ -74,10 +74,7 @@ public class WarehouseMaterialServiceAc {
 			ArrayList<WarehouseMaterial> entitys = materialDao.findAllBySearch(null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
-			entitys.forEach(t -> {
-				t.setWarehouseAreas(null);
-			});
-
+			
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝

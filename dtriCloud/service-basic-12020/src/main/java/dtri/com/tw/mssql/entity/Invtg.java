@@ -34,7 +34,7 @@ public class Invtg {
 	@Column(name = "TG022")
 	private String tg022;// --確認碼
 	@Column(name = "TF028")
-	private String tf028;// --簽核狀態碼
+	private String tf028;// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
 
 	@Column(name = "MB001")
 	private String mb001;// 品號

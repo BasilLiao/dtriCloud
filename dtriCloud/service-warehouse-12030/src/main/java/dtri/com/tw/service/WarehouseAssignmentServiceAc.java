@@ -1,0 +1,719 @@
+package dtri.com.tw.service;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
+import dtri.com.tw.pgsql.dao.BasicShippingListDao;
+import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
+import dtri.com.tw.pgsql.entity.BasicIncomingList;
+import dtri.com.tw.pgsql.entity.BasicShippingList;
+import dtri.com.tw.pgsql.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.WarehouseArea;
+import dtri.com.tw.pgsql.entity.WarehouseAssignment;
+import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
+import dtri.com.tw.shared.CloudExceptionService;
+import dtri.com.tw.shared.CloudExceptionService.ErCode;
+import dtri.com.tw.shared.CloudExceptionService.ErColor;
+import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.Fm_T;
+import dtri.com.tw.shared.PackageBean;
+import dtri.com.tw.shared.PackageService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+
+@Service
+public class WarehouseAssignmentServiceAc {
+
+	@Autowired
+	private PackageService packageService;
+
+	@Autowired
+	private SystemLanguageCellDao languageDao;
+
+	@Autowired
+	private WarehouseAreaDao areaDao;
+
+	@Autowired
+	private BasicIncomingListDao incomingListDao;
+
+	@Autowired
+	private BasicShippingListDao shippingListDao;
+	@Autowired
+	private WarehouseTypeFilterDao filterDao;
+
+	@Autowired
+	private EntityManager em;
+
+	/** 取得資料 */
+	public PackageBean getSearch(PackageBean packageBean) throws Exception {
+		// ========================分頁設置========================
+		// Step1.批次分頁
+		// JsonObject pageSetJson =
+		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
+		int total = 9999;
+		int batch = 0;
+
+		// Step2.排序
+		List<Order> inOrders = new ArrayList<>();
+		inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
+		inOrders.add(new Order(Direction.ASC, "bilsn"));// 單號
+		inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
+
+		List<Order> shOrders = new ArrayList<>();
+		shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
+		shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
+		shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
+
+		// 一般模式
+		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
+		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
+		// Step3-1.取得資料(一般/細節)
+		ArrayList<WarehouseAssignment> entitys = new ArrayList<WarehouseAssignment>();
+		ArrayList<WarehouseAssignment> entityDetails = new ArrayList<WarehouseAssignment>();
+		Map<String, String> entityChecks = new HashMap<>();
+		//
+		List<WarehouseArea> areaLists = areaDao.findAll();
+		Map<String, WarehouseArea> areaMaps = new HashMap<>();
+		//
+		List<WarehouseTypeFilter> typeFilters = filterDao.findAll();
+		Map<String, String> typeFilterMaps = new HashMap<>();
+		// Step3-2.資料區分(一般/細節)
+		areaLists.forEach(a -> {
+			String key = a.getWaaliasawmpnb();// 倉儲+物料號
+			areaMaps.put(key, a);
+		});
+		typeFilters.forEach(t -> {
+			typeFilterMaps.put(t.getWtfcode(), t.getWtfname());
+		});
+
+		// ========================區分:訪問/查詢========================
+		if (packageBean.getEntityJson() == "") {// 訪問
+			//
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null, 0, inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null, 0, shPageable);
+			// 進料
+			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+
+				WarehouseAssignment e = new WarehouseAssignment();
+				e.setId(Key);
+				e.setGid(headerKey);
+				// 進料單
+				e.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				e.setWasclasssn(headerKey);// 單據+單據號
+				e.setWasnb(in.getBilnb());// 序號
+				e.setWastype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				e.setWasmuser(in.getBilmuser());// : 可分配-負責人<br>
+				e.setWasfuser(in.getBilfuser());// 完成人
+				e.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+				e.setWaspnumber(in.getBilpnumber());// : 物料號<br>
+				e.setWaspname(in.getBilpname());// : 品名<br>
+				e.setWaspnqty(in.getBilpnqty());// : 數量<br>
+				e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				switch (in.getBilstatus()) {
+				case 0:
+					e.setWasstatusname("預設(3天)");
+					break;
+				case 1:
+					e.setWasstatusname("手動標示急迫");
+					break;
+				case 2:
+					e.setWasstatusname("立即");
+					break;
+				case 3:
+					e.setWasstatusname("取消");
+					break;
+				case 4:
+					e.setWasstatusname("暫停");
+					break;
+				default:
+					break;
+				}
+				e.setWasedate(in.getBiledate());// 預計領料/預計入料
+				e.setWastocommand(in.getBiltocommand());// 指令(對象)
+				e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
+				e.setWastowho(in.getBiltowho());// 物件(對象)
+				e.setWasfromwho(in.getBilfromwho());// 物件(來源)
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+						e.setWasqcqty(0);// 待驗量
+						e.setWasaliaswmpnb(areaKey);// 倉儲_物料號
+					}
+				}
+				// header
+				if (!entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, headerKey);
+					entitys.add(e);
+				}
+				// body
+				entityDetails.add(e);
+			});
+
+			// 領料
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+
+				WarehouseAssignment e = new WarehouseAssignment();
+				e.setId(Key);
+				e.setGid(headerKey);
+				// 進料單
+				e.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				e.setWasclasssn(headerKey);// 單據+單據號
+				e.setWasnb(sh.getBslnb());// 序號
+				e.setWastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				e.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+				e.setWasfuser(sh.getBslfuser());// 完成人
+				e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+				e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
+				e.setWaspname(sh.getBslpname());// : 品名<br>
+				e.setWaspnqty(sh.getBslpnqty());// : 數量<br>
+				e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				switch (sh.getBslstatus()) {
+				case 0:
+					e.setWasstatusname("預設(3天)");
+					break;
+				case 1:
+					e.setWasstatusname("手動標示急迫");
+					break;
+				case 2:
+					e.setWasstatusname("立即");
+					break;
+				case 3:
+					e.setWasstatusname("取消");
+					break;
+				case 4:
+					e.setWasstatusname("暫停");
+					break;
+				default:
+					break;
+				}
+				e.setWasedate(sh.getBsledate());// 預計領料/預計入料
+				e.setWastocommand(sh.getBsltocommand());// 指令(對象)
+				e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
+				e.setWastowho(sh.getBsltowho());// 物件(對象)
+				e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+						e.setWasqcqty(0);// 待驗量
+						e.setWasaliaswmpnb(areaKey);// 倉儲_物料號
+					}
+				}
+				// header
+				if (!entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, headerKey);
+					entitys.add(e);
+				}
+				// body
+				entityDetails.add(e);
+
+			});
+
+			// 類別(一般模式)
+			// 資料包裝
+			String entityJsonDatas = packageService.beanToJson(entitys);
+			packageBean.setEntityJson(entityJsonDatas);
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			packageBean.setEntityDetailJson(entityJsonDetails);
+
+			// ========================建立:查詢欄位/對應翻譯/修改選項========================
+			// Step3-3. 取得翻譯(一般/細節)
+			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
+			// 一般翻譯
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignment", null, 2);
+			languages.forEach(x -> {
+				mapLanguages.put(x.getSltarget(), x);
+			});
+			// 細節翻譯
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseAssignment", null, 2);
+			languagesDetail.forEach(x -> {
+				mapLanguagesDetail.put(x.getSltarget(), x);
+			});
+
+			// 動態->覆蓋寫入->修改UI選項
+
+			// Step3-4. 欄位設置
+			JsonObject searchSetJsonAll = new JsonObject();
+			JsonArray searchJsons = new JsonArray();// 查詢設定
+			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
+			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
+			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
+			Field[] fields = WarehouseAssignment.class.getDeclaredFields();
+			// 排除欄位
+			ArrayList<String> exceptionCell = new ArrayList<>();
+			exceptionCell.add("material");
+
+			// 欄位翻譯(一般)
+			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
+			// 欄位翻譯(細節)
+			resultDetailTJsons = packageService.resultSet(fields, exceptionCell, mapLanguagesDetail);
+
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "wasfromcommand", "Ex:指示來源?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			JsonArray selectArr = new JsonArray();
+			selectArr.add("領料類_領料類");
+			selectArr.add("入料類_入料類");
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "wastype", "Ex:單據類型?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+
+			// 查詢包裝/欄位名稱(一般/細節)
+			searchSetJsonAll.add("searchSet", searchJsons);
+			searchSetJsonAll.add("resultThead", resultDataTJsons);
+			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
+			packageBean.setSearchSet(searchSetJsonAll.toString());
+		} else {
+			// Step4-1. 取得資料(一般/細節)
+			WarehouseAssignment searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseAssignment.class);
+			String wasclass = null;
+			String wassn = null;
+			if (searchData.getWasclasssn() != null && searchData.getWasclasssn().split("-").length == 2) {
+				wasclass = searchData.getWasclasssn().split("-")[0];
+				wassn = searchData.getWasclasssn().split("-")[1];
+			} else {
+				wasclass = searchData.getWasclasssn();
+			}
+
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn, searchData.getWasfromcommand(),
+					searchData.getWastype(), 0, inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn, searchData.getWasfromcommand(),
+					searchData.getWastype(), 0, shPageable);
+			// Step4-2.資料區分(一般/細節)
+			// 進料
+			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+
+				WarehouseAssignment e = new WarehouseAssignment();
+				e.setId(Key);
+				e.setGid(headerKey);
+				// 進料單
+				e.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				e.setWasclasssn(headerKey);// 單據+單據號
+				e.setWasnb(in.getBilnb());// 序號
+				e.setWastype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				e.setWasmuser(in.getBilmuser());// : 可分配-負責人<br>
+				e.setWasfuser(in.getBilfuser());// 完成人
+				e.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+				e.setWaspnumber(in.getBilpnumber());// : 物料號<br>
+				e.setWaspname(in.getBilpname());// : 品名<br>
+				e.setWaspnqty(in.getBilpnqty());// : 數量<br>
+				e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				switch (in.getBilstatus()) {
+				case 0:
+					e.setWasstatusname("預設(3天)");
+					break;
+				case 1:
+					e.setWasstatusname("手動標示急迫");
+					break;
+				case 2:
+					e.setWasstatusname("立即");
+					break;
+				case 3:
+					e.setWasstatusname("取消");
+					break;
+				case 4:
+					e.setWasstatusname("暫停");
+					break;
+				default:
+					break;
+				}
+
+				e.setWasedate(in.getBiledate());// 預計領料/預計入料
+				e.setWastocommand(in.getBiltocommand());// 指令(對象)
+				e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
+				e.setWastowho(in.getBiltowho());// 物件(對象)
+				e.setWasfromwho(in.getBilfromwho());// 物件(來源)
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+						e.setWasqcqty(0);// 待驗量
+						e.setWasaliaswmpnb(areaKey);// 倉儲_物料號
+					}
+				}
+				// header
+				if (!entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, headerKey);
+					entitys.add(e);
+				}
+				// body
+				entityDetails.add(e);
+			});
+
+			// 領料
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+
+				WarehouseAssignment e = new WarehouseAssignment();
+				e.setId(Key);
+				e.setGid(headerKey);
+				// 進料單
+				e.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				e.setWasclasssn(headerKey);// 單據+單據號
+				e.setWasnb(sh.getBslnb());// 序號
+				e.setWastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				e.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+				e.setWasfuser(sh.getBslfuser());// 完成人
+				e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+				e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
+				e.setWaspname(sh.getBslpname());// : 品名<br>
+				e.setWaspnqty(sh.getBslpnqty());// : 數量<br>
+				e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				switch (sh.getBslstatus()) {
+				case 0:
+					e.setWasstatusname("預設(3天)");
+					break;
+				case 1:
+					e.setWasstatusname("手動標示急迫");
+					break;
+				case 2:
+					e.setWasstatusname("立即");
+					break;
+				case 3:
+					e.setWasstatusname("取消");
+					break;
+				case 4:
+					e.setWasstatusname("暫停");
+					break;
+				default:
+					break;
+				}
+				e.setWasedate(sh.getBsledate());// 預計領料/預計入料
+				e.setWastocommand(sh.getBsltocommand());// 指令(對象)
+				e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
+				e.setWastowho(sh.getBsltowho());// 物件(對象)
+				e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+						e.setWasqcqty(0);// 待驗量
+						e.setWasaliaswmpnb(areaKey);// 倉儲_物料號
+					}
+				}
+				// header
+				if (!entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, headerKey);
+					entitys.add(e);
+				}
+				// body
+				entityDetails.add(e);
+
+			});
+
+			// 類別(一般模式)
+			// 資料包裝
+			String entityJsonDatas = packageService.beanToJson(entitys);
+			packageBean.setEntityJson(entityJsonDatas);
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			packageBean.setEntityDetailJson(entityJsonDetails);
+
+			// 查不到資料
+			if (packageBean.getEntityJson().equals("[]")) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
+		}
+		// ========================配置共用參數========================
+		// Step5. 取得資料格式/(主KEY/群組KEY)
+		// 資料格式
+		String entityFormatJson = packageService.beanToJson(new WarehouseAssignment());
+		packageBean.setEntityFormatJson(entityFormatJson);
+		// KEY名稱Ikey_Gkey
+		packageBean.setEntityIKeyGKey("id_gid");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_wasedate");
+		return packageBean;
+	}
+
+	/** 修改資料 */
+	@Transactional
+	public PackageBean setModify(PackageBean packageBean) throws Exception {
+		// =======================資料準備 =======================
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
+			});
+
+			// Step2.資料檢查
+			for (WarehouseArea entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null);
+				for (WarehouseArea checkData : checkDatas) {
+					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getWawmpnb() });
+					}
+				}
+			}
+		}
+		// =======================資料整理=======================
+		// Step3.一般資料->寫入
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
+		entityDatas.forEach(x -> {
+			// 排除 沒有ID
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = new WarehouseArea();
+				entityDataOld = areaDao.getReferenceById(x.getWaid());
+
+				entityDataOld.setSysmdate(new Date());
+				entityDataOld.setSysmuser(packageBean.getUserAccount());
+				entityDataOld.setSysnote(x.getSysnote());
+				entityDataOld.setSysstatus(x.getSysstatus());
+				entityDataOld.setSyssort(x.getSyssort());
+				entityDataOld.setSysheader(false);
+				// 修改
+				entityDataOld.setWaslocation(x.getWaslocation());
+				entityDataOld.setWaalias(x.getWaalias());
+				entityDataOld.setWaaname(x.getWaaname());
+				entityDataOld.setWaerptqty(x.getWaerptqty());
+				entityDataOld.setWatqty(x.getWatqty());
+				entityDataOld.setWaaliasawmpnb(x.getWaalias() + "_" + entityDataOld.getWawmpnb());
+
+				entityDataOld.setChecksum(x.getChecksum());
+
+				saveDatas.add(entityDataOld);
+			}
+		});
+		// =======================資料儲存=======================
+		// 資料Data
+		areaDao.saveAll(saveDatas);
+		return packageBean;
+	}
+
+	/** 新增資料 */
+	// @Transactional
+	public PackageBean setAdd(PackageBean packageBean) throws Exception {
+		// =======================資料準備=======================
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
+			});
+
+			// Step2.資料檢查
+			for (WarehouseArea entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null);
+
+				if (checkDatas.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWawmpnb() });
+				}
+			}
+		}
+
+		// =======================資料整理=======================
+		// 資料Data
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
+		entityDatas.forEach(x -> {
+			x.setSysmdate(new Date());
+			x.setSysmuser(packageBean.getUserAccount());
+			x.setSysodate(new Date());
+			x.setSysouser(packageBean.getUserAccount());
+			x.setSyscdate(new Date());
+			x.setSyscuser(packageBean.getUserAccount());
+			// 新增
+			x.setWaaliasawmpnb(x.getWaalias() + "_" + x.getWawmpnb());
+			x.setWaid(null);
+			saveDatas.add(x);
+		});
+		// =======================資料儲存=======================
+		// 資料Detail
+		areaDao.saveAll(saveDatas);
+		return packageBean;
+	}
+
+	/** 作廢資料 */
+	@Transactional
+	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
+		// =======================資料準備 =======================
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
+			});
+			// Step2.資料檢查
+		}
+		// =======================資料整理=======================
+		// Step3.一般資料->寫入
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
+		entityDatas.forEach(x -> {
+			// 排除 沒有ID
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = areaDao.findById(x.getWaid()).get();
+				entityDataOld.setSysmdate(new Date());
+				entityDataOld.setSysmuser(packageBean.getUserAccount());
+				entityDataOld.setSysstatus(2);
+				saveDatas.add(entityDataOld);
+			}
+		});
+		// =======================資料儲存=======================
+		// 資料Data
+		areaDao.saveAll(saveDatas);
+		return packageBean;
+	}
+
+	/** 移除資料 */
+	@Transactional
+	public PackageBean setDetele(PackageBean packageBean) throws Exception {
+		// =======================資料準備 =======================
+		ArrayList<WarehouseArea> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
+			});
+			// Step2.資料檢查
+		}
+		// =======================資料整理=======================
+		// Step3.一般資料->寫入
+		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
+		// 一般-移除內容
+		entityDatas.forEach(x -> {
+			// 排除 沒有ID
+			if (x.getWaid() != null) {
+				WarehouseArea entityDataOld = areaDao.getReferenceById(x.getWaid());
+				saveDatas.add(entityDataOld);
+			}
+		});
+
+		// =======================資料儲存=======================
+		// 資料Data
+		areaDao.deleteAll(saveDatas);
+		return packageBean;
+	}
+
+	/** 取得資料 */
+	// @Transactional
+	@SuppressWarnings("unchecked")
+	public PackageBean getReport(PackageBean packageBean) throws Exception {
+		String entityReport = packageBean.getEntityReportJson();
+		JsonArray reportAry = packageService.StringToAJson(entityReport);
+		List<WarehouseArea> entitys = new ArrayList<>();
+		Map<String, String> sqlQuery = new HashMap<>();
+		// =======================查詢語法=======================
+		// 拼湊SQL語法
+		String nativeQuery = "SELECT e.* FROM warehouse_area e Where ";
+		for (JsonElement x : reportAry) {
+			// entity 需要轉換SQL與句 && 欄位
+			String cellName = x.getAsString().split("<_>")[0];
+			cellName = cellName.replace("sys", "sys_");
+			cellName = cellName.replace("sys_m", "sys_m_");
+			cellName = cellName.replace("sys_c", "sys_c_");
+			cellName = cellName.replace("sys_o", "sys_o_");
+			cellName = cellName.replace("wa", "wa_");
+			cellName = cellName.replace("wa_wmpnb", "wa_wm_p_nb");
+			cellName = cellName.replace("wa_wmpnbalias", "wa_wm_p_nb_alias");
+			cellName = cellName.replace("wa_slocation", "wa_s_location");
+			cellName = cellName.replace("wa_aname", "wa_a_name");
+			cellName = cellName.replace("wa_erptqty", "wa_erp_t_qty");
+			cellName = cellName.replace("wa_tqty", "wa_t_qty");
+
+			String where = x.getAsString().split("<_>")[1];
+			String value = x.getAsString().split("<_>")[2];// 有可能空白
+			String valueType = x.getAsString().split("<_>")[3];
+
+			switch (where) {
+			case "AllSame":
+				nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
+				sqlQuery.put(cellName, value + "<_>" + valueType);
+				break;
+			case "NotSame":
+				nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
+				sqlQuery.put(cellName, value + "<_>" + valueType);
+				break;
+			case "Like":
+				nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
+				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
+				break;
+			case "NotLike":
+				nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
+				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
+				break;
+			case "MoreThan":
+				nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
+				sqlQuery.put(cellName, value + "<_>" + valueType);
+				break;
+			case "LessThan":
+				nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
+				sqlQuery.put(cellName, value + "<_>" + valueType);
+				break;
+			}
+		}
+
+		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
+		nativeQuery += " order by e.wa_wm_p_nb asc";
+		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		Query query = em.createNativeQuery(nativeQuery, WarehouseArea.class);
+		// =======================查詢參數=======================
+		sqlQuery.forEach((key, valAndType) -> {
+			String val = valAndType.split("<_>")[0];
+			String tp = valAndType.split("<_>")[1];
+			if (tp.equals("dateTime")) {
+				// 時間格式?
+				query.setParameter(key, Fm_T.toDate(val));
+			} else if (tp.equals("number")) {
+				// 數字?
+				query.setParameter(key, Integer.parseInt(val));
+			} else {
+				// 文字?
+				query.setParameter(key, val);
+			}
+		});
+		try {
+			entitys = query.getResultList();
+		} catch (PersistenceException e) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
+		}
+
+		// 資料包裝
+		String entityJsonDatas = packageService.beanToJson(entitys);
+		packageBean.setEntityJson(entityJsonDatas);
+
+		return packageBean;
+	}
+}

@@ -84,13 +84,13 @@ body_index={
 			$("#body_warehouse_assignment #search_title").addClass("disabled");
 			$("#body_warehouse_assignment #modify_title").addClass("disabled");
 			$("#body_warehouse_assignment #report_title").addClass("disabled");
-			$("#body_warehouse_assignment #print_title").addClass("disabled");
+			//$("#body_warehouse_assignment #print_title").addClass("disabled");
 			$("#body_warehouse_assignment #compare_title").addClass("disabled");
 			//$("#body_warehouse_assignment #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_warehouse_assignment #search_title").addClass("active");
-            $("#body_warehouse_assignment #search_tab").addClass("show");
-            $("#body_warehouse_assignment #search_tab").addClass("active");
+            $("#body_warehouse_assignment #other_title").addClass("active");
+            $("#body_warehouse_assignment #other_tab").addClass("show");
+            $("#body_warehouse_assignment #other_tab").addClass("active");
             
           	//Step2.模板
             $("#body_warehouse_assignment #home_tab").load("./html/model/home.html", function(){});
@@ -104,9 +104,9 @@ body_index={
             //	modify.methods.create();
             //});
             //列印-模板
-            //$("#body_warehouse_assignment #print_tab").load("./html/model/print.html", function(){
-            //	print.methods.create();
-            //});
+            $("#body_warehouse_assignment #print_tab").load("./html/print/print_warehouse_assignment.html", function(){
+            	print.methods.create();
+            });
             //報告-模板
             //$("#body_warehouse_assignment #report_tab").load("./html/model/report.html", function(){
             //	report.methods.create();
@@ -116,7 +116,8 @@ body_index={
             //	compare.methods.create();
             //});
             //其他-模板
-            $("#body_warehouse_assignment #other_tab").load("./html/other/special.html", function(){
+            $("#body_warehouse_assignment #other_tab").load("./html/other/other_warehouse_assignment.html", function(){
+            	other.methods.create();
             	
             });
 		},

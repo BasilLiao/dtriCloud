@@ -18,7 +18,7 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 			+ "	INVMC.MC002, "// --倉別代號
 			+ "	CMSMC.MC002 AS CMC002, "// --倉別名稱
 			+ "	INVMC.MC003, "// --儲位位置
-			+ "	INVMC.MC007, "// --儲位數量
+			+ "	FLOOR(INVMC.MC007) AS MC007, "// --儲位數量
 			+ "	INVMB.MB017, "// --主要-倉別代號
 			+ "	INVMB.MB032, "// --主要-供應商代號
 			+ "	INVMB.MB036, "// --主要-固定前置天數
@@ -36,10 +36,11 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
-			+ "WHERE "//
-			+ "	INVMC.MC007 is not null "//
-			+ "	AND INVMC.MC007 >=1 "//
-			+ "ORDER BY " + "	INVMB.MB001 ASC,"//
+			//+ "WHERE "//
+			//+ "	INVMC.MC007 is not null "//
+			//+ "	AND (INVMC.MC007 >=1 OR INVMC.MC007 =0) "//
+			+ "ORDER BY " //
+			+ "	INVMB.MB001 ASC,"//
 			+ "	INVMC.MC002 ASC,"//
 			+ "	INVMC.MC003 ASC "// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值

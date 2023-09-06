@@ -5,6 +5,7 @@
 <title>DTR CLOUD(定誼雲平台)</title>
 <script src="./thirdparty/js/jquery-3.7.0.min.js"></script>
 <script src="./thirdparty/js/jquery-ui-1.13.2.min.js"></script>
+<script src="./thirdparty/js/jquery-qrcode.min.js"></script>
 <script src="./thirdparty/js/bootstrap-5.2.3.min.js"></script>
 <script src="./thirdparty/js/bootstrap-datetimepicker.min.js"></script>
 
@@ -52,7 +53,7 @@ body {
 	//main.web_html .=各類-網頁面位置(需註冊-頭/身/底/覽/警/讀取中/出)
 	var header_index={},body_index={},footer_index={},nav_index={},nav_alert={},loading={},logout={};
 	//main.web_body .=各類-身體模板(需註冊-家/查/修/印/報/比/特)
-	var home={},search={},modify={},print={},report={},compare={},special={};
+	var home={},search={},modify={},print={},report={},compare={},other={};
 	//資料-個人基本資訊(暫存-名/態/職/登時)
 	main.web_user={name:"",status:"",position:"",login_time:""};
 	//資料-傳送(位置/請求類型[POST/GET/PUT/DELETE]/資料內容)
@@ -104,7 +105,7 @@ body {
 						if(print.methods!=null){print.methods.destroy();print={};}
 						if(report.methods!=null){report.methods.destroy();report={};}
 						if(compare.methods!=null){compare.methods.destroy();compare={};}
-						if(special.methods!=null){special.methods.destroy();special={};}
+						if(other.methods!=null){other.methods.destroy();other={};}
 						//body 內本體->清除
 						body_index.methods.destroy();body_index={};
 						//body 掛載新頁面->註冊
@@ -122,9 +123,9 @@ body {
                                case "search":search.methods.searchReturn();break;
                                case "modify":modify.methods.modifyReturn();break;
                                case "report":report.methods.reportReturn();break;
-                               case "special_search":special.methods.special_searchReturn();break;
-                               case "special_modify":special.methods.methods.special_modifyReturn();break;
-                               case "special_other":special.methods.customized.special_otherReturn();break;
+                               case "other_search":other.methods.otherReturn();break;
+                               case "other_modify":other.methods.methods.otherReturn();break;
+                               case "other_other":other.methods.customized.otherReturn();break;
                            }
 					}else{
 						//console.log("Step3-3.異常請求尚未在範圍內");

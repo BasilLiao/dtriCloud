@@ -16,17 +16,17 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "	INVTB.TB007, "// --數量
 			+ "	INVTB.TB012, "// --出庫
 			+ "	INVTB.TB013, "// --入庫
-			+ "	INVTB.TB018, "// --確認碼
+			+ "	INVTB.TB018, "// --確認碼 Y/N/V
 			+ "	INVTA.TA016, "// --簽核碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格
-			+ "	INVMB.MB017, "// --倉別代號
-			+ "	INVMB.MB032, "// --供應商代號
-			+ "	INVMB.MB036, "// --固定前置天數
-			+ "	INVMB.MB039, "// --最低補量
-			+ "	INVMB.MB040, "// --補貨倍量
-			+ "	CMSMC.MC002, "// --倉別名稱
+			+ "	INVMB.MB017, "// --主要-倉別代號
+			+ "	INVMB.MB032, "// --主要-供應商代號
+			+ "	INVMB.MB036, "// --主要-固定前置天數
+			+ "	INVMB.MB039, "// --主要-最低補量
+			+ "	INVMB.MB040, "// --主要-補貨倍量
+			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
 			+ "	'領料類'  AS TK000 "//
 			+ "FROM "//
@@ -45,7 +45,8 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
 			+ "	INVTB.TB001 is not null"//
-			+ "	AND INVTB.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
+			+ "	AND (INVTB.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "// 今天
+			+ "	OR INVTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ "ORDER BY"//
 			+ "	(INVTB.TB001+'-'+TRIM(INVTB.TB002)+'-'+INVTB.TB003)  ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值

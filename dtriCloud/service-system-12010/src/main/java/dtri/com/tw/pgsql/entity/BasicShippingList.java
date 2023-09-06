@@ -34,6 +34,7 @@ import jakarta.persistence.Table;
  *      bsl_checkin : 核單 / 核項目 0=未核單 1=已核單<br>
  *      bsl_c_user: 核准人<br>
  *      bsl_f_user: 完成人<br>
+ *      bsl_m_user:分配負責人<br>
  *      bsl_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
  *      bsl_p_number:物料號 Ex:50-117-238132<br>
  *      bsl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
@@ -44,8 +45,8 @@ import jakarta.persistence.Table;
  *      bsl_from_command:單據指令來源 json [] A511-123456....<br>
  *      bsl_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
  *      bsl_from_who:物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
- *      bsl_status:單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
- *      bsl_e_date:預計時間(入料日) 指 單一項目 到齊時間 或是預定 入料時間<br>
+ *      bsl_status:單據狀態 3 = 取消 / 4=暫停/5=全數歸還 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+ *      bsl_e_date:預計時間(領料日) 指 單一項目 到齊時間 或是預定 領料時間<br>
  *      bsl_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
  * 
  * 
@@ -80,6 +81,7 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
+		this.bslmuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
 		this.bslpname = "";

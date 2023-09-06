@@ -29,13 +29,14 @@
 }
 /*Table 表格外框線*/
 #search_c #search_cr table {
+	max-height: 570px;
 	min-height: 200px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
 #search_c #search_dcr table {
-	max-height: 200px;
+	max-height: 570px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -181,22 +182,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-12 col-lg-2 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Page</div>
-						<div class="row m-0">
-							<button id="btn_pageU" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>＜＜<br>Page
-								</b>
-							</button>
-							<input id="numberPage" class="lh-base col-4 p-1 m-1 " name="page" type="number" placeholder="1-50" value="1" />
-							<button id="btn_pageD" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>＞＞<br>Page
-								</b>
-							</button>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -270,8 +255,8 @@
 </div>
 <script type="text/javascript">
 //宣告
-//console.log("search.html(init)");
-search={
+//console.log("other.html(init)");
+other={
 	//資料
 	data:{
 		marks:{},//有選取的IKeyGKey
@@ -280,15 +265,15 @@ search={
 		btn_send_auto:"",//自動傳送
 		//換頁設置
 		searchPageSet:{
-			total:1000,//批次數量(1-1000)
+			total:100,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:20,//每頁數量(1-20)
+			pageSize:100,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityIKey:"",//ID
 			entityGKey:"",//GID
-			entityDateTime:"",//是時間格式的欄位
+			entityDateTime:"",//是時間格式的欄位 
 		},
 		searchSet:{},
 	},	
@@ -297,19 +282,19 @@ search={
 		create(){
 			//==========================第一次載入==========================
 			//Step0.初始化
-			console.log("search.html(created)");
+			console.log("other.html(created)");
 			//查詢格式
-			search.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
+			other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 			//查詢項目 
 			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
 			//console.log(searchSetJson);
 			//資料內容
-			search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
-			search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
-			search.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
-			search.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
-			search.data.entityDateTime = main.resq_data['entityDateTime'];
-			search.data.searchSet = searchSetJson['searchSet'];
+			other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+			other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+			other.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+			other.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
+			other.data.entityDateTime = main.resq_data['entityDateTime'];
+			other.data.searchSet = searchSetJson['searchSet'];
 			//按鈕權限?
 			var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
 			var ps = Array.from(p);
@@ -332,6 +317,7 @@ search={
 			var resultDetailThead = searchSetJson['resultDetailThead'];
 			resultThead = main.methods.orderedSort(resultThead);
 			resultDetailThead = main.methods.orderedSort(resultDetailThead);
+			console.log(resultThead);
 			//Step2.查詢結果標題-資料
 			var check1=true;
 			Object.keys(resultThead).forEach(function(k){
@@ -424,7 +410,7 @@ search={
 			});
 			
 			//Step3.查詢內容-格式
-			for(var b=1;b<=20;b++){
+			for(var b=1;b<=100;b++){
 				var exTbodyTr = $('.exTbodyTr').clone();
 				exTbodyTr.removeClass('exTbodyTr');
 				exTbodyTr.removeClass('d-none');
@@ -518,17 +504,11 @@ search={
 				}
 			}
 			//時間格式
-            search.methods.datetimepickerDate();
+            other.methods.datetimepickerDate();
 			//Step5.帶入資料
-			search.methods.searchReLoad();
+			other.methods.otherReLoad();
 			
 			//==========================監聽==========================
-			//監聽-換頁數
-			$(document).off("change", "#search_c #numberPage");
-			$(document).on("change", "#search_c #numberPage", function () {
-				 if ($(this).val() > 50){$(this).val(50);}
-		         else if ($(this).val() < 1){ $(this).val(1);}      
-			});
 			//監聽-選取資料
 			$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
 			$(document).on("change", "#search_c #search_cr_open .exTbodyTh input", function (event) {
@@ -537,31 +517,31 @@ search={
 				var Ikey_Gkey = event.target.title;
 				var check = event.target.checked;
 				//細節細項
-				var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				var entityIKey = search.data.entityIKey;//IKey
-				var entityGKey = search.data.entityGKey;//GKey
+				var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				var entityIKey = other.data.entityIKey;//IKey
+				var entityGKey = other.data.entityGKey;//GKey
 				var detailGKey = Ikey_Gkey.split("_")[1];
 				//標記-選取|解除
 				if(check==true){
-					search.data.marks[Ikey_Gkey] = true;
+					other.data.marks[Ikey_Gkey] = true;
 					console.log(entityDetailJsons);	
 					//細節
 					for(var k in entityDetailJsons) {
 						if(entityDetailJsons[k][entityGKey]+"" == detailGKey){
 							var markDetail = entityDetailJsons[k][entityIKey]+"_"+entityDetailJsons[k][entityGKey];
-							search.data.markDetails[markDetail] = true;
+							other.data.markDetails[markDetail] = true;
 							continue;
 						};
 					}
 				}else{
-					for(var k in search.data.marks) {
+					for(var k in other.data.marks) {
 						if( k == Ikey_Gkey){
-							delete search.data.marks[k];
+							delete other.data.marks[k];
 							//細節
 							var markDetailsRemove = "_"+Ikey_Gkey.split("_")[1];
-							for(var s in search.data.markDetails) {
+							for(var s in other.data.markDetails) {
 								if(s.indexOf(markDetailsRemove)>=0){//取得群組尾數
-									delete search.data.markDetails[s];
+									delete other.data.markDetails[s];
 									continue;
 								};
 							}
@@ -569,8 +549,8 @@ search={
 						};
 					}
 				}
-				//console.log(search.data.marks);	
-				//console.log(search.data.markDetails);
+				//console.log(other.data.marks);	
+				//console.log(other.data.markDetails);
 			});
 			//監聽-選取資料
 			$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
@@ -581,16 +561,16 @@ search={
 				var mark = {};
 				//標記-選取|解除
 				if(check==true){
-					search.data.markDetails[Ikey_Gkey]=true;
+					other.data.markDetails[Ikey_Gkey]=true;
 				}else{
-					for(var k in search.data.markDetails) {
+					for(var k in other.data.markDetails) {
 						if( k == Ikey_Gkey){
-							delete search.data.markDetails[k];
+							delete other.data.markDetails[k];
 							break;
 						};
 					}
 				}
-				//console.log(search.data.markDetails);				
+				//console.log(other.data.markDetails);				
 			});
 			//監聽-全選資料
 			$(document).off("click", "#search_c #exthAll");
@@ -628,24 +608,24 @@ search={
 			$(document).off("click", "#search_c #btn_detail");
 			$(document).on("click", "#search_c #btn_detail", function (event) {
 				console.log("btn_detail");
-				var marks = search.data.marks;
-				var markDetails = search.data.markDetails;
+				var marks = other.data.marks;
+				var markDetails = other.data.markDetails;
 				//觸發?
 				$('#search_cr i').trigger('click');
 				if(!$('#search_dcr_open').hasClass('show')){
 					$('#search_dcr i').trigger('click');
 				}
 				//有標記?
-				if(marks!=null && search.data.searchPageSet.entityDetailJsons!=null){
-					var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-					var entityIKey = search.data.entityIKey;
-					var entityGKey = search.data.entityGKey;
-					var entityDateTime =  search.data.entityDateTime;
+				if(marks!=null && other.data.searchPageSet.entityDetailJsons!=null){
+					var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+					var entityIKey = other.data.entityIKey;
+					var entityGKey = other.data.entityGKey;
+					var entityDateTime =  other.data.entityDateTime;
 					//console.log(entityDetailJsons);
 					//Step1.查詢細節內容-格式
 					$(".valTbodyTrD").remove();
 					
-					for(var k in search.data.marks) {
+					for(var k in other.data.marks) {
 						for(var d=0;d<entityDetailJsons.length;d++){
 							if(entityDetailJsons[d][entityGKey]==k.split("_")[1]){
 								//=======格式=======
@@ -681,7 +661,7 @@ search={
 									}
 								});
 								//marks標記?	->帶入[mark]
-								if(search.data.markDetails[iKey+"_"+gKey]!=null){
+								if(other.data.markDetails[iKey+"_"+gKey]!=null){
 									exTbodyTr.find('input').prop( "checked", true );
 								}
 								$('.exDetailTbodyTr').before(exTbodyTr);
@@ -698,38 +678,38 @@ search={
 			$(document).off("click", "#search_c #btn_create");
 			$(document).on("click", "#search_c #btn_create", function (event) {
 				console.log("btn_create");
-				search.methods.searchToModify("create");
+				other.methods.searchToModify("create");
 			});
 			//監聽-另存
 			$(document).off("click", "#search_c #btn_saveAs");
 			$(document).on("click", "#search_c #btn_saveAs", function (event) {
 				console.log("btn_saveAs");
-				search.methods.searchToModify("saveAs");
+				other.methods.searchToModify("saveAs");
 			});
 			//監聽-修改
 			$(document).off("click", "#search_c #btn_modify");
 			$(document).on("click", "#search_c #btn_modify", function (event) {
 				console.log("btn_modify");
-				search.methods.searchToModify("modify");
+				other.methods.searchToModify("modify");
 			});
 			//監聽-作廢
 			$(document).off("click", "#search_c #btn_invalid");
 			$(document).on("click", "#search_c #btn_invalid", function (event) {
 				console.log("btn_invalid");
-				search.methods.searchToModify("invalid");
+				other.methods.searchToModify("invalid");
 			});
 			//監聽-移除
 			$(document).off("click", "#search_c #btn_delete");
 			$(document).on("click", "#search_c #btn_delete", function (event) {
 				console.log("btn_delete");
-				search.methods.searchToModify("delete");
+				other.methods.searchToModify("delete");
 			});
 			//監聽-標記移除
 			$(document).off("click", "#search_c #btn_markCancel");
 			$(document).on("click", "#search_c #btn_markCancel", function (event) {
 				console.log("btn_markCancel");
-				search.data.marks=[];
-				search.data.markDetails=[];
+				other.data.marks=[];
+				other.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
 				
 			});
@@ -737,28 +717,28 @@ search={
 			$(document).off("click", "#search_c #btn_printerForm");
 			$(document).on("click", "#search_c #btn_printerForm", function (event) {
 				console.log("btn_printerForm");
-				search.methods.searchToPrint(null);
+				other.methods.searchToPrint(null);
 				
 			});
 			//監聽-比對
 			$(document).off("click", "#search_c #btn_compare");
 			$(document).on("click", "#search_c #btn_compare", function (event) {
 				console.log("btn_compare");
-				search.methods.searchToCompare(null);
+				other.methods.searchToCompare(null);
 				
 			});
 			//監聽-查詢
 			$(document).off("click", "#search_c #btn_send");
 			$(document).on("click", "#search_c #btn_send", function (event) {
 				console.log("btn_send");
-				search.methods.searchSend(0);
+				other.methods.searchSend(0);
 				
 				if($("#btn_send_auto").prop( "checked")){
-					search.data.btn_send_auto = setTimeout(function (){
+					other.data.btn_send_auto = setTimeout(function (){
 						 $("#search_c #btn_send").trigger( "click" );
 					}, 30000);
 				}else{
-					clearTimeout(search.data.btn_send_auto);
+					clearTimeout(other.data.btn_send_auto);
 				}
 			});
 			//監聽-查詢(促發)
@@ -777,53 +757,9 @@ search={
 				$("#searchItem select").val("");
 				
 			});
-			//監聽-上一頁
-			$(document).off("click", "#search_c #btn_pageU");
-			$(document).on("click", "#search_c #btn_pageU", function (event) {
-				console.log("btn_pageU");
-				$('#btn_pageU').addClass("disabled");
-				var pageNew = search.data.searchPageSet.pageNew;
-				var batch = search.data.searchPageSet.batch;//第幾批次 
-				//目前資料可以換上一頁
-				if(pageNew>1){
-					pageNew = pageNew-1;
-					search.data.searchPageSet.pageNew = pageNew;
-					search.methods.searchReLoad();
-					$("#numberPage").val(pageNew);
-					$('#btn_pageU').removeClass("disabled");
-					$('#btn_pageD').removeClass("disabled");
-				}else if(batch>0){
-					//沒資料可以換上一頁&&資料 與 批次數量相同
-					search.methods.searchSend(batch-1);
-				}
-			});
-			//監聽-下一頁
-			$(document).off("click", "#search_c #btn_pageD");
-			$(document).on("click", "#search_c #btn_pageD", function (event) {
-				console.log("btn_pageD");
-				$('#btn_pageD').addClass("disabled");
-				//存入-頁面設定
-				//search.data.searchPageSet.total=1000;//批次數量
-				var total = search.data.searchPageSet.total;//批次數量
-				var batch = search.data.searchPageSet.batch;//第幾批次 
-				var entityJsons = search.data.searchPageSet.entityJsons;//存入資料
-				var pageNew = search.data.searchPageSet.pageNew;//目前分頁
-				var pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-				//目前資料可以換下一頁
-				if(entityJsons.length>(pageNew*pageSize)){
-					pageNew = pageNew+1;
-					search.data.searchPageSet.pageNew = pageNew;
-					search.methods.searchReLoad();
-					$("#numberPage").val(pageNew);
-					$('#btn_pageU').removeClass("disabled");
-					$('#btn_pageD').removeClass("disabled");
-				}else if(entityJsons.length==total){
-					//沒資料可以換下一頁&&資料 與 批次數量相同
-					search.methods.searchSend(batch+1);
-				}
-			});
+
 			//時間格式
-            search.methods.datetimepickerDate();
+            other.methods.datetimepickerDate();
 			
 		},
 		datetimepickerDate(){
@@ -860,13 +796,13 @@ search={
 			}
 			
 			//是否marks?markDetails?
-			var entityJsons = search.data.searchPageSet.entityJsons;
-			var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-			var marks = search.data.marks;
-			var markDetails = search.data.markDetails;
-			var entityIKey = search.data.entityIKey;
-			var entityGKey = search.data.entityGKey;
-			var entityDateTime = search.data.entityDateTime;
+			var entityJsons = other.data.searchPageSet.entityJsons;
+			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+			var marks = other.data.marks;
+			var markDetails = other.data.markDetails;
+			var entityIKey = other.data.entityIKey;
+			var entityGKey = other.data.entityGKey;
+			var entityDateTime = other.data.entityDateTime;
 			var dataHeader = [];
 			var dataBody =[];
 			console.log(JSON.stringify(marks)); 
@@ -899,13 +835,13 @@ search={
 		searchToPrint(order){
 			//比對資料 
 			//是否marks?markDetails?
-			var entityJsons = search.data.searchPageSet.entityJsons;
-			var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-			var marks = search.data.marks;
-			var markDetails = search.data.markDetails;
-			var entityIKey = search.data.entityIKey;
-			var entityGKey = search.data.entityGKey;
-			var entityDateTime = search.data.entityDateTime;
+			var entityJsons = other.data.searchPageSet.entityJsons;
+			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+			var marks = other.data.marks;
+			var markDetails = other.data.markDetails;
+			var entityIKey = other.data.entityIKey;
+			var entityGKey = other.data.entityGKey;
+			var entityDateTime = other.data.entityDateTime;
 			var dataHeader = [];
 			var dataBody =[];
 			console.log(JSON.stringify(marks)); 
@@ -938,13 +874,13 @@ search={
 		searchToCompare(order){
 			//比對資料 
 			//是否marks?markDetails?
-			var entityJsons = search.data.searchPageSet.entityJsons;
-			var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-			var marks = search.data.marks;
-			var markDetails = search.data.markDetails;
-			var entityIKey = search.data.entityIKey;
-			var entityGKey = search.data.entityGKey;
-			var entityDateTime = search.data.entityDateTime;
+			var entityJsons = other.data.searchPageSet.entityJsons;
+			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+			var marks = other.data.marks;
+			var markDetails = other.data.markDetails;
+			var entityIKey = other.data.entityIKey;
+			var entityGKey = other.data.entityGKey;
+			var entityDateTime = other.data.entityDateTime;
 			var dataHeader = [];
 			var dataBody =[];
 			console.log(JSON.stringify(marks)); 
@@ -975,7 +911,7 @@ search={
 		},
 		//==========================傳送資料==========================
 		searchSend(batch){
-			var entityJson= search.data.entityFormatJson;//格式
+			var entityJson= other.data.entityFormatJson;//格式
 			var data={};
 			var req_data={};
 			var searchPageSet={};
@@ -990,20 +926,20 @@ search={
 			});
 			data['entityJson'] = JSON.stringify(entityJson);
 			//換頁
-			searchPageSet['total'] = search.data.searchPageSet.total;//批次數量
+			searchPageSet['total'] = other.data.searchPageSet.total;//批次數量
 			searchPageSet['batch'] = batch;//第幾批次
 			data['searchPageSet'] = JSON.stringify(searchPageSet);
-			data['callBackFunction'] = "search";
+			data['callBackFunction'] = "other_search";
 			//包裝
 			req_data['data'] = data;
 			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.AR";
 			req_data['type'] = "POST";
 			main.methods.ajaxSend(req_data);
 			//時間格式
-            search.methods.datetimepickerDate();
+            other.methods.datetimepickerDate();
 		},
 		//==========================資料載入==========================
-		searchReLoad(){
+		otherReLoad(){
 			//還原
 			$('.valTbodytd').text("");
 			$('.exTbodyTh input').attr("disabled","disabled");
@@ -1011,13 +947,13 @@ search={
 			$('.exTbodyTh input').prop( "checked", false );
 			
 			//Step5.帶入資料
-			var marks = search.data.marks;
-			var entityJsons = search.data.searchPageSet.entityJsons;
-			var entityIKey = search.data.entityIKey;
-			var entityGKey = search.data.entityGKey;
-			var entityDateTime =  search.data.entityDateTime;
-			var pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-			var pageNew = search.data.searchPageSet.pageNew-1;//單前頁碼(1-50)
+			var marks = other.data.marks;
+			var entityJsons = other.data.searchPageSet.entityJsons;
+			var entityIKey = other.data.entityIKey;
+			var entityGKey = other.data.entityGKey;
+			var entityDateTime =  other.data.entityDateTime;
+			var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+			var pageNew = other.data.searchPageSet.pageNew-1;//單前頁碼(1-50)
 			var pageSN = pageSize*pageNew;//目前分頁->資料戳記
 			for(var x = 0 ; x < pageSize ;x++){
 				//筆數還夠
@@ -1061,35 +997,30 @@ search={
 			}
 		},
 		//==========================回傳接收==========================
-		searchReturn(){
+		otherReturn(){
 			//查詢回傳
 			console.log("searchReturn");
 			//Step4.分頁歸位
 			if(main.resq_data['entityJson'].length>0){
 				var searchPageSet =JSON.parse(main.resq_data['searchPageSet']);
-				search.data.searchPageSet.total = searchPageSet['total'];
-				search.data.searchPageSet.batch = searchPageSet['batch'];
-				search.data.searchPageSet.pageNew=1; //單前頁碼(1-50)
-				search.data.marks={};//有選取的IKeyGKey
-				search.data.markDetails={};//有選取的IKeyGKey
-				$("#numberPage").val(1);
-				$('#btn_pageD').removeClass("disabled");
-				$('#btn_pageU').removeClass("disabled");
+				other.data.searchPageSet.total = searchPageSet['total'];
+				other.data.searchPageSet.batch = searchPageSet['batch'];
+				other.data.searchPageSet.pageNew=1; //單前頁碼(1-50)
+				other.data.marks={};//有選取的IKeyGKey
+				other.data.markDetails={};//有選取的IKeyGKey
 				//Step5.帶入資料
 				if(main.resq_data['entityJson']!=""){
-					search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);				
-					search.methods.searchReLoad();
+					other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);				
+					other.methods.otherReLoad();
 				}
 				if(main.resq_data['entityDetailJson']!=""){
-					search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+					other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 				}
 			}
 		},
 		//==========================初始化==========================
 		destroy() {
 			//銷毀
-			$(document).off("click", "#search_c #btn_pageD");
-			$(document).off("click", "#search_c #btn_pageU");
 			$(document).off("click", "#search_c #btn_clearAll");
 			$(document).off("keyup", "#searchItem input");
 			$(document).off("click", "#search_c #btn_send");
@@ -1106,8 +1037,7 @@ search={
 			$(document).off("click", "#search_c #exthAll");
 			$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 			$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
-			$(document).off("change", "#search_c #numberPage");
-			console.log("search.html(destroy)");
+			console.log("other.html(destroy)");
 		},
 	},	
 };

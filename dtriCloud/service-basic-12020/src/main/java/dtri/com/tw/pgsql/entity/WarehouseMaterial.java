@@ -1,7 +1,6 @@
 package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -11,7 +10,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -108,9 +106,6 @@ public class WarehouseMaterial {
 	private Boolean wmaiqty;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
-
-	@OneToMany(mappedBy = "material")
-	private List<WarehouseArea> warehouseAreas;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -254,14 +249,6 @@ public class WarehouseMaterial {
 
 	public void setWmaiqty(Boolean wmaiqty) {
 		this.wmaiqty = wmaiqty;
-	}
-
-	public List<WarehouseArea> getWarehouseAreas() {
-		return warehouseAreas;
-	}
-
-	public void setWarehouseAreas(List<WarehouseArea> warehouseAreas) {
-		this.warehouseAreas = warehouseAreas;
 	}
 
 	public String getChecksum() {

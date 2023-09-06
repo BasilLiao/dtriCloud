@@ -13,8 +13,8 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 	// 物料號
 	ArrayList<WarehouseArea> findAllByWawmpnb(String wawmpnb);
 
-	// 物料號+倉儲
-	ArrayList<WarehouseArea> findAllByWawmpnbalias(String wawmpnb);
+	// 倉儲+物料號
+	ArrayList<WarehouseArea> findAllByWaaliasawmpnb(String wawmpnb);
 
 	// 物料號+物料不為0
 	ArrayList<WarehouseArea> findAllByWawmpnbAndWaerptqtyNot(String wawmpnb, Integer waerptqty);
@@ -26,7 +26,7 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 	@Query("SELECT c FROM WarehouseArea c WHERE "//
 			+ "(:wawmpnb is null or c.wawmpnb LIKE %:wawmpnb%) and "//
 			+ "(:waslocation is null or c.waslocation LIKE %:waslocation%) and "//
-			+ "(:waalias is null or c.waalias LIKE %:waalias%) ")
+			+ "(:waalias is null or c.waalias LIKE %:waalias%)") //
 	ArrayList<WarehouseArea> findAllBySearch(String wawmpnb, String waslocation, String waalias, Pageable pageable);
 
 	// 檢查用
@@ -34,6 +34,6 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 			+ "(:wawmpnb is null or c.wawmpnb=:wawmpnb) and "//
 			+ "(:waslocation is null or c.waslocation=:waslocation) and "//
 			+ "(:waalias is null or c.waalias=:waalias) ")
-	ArrayList<WarehouseArea> findAllByCheck(String wawmpnb, String waslocation, String waalias, Pageable pageable);
+	ArrayList<WarehouseArea> findAllByCheck(String wawmpnb, String waslocation, String waalias);
 
 }

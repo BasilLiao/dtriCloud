@@ -24,11 +24,11 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格
-			+ "	INVMB.MB017, "// --倉別代號
-			+ "	INVMB.MB032, "// --供應商代號
-			+ "	INVMB.MB036, "// --固定前置天數
-			+ "	INVMB.MB039, "// --最低補量
-			+ "	INVMB.MB040, "// --補貨倍量
+			+ "	INVMB.MB017, "// --主要-倉別代號
+			+ "	INVMB.MB032, "// --主要-供應商代號
+			+ "	INVMB.MB036, "// --主要-固定前置天數
+			+ "	INVMB.MB039, "// --主要-最低補量
+			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	COALESCE(CMSMC.MC002,'') AS MC002, "// --倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
 			+ "	'製令類' AS TK000"//
@@ -50,7 +50,8 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	(TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
 			+ "	AND (MOCTB.TB004) != 0 "// --數量不為0
 			+ "	AND MOCTB.TB018 = 'Y' "// --確認碼
-			+ " AND MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)"//
+			+ " AND (MOCTB.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
+			+ "	OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " ORDER BY "//
 			+ "	MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
 			+ "	INVMB.MB001 ASC,"// --物料

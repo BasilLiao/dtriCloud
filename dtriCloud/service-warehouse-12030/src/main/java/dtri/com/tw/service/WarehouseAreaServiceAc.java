@@ -74,9 +74,6 @@ public class WarehouseAreaServiceAc {
 			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
-			entitys.forEach(t -> {
-				t.setMaterial(null);
-			});
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
@@ -167,7 +164,7 @@ public class WarehouseAreaServiceAc {
 			// Step2.資料檢查
 			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null, null);
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, entityData.getWaalias());
 				for (WarehouseArea checkData : checkDatas) {
 					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -197,7 +194,7 @@ public class WarehouseAreaServiceAc {
 				entityDataOld.setWaaname(x.getWaaname());
 				entityDataOld.setWaerptqty(x.getWaerptqty());
 				entityDataOld.setWatqty(x.getWatqty());
-				entityDataOld.setWawmpnbalias(entityDataOld.getWawmpnb() + "_" + x.getWaalias());
+				entityDataOld.setWaaliasawmpnb(x.getWaalias() + "_" + entityDataOld.getWawmpnb());
 
 				entityDataOld.setChecksum(x.getChecksum());
 
@@ -224,8 +221,7 @@ public class WarehouseAreaServiceAc {
 			// Step2.資料檢查
 			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, null, null);
-
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, entityData.getWaalias());
 				if (checkDatas.size() > 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWawmpnb() });
 				}
@@ -243,7 +239,7 @@ public class WarehouseAreaServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			// 新增
-			x.setWawmpnbalias(x.getWawmpnb() + "_" + x.getWaalias());
+			x.setWaaliasawmpnb(x.getWaalias() + "_" + x.getWawmpnb());
 			x.setWaid(null);
 			saveDatas.add(x);
 		});

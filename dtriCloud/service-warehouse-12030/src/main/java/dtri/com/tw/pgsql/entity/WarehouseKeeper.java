@@ -28,10 +28,9 @@ import jakarta.persistence.Table;
  *      wk_id <br>
  *      wk_su_id :使用者ID<br>
  *      wk_su_account:使用者帳號<br>
- *      wk_g_list:使用倉儲清單 JSON:[]<br>
+ *      wk_g_list:使用倉儲清單 A0001<br>
+ *      wk_g_l_name:使用倉儲清單名稱 原物料倉<br>
  *      wk_wa_s_location:物料 主儲位位置: 關鍵字 Ex:1F-GG-GG-GG<br>
- *      wk_in_su_id:入料 共同負責人 JSON:[]<br>
- *      wk_sh_su_id: 領料 共同負責人 JSON:[]<br>
  * 
  */
 
@@ -54,11 +53,9 @@ public class WarehouseKeeper {
 		this.sysnote = "";
 		// 倉儲區域負責人-清單
 		this.wksuid = 0L;
-		this.wkglist = "[]";
-		this.wkwaslocation = "[]";
-		this.wkinsuaccount = "[]";
-		this.wkshsuaccount = "[]";
-
+		this.wkglist = "";
+		this.wkwaslocation = "";
+		this.wksuaccount = "";
 	}
 
 	// 共用型
@@ -90,18 +87,16 @@ public class WarehouseKeeper {
 	@SequenceGenerator(name = "warehouse_keeper_seq", sequenceName = "warehouse_keeper_seq", allocationSize = 1)
 	@Column(name = "wk_id")
 	private Long wkid;
-	@Column(name = "wk_su_id", nullable = false, unique = true)
+	@Column(name = "wk_su_id", nullable = false)
 	private Long wksuid;
-	@Column(name = "wk_su_account", nullable = false, unique = true, columnDefinition = "varchar(150) default ''")
+	@Column(name = "wk_su_account", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String wksuaccount;
-	@Column(name = "wk_g_list", nullable = false, columnDefinition = "varchar(150) default '[]'")
+	@Column(name = "wk_g_list", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String wkglist;
-	@Column(name = "wk_wa_s_location", nullable = false, columnDefinition = "varchar(120) default '[]'")
+	@Column(name = "wk_g_l_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String wkglname;
+	@Column(name = "wk_wa_s_location", nullable = false, columnDefinition = "varchar(12) default ''")
 	private String wkwaslocation;
-	@Column(name = "wk_in_su_account", nullable = false, columnDefinition = "varchar(150) default '[]'")
-	private String wkinsuaccount;
-	@Column(name = "wk_sh_su_account", nullable = false, columnDefinition = "varchar(150) default '[]'")
-	private String wkshsuaccount;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -207,22 +202,6 @@ public class WarehouseKeeper {
 		this.wkwaslocation = wkwaslocation;
 	}
 
-	public String getWkinsuaccount() {
-		return wkinsuaccount;
-	}
-
-	public void setWkinsuaccount(String wkinsuaccount) {
-		this.wkinsuaccount = wkinsuaccount;
-	}
-
-	public String getWkshsuaccount() {
-		return wkshsuaccount;
-	}
-
-	public void setWkshsuaccount(String wkshsuaccount) {
-		this.wkshsuaccount = wkshsuaccount;
-	}
-
 	public String getWksuaccount() {
 		return wksuaccount;
 	}
@@ -237,6 +216,14 @@ public class WarehouseKeeper {
 
 	public void setWkglist(String wkglist) {
 		this.wkglist = wkglist;
+	}
+
+	public String getWkglname() {
+		return wkglname;
+	}
+
+	public void setWkglname(String wkglname) {
+		this.wkglname = wkglname;
 	}
 
 }

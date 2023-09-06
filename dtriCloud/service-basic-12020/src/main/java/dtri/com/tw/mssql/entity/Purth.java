@@ -31,10 +31,14 @@ public class Purth {
 	private String th003;// 進貨單序號
 	@Column(name = "TH007")
 	private Integer th007;// 進貨數量
+	@Column(name = "TH009")
+	private String th009;// 庫別
 	@Column(name = "TH014")
 	private String th014;// 驗收時間
 	@Column(name = "TH028")
 	private String th028;// 檢驗狀態0.免檢,1.待驗,2.合格,3.不良,4.特採
+	@Column(name = "TH030")
+	private String th030;// 簽核確認碼 Y/N/V
 	@Column(name = "TH050")
 	private String th050;// 簽核碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
 
@@ -45,19 +49,19 @@ public class Purth {
 	@Column(name = "MB003")
 	private String mb003;// 規格
 	@Column(name = "MB017")
-	private String mb017;// 倉別代號
+	private String mb017;// 主要-倉別代號
 	@Column(name = "MB032")
-	private String mb032;// 供應商代號
+	private String mb032;// 主要-供應商代號
 	@Column(name = "MB036")
-	private Integer mb036;// 固定前置天數
+	private Integer mb036;// 主要-固定前置天數
 	@Column(name = "MB039")
-	private Integer mb039;// 最低補量
+	private Integer mb039;// 主要-最低補量
 	@Column(name = "MB040")
-	private Integer mb040;// 補貨倍量
+	private Integer mb040;// 主要-補貨倍量
 	@Column(name = "MC002")
-	private String mc002;// 倉別名稱
+	private String mc002;// 主要-倉別名稱
 	@Column(name = "MA002")
-	private String ma002;// 供應商名稱
+	private String ma002;// 主要-供應商名稱
 	@Column(name = "TK000")
 	private String tk000;// 進貨單
 
@@ -225,12 +229,27 @@ public class Purth {
 		this.th050 = th050;
 	}
 
-	@Override
-	public String toString() {
-		return "Purth [th011_th012_th013=" + th011_th012_th013 + ", th001_th002=" + th001_th002 + ", th003=" + th003 + ", th007=" + th007 + ", th014="
-				+ th014 + ", th028=" + th028 + ", th050=" + th050 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017
-				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002
-				+ ", tk000=" + tk000 + "]";
+	public String getTh009() {
+		return th009;
 	}
 
+	public void setTh009(String th009) {
+		this.th009 = th009;
+	}
+
+	public String getTh030() {
+		return th030;
+	}
+
+	public void setTh030(String th030) {
+		this.th030 = th030;
+	}
+
+	@Override
+	public String toString() {
+		return "Purth [th011_th012_th013=" + th011_th012_th013 + ", th001_th002=" + th001_th002 + ", th003=" + th003 + ", th007=" + th007 + ", th009="
+				+ th009 + ", th014=" + th014 + ", th028=" + th028 + ", th030=" + th030 + ", th050=" + th050 + ", mb001=" + mb001 + ", mb002=" + mb002
+				+ ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040
+				+ ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+	}
 }
