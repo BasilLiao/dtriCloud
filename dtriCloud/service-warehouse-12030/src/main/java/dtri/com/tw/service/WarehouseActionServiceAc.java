@@ -337,7 +337,7 @@ public class WarehouseActionServiceAc {
 						entitys.add(e);
 					}
 					// body
-					entityDetails.add(e);					
+					entityDetails.add(e);
 				}
 			});
 
@@ -444,23 +444,31 @@ public class WarehouseActionServiceAc {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
+					WarehouseHistory history = new WarehouseHistory();
 					BasicIncomingList incomingList = arrayList.get(0);
 					incomingList.setBilfuser(x.getWasfuser());
 					incomingList.setBilpngqty(x.getWaspngqty());
 					incomingList.setSysmuser(x.getWasfuser());
 					incomingList.setSysmdate(new Date());
 					incomingLists.add(incomingList);
+					// 紀錄
+					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
+					entityHistories.add(history);
 				}
 			} else {
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheck(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
+					WarehouseHistory history = new WarehouseHistory();
 					BasicShippingList shippingList = arrayList.get(0);
 					shippingList.setBslfuser(x.getWasfuser());
 					shippingList.setBslpngqty(x.getWaspngqty());
 					shippingList.setSysmuser(x.getWasfuser());
 					shippingList.setSysmdate(new Date());
 					shippingLists.add(shippingList);
+					// 紀錄
+					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
+					entityHistories.add(history);
 				}
 			}
 			// =======================資料儲存=======================
