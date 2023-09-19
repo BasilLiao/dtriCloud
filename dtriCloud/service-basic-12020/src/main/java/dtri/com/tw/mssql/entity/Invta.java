@@ -15,7 +15,11 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "INVTA")
 @EntityListeners(AuditingEntityListener.class)
-public class Invta {
+public class Invta implements Cloneable {
+	public Invta() {
+		super();
+	}
+
 	@Id
 	@Column(name = "INVTA_ID")
 	private Long mocid;
@@ -221,4 +225,8 @@ public class Invta {
 				+ ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

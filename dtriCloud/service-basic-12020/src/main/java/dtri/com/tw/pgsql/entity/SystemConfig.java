@@ -12,9 +12,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
+ * 
  * @see ---共用型---<br>
  *      sys_c_date : 創建時間<br>
  *      sys_c_user : 創建人名<br>
@@ -24,22 +26,20 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---物料異動-紀錄---<br>
- *      whwmpnb = "";物料號(品號)<br>
- *      whwmslocation = "";物料 主儲位位置 Ex:1F-GG-GG-GG<br>
- *      whtype = "";事件類型 入料/領料/轉料/清點/其他<br>
- *      whcontent = "";事件內容 Ex:XXX使用者_ 從位置XXXX_料號XXXX_ (入料/領料/轉料/清點/其他)的XX數量_
- *      來至於XXX單據<br>
- *      whmac = "";Mac位置 進行事件內容人<br>
- * 
+ *      ---參數設定---<br>
+ *      sc_id : 主key <br>
+ *      sc_g_id : 群組主key <br>
+ *      sc_name : 參數名稱<br>
+ *      sc_g_name : 參數群組名稱<br>
+ *      sc_value : 值<br>
  * 
  */
-
 @Entity
-@Table(name = "warehouse_history")
+@Table(name = "system_config")
 @EntityListeners(AuditingEntityListener.class)
-public class WarehouseHistory {
-	public WarehouseHistory() {
+public class SystemConfig {
+
+	public SystemConfig() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -50,15 +50,16 @@ public class WarehouseHistory {
 
 		this.sysheader = false;
 		this.sysstatus = 0;
-		this.syssort = 0;// 欄位?排序
+		this.syssort = 0;
 		this.sysnote = "";
-		// 倉儲單據過濾器-清單
-		this.whwmpnb = "";
-		this.whwmslocation = "";
-		this.whtype = "";
-		this.whcontent = "";
-		this.whmac = "";
-
+		// 主體型
+		this.scname = "";
+		this.scgname = "";
+		this.scvalue = "";
+		// 前端格式-修改/查詢用(翻譯與欄位)
+		this.setSysmdatestart(null);
+		this.setSysmdateend(null);
+		this.scgid = null;
 	}
 
 	// 共用型
@@ -84,22 +85,26 @@ public class WarehouseHistory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 倉儲單據過濾器-清單
+	// 主體型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_history_seq")
-	@SequenceGenerator(name = "warehouse_history_seq", sequenceName = "warehouse_history_seq", allocationSize = 1)
-	@Column(name = "wh_id")
-	private Long whid;
-	@Column(name = "wh_wm_p_nb", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whwmpnb;
-	@Column(name = "wh_wm_s_location", nullable = false, columnDefinition = "varchar(250) default ''")
-	private String whwmslocation;
-	@Column(name = "wh_type", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whtype;
-	@Column(name = "wh_content", nullable = false, columnDefinition = "text default ''")
-	private String whcontent;
-	@Column(name = "wh_mac", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String whmac;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_config_seq")
+	@SequenceGenerator(name = "system_config_seq", sequenceName = "system_config_seq", allocationSize = 1)
+	@Column(name = "sc_id")
+	private Long scid;
+	@Column(name = "sc_g_id", nullable = false, columnDefinition = "int default 0")
+	private Long scgid;
+	@Column(name = "sc_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String scname;
+	@Column(name = "sc_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String scgname;
+	@Column(name = "sc_value", nullable = false, columnDefinition = "text default ''")
+	private String scvalue;
+
+	// 前端格式-修改/查詢用(翻譯與欄位)
+	@Transient
+	private Date sysmdatestart;
+	@Transient
+	private Date sysmdateend;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -181,52 +186,60 @@ public class WarehouseHistory {
 		this.sysnote = sysnote;
 	}
 
-	public Long getWhid() {
-		return whid;
+	public Long getScid() {
+		return scid;
 	}
 
-	public void setWhid(Long whid) {
-		this.whid = whid;
+	public void setScid(Long scid) {
+		this.scid = scid;
 	}
 
-	public String getWhwmpnb() {
-		return whwmpnb;
+	public String getScname() {
+		return scname;
 	}
 
-	public void setWhwmpnb(String whwmpnb) {
-		this.whwmpnb = whwmpnb;
+	public void setScname(String scname) {
+		this.scname = scname;
 	}
 
-	public String getWhwmslocation() {
-		return whwmslocation;
+	public String getScgname() {
+		return scgname;
 	}
 
-	public void setWhwmslocation(String whwmslocation) {
-		this.whwmslocation = whwmslocation;
+	public void setScgname(String scgname) {
+		this.scgname = scgname;
 	}
 
-	public String getWhtype() {
-		return whtype;
+	public String getScvalue() {
+		return scvalue;
 	}
 
-	public void setWhtype(String whtype) {
-		this.whtype = whtype;
+	public void setScvalue(String scvalue) {
+		this.scvalue = scvalue;
 	}
 
-	public String getWhcontent() {
-		return whcontent;
+	public Date getSysmdatestart() {
+		return sysmdatestart;
 	}
 
-	public void setWhcontent(String whcontent) {
-		this.whcontent = whcontent;
+	public void setSysmdatestart(Date sysmdatestart) {
+		this.sysmdatestart = sysmdatestart;
 	}
 
-	public String getWhmac() {
-		return whmac;
+	public Date getSysmdateend() {
+		return sysmdateend;
 	}
 
-	public void setWhmac(String whmac) {
-		this.whmac = whmac;
+	public void setSysmdateend(Date sysmdateend) {
+		this.sysmdateend = sysmdateend;
+	}
+
+	public Long getScgid() {
+		return scgid;
+	}
+
+	public void setScgid(Long scgid) {
+		this.scgid = scgid;
 	}
 
 }

@@ -81,7 +81,6 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
-		this.bslmuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
 		this.bslpname = "";

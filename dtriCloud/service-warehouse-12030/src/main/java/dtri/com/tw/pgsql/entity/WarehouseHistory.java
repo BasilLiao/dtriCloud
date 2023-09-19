@@ -92,11 +92,11 @@ public class WarehouseHistory {
 	private Long whid;
 	@Column(name = "wh_wm_p_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String whwmpnb;
-	@Column(name = "wh_wm_s_location", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "wh_wm_s_location", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String whwmslocation;
 	@Column(name = "wh_type", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String whtype;
-	@Column(name = "wh_content", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "wh_content", nullable = false, columnDefinition = "text default ''")
 	private String whcontent;
 	@Column(name = "wh_mac", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String whmac;

@@ -154,26 +154,23 @@ public class WebSecurityConfig {
 				// ----請求-warehouse_assignment-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_ass).hasAuthority(actionRole(warehouse_ass, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_ass + ".AR").hasAuthority(actionRole(warehouse_ass, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_ass + ".ARR").hasAuthority(actionRole(warehouse_ass, "AR"))// (報告查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_ass + ".AC").hasAuthority(actionRole(warehouse_ass, "AC"))// (新增)
-				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".AU").hasAuthority(actionRole(warehouse_ass, "AU"))// (修改)
-				.requestMatchers(HttpMethod.DELETE, warehouse_ass + ".AD").hasAuthority(actionRole(warehouse_ass, "AD"))// (移除)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S2").hasAuthority(actionRole(warehouse_ass, "S2"))// (修改S2)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S3").hasAuthority(actionRole(warehouse_ass, "S3"))// (修改S3)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S4").hasAuthority(actionRole(warehouse_ass, "s4"))// (修改S4)
 
-				// ----請求-basic_shipping_list-(訪問) ----
+				// -客製化
+				// ----請求-warehouse_action-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_act).hasAuthority(actionRole(warehouse_act, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_act + ".AR").hasAuthority(actionRole(warehouse_act, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_act + ".ARR").hasAuthority(actionRole(warehouse_act, "AR"))// (報告查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_act + ".AC").hasAuthority(actionRole(warehouse_act, "AC"))// (新增)
-				.requestMatchers(HttpMethod.PUT, warehouse_act + ".AU").hasAuthority(actionRole(warehouse_act, "AU"))// (修改)
-				.requestMatchers(HttpMethod.DELETE, warehouse_act + ".AD").hasAuthority(actionRole(warehouse_act, "AD"))// (移除)
-
-				// ----請求-basic_incoming_list-(訪問) ----
+				.requestMatchers(HttpMethod.PUT, warehouse_act + ".S1").hasAuthority(actionRole(warehouse_act, "S1"))// (修改S1)
+				
+				// -客製化
+				// ----請求-warehouse_synchronize-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_syn).hasAuthority(actionRole(warehouse_syn, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_syn + ".AR").hasAuthority(actionRole(warehouse_syn, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_syn + ".ARR").hasAuthority(actionRole(warehouse_syn, "AR"))// (報告查詢)
-				.requestMatchers(HttpMethod.POST, warehouse_syn + ".AC").hasAuthority(actionRole(warehouse_syn, "AC"))// (新增)
-				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".AU").hasAuthority(actionRole(warehouse_syn, "AU"))// (修改)
-				.requestMatchers(HttpMethod.DELETE, warehouse_syn + ".AD").hasAuthority(actionRole(warehouse_syn, "AD"))// (移除)
+				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".S1").hasAuthority(actionRole(warehouse_syn, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".S2").hasAuthority(actionRole(warehouse_syn, "S2"))// (修改S2)
 
 				// 倉庫功能-基本
 				// ----請求-warehouse_history-(訪問) ----

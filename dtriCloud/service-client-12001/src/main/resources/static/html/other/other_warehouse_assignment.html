@@ -118,27 +118,23 @@
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
 							<button id="btn_detail" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>Detail<br>(AR)
+								<b>Detail<br>()
 								</b>
 							</button>
-							<button id="btn_create" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Create<br>new(AC)
+							<button id="btn_agree" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Agree<br>(S1)
 								</b>
 							</button>
-							<button id="btn_saveAs" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Save<br>as...(AC)
+							<button id="btn_passAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Pass all<br>(S2)
 								</b>
 							</button>
-							<button id="btn_modify" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Modify<br>(AU)
+							<button id="btn_returnAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Return all<br>(S3)
 								</b>
 							</button>
-							<button id="btn_invalid" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Invalid<br>(AD)
-								</b>
-							</button>
-							<button id="btn_delete" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
-								<b>Delete<br>(DD)
+							<button id="btn_urgency" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Urgency<br>(S4)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
@@ -150,15 +146,14 @@
 				</div>
 				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Special</div>
+						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
-
 							<button id="btn_printerForm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Printer<br>form()
 								</b>
 							</button>
-							<button id="btn_compare" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Compare<br>()
+							<button id="btn_confirm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Confirm<br>(S1~S4)
 								</b>
 							</button>
 						</div>
@@ -172,7 +167,7 @@
 								<input id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Send<br>(AR)
+								<b>Query<br>(AR)
 								</b>
 							</button>
 							<button id="btn_clearAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
@@ -301,23 +296,26 @@ other={
 			
 			if(ps[10] != 1){//查詢(AR)10
 				$("#btn_send").addClass("disabled");
-			}if(ps[9] != 1){//修改(AU)9
-				$("#btn_modify").addClass("disabled");
-			}if(ps[8] != 1){//新增(AC)8
-				$("#btn_create").addClass("disabled");
-				$("#btn_saveAs").addClass("disabled");
-			}if(ps[7] != 1){//作廢(AD)7
-				$("#btn_invalid").addClass("disabled");
-			}if(ps[6] != 1){//移除(DD)6
-				$("#btn_delete").addClass("disabled");
+			}if(ps[5] != 1){//修改(S1)5
+				$("#btn_agree").addClass("disabled");			
+			}		
+			if(ps[4] != 1){//修改(S2)4
+				$("#btn_passAll").addClass("disabled");
 			}
+			if(ps[3] != 1){//修改(S3)3
+				$("#btn_returnAll").addClass("disabled");
+			}
+			if(ps[2] != 1){//修改(S4)2
+				$("#btn_urgency").addClass("disabled");
+			}
+			
 
 			//Step1.查詢結果標題-排序
 			var resultThead = searchSetJson['resultThead'];
 			var resultDetailThead = searchSetJson['resultDetailThead'];
 			resultThead = main.methods.orderedSort(resultThead);
 			resultDetailThead = main.methods.orderedSort(resultDetailThead);
-			console.log(resultThead);
+			//console.log(resultThead);
 			//Step2.查詢結果標題-資料
 			var check1=true;
 			Object.keys(resultThead).forEach(function(k){
@@ -478,7 +476,7 @@ other={
 					for(var s = 0;s<searchSet['select'].length;s++){
 						var key = searchSet['select'][s].split("_")[0];
 						var val = searchSet['select'][s].split("_")[1];
-						selectEx = $('.selectEx').clone();
+						selectEx = searchSelectEx.find('.selectEx').clone();
 						selectEx.removeClass("selectEx");
 						selectEx.removeAttr("selected");
 						selectEx.text(key);
@@ -524,7 +522,7 @@ other={
 				//標記-選取|解除
 				if(check==true){
 					other.data.marks[Ikey_Gkey] = true;
-					console.log(entityDetailJsons);	
+					//console.log(entityDetailJsons);	
 					//細節
 					for(var k in entityDetailJsons) {
 						if(entityDetailJsons[k][entityGKey]+"" == detailGKey){
@@ -674,36 +672,31 @@ other={
 					$('.exDetailTbodyTr').addClass('d-none');
 				}
 			});
-			//監聽-建立
-			$(document).off("click", "#search_c #btn_create");
-			$(document).on("click", "#search_c #btn_create", function (event) {
-				console.log("btn_create");
-				other.methods.searchToModify("create");
+			//監聽-同意
+			$(document).off("click", "#search_c #btn_agree");
+			$(document).on("click", "#search_c #btn_agree", function (event) {
+				console.log("btn_agree");
+				other.methods.searchToModify("btn_agree");
 			});
-			//監聽-另存
-			$(document).off("click", "#search_c #btn_saveAs");
-			$(document).on("click", "#search_c #btn_saveAs", function (event) {
-				console.log("btn_saveAs");
-				other.methods.searchToModify("saveAs");
+			//監聽-暫停
+			$(document).off("click", "#search_c #btn_passAll");
+			$(document).on("click", "#search_c #btn_passAll", function (event) {
+				console.log("btn_passAll");
+				other.methods.searchToModify("btn_passAll");
 			});
-			//監聽-修改
-			$(document).off("click", "#search_c #btn_modify");
-			$(document).on("click", "#search_c #btn_modify", function (event) {
-				console.log("btn_modify");
-				other.methods.searchToModify("modify");
+			//監聽-歸還
+			$(document).off("click", "#search_c #btn_returnAll");
+			$(document).on("click", "#search_c #btn_returnAll", function (event) {
+				console.log("btn_returnAll");
+				other.methods.searchToModify("btn_returnAll");
 			});
-			//監聽-作廢
-			$(document).off("click", "#search_c #btn_invalid");
-			$(document).on("click", "#search_c #btn_invalid", function (event) {
-				console.log("btn_invalid");
-				other.methods.searchToModify("invalid");
+			//監聽-急迫
+			$(document).off("click", "#search_c #btn_urgency");
+			$(document).on("click", "#search_c #btn_urgency", function (event) {
+				console.log("btn_urgency");
+				other.methods.searchToModify("btn_urgency");
 			});
-			//監聽-移除
-			$(document).off("click", "#search_c #btn_delete");
-			$(document).on("click", "#search_c #btn_delete", function (event) {
-				console.log("btn_delete");
-				other.methods.searchToModify("delete");
-			});
+			
 			//監聽-標記移除
 			$(document).off("click", "#search_c #btn_markCancel");
 			$(document).on("click", "#search_c #btn_markCancel", function (event) {
@@ -720,11 +713,11 @@ other={
 				other.methods.searchToPrint(null);
 				
 			});
-			//監聽-比對
-			$(document).off("click", "#search_c #btn_compare");
-			$(document).on("click", "#search_c #btn_compare", function (event) {
-				console.log("btn_compare");
-				other.methods.searchToCompare(null);
+			//監聽-修改傳送
+			$(document).off("click", "#search_c #btn_confirm");
+			$(document).on("click", "#search_c #btn_confirm", function (event) {
+				console.log("btn_confirm");
+				other.methods.confirmSend();
 				
 			});
 			//監聽-查詢
@@ -789,48 +782,64 @@ other={
 		},
 		//==========================修改資料==========================
 		searchToModify(order){
-			//新建?
-			if(order=="create"){
-				modify.methods.modify(order,null,null);
-				return null;
-			}
-			
 			//是否marks?markDetails?
-			var entityJsons = other.data.searchPageSet.entityJsons;
-			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
 			var marks = other.data.marks;
-			var markDetails = other.data.markDetails;
-			var entityIKey = other.data.entityIKey;
-			var entityGKey = other.data.entityGKey;
-			var entityDateTime = other.data.entityDateTime;
-			var dataHeader = [];
-			var dataBody =[];
-			console.log(JSON.stringify(marks)); 
-			if(JSON.stringify(marks)=="{}" && JSON.stringify(markDetails)=="{}"){
+			//console.log(JSON.stringify(marks)); 
+			if(JSON.stringify(marks)=="{}"){
 				return null;
 			}
 			//Data
-			Object.keys(marks).forEach(function(ik){
-				var ikey = ik.split("_")[0];
-				var gkey = ik.split("_")[1];
-				for(var en=0;en<entityJsons.length;en++){
-					if(entityJsons[en][entityIKey]==ikey){
-						dataHeader.push(entityJsons[en]);
+			$('#search_cr_open tbody tr').each(function() {
+				if($('.'+this.className+' input').prop("checked")){
+					//console.log(this.className+" "+ $('.'+this.className+' input').prop("checked"));
+					
+					switch(order){
+					case "btn_agree":
+						$('.'+this.className+' .wascuser').removeClass('text-success');
+						$('.'+this.className+' .wasfuser').removeClass('text-success');
+						if($('.'+this.className+' .wascuser').hasClass('text-primary')){	
+							$('.'+this.className+' .wascuser').text("");
+							$('.'+this.className+' .wasfuser').text("");
+							$('.'+this.className+' .wascuser').removeClass('text-primary');
+						}else{
+							$('.'+this.className+' .wasfuser').text("");
+							$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
+							$('.'+this.className+' .wascuser').addClass('text-primary');
+						}
+					break;
+					case "btn_passAll":
+						$('.'+this.className+' .wascuser').removeClass('text-primary');
+						if($('.'+this.className+' .wascuser').hasClass('text-success')){	
+							$('.'+this.className+' .wascuser').text("");
+							$('.'+this.className+' .wasfuser').text("");
+							$('.'+this.className+' .wascuser').removeClass('text-success');
+							$('.'+this.className+' .wasfuser').removeClass('text-success');
+						}else{
+							$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
+							$('.'+this.className+' .wasfuser').text($('#menu_login_name').text());
+							$('.'+this.className+' .wascuser').addClass('text-success');
+							$('.'+this.className+' .wasfuser').addClass('text-success');
+						}
+					break;
+					case "btn_urgency":
+						$('.'+this.className+' .wasstatus').text("0");
+						if($('.'+this.className+' .wasstatusname').hasClass('text-warning')){	
+							$('.'+this.className+' .wasstatusname').removeClass('text-warning');
+						}else{
+							$('.'+this.className+' .wasstatus').text("1");
+							$('.'+this.className+' .wasstatusname').addClass('text-warning');
+						}
+					break;
+					case "btn_returnAll":
+						if($('.'+this.className+' .wasclasssn ').hasClass('text-danger')){	
+							$('.'+this.className+' .wasclasssn ').removeClass('text-danger');
+						}else{
+							$('.'+this.className+' .wasclasssn ').addClass('text-danger');
+						}
+					break;
 					}
 				}
 			});
-			//Details
-			Object.keys(markDetails).forEach(function(dk){
-				var ikey = dk.split("_")[0];
-				var gkey = dk.split("_")[1];
-				for(var en=0;en<entityDetailJsons.length;en++){
-					if(entityDetailJsons[en][entityIKey]==ikey){
-						dataBody.push(entityDetailJsons[en]);
-					}
-				}
-			});
-			
-			modify.methods.modify(order,dataHeader,dataBody); 
 		},
 		searchToPrint(order){
 			//比對資料 
@@ -871,45 +880,138 @@ other={
 			//打印資料
 			print.methods.printPrepare(dataHeader,dataBody,entityIKey,entityGKey); 
 		},
-		searchToCompare(order){
-			//比對資料 
-			//是否marks?markDetails?
+		
+		//==========================傳送資料==========================
+		confirmSend(){
 			var entityJsons = other.data.searchPageSet.entityJsons;
 			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
-			var marks = other.data.marks;
 			var markDetails = other.data.markDetails;
 			var entityIKey = other.data.entityIKey;
 			var entityGKey = other.data.entityGKey;
 			var entityDateTime = other.data.entityDateTime;
-			var dataHeader = [];
-			var dataBody =[];
-			console.log(JSON.stringify(marks)); 
-			if(JSON.stringify(marks)=="{}" && JSON.stringify(markDetails)=="{}"){
-				return null;
+			
+			var dataHeaderAgree = [];
+			var dataHeaderPassAll = [];
+			var dataHeaderUrgency = [];
+			var dataHeaderReturnAll = [];
+			
+			//確認選取
+			$('#search_cr_open tbody tr').each(function() {
+				//同意:核准人
+				if($('.'+this.className+' .wascuser').hasClass('text-primary')){
+					var entityJosn={};
+					$(this).find('.valTbodytd').each(function(index){ 
+						var val = $(this).text();
+						var name = $(this).attr('class').split(' ')[1];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeaderAgree.push(entityJosn);
+				}
+				//同意:略過此單據
+				if($('.'+this.className+' .wascuser').hasClass('text-success')){
+					var entityJosn={};
+					$(this).find('.valTbodytd').each(function(index){ 
+						var val = $(this).text();
+						var name = $(this).attr('class').split(' ')[1];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeaderPassAll.push(entityJosn);
+					
+				}
+				//登記:急單
+				if($('.'+this.className+' .wasstatusname').hasClass('text-warning')){
+					var entityJosn={};
+					$(this).find('.valTbodytd').each(function(index){ 
+						var val = $(this).text();
+						var name = $(this).attr('class').split(' ')[1];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeaderUrgency.push(entityJosn);
+					
+				}
+				//登記:返回
+				if($('.'+this.className+' .wasclasssn ').hasClass('text-danger')){
+					var entityJosn={};
+					$(this).find('.valTbodytd').each(function(index){ 
+						var val = $(this).text();
+						var name = $(this).attr('class').split(' ')[1];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeaderReturnAll.push(entityJosn);
+					
+				}
+
+			});
+			console.log(dataHeaderAgree);
+			console.log(dataHeaderPassAll);
+			console.log(dataHeaderReturnAll);
+			console.log(dataHeaderUrgency);
+			//移除
+			$('#search_cr_open .valTbodytd').
+			removeClass('text-success').removeClass('text-primary').
+			removeClass('text-warning').removeClass('text-danger');
+			
+			var action = "";
+			var type = "PUT";
+			var data=null;
+			var req_data={};
+			var searchPageSet={};
+			if(dataHeaderAgree.length>0){
+				action = "S1";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify(dataHeaderAgree);
+				data['entityDetailJson'] = JSON.stringify('{}');
+			}else if(dataHeaderPassAll.length>0){
+				action = "S2";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify(dataHeaderPassAll);
+				data['entityDetailJson'] = JSON.stringify('{}');
+			}else if(dataHeaderReturnAll.length>0){
+				action = "S3";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify(dataHeaderReturnAll);
+				data['entityDetailJson'] = JSON.stringify('{}');
+			}else if(dataHeaderUrgency.length>0){
+				action = "S4";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify(dataHeaderUrgency);
+				data['entityDetailJson'] = JSON.stringify('{}');
 			}
-			//Data
-			Object.keys(marks).forEach(function(ik){
-				var ikey = ik.split("_")[0];
-				var gkey = ik.split("_")[1];
-				for(var en=0;en<entityJsons.length;en++){
-					if(entityJsons[en][entityIKey]==ikey){
-						dataHeader.push(entityJsons[en]);
-					}
-				}
-			});
-			//Details
-			Object.keys(markDetails).forEach(function(dk){
-				var ikey = dk.split("_")[0];
-				var gkey = dk.split("_")[1];
-				for(var en=0;en<entityDetailJsons.length;en++){
-					if(entityDetailJsons[en][entityIKey]==ikey){
-						dataBody.push(entityDetailJsons[en]);
-					}
-				}
-			});
-			compare.methods.compare(dataHeader,dataBody,entityDateTime,entityIKey,entityGKey); 
+			if(data!=null){
+				//包裝
+				data['callBackFunction'] = "other_modify";
+				req_data['data'] = data;
+				req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
+				req_data['type'] = type;//POST/PUT/DELETE...
+				main.methods.ajaxSend(req_data,true);
+				
+			}
+			return false;
 		},
-		//==========================傳送資料==========================
+		//修改後回傳
+		otherModifyReturn(){
+			other.methods.searchSend(0);
+		},
 		searchSend(batch){
 			var entityJson= other.data.entityFormatJson;//格式
 			var data={};
@@ -917,7 +1019,7 @@ other={
 			var searchPageSet={};
 			//查詢
 			$("#searchItem .searchVal").each(function( index ) {
-				console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
+				//console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
 				if($(this).hasClass('datetimepicker_date') && $(this).val()!=""){
 					entityJson[$(this).attr("id")]=new Date($(this).val()).getTime();	
 				}else{
@@ -934,7 +1036,7 @@ other={
 			req_data['data'] = data;
 			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.AR";
 			req_data['type'] = "POST";
-			main.methods.ajaxSend(req_data);
+			main.methods.ajaxSend(req_data,true);
 			//時間格式
             other.methods.datetimepickerDate();
 		},
@@ -1024,14 +1126,13 @@ other={
 			$(document).off("click", "#search_c #btn_clearAll");
 			$(document).off("keyup", "#searchItem input");
 			$(document).off("click", "#search_c #btn_send");
-			$(document).off("click", "#search_c #btn_compare");
 			$(document).off("click", "#search_c #btn_printerForm");
 			$(document).off("click", "#search_c #btn_markCancel");
-			$(document).off("click", "#search_c #btn_delete");
-			$(document).off("click", "#search_c #btn_invalid");
-			$(document).off("click", "#search_c #btn_modify");
-			$(document).off("click", "#search_c #btn_saveAs");
-			$(document).off("click", "#search_c #btn_create");
+			
+			$(document).off("click", "#search_c #btn_urgency");
+			$(document).off("click", "#search_c #btn_returnAll");
+			$(document).off("click", "#search_c #btn_passAll");
+			$(document).off("click", "#search_c #btn_agree");
 			$(document).off("click", "#search_c #btn_detail");
 			$(document).off("click", "#search_c #exthDetailAll");
 			$(document).off("click", "#search_c #exthAll");

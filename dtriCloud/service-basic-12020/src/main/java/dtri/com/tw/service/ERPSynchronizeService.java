@@ -116,7 +116,9 @@ public class ERPSynchronizeService {
 			wTFs.put(y.getWtfcode(), y);
 		});
 		keeperDao.findAll().forEach(z -> {
-			wKs.put(z.getWkwaslocation(), z);
+			if (!z.getWksuaccount().equals("") && !z.getWkglist().equals("") && !z.getWkwaslocation().equals("")) {
+				wKs.put(z.getWksuaccount() + "_" + z.getWkglist() + "_" + z.getWkwaslocation(), z);
+			}
 		});
 		configDao.findAll().forEach(w -> {
 			wCs.put(w.getWcalias(), w);
@@ -707,11 +709,17 @@ public class ERPSynchronizeService {
 				erpInMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 0);
 			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {// 轉
-				m.setTk000("入料類");
-				erpInMaps.put(nKey, m);
+				Invta mIn = new Invta();
+				try {
+					mIn = (Invta) m.clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+				mIn.setTk000("入料類");
+				erpInMaps.put(nKey, mIn);
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
-				wTFsSave.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 2);
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
 			}
 		}
 
@@ -741,6 +749,7 @@ public class ERPSynchronizeService {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb() + "-" + o.getBslpnumber();
 			oKey = oKey.replaceAll("\\s", "");
+
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");

@@ -269,7 +269,7 @@ public class SystemUserServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
 				// 修改
-				entityDataOld.setSuaccount(x.getSuaccount());
+				entityDataOld.setSuaccount(x.getSuaccount().replaceAll("_", ""));
 				entityDataOld.setSuemail(x.getSuemail());
 				entityDataOld.setSuname(x.getSuname());
 				entityDataOld.setSuename(x.getSuename());
@@ -349,7 +349,7 @@ public class SystemUserServiceAc {
 			// 密碼加密
 			BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
 			x.setSupassword(pwdEncoder.encode(x.getSupassword()));
-
+			x.setSuaccount(x.getSuaccount().replaceAll("_", ""));
 			saveDatas.add(x);
 		});
 		// =======================資料儲存=======================

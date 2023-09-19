@@ -40,7 +40,7 @@
 		<!-- Menu -->
 		<div class="menu_css collapse float-start col-5 col-md-4 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0" id="nav_functional_menu">
 			<div class="row m-0 p-0">
-				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
+				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 60vh;">
 					<div id="menu_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
@@ -52,7 +52,7 @@
 
 				</div>
 				<!-- Menu-item -->
-				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 80vh;">
+				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 60vh;">
 					<div id="menu_i_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div class="sptype_0 d-none ">
@@ -209,6 +209,7 @@ nav_index = {
 			var systemgroups = entityJson.systemgroups;
 			//console.log(entityJson);
 			$("#menu_login_name").text(entityJson.suname);
+			$("#menu_login_name").attr("alt",entityJson.suaccount);
 			$("#menu_login_language").text(entityJson.sulanguage);
 			$("#menu_login_datetime").text(new Date());
 			//例遍->每項目->自動排序
@@ -296,7 +297,7 @@ nav_index = {
 				req_data.url = url;
 				req_data.type = "POST";
 				req_data.data = data;
-				main.methods.ajaxSend(req_data);
+				main.methods.ajaxSend(req_data,true);
 			});
 			//console.log(nav_index.date.menuUnitJson);
 		},

@@ -47,6 +47,7 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
 			+ "	INVTI.TI001 is not null "//
+			+ "	AND INVTI.TI009 > 0 "//數量大於0
 			+ "	AND (INVTI.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
 			+ "	OR INVTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//

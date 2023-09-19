@@ -87,6 +87,7 @@ public class BasicIncomingList {
 		this.bilpspecification = "";
 		this.bilpnqty = 0;
 		this.bilpngqty = 0;
+		this.bilpnaqty = 0;
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";

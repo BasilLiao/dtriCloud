@@ -24,6 +24,7 @@ import java.util.Date;
  *      was_class_nb:單別+單號<br>
  *      was_sn : 序號<br>
  *      was_type : 單據類型(領料類/入料類)<br>
+ *      was_c_user : 核准人<br>
  *      was_m_user : 可分配-負責人<br>
  *      was_f_user : 完成人<br>
  *      was_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
@@ -84,6 +85,7 @@ public class WarehouseAssignment {
 	private String wasclasssn;// :單別+單號<br>
 	private String wasnb;// : 序號<br>
 	private String wastype;// : 單據類型(領料類/入料類)<br>
+	private String wascuser;// 核准人
 	private String wasmuser;// : 可分配-負責人<br>
 	private String wasfuser;// : 完成人<br>
 	private String wasacceptance;// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
@@ -361,6 +363,14 @@ public class WarehouseAssignment {
 
 	public void setWasaliaswmpnb(String wasaliaswmpnb) {
 		this.wasaliaswmpnb = wasaliaswmpnb;
+	}
+
+	public String getWascuser() {
+		return wascuser;
+	}
+
+	public void setWascuser(String wascuser) {
+		this.wascuser = wascuser;
 	}
 
 }

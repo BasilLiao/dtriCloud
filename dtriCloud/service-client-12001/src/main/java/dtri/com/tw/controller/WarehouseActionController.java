@@ -42,12 +42,12 @@ public class WarehouseActionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getActionSearch(packageService.beanToJson(packageBean));
-			
+
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -83,12 +83,12 @@ public class WarehouseActionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getActionSearch(packageService.beanToJson(packageBean));
-			
+
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -116,35 +116,6 @@ public class WarehouseActionController extends AbstractController {
 
 		// Step0.資料準備
 		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getActionReport(packageService.beanToJson(packageBean));
-			
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
-			e.printStackTrace();
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			loggerWarn(e.toString());
-		}
 		return packageJson;
 	}
 
@@ -157,40 +128,24 @@ public class WarehouseActionController extends AbstractController {
 
 		// Step0.資料準備
 		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setActionAdd(packageService.beanToJson(packageBean));
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
-			e.printStackTrace();
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			loggerWarn(e.toString());
-		}
 		return packageJson;
 	}
 
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/warehouse_action.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/warehouse_action.basil.S1" }, method = { RequestMethod.PUT })
+	String modifyNormal(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
 		}.getClass().getEnclosingMethod().getName());
@@ -205,12 +160,12 @@ public class WarehouseActionController extends AbstractController {
 
 			// Step2.基礎資料整理
 			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setActionModify(packageService.beanToJson(packageBean));
-			
+			packageBean = serviceFeign.setActionModifyNormal(packageService.beanToJson(packageBean));
+
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			loggerWarn(e.toString());
@@ -237,35 +192,6 @@ public class WarehouseActionController extends AbstractController {
 		}.getClass().getEnclosingMethod().getName());
 		// Step0.資料準備
 		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setActionInvalid(packageService.beanToJson(packageBean));
-			
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
-			e.printStackTrace();
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			loggerWarn(e.toString());
-		}
 		return packageJson;
 	}
 
@@ -277,36 +203,6 @@ public class WarehouseActionController extends AbstractController {
 		}.getClass().getEnclosingMethod().getName());
 		// Step0.資料準備
 		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());//語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setActionDetele(packageService.beanToJson(packageBean));
-			
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
-			e.printStackTrace();
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			loggerWarn(e.toString());
-		}
 		return packageJson;
 	}
-
 }

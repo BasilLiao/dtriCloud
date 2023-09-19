@@ -1,13 +1,26 @@
 package dtri.com.tw.service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
+
+import dtri.com.tw.bean.FtpUtilBean;
+import dtri.com.tw.pgsql.dao.SystemConfigDao;
+import dtri.com.tw.pgsql.entity.SystemConfig;
 
 /***
  * https://polinwei.com/spring-boot-scheduling-tasks/ 排程 cron:
@@ -26,9 +39,15 @@ public class ScheduledTasksService {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Autowired
+	private SystemConfigDao sysDao;
+	@Value("${catalina.home}")
+	private String apache_path;
+
+	@Autowired
 	ERPSynchronizeService synchronizeService;
 
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
+	@Async
 	@Scheduled(fixedDelay = 180000)
 	public void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
@@ -49,6 +68,97 @@ public class ScheduledTasksService {
 		synchronizeService.erpSynchronizePurth();
 		synchronizeService.erpSynchronizeWtypeFilter();
 
+	}
+
+	// 每日(30)12/22:00分執行一次
+	// 系統 備份(pgsql+ftp)
+	@Async
+	@Scheduled(cron = "0 30 12,22 * * ? ")
+	public void backupDataBase() {
+		System.out.println("每隔1天 早上12點30分/晚上18點30 執行一次：" + new Date());
+		logger.info("Database backup night 18.30  執行一次：" + new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+		String backupDay = sdf.format(new Date());
+		System.out.println("備份資料庫:" + new Date());
+		logger.info("備份資料庫：" + new Date());
+
+		// Step1. 備份位置
+		ArrayList<SystemConfig> ftp_config = sysDao.findAllByConfig(null, "FTP_DATA_BKUP", null, null, 0, false, null);
+		JsonObject c_json = new JsonObject();
+		ftp_config.forEach(c -> {
+			c_json.addProperty(c.getScname(), c.getScvalue());
+		});
+		String ftp_host = c_json.get("IP").getAsString(), //
+				ftp_user_name = c_json.get("ACCOUNT").getAsString(), //
+				ftp_password = c_json.get("PASSWORD").getAsString(), //
+				ftp_remote_path = c_json.get("PATH").getAsString();//
+		int ftp_port = c_json.get("FTP_PORT").getAsInt();
+
+		// Step2. 資料庫設定
+		ArrayList<SystemConfig> data_config = sysDao.findAllByConfig(null, "DATA_BKUP", null, null, 0, false, null);
+		JsonObject d_json = new JsonObject();
+		data_config.forEach(d -> {
+			d_json.addProperty(d.getScname(), d.getScvalue());
+		});
+		String db_folder_name = d_json.get("FOLDER_NAME").getAsString(), //
+				db_file_name = d_json.get("FILE_NAME").getAsString(), //
+				db_pg_dump = d_json.get("PG_DUMP").getAsString(), //
+				db_name = d_json.get("DB_NAME").getAsString();//
+		int db_port = d_json.get("DB_PORT").getAsInt();
+
+		// Runtime rt = Runtime.getRuntime();
+		// rt = Runtime.getRuntime();
+		// Step3. 備份指令-postgres
+		Process p;
+		/**
+		 * Apache C:\Users\Basil\AppData\Local\Temp\tomcat
+		 * 
+		 * C:\Program Files\PostgreSQL\10\bin\pg_dump.exe --file
+		 * "C:\\Users\\Basil\\Desktop\\DTRIME~1.SQL" --host "localhost" --port "5432"
+		 * --username "postgres" --no-password --verbose --format=c --blobs --encoding
+		 * "UTF8" "dtrimes"
+		 */
+
+		ProcessBuilder pb = new ProcessBuilder("" + db_pg_dump, "--dbname=" + db_name, "--port=" + db_port, "--no-password", "--verbose",
+				"--format=c", "--blobs", "--encoding=UTF8", "--file=" + apache_path + db_folder_name + db_file_name + "_" + backupDay + ".sql");
+		try {
+			// Step3-1.查資料夾
+			File directory = new File(apache_path + db_folder_name);
+			if (!directory.exists()) {
+				directory.mkdir();
+			}
+
+			p = pb.start();
+			final BufferedReader r = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			String line = r.readLine();
+			while (line != null) {
+				System.err.println(line);
+				logger.info(line);
+				line = r.readLine();
+			}
+			r.close();
+			p.waitFor();
+			System.out.println(p.exitValue());
+			logger.info(p.exitValue() + "");
+		} catch (IOException | InterruptedException e) {
+			logger.error(e.getMessage());
+			System.out.println(e.getMessage());
+		}
+		// Step4. 上傳-FTP
+		try {
+			// File initialFile = new File(apache_path + db_folder_name + db_file_name + "_"
+			// + backupDay + ".sql");
+			// InputStream input = new FileInputStream(initialFile);
+			FtpUtilBean f_Bean = new FtpUtilBean(ftp_host, ftp_user_name, ftp_password, ftp_port);
+			f_Bean.setLocalPath(apache_path + db_folder_name + db_file_name + "_" + backupDay + ".sql");
+			f_Bean.setRemotePathBackup(ftp_remote_path + db_file_name + "_" + backupDay + ".sql");
+			f_Bean.setFileName(db_file_name + "_" + backupDay + ".sql");
+			FtpService fts = new FtpService();
+			fts.uploadFile(f_Bean);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

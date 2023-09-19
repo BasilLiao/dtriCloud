@@ -81,13 +81,13 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
-		this.bslmuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
 		this.bslpname = "";
 		this.bslpspecification = "";
 		this.bslpnqty = 0;
 		this.bslpngqty = 0;
+		this.bslpnaqty = 0;
 		this.bsltocommand = "[]";
 		this.bsltowho = "[]";
 		this.bslfromcommand = "[]";

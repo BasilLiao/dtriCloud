@@ -21,58 +21,79 @@ public interface WarehouseServiceFeign {
 	@RequestMapping(value = { "/warehouseAssignment/getSearch" }, method = RequestMethod.POST)
 	PackageBean getAssignmentSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAssignment/getReport" }, method = RequestMethod.POST)
-	PackageBean getAssignmentReport(@RequestBody String jsonPackageBean);
+//	@RequestMapping(value = { "/warehouseAssignment/getReport" }, method = RequestMethod.POST)
+//	PackageBean getAssignmentReport(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAssignment/setModify" }, method = RequestMethod.POST)
+//	PackageBean setAssignmentModify(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAssignment/setModify" }, method = RequestMethod.POST)
-	PackageBean setAssignmentModify(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseAssignment/setModifyAgree" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyAgree(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAssignment/setAdd" }, method = RequestMethod.POST)
-	PackageBean setAssignmentAdd(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseAssignment/setModifyPassAll" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyPassAll(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAssignment/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setAssignmentInvalid(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseAssignment/setModifyReturnAll" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyReturnAll(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAssignment/setDetele" }, method = RequestMethod.POST)
-	PackageBean setAssignmentDetele(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyUrgency(@RequestBody String jsonPackageBean);
+
+//	@RequestMapping(value = { "/warehouseAssignment/setAdd" }, method = RequestMethod.POST)
+//	PackageBean setAssignmentAdd(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAssignment/setInvalid" }, method = RequestMethod.POST)
+//	PackageBean setAssignmentInvalid(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAssignment/setDetele" }, method = RequestMethod.POST)
+//	PackageBean setAssignmentDetele(@RequestBody String jsonPackageBean);
 
 	// ================================通用-區域事件處理================================
 	@RequestMapping(value = { "/warehouseAction/getSearch" }, method = RequestMethod.POST)
 	PackageBean getActionSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAction/getReport" }, method = RequestMethod.POST)
-	PackageBean getActionReport(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseAction/setModifyNormal" }, method = RequestMethod.POST)
+	PackageBean setActionModifyNormal(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseAction/setModify" }, method = RequestMethod.POST)
-	PackageBean setActionModify(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseAction/setAdd" }, method = RequestMethod.POST)
-	PackageBean setActionAdd(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseAction/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setActionInvalid(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseAction/setDetele" }, method = RequestMethod.POST)
-	PackageBean setActionDetele(@RequestBody String jsonPackageBean);
+//	@RequestMapping(value = { "/warehouseAction/getReport" }, method = RequestMethod.POST)
+//	PackageBean getActionReport(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAction/setModify" }, method = RequestMethod.POST)
+//	PackageBean setActionModify(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAction/setAdd" }, method = RequestMethod.POST)
+//	PackageBean setActionAdd(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAction/setInvalid" }, method = RequestMethod.POST)
+//	PackageBean setActionInvalid(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseAction/setDetele" }, method = RequestMethod.POST)
+//	PackageBean setActionDetele(@RequestBody String jsonPackageBean);
 
 	// ================================管理-庫存同步================================
 	@RequestMapping(value = { "/warehouseSynchronize/getSearch" }, method = RequestMethod.POST)
 	PackageBean getSynchronizeSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseSynchronize/getReport" }, method = RequestMethod.POST)
-	PackageBean getSynchronizeReport(@RequestBody String jsonPackageBean);
+//	@RequestMapping(value = { "/warehouseSynchronize/getReport" }, method = RequestMethod.POST)
+//	PackageBean getSynchronizeReport(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseSynchronize/setModify" }, method = RequestMethod.POST)
+//	PackageBean setSynchronizeModify(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseSynchronize/setModify" }, method = RequestMethod.POST)
-	PackageBean setSynchronizeModify(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeQty" }, method = RequestMethod.POST)
+	PackageBean setModifySynchronizeQty(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseSynchronize/setAdd" }, method = RequestMethod.POST)
-	PackageBean setSynchronizeAdd(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeItem" }, method = RequestMethod.POST)
+	PackageBean setModifySynchronizeItem(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/warehouseSynchronize/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setSynchronizeInvalid(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseSynchronize/setDetele" }, method = RequestMethod.POST)
-	PackageBean setSynchronizeDetele(@RequestBody String jsonPackageBean);
+//	@RequestMapping(value = { "/warehouseSynchronize/setAdd" }, method = RequestMethod.POST)
+//	PackageBean setSynchronizeAdd(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseSynchronize/setInvalid" }, method = RequestMethod.POST)
+//	PackageBean setSynchronizeInvalid(@RequestBody String jsonPackageBean);
+//
+//	@RequestMapping(value = { "/warehouseSynchronize/setDetele" }, method = RequestMethod.POST)
+//	PackageBean setSynchronizeDetele(@RequestBody String jsonPackageBean);
 
 	// ================================紀錄-物料異動================================
 	@RequestMapping(value = { "/warehouseHistory/getSearch" }, method = RequestMethod.POST)

@@ -17,9 +17,9 @@ INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (1
 
 INSERT INTO system_config(sc_id, sc_g_id,  sc_g_name, sc_name, sc_value ,sys_header)VALUES (11,3,  'DATA_BKUP', 'DATA_BKUP', '',true);
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (12, 3, 'DATA_BKUP', 'FOLDER_NAME', '\WebAppBackupDatabase\');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (13, 3, 'DATA_BKUP', 'FILE_NAME', 'dtrimes_backup');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (13, 3, 'DATA_BKUP', 'FILE_NAME', 'dtricloud_backup');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (14, 3, 'DATA_BKUP', 'PG_DUMP', 'C:\Program Files\PostgreSQL\10\bin\pg_dump.exe');
-INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (15, 3, 'DATA_BKUP', 'DB_NAME', 'postgres://dbadmin:12345@localhost/dtrimes');
+INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (15, 3, 'DATA_BKUP', 'DB_NAME', 'postgres://dbadmin:12345@localhost/dtricloud');
 INSERT INTO system_config(sc_id, sc_g_id, sc_g_name, sc_name, sc_value)VALUES (16, 3, 'DATA_BKUP', 'DB_PORT', '5432');
 SELECT setval('public.system_config_seq', 16, true);
 DROP sequence IF EXISTS SYSTEM_CONFIG_G_SEQ CASCADE;

@@ -29,16 +29,19 @@
 }
 /*Table 表格外框線*/
 #search_c #search_cr table {
-	max-height: 570px;
-	min-height: 200px;
+	max-height: 600px;
+	min-height: 600px;
 	border-collapse: separate;
 	border-spacing: 0px;
 }
 /*Table 表格外框線*/
 #search_c #search_dcr table {
-	max-height: 570px;
+	max-height: 600px;
+	min-height: 600px;
 	border-collapse: separate;
 	border-spacing: 0px;
+	font-size: 25px;
+	line-height: 28px;
 }
 /*Table 表格內 背景色*/
 #search_c .table-white {
@@ -58,6 +61,11 @@
 	writing-mode: vertical-lr;
 	width: 20px;
 }
+/*checkbox_36*/
+#search_c .checkbox_36 {
+	width: 36px;
+	height: 36px;
+}
 
 /*checkbox_24*/
 #search_c .checkbox_24 {
@@ -74,21 +82,63 @@
 	width: 16px;
 	height: 16px;
 }
+
+#controller_command input:focus {
+	background: #ffc107;
+}
+/*高量顯示*/
+.bg-show {
+	background: #ffc1073b;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
+	<!-- 查詢-細節結果 -->
+	<div id="search_dcr" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div id="search_dcr_open" class="row m-0 collapse">
+			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
+			<table class="col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary fixedCt">
+					<tr>
+						<th class="fixedC1" style="min-width: 50px;">
+							<div>
+								<button id="exthDetailAll" type="button" class="lh-1 col p-1 m-0 mb-1 btn btn-sm btn-outline-dark">
+									<b>M</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr class="exDetailTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 50px;">
+							<div>
+								<input disabled="disabled" type="checkbox" alt="row_x" title="IKey_GKey" class="m-0 form-check-input checkbox_36 border border-dark">
+							</div>
+						</th>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
 	<!-- 查詢面板 -->
 	<div id="search_c_item" class="col-12 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#search_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div class="row m-0 collapse show" id="search_c_item_open">
+		<div class="row m-0 collapse" id="search_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
 			<div id="searchItem" class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 searchTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="ex_id" name="ex_name" placeholder="Ex:123" autofocus>
+							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="ex_id" name="ex_name" placeholder="Ex:123">
 						</div>
 					</div>
 				</div>
@@ -113,53 +163,68 @@
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-6 col-lg-4 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Execution</div>
-						<div class="row m-0">
-							<button id="btn_detail" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>Detail<br>()
-								</b>
-							</button>
-							<button id="btn_synchronize_qty" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Synchronize<br>qty(S1)
-								</b>
-							</button>
-							<button id="btn_synchronize_item" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Synchronize<br>item(S2)
-								</b>
-							</button>
-							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Mark<br>cancel()
-								</b>
-							</button>
+				<div class="col-12 col-lg-4 p-1">
+					<div id="controller_command" class="border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Command</div>
+						<div class="row m-0" style="height: 56px;">
+							<div class="col-4 p-1">
+								<select id="command_sel" class="lh-1 p-1 m-0 border border-primary rounded" style="width: 100%; height: 100%">
+									<option value="Normal">Normal(正常)</option>
+									<option value="Abnormal">Abnormal(異常[多or少])</option>
+									<option value="Sub-storage">Sub-storage(次儲位)</option>
+								</select>
+							</div>
+							<div class="col-4 p-1" id="command_send">
+								<input class="lh-1 p-1 m-0 border border-dark rounded" type="text" value="" placeholder="儲位 or 料號" style="width: 100%; height: 100%" readonly="readonly" autofocus>
+							</div>
+							<div class="col-4 p-1" id="command_qty">
+								<input class="lh-1 p-1 m-0 border border-dark rounded" type="number" value="" placeholder="異常:數量" style="width: 100%; height: 100%" disabled="disabled" value="0">
+							</div>
+							<div class="col-4 p-1 d-none" id="command_sub">
+								<input class="lh-1 p-1 m-0 border border-dark rounded" type="text" value="" placeholder="登記:副儲位" style="width: 100%; height: 100%" value="">
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-4 col-lg-1 p-1">
+				<div class="col-4 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
-						<div class="row m-0">
+						<div class="row m-0" style="min-height: 56px;">
+							<button id="btn_printerForm" type="button" class=" lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>Printer<br>form()
+								</b>
+							</button>
 							<button id="btn_confirm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Confirm<br>send()
+								<b>Confrm<br>(S1)
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-2 p-1">
+				<div class="col-4 col-lg-2 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Execution</div>
+						<div class="row m-0" style="min-height: 56px;">
+							<button id="btn_detail" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
+								<b>Detail<br>item()
+								</b>
+							</button>
+							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>All/M<br>cancel()
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-4 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
+								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Send<br>(AR)
-								</b>
-							</button>
-							<button id="btn_clearAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Clear<br>all()
+								<b>Query<br>(AR)
 								</b>
 							</button>
 						</div>
@@ -178,7 +243,7 @@
 			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
 					<tr>
-						<th class="fixedC1" style="min-width: 40px;">
+						<th class="fixedC1" style="min-width: 50px;">
 							<div>
 								<button id="exthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 									<b>M</b>
@@ -190,9 +255,9 @@
 				</thead>
 				<tbody class="table-white">
 					<tr class="exTbodyTr">
-						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
+						<th class="fixedC1 exTbodyTh" style="max-width: 50px;">
 							<div>
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox" class="m-0 form-check-input checkbox_36 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -201,40 +266,7 @@
 			</table>
 		</div>
 	</div>
-	<!-- 查詢-細節結果 -->
-	<div id="search_dcr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-		</div>
-		<div id="search_dcr_open" class="row m-0 collapse">
-			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
-			<table class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary fixedCt">
-					<tr>
-						<th class="fixedC1" style="min-width: 40px;">
-							<div>
-								<button id="exthDetailAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
-									<b>M</b>
-								</button>
-							</div>
-						</th>
-						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
-					</tr>
-				</thead>
-				<tbody class="table-white">
-					<tr class="exDetailTbodyTr">
-						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
-							<div>
-								<input type="checkbox" alt="row_x" title="IKey_GKey" class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td class="exTbodytd d-none" style="max-width: 100px"></td>
-					</tr>
 
-				</tbody>
-			</table>
-		</div>
-	</div>
 </div>
 <script type="text/javascript">
 //宣告
@@ -246,13 +278,12 @@ other={
 		markDetails:{},//有選取的IKeyGKey
 		entityFormatJson:{},//查詢格式
 		btn_send_auto:"",//自動傳送
-		action:"",
 		//換頁設置
 		searchPageSet:{
 			total:100,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:100,//每頁數量(1-20)
+			pageSize:50,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityIKey:"",//ID
@@ -285,13 +316,11 @@ other={
 			
 			if(ps[10] != 1){//查詢(AR)10
 				$("#btn_send").addClass("disabled");
-			}	
-			if(ps[5] != 1){//修改(S1)5
-				$("#btn_synchronize_item").addClass("disabled");
-			}
-			if(ps[4] != 1){//修改(S2)4
-				$("#btn_synchronize_qty").addClass("disabled");
-			}
+			}if(ps[5] != 1){//修改(S1)5
+				$("#btn_confirm").addClass("disabled");			
+			}		
+			
+
 			//Step1.查詢結果標題-排序
 			var resultThead = searchSetJson['resultThead'];
 			var resultDetailThead = searchSetJson['resultDetailThead'];
@@ -317,9 +346,9 @@ other={
 				if(check1 && resultThead[k].show==1){
 					check1=false;
 					exTheadth.addClass('fixedC1');
-					exTheadth.css('left',"40px");
+					exTheadth.css('left',"50px");
 					exTbodytd.addClass('fixedC1');
-					exTbodytd.css('left',"40px");
+					exTbodytd.css('left',"50px");
 				}
 				//如果有翻譯
 				if(resultThead[k].cellLanguage!=''){
@@ -347,35 +376,57 @@ other={
 				$('#btn_detail').addClass('disabled');
 				$('#search_dcr').addClass('d-none');
 			}
+			//合併存格
+			var mergeCell = 1;
+			var exTheadth = "";
+			var exTbodytd ="";
 			Object.keys(resultDetailThead).forEach(function(k){
 				//console.log(k + ' - ' + resultDetailThead[k]);
 				//複製格式
-				var exTheadth = $('#search_dcr_open .exTheadth').clone();
-				var exTbodytd = $('#search_dcr_open .exTbodytd').clone();
-				exTheadth.removeClass('exTheadth');
-				exTheadth.removeClass('d-none')
-				exTheadth.addClass('titTheadth');
-				//
-				exTbodytd.removeClass('exTbodytd');
-				exTbodytd.removeClass('d-none')
-				exTbodytd.addClass('valTbodytd');
-				exTbodytd.addClass(resultDetailThead[k].cellName);
+				if(mergeCell==1){
+					exTheadth = $('#search_dcr_open .exTheadth').clone();
+					exTbodytd = $('#search_dcr_open .exTbodytd').clone();
+					exTheadth.removeClass('exTheadth');
+					exTheadth.removeClass('d-none')
+					exTheadth.addClass('titTheadth');
+					//
+					exTbodytd.removeClass('exTbodytd');
+					exTbodytd.removeClass('d-none')
+					exTbodytd.addClass('valTbodytd');
+					mergeCell = mergeCell+1;
+				}else{
+					if(mergeCell==6){
+						mergeCell = 1;
+						//添加
+						$('#search_dcr_open .exTheadth').before(exTheadth);
+						$('#search_dcr_open .exTbodytd').before(exTbodytd);
+					}else{
+						mergeCell = mergeCell+1;						
+					}
+				}
+				
+				//exTbodytd.addClass(resultDetailThead[k].cellName);
+				exTbodytd.html(exTbodytd.html()+"<div class='"+resultDetailThead[k].cellName+"'></div>");
 				//固定第一格式
 				if(check1 && resultDetailThead[k].show==1){
 					check1=false;
 					exTheadth.addClass('fixedC1');
-					exTheadth.css('left',"40px");
+					exTheadth.css('left',"50px");
 					exTbodytd.addClass('fixedC1');
-					exTbodytd.css('left',"40px");
+					exTbodytd.css('left',"50px");
 				}
+				
 				//如果有翻譯
 				if(resultDetailThead[k].cellLanguage!=''){
 					var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
-					exTheadth.text(cellName==""?resultDetailThead[k].cellName:cellName);
+					cellName = cellName==""?resultDetailThead[k].cellName:cellName
+					var cellText = exTheadth.html()=="N/A"?"":exTheadth.html();
+					exTheadth.html(cellText+"<div>"+cellName+"</div>");
 					exTheadth.css('minWidth',resultDetailThead[k].width+"px");
 					exTbodytd.css('maxWidth',resultDetailThead[k].width+"px");
 				}else{
-					exTheadth.text(resultDetailThead[k].cellName);
+					var cellText = exTheadth.html()=="N/A"?"":exTheadth.html();
+					exTheadth.html(cellText+"<div>"+resultDetailThead[k].cellName+"</div>");
 					exTheadth.css('minWidth',resultDetailThead[k].width+"px");
 					exTbodytd.css('maxWidth',resultDetailThead[k].width+"px");
 				}
@@ -384,13 +435,10 @@ other={
 					exTheadth.addClass('d-none');
 					exTbodytd.addClass('d-none');
 				}
-				//添加
-				$('#search_dcr_open .exTheadth').before(exTheadth);
-				$('#search_dcr_open .exTbodytd').before(exTbodytd);
 			});
-			
 			//Step3.查詢內容-格式
-			for(var b=1;b<=100;b++){
+			var pageSize = other.data.searchPageSet.pageSize;
+			for(var b=1;b<=pageSize;b++){
 				var exTbodyTr = $('.exTbodyTr').clone();
 				exTbodyTr.removeClass('exTbodyTr');
 				exTbodyTr.removeClass('d-none');
@@ -504,15 +552,6 @@ other={
 				//標記-選取|解除
 				if(check==true){
 					other.data.marks[Ikey_Gkey] = true;
-					//console.log(entityDetailJsons);	
-					//細節
-					for(var k in entityDetailJsons) {
-						if(entityDetailJsons[k][entityGKey]+"" == detailGKey){
-							var markDetail = entityDetailJsons[k][entityIKey]+"_"+entityDetailJsons[k][entityGKey];
-							other.data.markDetails[markDetail] = true;
-							continue;
-						};
-					}
 				}else{
 					for(var k in other.data.marks) {
 						if( k == Ikey_Gkey){
@@ -571,18 +610,12 @@ other={
 			//監聽-全選資料
 			$(document).off("click", "#search_c #exthDetailAll");
 			$(document).on("click", "#search_c #exthDetailAll", function (event) {
-				//都有勾選?
-				var clickAll = true;
+				//全部取消?
 				$("#search_dcr_open .exTbodyTh").each(function(){
-					if($(this).find("input").attr("disabled")!="disabled" && $(this).find("input").prop("checked")==false){
-						$(this).find("input").trigger("click");
-						clickAll = false;
+					if($(this).find("input").prop("checked")==true){
+						$(this).find("input").prop("checked",false);
 					}
 				});
-				//全部取消?
-				if(clickAll){
-					$("#search_dcr_open .exTbodyTh").find("input").trigger("click");
-				}
 			});
 			//監聽-細節
 			$(document).off("click", "#search_c #btn_detail");
@@ -591,10 +624,10 @@ other={
 				var marks = other.data.marks;
 				var markDetails = other.data.markDetails;
 				//觸發?
+				$("#command_send input").focus();
+				$('#search_dcr i').trigger('click');
 				$('#search_cr i').trigger('click');
-				if(!$('#search_dcr_open').hasClass('show')){
-					$('#search_dcr i').trigger('click');
-				}
+				
 				//有標記?
 				if(marks!=null && other.data.searchPageSet.entityDetailJsons!=null){
 					var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
@@ -604,72 +637,87 @@ other={
 					//console.log(entityDetailJsons);
 					//Step1.查詢細節內容-格式
 					$(".valTbodyTrD").remove();
-					
+					//排序(負責人_物料[對象 or 來源])
+					var sortEntity={};
 					for(var k in other.data.marks) {
 						for(var d=0;d<entityDetailJsons.length;d++){
 							if(entityDetailJsons[d][entityGKey]==k.split("_")[1]){
-								//=======格式=======
-								var exTbodyTr = $('.exDetailTbodyTr').clone();
-								exTbodyTr.removeClass('exDetailTbodyTr');
-								exTbodyTr.removeClass('d-none');
-								exTbodyTr.addClass('valTbodyDetailTr_'+(d+1));
-								exTbodyTr.addClass('valTbodyTrD');
-								exTbodyTr.find('input').attr("alt","row_"+(d+1));
-								//=======資料=======
-								var entity = entityDetailJsons[d];//
-								var iKey = "",gKey="";
-								var valTrNb = d+1;
-								Object.keys(entity).forEach(function(s){
-									//是否IKEY?
-									if(entityIKey==s){iKey= entity[s];}	
-									//是否GKEY?
-									if(entityGKey==s){gKey= entity[s];}	
-									exTbodyTr.find('input').removeAttr("disabled");
-									exTbodyTr.find('input').attr("title",iKey+"_"+gKey);
-									//是否時間格式?
-									if(entityDateTime.indexOf(s)>=0){
-										 var dF = new Date(entity[s]);
-										 var dateF = dF.getFullYear()+"-";
-										 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
-										 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
-										 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
-										 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
-										 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
-										 exTbodyTr.find('.'+s).text(dateF); 
-									}else{
-										 exTbodyTr.find('.'+s).text(entity[s]);
-									}
-								});
-								//marks標記?	->帶入[mark]
-								if(other.data.markDetails[iKey+"_"+gKey]!=null){
-									exTbodyTr.find('input').prop( "checked", true );
+								var wasmuser = entityDetailJsons[d].wasmuser;
+								var was_tofrom_who =  "";
+								var wasclasssn = entityDetailJsons[d].wasclasssn;
+								var wasnb = entityDetailJsons[d].wasnb;
+								if(entityDetailJsons[d].wastype=="入料類"){
+									was_tofrom_who = entityDetailJsons[d].wastowho;
+								}else{
+									was_tofrom_who = entityDetailJsons[d].wasfromwho;
 								}
-								$('.exDetailTbodyTr').before(exTbodyTr);
-							}else{
-								continue;
+								sortEntity[wasmuser+was_tofrom_who+"_"+wasclasssn+"_"+wasnb] = entityDetailJsons[d];
 							}
-
-						}				
+						}
+					}
+					sortEntity = main.methods.orderedSort(sortEntity);
+					var d=0;
+					for(var k in sortEntity) {
+						d+=1;
+						//=======格式=======
+						var exTbodyTr = $('.exDetailTbodyTr').clone();
+						exTbodyTr.removeClass('exDetailTbodyTr');
+						exTbodyTr.removeClass('d-none');
+						exTbodyTr.addClass('valTbodyDetailTr_'+(d+1));
+						exTbodyTr.addClass('valTbodyTrD');
+						exTbodyTr.find('input').attr("alt","row_"+(d+1));
+						//=======資料=======
+						var entity = sortEntity[k];//
+						var iKey = "",gKey="";
+						var valTrNb = d+1;
+						Object.keys(entity).forEach(function(s){
+							//是否IKEY?
+							if(entityIKey==s){iKey= entity[s];}	
+							//是否GKEY?
+							if(entityGKey==s){gKey= entity[s];}	
+							
+							//exTbodyTr.find('input').removeAttr("disabled");
+							exTbodyTr.find('input').attr("title",iKey+"_"+gKey);
+							//輔助顏色
+							if(s=="wastowho" && entity['wastype']=="入料類"){
+								exTbodyTr.find('.'+s).addClass("bg-show");
+							}
+							if(s=="wasfromwho" && entity['wastype']=="領料類"){
+								exTbodyTr.find('.'+s).addClass("bg-show");
+							}
+							if(s=="waspnqty" || s=="sysnote" || s=="waspnumber" || s=="wasclasssn"){
+								exTbodyTr.find('.'+s).addClass("bg-show");
+							}
+							if(s=="waspngqty" || s=="wasfuser"){
+								exTbodyTr.find('.'+s).addClass("bg-warning");
+							}
+							//是否時間格式?
+							if(entityDateTime.indexOf(s)>=0){
+								 var dF = new Date(entity[s]);
+								 var dateF = dF.getFullYear()+"-";
+								 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+								 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+								 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+								 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+								 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
+								 
+								 exTbodyTr.find('.'+s).text(dateF); 
+							}else{
+								//如果是空值
+								if(entity[s]==""){
+									entity[s] = "[N/A]";
+								}
+								exTbodyTr.find('.'+s).text(entity[s]);
+							}
+						});
+						//marks標記?	->帶入[mark]
+						if(other.data.markDetails[iKey+"_"+gKey]!=null){
+							exTbodyTr.find('input').prop( "checked", true );
+						}
+						$('.exDetailTbodyTr').before(exTbodyTr);			
 					}
 					$('.exDetailTbodyTr').addClass('d-none');
 				}
-			});
-			//監聽-同步項目
-			$(document).off("click", "#search_c #btn_synchronize_item");
-			$(document).on("click", "#search_c #btn_synchronize_item", function (event) {
-				console.log("btn_synchronize_item");
-				other.data.action ="Item";
-				$('.wsspnumber').removeClass("text-success");
-				$('.wsspnumber').addClass("text-danger");
-			});
-			//監聽-同步數量
-			$(document).off("click", "#search_c #btn_synchronize_qty");
-			$(document).on("click", "#search_c #btn_synchronize_qty", function (event) {
-				console.log("btn_synchronize_qty");
-				other.data.action ="Qty";
-				$('.wsspnumber').removeClass("text-danger");
-				$('.wsspnumber').addClass("text-success");
-				
 			});
 			
 			
@@ -680,8 +728,19 @@ other={
 				other.data.marks=[];
 				other.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
+				$('#command_send input').val("");
+				$('#command_qty input').val("");
+				$('#command_qty input').attr('disabled','disabled');
+				$("#btn_send_auto").prop("checked",false);
+				clearTimeout(other.data.btn_send_auto);
+				
+				//
+				$("#searchItem input").val("");
+				$("#searchItem select").val("");
+				$("#command_send input").focus();
 				
 			});
+			
 			//監聽-打印
 			$(document).off("click", "#search_c #btn_printerForm");
 			$(document).on("click", "#search_c #btn_printerForm", function (event) {
@@ -693,7 +752,7 @@ other={
 			$(document).off("click", "#search_c #btn_confirm");
 			$(document).on("click", "#search_c #btn_confirm", function (event) {
 				console.log("btn_confirm");
-				other.methods.confirmSend();
+				other.methods.confirmSend(null);
 				
 			});
 			//監聽-查詢
@@ -701,11 +760,11 @@ other={
 			$(document).on("click", "#search_c #btn_send", function (event) {
 				console.log("btn_send");
 				other.methods.searchSend(0);
-				
-				if($("#btn_send_auto").prop( "checked")){
+				clearTimeout(other.data.btn_send_auto);
+				if($("#btn_send_auto").prop("checked")){
 					other.data.btn_send_auto = setTimeout(function (){
 						 $("#search_c #btn_send").trigger( "click" );
-					}, 30000);
+					}, 60000);
 				}else{
 					clearTimeout(other.data.btn_send_auto);
 				}
@@ -718,17 +777,128 @@ other={
 					 $("#search_c #btn_send").trigger( "click" );
 				 }
 			});
-			//監聽-清除查詢
-			$(document).off("click", "#search_c #btn_clearAll");
-			$(document).on("click", "#search_c #btn_clearAll", function (event) {
-				console.log("btn_clearAll");
-				$("#searchItem input").val("");
-				$("#searchItem select").val("");
-				
+			//監聽-(command促發)
+			$(document).off("keydown", "#command_send input");
+			$(document).on("keydown", "#command_send input", function (e) {
+				//console.log(e.key);
+				//清除?輸入?送出?
+				if(e.key =='Backspace'){
+					$('#command_send input').val("");
+				}else if(e.key =='Enter'){
+					//確認-儲位類型?
+					var command_alias = $("#command_send input").val().split("_")[0];
+					var command_val = $("#command_send input").val().split("_")[1];
+					var re = new RegExp("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
+					var accUser = $("#menu_login_name").attr("alt");
+					var command_sel =$("#command_sel").val();
+					if(re.exec(command_val)){
+						console.log("倉別:"+command_alias +" 儲位類型:"+command_val);
+						$('#search_dcr .valTbodyTrD').each(function() {
+							//比對欄位(單據類型+儲位+倉別)
+							var wastowho = $(this).find(".wastowho").text();
+							var wastype = $(this).find(".wastype").text();
+							if(wastype=="入料類" && wastowho.indexOf(command_val)>=0 && wastowho.indexOf(command_alias)>=0){
+								console.log(wastowho);
+								if(command_sel == "Normal"){
+									$(this).find(".waspngqty").text($(this).find(".waspnqty input").text());
+									$(this).find(".wasfuser").text(accUser);
+									$(this).find(".wasfuser").removeClass("bg-warning");
+									$(this).find(".wasfuser").addClass("bg-success");
+									$(this).find(".waspngqty").removeClass("bg-warning");
+									$(this).find(".waspngqty").addClass("bg-success");
+									$(this).find("input").prop("checked",true);
+									other.methods.confirmSend(this);
+								}else if(command_sel == "Abnormal"){
+									if($("#command_qty input").val()!=""){
+										$(this).find(".waspngqty").text($("#command_qty").val());
+										$(this).find(".wasfuser").text(accUser);
+										$(this).find(".wasfuser").removeClass("bg-warning");
+										$(this).find(".wasfuser").addClass("bg-success");
+										$(this).find(".waspngqty").removeClass("bg-warning");
+										$(this).find(".waspngqty").addClass("bg-success");
+										$(this).find("input").prop("checked",true);
+										other.methods.confirmSend(this);
+									}
+								}
+							}
+						});
+					}else{
+						console.log("倉別:"+command_alias +" 物料類型:"+command_val);
+						//比對欄位(單據類型+物料+倉別)
+						$('#search_dcr .valTbodyTrD').each(function() {
+							var wasfromwho = $(this).find(".wasfromwho").text();
+							var waspnumber = $(this).find(".waspnumber").text();
+							var wastype = $(this).find(".wastype").text();
+							if(wastype=="領料類" && waspnumber==command_val && wasfromwho.indexOf(command_alias)>=0){
+								console.log(wasfromwho);
+								if(command_sel == "Normal"){
+									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
+									$(this).find(".wasfuser").text(accUser);
+									$(this).find(".wasfuser").removeClass("bg-warning");
+									$(this).find(".wasfuser").addClass("bg-success");
+									$(this).find(".waspngqty").removeClass("bg-warning");
+									$(this).find(".waspngqty").addClass("bg-success");
+									$(this).find("input").prop("checked",true);
+									other.methods.confirmSend(this);
+								}else if(command_sel == "Abnormal"){
+									if($("#command_qty input").val()!=""){
+										$(this).find(".waspngqty").text($("#command_qty input").val());
+										$(this).find(".wasfuser").text(accUser);
+										$(this).find(".wasfuser").removeClass("bg-warning");
+										$(this).find(".wasfuser").addClass("bg-success");
+										$(this).find(".waspngqty").removeClass("bg-warning");
+										$(this).find(".waspngqty").addClass("bg-success");
+										$(this).find("input").prop("checked",true);
+										other.methods.confirmSend(this);
+									}
+								}
+							}						
+						});
+					}
+					$("#command_send input").val("");
+				}else if(e.key =='Shift'){
+					//排除
+				}else{
+					//輸入
+					var command_val = $("#command_send input").val();
+					$('#command_send input').val(command_val+e.key);	
+				}
+				$("#command_send input").focus();
 			});
-
+			//監聽-(command促發)
+			$(document).off("change", "#command_sel");
+			$(document).on("change", "#command_sel", function (e) {
+				console.log($(e.target).val());
+				$('#command_qty input').val("");
+				$("#command_send input").val("");
+				$("#command_sub input").val("");
+				$('#command_qty input').attr('disabled','disabled');
+				$("#command_sub").addClass("d-none");
+				$('#command_qty').removeClass("d-none");
+				if($(e.target).val()=='Abnormal'){
+					//異常模式
+					$('#command_qty input').removeAttr('disabled');
+					$("#command_sub").addClass("d-none");
+				}else if($(e.target).val()=='Sub-storage'){
+					//登記子儲位模式
+					$("#command_sub").removeClass("d-none");
+					$('#command_qty').addClass("d-none");
+				}else{
+					//一般模式
+				}			
+				$("#command_send input").focus();
+			});
+			
+			
 			//時間格式
             other.methods.datetimepickerDate();
+			//預設對焦
+            $("#command_send input").focus();
+          	//自動查詢
+          	clearTimeout(other.data.btn_send_auto);
+            other.data.btn_send_auto = setTimeout(function (){
+				 $("#search_c #btn_send").trigger( "click" );
+			}, 60000);
 			
 		},
 		datetimepickerDate(){
@@ -794,47 +964,78 @@ other={
 				}
 			});
 			//打印資料
-			print.methods.printPrepare(dataHeader,dataBody,entityIKey,entityGKey); 
+			//print.methods.printPrepare(dataHeader,dataBody,entityIKey,entityGKey); 
+			
 		},
 		
 		//==========================傳送資料==========================
-		confirmSend(){
+		confirmSend(onlyOne){
 			var entityJsons = other.data.searchPageSet.entityJsons;
 			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
 			var markDetails = other.data.markDetails;
 			var entityIKey = other.data.entityIKey;
 			var entityGKey = other.data.entityGKey;
 			var entityDateTime = other.data.entityDateTime;
+			var dataHeader = [];
 			
+			//單一筆資料-送出
+			if(onlyOne!=null){
+				var entityJosn={};
+				$(onlyOne).find('.valTbodytd div').each(function(index){ 
+					var val = $(this).text()=="[N/A]"?"":$(this).text();
+					var name = $(this).attr('class').split(' ')[0];
+					//可能是時間格式
+					if(entityDateTime.indexOf(name)>=0){
+						val = new Date(val).getTime();	
+					}
+					entityJosn[name] = val;
+				});
+				dataHeader.push(entityJosn);
+			}else{
+				//多筆資料-確認選取
+				$('#search_dcr_open tbody tr').each(function() {
+					//同意:最後完成人
+					if($(this).find('.wasfuser').hasClass('bg-success')){
+						var entityJosn={};
+						$(this).find('.valTbodytd div').each(function(index){ 
+							var val = $(this).text()=="[N/A]"?"":$(this).text();
+							var name = $(this).attr('class').split(' ')[0];
+							//可能是時間格式
+							if(entityDateTime.indexOf(name)>=0){
+								val = new Date(val).getTime();	
+							}
+							entityJosn[name] = val;
+						});
+						dataHeader.push(entityJosn);
+					}
+				});
+			}
+			
+			
+			console.log(dataHeader);
 			var action = "";
 			var type = "PUT";
 			var data=null;
 			var req_data={};
 			var searchPageSet={};
-			if(other.data.action=="Qty"){
-				action = "S1";//同步倉庫數量
+			if(dataHeader.length>0){
+				action = "S1";
 				//傳送....
 				data = {};
-				other.data.action ="";
-			}else if(other.data.action=="Item"){
-				action = "S2";//同步單據項目
-				//傳送....
-				data = {};
-				other.data.action ="";
+				data['entityJson'] =  JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify(dataHeader);
 			}
 			if(data!=null){
 				//包裝
-				data['entityJson'] = JSON.stringify('{}');
-				data['entityDetailJson'] = JSON.stringify('{}');
 				data['callBackFunction'] = "other_modify";
 				req_data['data'] = data;
 				req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
 				req_data['type'] = type;//POST/PUT/DELETE...
 				main.methods.ajaxSend(req_data,true);
-				
 			}
 			return false;
 		},
+		//修改後回傳
 		otherModifyReturn(){
 			other.methods.searchSend(0);
 		},
@@ -862,17 +1063,18 @@ other={
 			req_data['data'] = data;
 			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.AR";
 			req_data['type'] = "POST";
-			main.methods.ajaxSend(req_data,true);
+			main.methods.ajaxSend(req_data,false);
 			//時間格式
             other.methods.datetimepickerDate();
+			
 		},
 		//==========================資料載入==========================
 		otherReLoad(){
 			//還原
-			$('.valTbodytd').text("");
+			$('#search_cr .valTbodytd').text("");
 			$('.exTbodyTh input').attr("disabled","disabled");
 			$('.exTbodyTh input').attr("title","IKey_GKey");
-			$('.exTbodyTh input').prop( "checked", false );
+			$('#search_cr .exTbodyTh input').prop( "checked", false );
 			
 			//Step5.帶入資料
 			var marks = other.data.marks;
@@ -949,16 +1151,16 @@ other={
 		//==========================初始化==========================
 		destroy() {
 			//銷毀
-			$(document).off("click", "#search_c #btn_clearAll");
+			clearTimeout(other.data.btn_send_auto);
+			
 			$(document).off("keyup", "#searchItem input");
 			$(document).off("click", "#search_c #btn_send");
 			$(document).off("click", "#search_c #btn_printerForm");
 			$(document).off("click", "#search_c #btn_markCancel");
 			
-			$(document).off("click", "#search_c #btn_urgency");
-			$(document).off("click", "#search_c #btn_synchronize_qty");
-			$(document).off("click", "#search_c #btn_synchronize_item");
-
+			$(document).off("change", "#command_sel");
+			$(document).off("keydown", "#command_send input");
+			$(document).off("click", "#search_c #btn_detail");
 			$(document).off("click", "#search_c #exthDetailAll");
 			$(document).off("click", "#search_c #exthAll");
 			$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");

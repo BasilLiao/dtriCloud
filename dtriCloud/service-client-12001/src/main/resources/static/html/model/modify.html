@@ -4,6 +4,8 @@
 	display: block;
 	width: 1px;
 	overflow-x: auto;
+	border-collapse: separate;
+	border-spacing: 0px;
 }
 /*Table 表格固定*/
 #modify_c .f_c_1 {
@@ -1096,7 +1098,7 @@ modify={
 			req_data['data'] = data;
 			req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
 			req_data['type'] = type;//POST/PUT/DELETE...
-			main.methods.ajaxSend(req_data);
+			main.methods.ajaxSend(req_data,true);
 			return false;
 		},
 		//修改後查詢

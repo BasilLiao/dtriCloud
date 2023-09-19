@@ -87,6 +87,7 @@ public class BasicShippingList {
 		this.bslpspecification = "";
 		this.bslpnqty = 0;
 		this.bslpngqty = 0;
+		this.bslpnaqty = 0;
 		this.bsltocommand = "[]";
 		this.bsltowho = "[]";
 		this.bslfromcommand = "[]";

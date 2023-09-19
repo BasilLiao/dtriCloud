@@ -62,8 +62,9 @@ public class WarehouseAreaServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "waalias"));// 倉別
+		orders.add(new Order(Direction.ASC, "waslocation"));// 物料位置
 		orders.add(new Order(Direction.ASC, "wawmpnb"));// 物料號
-		orders.add(new Order(Direction.DESC, "waslocation"));// 物料位置
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 

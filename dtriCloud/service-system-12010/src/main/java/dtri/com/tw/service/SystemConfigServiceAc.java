@@ -249,7 +249,7 @@ public class SystemConfigServiceAc {
 						y.setSyssort(0);
 						y.setScgname(x.getScgname());
 						saveDetails.add(y);
-					} else if (y.getScid() != null && y.getScgid().compareTo(x.getScid()) == 0) {
+					} else if (y.getScid() != null && y.getScgid().compareTo(x.getScgid()) == 0) {
 						// 同一群組
 						SystemConfig oldy = configDao.findAllByConfigByScid(y.getScid()).get(0);
 						oldy.setSysmdate(new Date());

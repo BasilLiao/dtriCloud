@@ -50,7 +50,7 @@
 			</li>
 		</ul>
 		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
-						<!-- tab-home -->
+			<!-- tab-home -->
 			<div class="tab-pane fade" id="home_tab" role="tabpanel" aria-labelledby="tab-home">home_tab Loading...!!</div>
 			<!-- tab-search -->
 			<div class="tab-pane fade" id="search_tab" role="tabpanel" aria-labelledby="tab-search">search_tab Loading...!!</div>
@@ -84,7 +84,7 @@ body_index={
 			//$("#body_warehouse_area #search_title").addClass("disabled");
 			//$("#body_warehouse_area #modify_title").addClass("disabled");
 			//$("#body_warehouse_area #report_title").addClass("disabled");
-			$("#body_warehouse_area #print_title").addClass("disabled");
+			//$("#body_warehouse_area #print_title").addClass("disabled");
 			//$("#body_warehouse_area #compare_title").addClass("disabled");
 			$("#body_warehouse_area #other_title").addClass("disabled");
             //模板-預設分頁 active
@@ -104,9 +104,9 @@ body_index={
             	modify.methods.create();
             });
             //列印-模板
-            //$("#body_warehouse_area #print_tab").load("./html/model/print.html", function(){
-            //	print.methods.create();
-            //});
+            $("#body_warehouse_area #print_tab").load("./html/print/print_warehouse_area.html", function(){
+            	print.methods.create();
+            });
             //報告-模板
             $("#body_warehouse_area #report_tab").load("./html/model/report.html", function(){
             	report.methods.create();

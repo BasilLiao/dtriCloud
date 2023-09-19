@@ -68,8 +68,10 @@ body {
 	
 	//共用-方法清單
 	main.methods={
-		ajaxSend(req_data) {
-			$("#loading").removeClass("d-none");
+		ajaxSend(req_data,loading) {
+			if(loading){
+				$("#loading").removeClass("d-none");			
+			}
 			//模組-(傳送+接收)
 			//排除{!=}/{複製上Tab}
 			req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "").replaceAll("\\t","");
@@ -124,8 +126,8 @@ body {
                                case "modify":modify.methods.modifyReturn();break;
                                case "report":report.methods.reportReturn();break;
                                case "other_search":other.methods.otherReturn();break;
-                               case "other_modify":other.methods.methods.otherReturn();break;
-                               case "other_other":other.methods.customized.otherReturn();break;
+                               case "other_modify":other.methods.otherModifyReturn();break;
+                               case "other_other":other.methods.otherOtherReturn();break;
                            }
 					}else{
 						//console.log("Step3-3.異常請求尚未在範圍內");

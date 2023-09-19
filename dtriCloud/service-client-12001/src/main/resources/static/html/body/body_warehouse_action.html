@@ -50,7 +50,7 @@
 			</li>
 		</ul>
 		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
-						<!-- tab-home -->
+			<!-- tab-home -->
 			<div class="tab-pane fade" id="home_tab" role="tabpanel" aria-labelledby="tab-home">home_tab Loading...!!</div>
 			<!-- tab-search -->
 			<div class="tab-pane fade" id="search_tab" role="tabpanel" aria-labelledby="tab-search">search_tab Loading...!!</div>
@@ -81,30 +81,30 @@ body_index={
 			console.log("body_warehouse_action.html(created)");
 			//模板-鎖定-不需要的分頁 disabled
 			//$("#body_warehouse_action #home_title").addClass("disabled");
-			//$("#body_warehouse_action #search_title").addClass("disabled");
-			$("#body_warehouse_action #modify_title").addClass("disabled");
-			$("#body_warehouse_action #report_title").addClass("disabled");
+			$("#body_warehouse_action #search_title").addClass("disabled").addClass("d-none");
+			$("#body_warehouse_action #modify_title").addClass("disabled").addClass("d-none");
+			$("#body_warehouse_action #report_title").addClass("disabled").addClass("d-none");
 			//$("#body_warehouse_action #print_title").addClass("disabled");
-			$("#body_warehouse_action #compare_title").addClass("disabled");
+			$("#body_warehouse_action #compare_title").addClass("disabled").addClass("d-none");
 			//$("#body_warehouse_action #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_warehouse_action #search_title").addClass("active");
-            $("#body_warehouse_action #search_tab").addClass("show");
-            $("#body_warehouse_action #search_tab").addClass("active");
+            $("#body_warehouse_action #other_title").addClass("active");
+            $("#body_warehouse_action #other_tab").addClass("show");
+            $("#body_warehouse_action #other_tab").addClass("active");
             
           	//Step2.模板
             $("#body_warehouse_action #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_warehouse_action #search_tab").load("./html/model/search.html", function(){
-            	search.methods.create();
-            	main.methods.reWindowsSize();
-            });
+            //$("#body_warehouse_action #search_tab").load("./html/model/search.html", function(){
+            //	search.methods.create();
+            //	main.methods.reWindowsSize();
+            //});
             //編輯-模板
             //$("#body_warehouse_action #modify_tab").load("./html/model/modify.html", function(){
             //	modify.methods.create();
             //});
             //列印-模板
-            $("#body_warehouse_action #print_tab").load("./html/model/print.html", function(){
+            $("#body_warehouse_action #print_tab").load("./html/print/print_warehouse_action.html", function(){
             	print.methods.create();
             });
             //報告-模板
@@ -116,8 +116,8 @@ body_index={
             //	compare.methods.create();
             //});
             //其他-模板
-            $("#body_warehouse_action #other_tab").load("./html/other/other.html", function(){
-            	
+            $("#body_warehouse_action #other_tab").load("./html/other/other_warehouse_action.html", function(){
+            	other.methods.create();
             });
 		},
 		

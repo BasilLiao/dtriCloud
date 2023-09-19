@@ -171,7 +171,7 @@
 								<input id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Send<br>(AR)
+								<b>Query<br>(AR)
 								</b>
 							</button>
 							<button id="btn_clearAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
@@ -492,7 +492,7 @@ search={
 					for(var s = 0;s<searchSet['select'].length;s++){
 						var key = searchSet['select'][s].split("_")[0];
 						var val = searchSet['select'][s].split("_")[1];
-						selectEx = $('.selectEx').clone();
+						selectEx = searchSelectEx.find('.selectEx').clone();
 						selectEx.removeClass("selectEx");
 						selectEx.removeAttr("selected");
 						selectEx.text(key);
@@ -998,7 +998,7 @@ search={
 			req_data['data'] = data;
 			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.AR";
 			req_data['type'] = "POST";
-			main.methods.ajaxSend(req_data);
+			main.methods.ajaxSend(req_data,true);
 			//時間格式
             search.methods.datetimepickerDate();
 		},

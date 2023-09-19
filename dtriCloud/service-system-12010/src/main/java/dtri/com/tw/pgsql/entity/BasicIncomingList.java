@@ -81,13 +81,13 @@ public class BasicIncomingList {
 		this.bilcheckin = 0;
 		this.bilcuser = "";
 		this.bilfuser = "";
-		this.bilmuser = "";
 		this.bilacceptance = 0;
 		this.bilpnumber = "";
 		this.bilpname = "";
 		this.bilpspecification = "";
 		this.bilpnqty = 0;
 		this.bilpngqty = 0;
+		this.bilpnaqty = 0;
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";

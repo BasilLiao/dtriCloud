@@ -47,16 +47,15 @@
 		<div id="print_c_content_open" class="row p-0 m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div id="print_l" class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
+				<div id="print_l" class="col border border-info rounded-top p-1 bg-white shadow-sm" style="max-width: 850px;">
 					<div id="printContent">
 						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
-						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start"
-							style="page-break-after: always; width: 370px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
+						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start" style="page-break-after: always; width: 370px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<div>
 								<div style="display: inline-block; width: 310px;">
-									<!-- 單據-來源 -->
+									<!-- 單據 -->
 									<div class="">
-										<b>製單號：</b><font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1] </font>
+										<b>單據號：</b><font class="pr_bslclass_bslsn_bslnb">A551-230829006-0001</font>
 									</div>
 									<!-- 物料號 / 數量  -->
 									<div class="">
@@ -66,15 +65,11 @@
 									<div class="">
 										<b>物料名：</b><font class="pr_bslpname">10K_1%/0402_THERMISTOR</font>
 									</div>
-									<!-- 單據 -->
-									<div class="">
-										<b>領單號：</b><font class="pr_bslclass_bslsn_bslnb">A551-230829006-0001</font>
-									</div>
 								</div>
 								<div style="display: inline-block; top: 20px" class="pr_qrcode"></div>
 								<!-- 倉儲-位 -->
 								<div class="">
-									<b>來源：</b><font class="pr_bslfromwho">[A0002_原物料倉]</font>／<b>負責人：</b><font class="pr_user">Nobody</font>
+									<b>來源：</b><font class="pr_bslfromwho">[A0002_原物料倉]</font>／<b>打印人：</b><font class="pr_user">Nobody</font>
 								</div>
 							</div>
 						</div>
@@ -114,7 +109,7 @@ print={
             
             printWindow.document.write('<html><head><title>DIV Contents</title>');
             printWindow.document.write('<style> @media print{.noprint{display:none;}}</style>');
-            printWindow.document.write('</head><body style="font-size: 13px; margin: 1;line-height: 14px;">');
+            printWindow.document.write('</head><body style="font-size: 15px; margin: 1;line-height: 18px;">');
             printWindow.document.write(divContents);
             printWindow.document.write('</body></html>');
           	//查詢
@@ -133,29 +128,21 @@ print={
 			$(".printList").remove();
 			console.log(dataHeader);
 			console.log(dataBody);
-			//排序整理
-			var sortJson ={};
-			Object.keys(dataBody).forEach(function(k){
-				sortJson[dataBody[k]['wasmuser']+dataBody[k]['wasfromwho']] = dataBody[k];
-			});
-			sortJson = main.methods.orderedSort(sortJson);
-			
 			//一般
-			Object.keys(sortJson).forEach(function(k){
-				console.log(sortJson[k]);
-				var h = sortJson[k];
-				var key = h.id+'_'+h.waspnumber;
+			Object.keys(dataHeader).forEach(function(k){
+				console.log(dataHeader[k]);
+				var h = dataHeader[k];
+				var key = h.bslclass+"-"+h.bslsn+"-"+h.bslnb;
 				var print_ex = $('#print_ex').clone();
 				print_ex.attr("id",key);
 				print_ex.removeClass("noprint");
 				print_ex.addClass("printList");
-				print_ex.find(".pr_bslpnumber").text(h.waspnumber);//物料號
-				print_ex.find(".pr_bslpnqty").text(h.waspnqty);//數量
-				print_ex.find(".pr_bslpname").text(h.waspname);//物料名稱
-				print_ex.find(".pr_bslclass_bslsn_bslnb").text(h.id);//單據號
-				print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand);//單據號
-				print_ex.find(".pr_bslfromwho").text(h.wasfromwho);//來源
-				print_ex.find(".pr_user").text(h.wasmuser);//負責人
+				print_ex.find(".pr_bslpnumber").text(h.bslpnumber);//物料號
+				print_ex.find(".pr_bslpnqty").text(h.bslpnqty);//數量
+				print_ex.find(".pr_bslpname").text(h.bslpname);//物料名稱
+				print_ex.find(".pr_bslclass_bslsn_bslnb").text(key);//單據號
+				print_ex.find(".pr_bslfromwho").text(h.bslfromwho);//來源
+				print_ex.find(".pr_user").text($("#menu_login_name").text());//打印人
 				$('#print_l #print_start').after(print_ex);
 				
 			});

@@ -41,7 +41,6 @@ import jakarta.persistence.Table;
  *      bil_p_specification:物料規格<br>
  *      bil_pn_qty:數量<br>
  *      bil_pn_g_qty:已入數量<br>
- *      bil_pn_a_qty:提前領用<br>
  *      bil_to_command:單據指令對象 json [] A511-123456....<br>
  *      bil_from_command:單據指令來源 json [] A511-123456....<br>
  *      bil_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
@@ -82,7 +81,6 @@ public class BasicIncomingList {
 		this.bilcheckin = 0;
 		this.bilcuser = "";
 		this.bilfuser = "";
-		this.bilmuser = "";
 		this.bilacceptance = 0;
 		this.bilpnumber = "";
 		this.bilpname = "";

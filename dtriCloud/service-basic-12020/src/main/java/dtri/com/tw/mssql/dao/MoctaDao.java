@@ -48,7 +48,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
 			+ "	(TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
-			+ "	AND (MOCTB.TB004) != 0 "// --數量不為0
+			+ "	AND MOCTB.TB004 > 0 "// --數量不為0
 			+ "	AND MOCTB.TB018 = 'Y' "// --確認碼
 			+ " AND (MOCTB.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
 			+ "	OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天

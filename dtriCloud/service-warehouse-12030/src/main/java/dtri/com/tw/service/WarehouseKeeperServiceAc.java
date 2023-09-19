@@ -70,6 +70,8 @@ public class WarehouseKeeperServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "wkglist"));// 倉別
+		orders.add(new Order(Direction.ASC, "wkwaslocation"));// 位置
 		orders.add(new Order(Direction.ASC, "wksuaccount"));// 帳號
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
@@ -102,6 +104,7 @@ public class WarehouseKeeperServiceAc {
 			JsonArray pListArr = new JsonArray();
 			pList = systemUserDao.findAll();
 			pList.forEach(t -> {
+				System.out.println(t.getSuaccount() + "_" + t.getSuid());
 				pListArr.add(t.getSuaccount() + "_" + t.getSuid());
 			});
 			wksuid.setSlcmtype("select");

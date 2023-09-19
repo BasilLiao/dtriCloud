@@ -2,11 +2,11 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,24 +16,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
+import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
+import dtri.com.tw.pgsql.entity.BasicIncomingList;
+import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
+import dtri.com.tw.pgsql.entity.WarehouseSynchronize;
+import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
-import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.Query;
 
 @Service
 public class WarehouseSynchronizeServiceAc {
@@ -48,42 +49,141 @@ public class WarehouseSynchronizeServiceAc {
 	private WarehouseAreaDao areaDao;
 
 	@Autowired
-	private EntityManager em;
+	private BasicIncomingListDao incomingListDao;
+
+	@Autowired
+	private BasicShippingListDao shippingListDao;
+
+	@Autowired
+	private WarehouseTypeFilterDao filterDao;
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
 		// ========================分頁設置========================
 		// Step1.批次分頁
-		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = pageSetJson.get("total").getAsInt();
-		int batch = pageSetJson.get("batch").getAsInt();
+		// JsonObject pageSetJson =
+		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
+		int total = 9999;
+		int batch = 0;
 
 		// Step2.排序
-		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "wawmpnb"));// 物料號
-		orders.add(new Order(Direction.DESC, "waslocation"));// 物料位置
+		List<Order> inOrders = new ArrayList<>();
+		inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
+		inOrders.add(new Order(Direction.ASC, "bilsn"));// 單號
+		inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
+
+		List<Order> shOrders = new ArrayList<>();
+		shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
+		shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
+		shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
+
 		// 一般模式
-		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
+		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
+		// Step3-1.取得資料(一般/細節)
+		ArrayList<WarehouseSynchronize> entitys = new ArrayList<WarehouseSynchronize>();
+		//
+		List<WarehouseArea> areaLists = areaDao.findAll();
+		Map<String, WarehouseArea> areaMaps = new HashMap<>();
+		//
+		List<WarehouseTypeFilter> typeFilters = filterDao.findAll();
+		Map<String, String> typeFilterMaps = new HashMap<>();
+		// Step3-2.資料區分(一般/細節)
+		areaLists.forEach(a -> {
+			String key = a.getWaaliasawmpnb();// 倉儲+物料號
+			areaMaps.put(key, a);
+		});
+		typeFilters.forEach(t -> {
+			typeFilterMaps.put(t.getWtfcode(), t.getWtfname());
+		});
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
+			//
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(null, null, null, inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(null, null, null, shPageable);
+			// 進料
+			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 
-			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(null, null, null, pageable);
+				WarehouseSynchronize e = new WarehouseSynchronize();
+				e.setId(Key);
+				// 進料單
+				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				e.setWssclasssn(headerKey);// 單據+單據號
+				e.setWssnb(in.getBilnb());// 序號
+				e.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				e.setWssfuser(in.getBilfuser());// 完成人
+				e.setWsscuser(in.getBilcuser());// 核准人
+				e.setWsspnumber(in.getBilpnumber());// : 物料號<br>
+				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
+				e.setWsspngqty(in.getBilpngqty());// 已取數量<br>
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				e.setSyscdate(in.getSyscdate());
+				e.setSyscuser(in.getSyscuser());
+				e.setSysmdate(in.getSysmdate());
+				e.setSysmuser(in.getSysmuser());
+				e.setSysnote(in.getSysnote());
+				e.setSysstatus(in.getSysstatus());
+				// header
+				entitys.add(e);
+			});
 
-			// Step3-2.資料區分(一般/細節)
-			
+			// 領料
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+
+				WarehouseSynchronize e = new WarehouseSynchronize();
+				e.setId(Key);
+				// 進料單
+				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				e.setWssclasssn(headerKey);// 單據+單據號
+				e.setWssnb(sh.getBslnb());// 序號
+				e.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				e.setWssfuser(sh.getBslfuser());// 完成人
+				e.setWsscuser(sh.getBslcuser());// 核准人
+				e.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
+				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
+				e.setWsspngqty(sh.getBslpngqty());// 已取數量<br>
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				e.setSyscdate(sh.getSyscdate());
+				e.setSyscuser(sh.getSyscuser());
+				e.setSysmdate(sh.getSysmdate());
+				e.setSysmuser(sh.getSysmuser());
+				e.setSysnote(sh.getSysnote());
+				e.setSysstatus(sh.getSysstatus());
+				entitys.add(e);
+			});
+
 			// 類別(一般模式)
-			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
-			packageBean.setEntityJson(entityJson);
+			String entityJsonDatas = packageService.beanToJson(entitys);
+			packageBean.setEntityJson(entityJsonDatas);
 			packageBean.setEntityDetailJson("{}");
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseArea", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronize", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -95,7 +195,7 @@ public class WarehouseSynchronizeServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseArea.class.getDeclaredFields();
+			Field[] fields = WarehouseSynchronize.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			exceptionCell.add("material");
@@ -104,14 +204,20 @@ public class WarehouseSynchronizeServiceAc {
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wawmpnb", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wssclasssn", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "waslocation", "Ex:物料位置?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			JsonArray selectArr = new JsonArray();
+			selectArr.add("領料類_領料類");
+			selectArr.add("入料類_入料類");
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "wsstype", "Ex:單據類型?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "waalias", "Ex:倉別?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			JsonArray selectStatusArr = new JsonArray();
+			selectStatusArr.add("未結單_0");
+			selectStatusArr.add("已結單_1");
+			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -120,17 +226,100 @@ public class WarehouseSynchronizeServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseArea searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseArea.class);
+			WarehouseSynchronize searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseSynchronize.class);
+			String wasclass = null;
+			String wassn = null;
+			if (searchData.getWssclasssn() != null && searchData.getWssclasssn().split("-").length == 2) {
+				wasclass = searchData.getWssclasssn().split("-")[0];
+				wassn = searchData.getWssclasssn().split("-")[1];
+			} else {
+				wasclass = searchData.getWssclasssn();
+			}
 
-			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(searchData.getWawmpnb(), searchData.getWaslocation(), searchData.getWaalias(),
-					pageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(wasclass, wassn, searchData.getWsstype(),
+					inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(wasclass, wassn, searchData.getWsstype(),
+					shPageable);
 			// Step4-2.資料區分(一般/細節)
+			// 進料
+			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+
+				WarehouseSynchronize e = new WarehouseSynchronize();
+				e.setId(Key);
+				// 進料單
+				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				e.setWssclasssn(headerKey);// 單據+單據號
+				e.setWssnb(in.getBilnb());// 序號
+				e.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				e.setWssfuser(in.getBilfuser());// 完成人
+				e.setWsscuser(in.getBilcuser());// 核准人
+				e.setWsspnumber(in.getBilpnumber());// : 物料號<br>
+				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
+				e.setWsspngqty(in.getBilpngqty());// 已取數量<br>
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				e.setSyscdate(in.getSyscdate());
+				e.setSyscuser(in.getSyscuser());
+				e.setSysmdate(in.getSysmdate());
+				e.setSysmuser(in.getSysmuser());
+				e.setSysnote(in.getSysnote());
+				e.setSysstatus(in.getSysstatus());
+				// header
+				entitys.add(e);
+
+			});
+
+			// 領料
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+
+				WarehouseSynchronize e = new WarehouseSynchronize();
+				e.setId(Key);
+				// 進料單
+				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				e.setWssclasssn(headerKey);// 單據+單據號
+				e.setWssnb(sh.getBslnb());// 序號
+				e.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				e.setWssfuser(sh.getBslfuser());// 完成人
+				e.setWsscuser(sh.getBslcuser());// 核准人
+				e.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
+				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
+				e.setWsspngqty(sh.getBslpngqty());// 已取數量<br>
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+
+					}
+				}
+				// System
+				e.setSyscdate(sh.getSyscdate());
+				e.setSyscuser(sh.getSyscuser());
+				e.setSysmdate(sh.getSysmdate());
+				e.setSysmuser(sh.getSysmuser());
+				e.setSysnote(sh.getSysnote());
+				e.setSysstatus(sh.getSysstatus());
+				// header
+				entitys.add(e);
+			});
 
 			// 類別(一般模式)
-			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
-			packageBean.setEntityJson(entityJson);
-			packageBean.setEntityDetailJson("");
+			String entityJsonDatas = packageService.beanToJson(entitys);
+			packageBean.setEntityJson(entityJsonDatas);
+			packageBean.setEntityDetailJson("{}");
 
 			// 查不到資料
 			if (packageBean.getEntityJson().equals("[]")) {
@@ -140,132 +329,48 @@ public class WarehouseSynchronizeServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseArea());
+		String entityFormatJson = packageService.beanToJson(new WarehouseSynchronize());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("waid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityIKeyGKey("id_gid");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_wasedate");
 		return packageBean;
 	}
 
 	/** 修改資料 */
 	@Transactional
-	public PackageBean setModify(PackageBean packageBean) throws Exception {
+	public PackageBean setModify(PackageBean packageBean, String action) throws Exception {
 		// =======================資料準備 =======================
+		ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllByStatus(0);
+		ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByStatus(0);
+		List<WarehouseArea> areas = areaDao.findAll();
+
 		// =======================資料檢查=======================
-		return packageBean;
-	}
 
-	/** 新增資料 */
-	// @Transactional
-	public PackageBean setAdd(PackageBean packageBean) throws Exception {
-		// =======================資料準備=======================
-		// =======================資料檢查=======================
-		return packageBean;
-	}
-
-	/** 作廢資料 */
-	@Transactional
-	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
-		// =======================資料準備 =======================
-		// =======================資料檢查=======================
-		return packageBean;
-	}
-
-	/** 移除資料 */
-	@Transactional
-	public PackageBean setDetele(PackageBean packageBean) throws Exception {
-		// =======================資料準備 =======================
-		// =======================資料檢查=======================
-		return packageBean;
-	}
-
-	/** 取得資料 */
-	// @Transactional
-	@SuppressWarnings("unchecked")
-	public PackageBean getReport(PackageBean packageBean) throws Exception {
-		String entityReport = packageBean.getEntityReportJson();
-		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<WarehouseArea> entitys = new ArrayList<>();
-		Map<String, String> sqlQuery = new HashMap<>();
-		// =======================查詢語法=======================
-		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM warehouse_area e Where ";
-		for (JsonElement x : reportAry) {
-			// entity 需要轉換SQL與句 && 欄位
-			String cellName = x.getAsString().split("<_>")[0];
-			cellName = cellName.replace("sys", "sys_");
-			cellName = cellName.replace("sys_m", "sys_m_");
-			cellName = cellName.replace("sys_c", "sys_c_");
-			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("wa", "wa_");
-			cellName = cellName.replace("wa_wmpnb", "wa_wm_p_nb");
-			cellName = cellName.replace("wa_wmpnbalias", "wa_wm_p_nb_alias");
-			cellName = cellName.replace("wa_slocation", "wa_s_location");
-			cellName = cellName.replace("wa_aname", "wa_a_name");
-			cellName = cellName.replace("wa_erptqty", "wa_erp_t_qty");
-			cellName = cellName.replace("wa_tqty", "wa_t_qty");
-
-			String where = x.getAsString().split("<_>")[1];
-			String value = x.getAsString().split("<_>")[2];// 有可能空白
-			String valueType = x.getAsString().split("<_>")[3];
-
-			switch (where) {
-			case "AllSame":
-				nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "NotSame":
-				nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "Like":
-				nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "NotLike":
-				nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "MoreThan":
-				nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "LessThan":
-				nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			}
+		// =======================資料整理=======================
+		// Step3.一般資料->寫入
+		if (action.equals("Item")) {
+			incomingLists.forEach(x -> {
+				x.setBilpngqty(x.getBilpnqty());
+				x.setSysmuser(packageBean.getUserAccount());
+				x.setSysmdate(new Date());
+			});
+			shippingLists.forEach(x -> {
+				x.setBslpngqty(x.getBslpnqty());
+				x.setSysmuser(packageBean.getUserAccount());
+				x.setSysmdate(new Date());
+			});
+			incomingListDao.saveAll(incomingLists);
+			shippingListDao.saveAll(shippingLists);
 		}
-
-		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.wa_wm_p_nb asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, WarehouseArea.class);
-		// =======================查詢參數=======================
-		sqlQuery.forEach((key, valAndType) -> {
-			String val = valAndType.split("<_>")[0];
-			String tp = valAndType.split("<_>")[1];
-			if (tp.equals("dateTime")) {
-				// 時間格式?
-				query.setParameter(key, Fm_T.toDate(val));
-			} else if (tp.equals("number")) {
-				// 數字?
-				query.setParameter(key, Integer.parseInt(val));
-			} else {
-				// 文字?
-				query.setParameter(key, val);
-			}
-		});
-		try {
-			entitys = query.getResultList();
-		} catch (PersistenceException e) {
-			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
+		if (action.equals("Qty")) {
+			areas.forEach(x -> {
+				x.setWatqty(x.getWaerptqty());
+				x.setSysmuser(packageBean.getUserAccount());
+				x.setSysmdate(new Date());
+			});
+			areaDao.saveAll(areas);
 		}
-
-		// 資料包裝
-		String entityJsonDatas = packageService.beanToJson(entitys);
-		packageBean.setEntityJson(entityJsonDatas);
 
 		return packageBean;
 	}

@@ -60,6 +60,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTh030().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTh007());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -96,9 +99,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) > 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTh009())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -113,6 +120,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTb004());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -151,13 +161,16 @@ public class ERPToCloudService {
 		}
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[_生產線]");// 目的來源[_生產線]
-
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTb009())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -171,6 +184,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
+			o.setBslpngqty(m.getTb004());// 已取庫量
+			o.setBslcuser("System(ERP_Auto)");
+			o.setBslfuser("System(ERP_Auto)");
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -205,9 +221,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (bilfromwho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTb009())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBslmuser(bilmuser);
@@ -223,6 +243,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTg011());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTg001_tg002_tg003().split("-")[0]);// 入庫單[別]
@@ -256,9 +279,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTg010())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -274,6 +301,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi037().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTi007());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTi001_ti002_ti003().split("-")[0]);// 入庫單[別]
@@ -308,9 +338,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTi009())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -325,6 +359,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTg009());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTg001_tg002_tg003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
@@ -355,9 +392,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) > 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTg008())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -371,6 +412,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
+			o.setBslpngqty(m.getTg009());// 已領庫量
+			o.setBslcuser("System(ERP_Auto)");
+			o.setBslfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTg001_tg002_tg003().split("-")[0]);// 借出庫單[別]
@@ -401,9 +445,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (bilfromwho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTg007())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBslmuser(bilmuser);
@@ -418,6 +466,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("3")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTi009());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTi001_ti002_ti003().split("-")[0]);// 借入庫單[別]
@@ -452,9 +503,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) > 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTi008())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -469,6 +524,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("Y")) {
 			sysstatus = 1;
+			o.setBslpngqty(m.getTi009());// 已領庫量
+			o.setBslcuser("System(ERP_Auto)");
+			o.setBslfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTi001_ti002_ti003().split("-")[0].replaceAll("\\s", ""));// 借出庫單[別]
@@ -503,9 +561,13 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (bilfromwho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTi007())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBslmuser(bilmuser);
@@ -520,6 +582,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
+			o.setBilpngqty(m.getTb007());// 已入庫量
+			o.setBilcuser("System(ERP_Auto)");
+			o.setBilfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTb001_tb002_tb003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
@@ -550,14 +615,18 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTb012() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
-		o.setBiltowho("[" + biltowho + "]");// 目的來源[_倉庫]
+		o.setBiltowho("[" + biltowho + "]");// 目的對象[_倉庫]
 		o.setBilfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (biltowho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTb013())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBilmuser(bilmuser);
@@ -571,6 +640,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
+			o.setBslpngqty(m.getTb007());// 已領庫量
+			o.setBslcuser("System(ERP_Auto)");
+			o.setBslfuser("System(ERP_Auto)");
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTb001_tb002_tb003().split("-")[0].replaceAll("\\s", ""));// 借出庫單[別]
@@ -605,13 +677,16 @@ public class ERPToCloudService {
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
-			if (bilfromwho.indexOf(wkey) >= 0) {
-				bilmuser += wKs.get(wkey).getWksuaccount() + "_";
-				break;
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTb012())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
 			}
 		}
 		o.setBslmuser(bilmuser);
-
 		return o;
 	}
 }
