@@ -194,6 +194,7 @@ public class BasicIncomingListServiceAc {
 				entityDataOld.setBilpnqty(x.getBilpnqty());// 數量
 				entityDataOld.setBilpnaqty(x.getBilpnaqty());// 提前領數量
 				entityDataOld.setBilpngqty(x.getBilpngqty());// 已領取數量
+				entityDataOld.setBilstatus(x.getBilstatus());
 				saveDatas.add(entityDataOld);
 			}
 		});

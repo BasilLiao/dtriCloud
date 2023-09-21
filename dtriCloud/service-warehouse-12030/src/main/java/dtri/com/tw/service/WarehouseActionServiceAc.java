@@ -441,7 +441,7 @@ public class WarehouseActionServiceAc {
 			String wasNb = x.getId().split("-")[2];
 			String wasType = x.getWastype();
 			if (wasType.equals("入料類")) {
-				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, wasNb);
+				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
 					WarehouseHistory history = new WarehouseHistory();
@@ -456,7 +456,7 @@ public class WarehouseActionServiceAc {
 					entityHistories.add(history);
 				}
 			} else {
-				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheck(wasClass, wasSn, wasNb);
+				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
 					WarehouseHistory history = new WarehouseHistory();
@@ -474,7 +474,7 @@ public class WarehouseActionServiceAc {
 			// =======================資料儲存=======================
 
 		});
-
+		historyDao.saveAll(entityHistories);
 		return packageBean;
 	}
 }

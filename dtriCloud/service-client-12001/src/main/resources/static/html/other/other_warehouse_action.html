@@ -41,7 +41,7 @@
 	border-collapse: separate;
 	border-spacing: 0px;
 	font-size: 25px;
-	line-height: 28px;
+	line-height: 30px;
 }
 /*Table 表格內 背景色*/
 #search_c .table-white {
@@ -389,13 +389,15 @@ other={
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
+					exTheadth.addClass('text-start');
 					//
 					exTbodytd.removeClass('exTbodytd');
 					exTbodytd.removeClass('d-none')
 					exTbodytd.addClass('valTbodytd');
+					exTbodytd.addClass('text-start');
 					mergeCell = mergeCell+1;
 				}else{
-					if(mergeCell==6){
+					if(mergeCell==5){
 						mergeCell = 1;
 						//添加
 						$('#search_dcr_open .exTheadth').before(exTheadth);
@@ -634,6 +636,7 @@ other={
 					var entityIKey = other.data.entityIKey;
 					var entityGKey = other.data.entityGKey;
 					var entityDateTime =  other.data.entityDateTime;
+					var menu_account = $('#menu_login_name').attr('alt');
 					//console.log(entityDetailJsons);
 					//Step1.查詢細節內容-格式
 					$(".valTbodyTrD").remove();
@@ -658,6 +661,12 @@ other={
 					sortEntity = main.methods.orderedSort(sortEntity);
 					var d=0;
 					for(var k in sortEntity) {
+						//=======過濾負責人=======
+						if(sortEntity[k]['wasmuser']!="" && sortEntity[k]['wasmuser'].indexOf(menu_account)<0){
+							if(menu_account!="admin"){
+								continue;//admin 除外								
+							}
+						}
 						d+=1;
 						//=======格式=======
 						var exTbodyTr = $('.exDetailTbodyTr').clone();
@@ -764,7 +773,7 @@ other={
 				if($("#btn_send_auto").prop("checked")){
 					other.data.btn_send_auto = setTimeout(function (){
 						 $("#search_c #btn_send").trigger( "click" );
-					}, 60000);
+					}, 30000);
 				}else{
 					clearTimeout(other.data.btn_send_auto);
 				}
@@ -898,7 +907,7 @@ other={
           	clearTimeout(other.data.btn_send_auto);
             other.data.btn_send_auto = setTimeout(function (){
 				 $("#search_c #btn_send").trigger( "click" );
-			}, 60000);
+			}, 30000);
 			
 		},
 		datetimepickerDate(){
@@ -1073,8 +1082,11 @@ other={
 			//還原
 			$('#search_cr .valTbodytd').text("");
 			$('.exTbodyTh input').attr("disabled","disabled");
-			$('.exTbodyTh input').attr("title","IKey_GKey");
+			$('search_cr_open .exTbodyTh input').attr("title","IKey_GKey");
 			$('#search_cr .exTbodyTh input').prop( "checked", false );
+			$('#search_cr td').removeClass("bg-warning");
+			$('#search_cr td').removeClass("bg-danger");
+			
 			
 			//Step5.帶入資料
 			var marks = other.data.marks;
@@ -1091,9 +1103,9 @@ other={
 					var entity = entityJsons[pageSN+x];//((目前頁碼-1)*每頁數量)+x
 					var iKey = "";
 					var gKey = "";
+					var valTrNb = x+1;
 					Object.keys(entity).forEach(function(k){
 						//欄位計數
-						var valTrNb = x+1;
 						$('.valTbodyTr_'+valTrNb+' th input').removeAttr("disabled");
 						//是否IKEY?
 							if(entityIKey==k){iKey= entity[k];}	
@@ -1123,7 +1135,43 @@ other={
 							}
 						}
 					});
+					//急單?
+					if(entity['wasstatus']==1){
+						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-warning');
+					}
+					if(entity['wasstatus']==2){
+						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-danger');
+					}
+				
 				}
+			}
+			//更新子項目
+			if($(".valTbodyTrD").length>0){
+				var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				//console.log(entityDetailJsons);
+				//細節
+				$(".valTbodyTrD input").each(function(){
+					var id = $(this).attr('title').split("_")[0];
+					var gid =  $(this).attr('title').split("_")[1];
+					var check = false;
+					for(var d=0;d<entityDetailJsons.length;d++){
+						var entityD =entityDetailJsons[d];
+						if(gid ==entityD['gid']){
+							//同一項目物料?
+							if(id == entityD['id']){
+								//找的到->尚未完成
+								check = false;
+								break;
+							}else{
+								//找不到
+								check = true;
+							}							
+						}
+					}
+					if(check){
+						$(this).prop("checked",check);
+					}
+				});
 			}
 		},
 		//==========================回傳接收==========================
