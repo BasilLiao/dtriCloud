@@ -351,12 +351,12 @@ public class WarehouseSynchronizeServiceAc {
 		// Step3.一般資料->寫入
 		if (action.equals("Item")) {
 			incomingLists.forEach(x -> {
-				x.setBilpngqty(x.getBilpnqty());
+				x.setBilpnqty(x.getBilpngqty());
 				x.setSysmuser(packageBean.getUserAccount());
 				x.setSysmdate(new Date());
 			});
 			shippingLists.forEach(x -> {
-				x.setBslpngqty(x.getBslpnqty());
+				x.setBslpnqty(x.getBslpngqty());
 				x.setSysmuser(packageBean.getUserAccount());
 				x.setSysmdate(new Date());
 			});
