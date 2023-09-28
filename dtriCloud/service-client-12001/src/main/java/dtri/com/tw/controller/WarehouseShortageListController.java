@@ -17,7 +17,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class WarehouseActionController extends AbstractController {
+public class WarehouseShortageListController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -26,7 +26,7 @@ public class WarehouseActionController extends AbstractController {
 	WarehouseServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -46,7 +46,7 @@ public class WarehouseActionController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getActionSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getShortageListSearch(packageService.beanToJson(packageBean));
 
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -67,7 +67,8 @@ public class WarehouseActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -87,47 +88,7 @@ public class WarehouseActionController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getActionSearch(packageService.beanToJson(packageBean));
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
-			e.printStackTrace();
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			loggerWarn(e.toString());
-		}
-		return packageJson;
-	}
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.ARD" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	String searchD(@RequestBody String jsonObject) {
-		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getActionSearchDetail(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getShortageListSearch(packageService.beanToJson(packageBean));
 
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -148,7 +109,8 @@ public class WarehouseActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.ARR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -156,42 +118,6 @@ public class WarehouseActionController extends AbstractController {
 
 		// Step0.資料準備
 		String packageJson = "{}";
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.AC" }, method = { RequestMethod.POST })
-	String add(@RequestBody String jsonObject) {
-		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.AU" }, method = { RequestMethod.PUT })
-	String modify(@RequestBody String jsonObject) {
-		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.S1" }, method = { RequestMethod.PUT })
-	String modifyNormal(@RequestBody String jsonObject) {
-		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
-
-		// Step0.資料準備
-		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
@@ -204,7 +130,7 @@ public class WarehouseActionController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setActionModifyNormal(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getShortageListReport(packageService.beanToJson(packageBean));
 
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -225,24 +151,164 @@ public class WarehouseActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AC" }, method = { RequestMethod.POST })
+	String add(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setShortageListAdd(packageService.beanToJson(packageBean));
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(e.toString());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(e.toString());
+		}
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AU" }, method = { RequestMethod.PUT })
+	String modify(@RequestBody String jsonObject) {
+		// 顯示方法
+		sysFunction(new Object() {
+		}.getClass().getEnclosingMethod().getName());
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setShortageListModify(packageService.beanToJson(packageBean));
+
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(e.toString());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(e.toString());
+		}
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
 		}.getClass().getEnclosingMethod().getName());
 		// Step0.資料準備
 		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setShortageListInvalid(packageService.beanToJson(packageBean));
+
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(e.toString());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(e.toString());
+		}
 		return packageJson;
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_action.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
 		}.getClass().getEnclosingMethod().getName());
 		// Step0.資料準備
 		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setShortageListDetele(packageService.beanToJson(packageBean));
+
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(e.toString());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(e.toString());
+		}
 		return packageJson;
 	}
+
 }

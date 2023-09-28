@@ -809,11 +809,11 @@ public class ERPSynchronizeService {
 		String checkSame = "";
 		for (Invtb m : erpEntitys) {
 			// 物料號+倉別號+位置
-			String nKey = m.getMb001() + "_" + m.getMc002() + '_' + m.getMc003();
+			String nKey = m.getMc002() + "_" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
-			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s", ""));
+			m.setMb003(m.getMb003().replaceAll("\\s", ""));
 			// ERP 倉別異常Null
 			if (m.getMc002() == null) {
 				m.setMc002(m.getMb017());// --倉別代號
@@ -877,8 +877,9 @@ public class ERPSynchronizeService {
 
 		// Step4-1. [物料位置] 資料整理轉換
 		Map<String, WarehouseArea> areaSameMap = new HashMap<>();
-		areaOlds.forEach(a -> {
-			String aKey = a.getWawmpnb() + "_" + a.getWaalias() + "_" + a.getWaslocation();
+		areaOlds.forEach(a -> {// 區域庫別代號_物料號_
+			String aKey = a.getWaaliasawmpnb();
+
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
@@ -894,6 +895,8 @@ public class ERPSynchronizeService {
 					a.setWaaname(av.getCmc002() == null ? "" : av.getCmc002());// 倉庫名稱
 					a.setWaerptqty(av.getMc007());// 倉儲數量
 					a.setChecksum(checkSum);
+					a.setSysmdate(new Date());
+					a.setSysmuser("system");
 					saveItems.add(a);
 				}
 			}

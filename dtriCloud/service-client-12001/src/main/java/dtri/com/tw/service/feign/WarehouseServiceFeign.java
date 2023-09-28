@@ -51,6 +51,9 @@ public interface WarehouseServiceFeign {
 	// ================================通用-區域事件處理================================
 	@RequestMapping(value = { "/warehouseAction/getSearch" }, method = RequestMethod.POST)
 	PackageBean getActionSearch(@RequestBody String jsonPackageBean);
+	
+	@RequestMapping(value = { "/warehouseAction/getSearchDetail" }, method = RequestMethod.POST)
+	PackageBean getActionSearchDetail(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/warehouseAction/setModifyNormal" }, method = RequestMethod.POST)
 	PackageBean setActionModifyNormal(@RequestBody String jsonPackageBean);
@@ -192,6 +195,25 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseArea/setDetele" }, method = RequestMethod.POST)
 	PackageBean setAreaDetele(@RequestBody String jsonPackageBean);
+
+	// ================================通用-缺料清單================================
+	@RequestMapping(value = { "/warehouseShortageList/getSearch" }, method = RequestMethod.POST)
+	PackageBean getShortageListSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseShortageList/getReport" }, method = RequestMethod.POST)
+	PackageBean getShortageListReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseShortageList/setModify" }, method = RequestMethod.POST)
+	PackageBean setShortageListModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseShortageList/setAdd" }, method = RequestMethod.POST)
+	PackageBean setShortageListAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseShortageList/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setShortageListInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseShortageList/setDetele" }, method = RequestMethod.POST)
+	PackageBean setShortageListDetele(@RequestBody String jsonPackageBean);
 
 	// ================================通用-物料清單================================
 	@RequestMapping(value = { "/warehouseMaterial/getSearch" }, method = RequestMethod.POST)
