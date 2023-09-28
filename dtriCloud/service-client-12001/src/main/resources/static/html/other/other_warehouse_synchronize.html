@@ -113,7 +113,7 @@
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-6 col-lg-4 p-1">
+				<div class="col-7 col-lg-5 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
@@ -125,8 +125,12 @@
 								<b>Synchronize<br>qty(S1)
 								</b>
 							</button>
-							<button id="btn_synchronize_item" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+							<button id="btn_synchronize_item" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
 								<b>Synchronize<br>item(S2)
+								</b>
+							</button>
+							<button id="btn_synchronize_remove" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Synchronize<br>removeAll(S3)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
@@ -287,11 +291,16 @@ other={
 				$("#btn_send").addClass("disabled");
 			}	
 			if(ps[5] != 1){//修改(S1)5
-				$("#btn_synchronize_item").addClass("disabled");
-			}
-			if(ps[4] != 1){//修改(S2)4
 				$("#btn_synchronize_qty").addClass("disabled");
 			}
+			if(ps[4] != 1){//修改(S1)4
+				$("#btn_synchronize_item").addClass("disabled");
+			}
+			if(ps[3] != 1){//修改(S3)3
+				$("#btn_synchronize_remove").addClass("disabled");
+			}
+			
+			
 			//Step1.查詢結果標題-排序
 			var resultThead = searchSetJson['resultThead'];
 			var resultDetailThead = searchSetJson['resultDetailThead'];
@@ -654,23 +663,38 @@ other={
 					$('.exDetailTbodyTr').addClass('d-none');
 				}
 			});
-			//監聽-同步項目
-			$(document).off("click", "#search_c #btn_synchronize_item");
-			$(document).on("click", "#search_c #btn_synchronize_item", function (event) {
-				console.log("btn_synchronize_item");
-				other.data.action ="Item";
-				$('.wsspnumber').removeClass("text-success");
-				$('.wsspnumber').addClass("text-danger");
-			});
-			//監聽-同步數量
+			//監聽-同步倉庫數量
 			$(document).off("click", "#search_c #btn_synchronize_qty");
 			$(document).on("click", "#search_c #btn_synchronize_qty", function (event) {
 				console.log("btn_synchronize_qty");
 				other.data.action ="Qty";
 				$('.wsspnumber').removeClass("text-danger");
+				$('.wsspnumber').removeClass("text-warning");
+				$('.wsspnumber').removeClass("text-success");
 				$('.wsspnumber').addClass("text-success");
-				
 			});
+			//監聽-同步單據項目
+			$(document).off("click", "#search_c #btn_synchronize_item");
+			$(document).on("click", "#search_c #btn_synchronize_item", function (event) {
+				console.log("btn_synchronize_item");
+				other.data.action ="Item";
+				$('.wsspnumber').removeClass("text-danger");
+				$('.wsspnumber').removeClass("text-warning");
+				$('.wsspnumber').removeClass("text-success");
+				$('.wsspnumber').addClass("text-warning");
+			});
+			//監聽-移除所有單據
+			$(document).off("click", "#search_c #btn_synchronize_remove");
+			$(document).on("click", "#search_c #btn_synchronize_remove", function (event) {
+				console.log("btn_synchronize_remove");
+				other.data.action ="Remove";
+				$('.wsspnumber').removeClass("text-danger");
+				$('.wsspnumber').removeClass("text-warning");
+				$('.wsspnumber').removeClass("text-success");
+				$('.wsspnumber').addClass("text-danger");
+			});
+			
+			
 			
 			
 			//監聽-標記移除
@@ -818,6 +842,11 @@ other={
 				other.data.action ="";
 			}else if(other.data.action=="Item"){
 				action = "S2";//同步單據項目
+				//傳送....
+				data = {};
+				other.data.action ="";
+			}else if(other.data.action=="Remove"){
+				action = "S3";//移除數量
 				//傳送....
 				data = {};
 				other.data.action ="";

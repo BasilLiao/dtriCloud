@@ -29,7 +29,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "// 類型
-			+ "(:bilmuser is null or c.bilmuser LIKE %:bilmuser%) and "// 負責人
+			+ "(:bilmuser is null or (c.bilmuser LIKE %:bilmuser% or c.bilmuser='')) and "// 負責人
 			+ "(c.bilfuser ='') ") // 已完成-負責人
 	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser, Pageable pageable);
 

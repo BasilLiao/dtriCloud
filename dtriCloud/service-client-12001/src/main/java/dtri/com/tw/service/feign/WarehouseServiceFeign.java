@@ -86,6 +86,9 @@ public interface WarehouseServiceFeign {
 	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeItem" }, method = RequestMethod.POST)
 	PackageBean setModifySynchronizeItem(@RequestBody String jsonPackageBean);
 
+	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeRemove" }, method = RequestMethod.POST)
+	PackageBean setModifySynchronizeRemove(@RequestBody String jsonPackageBean);
+
 //	@RequestMapping(value = { "/warehouseSynchronize/setAdd" }, method = RequestMethod.POST)
 //	PackageBean setSynchronizeAdd(@RequestBody String jsonPackageBean);
 //

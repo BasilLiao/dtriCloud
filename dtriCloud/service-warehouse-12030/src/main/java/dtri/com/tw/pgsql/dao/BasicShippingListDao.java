@@ -29,7 +29,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//
 			+ "(:bslsn is null or  c.bslsn LIKE %:bslsn%) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "// 類型
-			+ "(:bslmuser is null or c.bslmuser LIKE %:bslmuser%) and "// 負責人
+			+ "(:bslmuser is null or (c.bslmuser LIKE %:bslmuser% or c.bslmuser='')) and "// 負責人
 			+ "(c.bslfuser ='') ") // 已完成-負責人
 	ArrayList<BasicShippingList> findAllBySearchAction(String bslclass, String bslsn, String bsltype, String bslmuser, Pageable pageable);
 

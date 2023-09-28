@@ -713,7 +713,7 @@ other={
 								 exTbodyTr.find('.'+s).text(dateF); 
 							}else{
 								//如果是空值
-								if(entity[s]==""){
+								if(entity[s]===""){
 									entity[s] = "[N/A]";
 								}
 								exTbodyTr.find('.'+s).text(entity[s]);
@@ -801,6 +801,7 @@ other={
 					var accUser = $("#menu_login_name").attr("alt");
 					var command_sel =$("#command_sel").val();
 					if(re.exec(command_val)){
+						//儲位類型
 						console.log("倉別:"+command_alias +" 儲位類型:"+command_val);
 						$('#search_dcr .valTbodyTrD').each(function() {
 							//比對欄位(單據類型+儲位+倉別)
@@ -809,7 +810,7 @@ other={
 							if(wastype=="入料類" && wastowho.indexOf(command_val)>=0 && wastowho.indexOf(command_alias)>=0){
 								console.log(wastowho);
 								if(command_sel == "Normal"){
-									$(this).find(".waspngqty").text($(this).find(".waspnqty input").text());
+									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 									$(this).find(".wasfuser").text(accUser);
 									$(this).find(".wasfuser").removeClass("bg-warning");
 									$(this).find(".wasfuser").addClass("bg-success");
@@ -832,6 +833,7 @@ other={
 							}
 						});
 					}else{
+						//物料類型
 						console.log("倉別:"+command_alias +" 物料類型:"+command_val);
 						//比對欄位(單據類型+物料+倉別)
 						$('#search_dcr .valTbodyTrD').each(function() {

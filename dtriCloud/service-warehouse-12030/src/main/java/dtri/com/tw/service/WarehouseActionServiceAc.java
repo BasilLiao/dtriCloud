@@ -112,8 +112,8 @@ public class WarehouseActionServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null, null, inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null, null, shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), shPageable);
 
 			// 進料
 			incomingLists.forEach(in -> {
@@ -286,8 +286,8 @@ public class WarehouseActionServiceAc {
 			} else {
 				wasclass = searchData.getWasclasssn();
 			}
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null, null, inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null, null, shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(), inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {

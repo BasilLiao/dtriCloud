@@ -112,6 +112,8 @@ print={
 			$(document).on("click", "#print_c #btn_print_clearAll", function (event) {
 				console.log("btn_print_clearAll");
 				$(".printList").remove();
+				$(".printWarehouseList").remove();
+				
 			});
 		},
 		//一般A4(倉儲_儲位)
@@ -165,11 +167,13 @@ print={
 			//
 			$('#print_title').trigger('click');
 			$(".printList").remove();
+			$(".printWarehouseList").remove();
 			console.log(dataHeader);
 			console.log(dataBody);
 			//排序整理
 			
 			//一般
+			var sameCheck ="";
 			Object.keys(dataHeader).forEach(function(k){
 				console.log(dataHeader[k]);
 				var h = dataHeader[k];
@@ -184,14 +188,17 @@ print={
 				print_ex.find(".pr_waalias").attr('alt',h.waalias);//倉別
 				print_ex.find(".pr_waslocation").text(h.waslocation);//儲位位置
 				$('#print_l #print_start').after(print_ex);
-				//儲位
-				var print_w_ex = $('#print_warehouse_ex').clone();
-				print_w_ex.attr("id","w_"+key);
-				print_w_ex.removeClass("noprint");
-				print_w_ex.addClass("printWarehouseList");
-				print_w_ex.find(".pr_warehouse").attr('alt',h.waalias+"_"+h.waslocation);//倉別
-				print_w_ex.find(".pr_warehouse").text(h.waslocation);//儲位位置
-				$('#print_w #print_w_start').after(print_w_ex);
+				//儲位->排除跟上一筆重複
+				if(sameCheck!=h.waslocation){
+					sameCheck = h.waslocation;
+					var print_w_ex = $('#print_warehouse_ex').clone();
+					print_w_ex.attr("id","w_"+key);
+					print_w_ex.removeClass("noprint");
+					print_w_ex.addClass("printWarehouseList");
+					print_w_ex.find(".pr_warehouse").attr('alt',h.waalias+"_"+h.waslocation);//倉別
+					print_w_ex.find(".pr_warehouse").text(h.waslocation);//儲位位置
+					$('#print_w #print_w_start').after(print_w_ex);
+				}
 			});
 			//細節
 			

@@ -171,6 +171,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_syn + ".AR").hasAuthority(actionRole(warehouse_syn, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".S1").hasAuthority(actionRole(warehouse_syn, "S1"))// (修改S1)
 				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".S2").hasAuthority(actionRole(warehouse_syn, "S2"))// (修改S2)
+				.requestMatchers(HttpMethod.PUT, warehouse_syn + ".S3").hasAuthority(actionRole(warehouse_syn, "S3"))// (修改S3)
 
 				// 倉庫功能-基本
 				// ----請求-warehouse_history-(訪問) ----

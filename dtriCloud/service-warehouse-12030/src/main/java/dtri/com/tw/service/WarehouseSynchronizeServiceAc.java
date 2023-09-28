@@ -371,6 +371,10 @@ public class WarehouseSynchronizeServiceAc {
 			});
 			areaDao.saveAll(areas);
 		}
+		if (action.equals("Remove")) {
+			incomingListDao.deleteAll();
+			shippingListDao.deleteAll();
+		}
 
 		return packageBean;
 	}
