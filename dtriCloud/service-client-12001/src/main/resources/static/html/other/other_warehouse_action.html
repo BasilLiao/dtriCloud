@@ -61,6 +61,12 @@
 	writing-mode: vertical-lr;
 	width: 20px;
 }
+/*checkbox_66*/
+#search_c .checkbox_66 {
+	width: 66px;
+	height: 66px;
+}
+
 /*checkbox_36*/
 #search_c .checkbox_36 {
 	width: 36px;
@@ -243,7 +249,7 @@
 			<table class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
 					<tr>
-						<th class="fixedC1" style="min-width: 50px;">
+						<th class="fixedC1" style="min-width: 80px;">
 							<div>
 								<button id="exthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 									<b>M</b>
@@ -255,9 +261,9 @@
 				</thead>
 				<tbody class="table-white">
 					<tr class="exTbodyTr">
-						<th class="fixedC1 exTbodyTh" style="max-width: 50px;">
+						<th class="fixedC1 exTbodyTh" style="max-width: 80px;">
 							<div>
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox" class="m-0 form-check-input checkbox_36 border border-dark">
+								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox" class="m-0 form-check-input checkbox_66 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -348,9 +354,9 @@ other={
 				if(check1 && resultThead[k].show==1){
 					check1=false;
 					exTheadth.addClass('fixedC1');
-					exTheadth.css('left',"50px");
+					exTheadth.css('left',"80px");
 					exTbodytd.addClass('fixedC1');
-					exTbodytd.css('left',"50px");
+					exTbodytd.css('left',"80px");
 				}
 				//如果有翻譯
 				if(resultThead[k].cellLanguage!=''){
@@ -1240,9 +1246,10 @@ other={
 					Object.keys(entityDetailJsons).forEach(function(k){
 						var d = entityDetailJsons[k];
 						var target = $('#search_dcr_open .'+d['id']);
-						if(target!=null && d['wasfuser']!="" && d['waspngqty']!=0){
+						if(target!=null && d['wasfuser']!="" && d['waspngqty']>=0){
 							target.find('.wasfuser').text(d['wasfuser']);
 							target.find('.waspngqty').text(d['waspngqty']);
+							target.find('.wastqty').text(d['wastqty']);
 							
 							target.find(".wasfuser").removeClass("bg-warning");
 							target.find(".wasfuser").addClass("bg-success");

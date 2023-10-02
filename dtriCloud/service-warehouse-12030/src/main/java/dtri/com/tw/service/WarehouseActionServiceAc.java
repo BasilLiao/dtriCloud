@@ -113,10 +113,10 @@ public class WarehouseActionServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), "",
-					inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), "",
-					shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null,
+					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null,
+					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
 
 			// 進料
 			incomingLists.forEach(in -> {
@@ -289,10 +289,10 @@ public class WarehouseActionServiceAc {
 			} else {
 				wasclass = searchData.getWasclasssn();
 			}
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(),
-					"", inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(),
-					"", shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
+					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
+					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
@@ -475,9 +475,9 @@ public class WarehouseActionServiceAc {
 				String wasclass = r.split("-")[0];
 				String wassn = r.split("-")[1];
 				ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount(), null, inPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), null, inPageable);
 				ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount(), null, shPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), null, shPageable);
 				// Step4-2.資料區分(一般/細節)
 				// 進料
 				incomingLists.forEach(in -> {
@@ -613,7 +613,7 @@ public class WarehouseActionServiceAc {
 						entityData.getWasnb());
 				if (checkIncomingDatas.size() == 0 && entityData.getWastype().equals("入料類")) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { entityData.getWasclasssn() +"-"+ entityData.getWasnb() });
+							new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
 				}
 				ArrayList<BasicShippingList> checkShippingDatas = shippingListDao.findAllByCheckUser(//
 						entityData.getWasclasssn().split("-")[0], //
@@ -621,7 +621,7 @@ public class WarehouseActionServiceAc {
 						entityData.getWasnb());
 				if (checkShippingDatas.size() == 0 && !entityData.getWastype().equals("入料類")) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { entityData.getWasclasssn() +"-"+ entityData.getWasnb() });
+							new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
 				}
 
 			}
@@ -641,6 +641,7 @@ public class WarehouseActionServiceAc {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
+					List<WarehouseArea> areaLists = areaDao.findAllByWaaliasawmpnb(x.getWasaliaswmpnb());
 					WarehouseHistory history = new WarehouseHistory();
 					BasicIncomingList incomingList = arrayList.get(0);
 					incomingList.setBilfuser(x.getWasfuser());
@@ -648,6 +649,14 @@ public class WarehouseActionServiceAc {
 					incomingList.setSysmuser(x.getWasfuser());
 					incomingList.setSysmdate(new Date());
 					incomingLists.add(incomingList);
+					// 庫存數
+					if (areaLists.size() > 0) {
+						WarehouseArea area = new WarehouseArea();
+						area = areaLists.get(0);
+						area.setWatqty(area.getWatqty() + x.getWaspngqty());
+						areaDao.save(area);
+					}
+
 					// 紀錄
 					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
 					entityHistories.add(history);
@@ -656,6 +665,7 @@ public class WarehouseActionServiceAc {
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
+					List<WarehouseArea> areaLists = areaDao.findAllByWaaliasawmpnb(x.getWasaliaswmpnb());
 					WarehouseHistory history = new WarehouseHistory();
 					BasicShippingList shippingList = arrayList.get(0);
 					shippingList.setBslfuser(x.getWasfuser());
@@ -663,6 +673,13 @@ public class WarehouseActionServiceAc {
 					shippingList.setSysmuser(x.getWasfuser());
 					shippingList.setSysmdate(new Date());
 					shippingLists.add(shippingList);
+					// 庫存數
+					if (areaLists.size() > 0) {
+						WarehouseArea area = new WarehouseArea();
+						area = areaLists.get(0);
+						area.setWatqty(area.getWatqty() - x.getWaspngqty() < 0 ? 0 : area.getWatqty() - x.getWaspngqty());
+						areaDao.save(area);
+					}
 					// 紀錄
 					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
 					entityHistories.add(history);

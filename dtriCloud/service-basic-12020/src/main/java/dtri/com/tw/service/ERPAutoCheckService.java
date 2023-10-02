@@ -83,6 +83,7 @@ public class ERPAutoCheckService {
 			System.out.println(o.getBslclass() + " " + wTFs.get(o.getBslclass()).getWtfaiqty() + " " //
 					+ wTFs.get(o.getBslclass()).getWtfmrcheck() + " "//
 					+ wTFs.get(o.getBslclass()).getWtfsepncheck());
+			
 			if (wTFs.get(o.getBslclass()).getWtfaiqty()) {
 				String wcKey = o.getBsltowho().split("_")[0].replace("[", "");
 				String wAsKey = wcKey + "_" + o.getBslpnumber();
@@ -97,7 +98,7 @@ public class ERPAutoCheckService {
 				}
 			}
 			// 單據管理人(攔截)->沒有勾起來 自動Pass
-			if (!wTFs.get(o.getBslclass()).getWtfmrcheck()) {
+			if (wTFs.get(o.getBslclass()).getWtfmrcheck()) {
 				o.setBslcuser("System(Type_Pass)");
 			}
 			// 欄位管理人(攔截)->沒有勾起來 自動Pass
