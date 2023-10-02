@@ -30,8 +30,9 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "// 類型
 			+ "(:bilmuser is null or (c.bilmuser LIKE %:bilmuser% or c.bilmuser='')) and "// 負責人
-			+ "(c.bilfuser ='') ") // 已完成-負責人
-	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser, Pageable pageable);
+			+ "(:bilfuser is null or c.bilfuser =:bilfuser) ") // 已完成-負責人
+	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser, String bilfuser,
+			Pageable pageable);
 
 	// 同步查詢用
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//

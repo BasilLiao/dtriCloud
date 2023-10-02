@@ -113,9 +113,9 @@ public class WarehouseActionServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(),
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), "",
 					inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(),
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null, packageBean.getUserAccount(), "",
 					shPageable);
 
 			// 進料
@@ -290,9 +290,9 @@ public class WarehouseActionServiceAc {
 				wasclass = searchData.getWasclasssn();
 			}
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(),
-					inPageable);
+					"", inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null, packageBean.getUserAccount(),
-					shPageable);
+					"", shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
@@ -475,9 +475,9 @@ public class WarehouseActionServiceAc {
 				String wasclass = r.split("-")[0];
 				String wassn = r.split("-")[1];
 				ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount(), inPageable);
+						packageBean.getUserAccount(), null, inPageable);
 				ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount(), shPageable);
+						packageBean.getUserAccount(), null, shPageable);
 				// Step4-2.資料區分(一般/細節)
 				// 進料
 				incomingLists.forEach(in -> {
@@ -522,7 +522,6 @@ public class WarehouseActionServiceAc {
 					e.setSysnote(in.getSysnote());
 					// body
 					entityDetails.add(e);
-
 				});
 
 				// 領料
@@ -605,6 +604,27 @@ public class WarehouseActionServiceAc {
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<WarehouseAction>>() {
 
 			});
+			// Step2.資料檢查
+			for (WarehouseAction entityData : entityDatas) {
+				// 檢查-名稱重複(沒資料 已經被登記過)
+				ArrayList<BasicIncomingList> checkIncomingDatas = incomingListDao.findAllByCheckUser(//
+						entityData.getWasclasssn().split("-")[0], //
+						entityData.getWasclasssn().split("-")[1], //
+						entityData.getWasnb());
+				if (checkIncomingDatas.size() == 0 && entityData.getWastype().equals("入料類")) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getWasclasssn() +"-"+ entityData.getWasnb() });
+				}
+				ArrayList<BasicShippingList> checkShippingDatas = shippingListDao.findAllByCheckUser(//
+						entityData.getWasclasssn().split("-")[0], //
+						entityData.getWasclasssn().split("-")[1], //
+						entityData.getWasnb());
+				if (checkShippingDatas.size() == 0 && !entityData.getWastype().equals("入料類")) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getWasclasssn() +"-"+ entityData.getWasnb() });
+				}
+
+			}
 
 			// Step2.資料檢查(PASS)
 		}

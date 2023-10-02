@@ -221,7 +221,7 @@
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark"> <br> <b style="font-size: 12px;">Auto(60s)</b>
+								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Query<br>(AR)
@@ -287,6 +287,7 @@ other={
 			pageSize:50,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
+			entityDetailOpenJsons:[],//展開-細節資料
 			entityIKey:"",//ID
 			entityGKey:"",//GID
 			entityDateTime:"",//是時間格式的欄位 
@@ -676,6 +677,7 @@ other={
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.addClass('valTbodyDetailTr_'+(d+1));
 						exTbodyTr.addClass('valTbodyTrD');
+						exTbodyTr.addClass(sortEntity[k]['id']);
 						exTbodyTr.find('input').attr("alt","row_"+(d+1));
 						//=======資料=======
 						var entity = sortEntity[k];//
@@ -743,7 +745,7 @@ other={
 					if($("#btn_send_auto").prop("checked")){
 						other.data.btn_send_auto = setTimeout(function (){
 							 $("#search_c #btn_send").trigger( "click" );
-						}, 60000);
+						}, 30000);
 					}else{
 						clearTimeout(other.data.btn_send_auto);
 					}					
@@ -794,7 +796,7 @@ other={
 				if($("#btn_send_auto").prop("checked")){
 					other.data.btn_send_auto = setTimeout(function (){
 						 $("#search_c #btn_send").trigger( "click" );
-					}, 60000);
+					}, 30000);
 				}else{
 					clearTimeout(other.data.btn_send_auto);
 				}
@@ -828,26 +830,28 @@ other={
 							//比對欄位(單據類型+儲位+倉別)
 							var wastowho = $(this).find(".wastowho").text();
 							var wastype = $(this).find(".wastype").text();
-							if(wastype=="入料類" && wastowho.indexOf(command_val)>=0 && wastowho.indexOf(command_alias)>=0){
+							if(wastype=="入料類" && wastowho.indexOf(command_val)>=0 && 
+									wastowho.indexOf(command_alias)>=0 &&
+									!$(this).find("input").prop("checked")){
 								console.log(wastowho);
 								if(command_sel == "Normal"){
 									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 									$(this).find(".wasfuser").text(accUser);
-									$(this).find(".wasfuser").removeClass("bg-warning");
-									$(this).find(".wasfuser").addClass("bg-success");
-									$(this).find(".waspngqty").removeClass("bg-warning");
-									$(this).find(".waspngqty").addClass("bg-success");
-									$(this).find("input").prop("checked",true);
+									//$(this).find(".wasfuser").removeClass("bg-warning");
+									//$(this).find(".wasfuser").addClass("bg-success");
+									//$(this).find(".waspngqty").removeClass("bg-warning");
+									//$(this).find(".waspngqty").addClass("bg-success");
+									//$(this).find("input").prop("checked",true);
 									other.methods.confirmSend(this);
 								}else if(command_sel == "Abnormal"){
 									if($("#command_qty input").val()!=""){
 										$(this).find(".waspngqty").text($("#command_qty").val());
 										$(this).find(".wasfuser").text(accUser);
-										$(this).find(".wasfuser").removeClass("bg-warning");
-										$(this).find(".wasfuser").addClass("bg-success");
-										$(this).find(".waspngqty").removeClass("bg-warning");
-										$(this).find(".waspngqty").addClass("bg-success");
-										$(this).find("input").prop("checked",true);
+										//$(this).find(".wasfuser").removeClass("bg-warning");
+										//$(this).find(".wasfuser").addClass("bg-success");
+										//$(this).find(".waspngqty").removeClass("bg-warning");
+										//$(this).find(".waspngqty").addClass("bg-success");
+										//$(this).find("input").prop("checked",true);
 										other.methods.confirmSend(this);
 									}
 								}
@@ -861,26 +865,28 @@ other={
 							var wasfromwho = $(this).find(".wasfromwho").text();
 							var waspnumber = $(this).find(".waspnumber").text();
 							var wastype = $(this).find(".wastype").text();
-							if(wastype=="領料類" && waspnumber==command_val && wasfromwho.indexOf(command_alias)>=0){
+							if(wastype=="領料類" && waspnumber==command_val && 
+									wasfromwho.indexOf(command_alias)>=0 &&
+									!$(this).find("input").prop("checked")){
 								console.log(wasfromwho);
 								if(command_sel == "Normal"){
 									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 									$(this).find(".wasfuser").text(accUser);
-									$(this).find(".wasfuser").removeClass("bg-warning");
-									$(this).find(".wasfuser").addClass("bg-success");
-									$(this).find(".waspngqty").removeClass("bg-warning");
-									$(this).find(".waspngqty").addClass("bg-success");
-									$(this).find("input").prop("checked",true);
+									//$(this).find(".wasfuser").removeClass("bg-warning");
+									//$(this).find(".wasfuser").addClass("bg-success");
+									//$(this).find(".waspngqty").removeClass("bg-warning");
+									//$(this).find(".waspngqty").addClass("bg-success");
+									//$(this).find("input").prop("checked",true);
 									other.methods.confirmSend(this);
 								}else if(command_sel == "Abnormal"){
 									if($("#command_qty input").val()!=""){
 										$(this).find(".waspngqty").text($("#command_qty input").val());
 										$(this).find(".wasfuser").text(accUser);
-										$(this).find(".wasfuser").removeClass("bg-warning");
-										$(this).find(".wasfuser").addClass("bg-success");
-										$(this).find(".waspngqty").removeClass("bg-warning");
-										$(this).find(".waspngqty").addClass("bg-success");
-										$(this).find("input").prop("checked",true);
+										//$(this).find(".wasfuser").removeClass("bg-warning");
+										//$(this).find(".wasfuser").addClass("bg-success");
+										//$(this).find(".waspngqty").removeClass("bg-warning");
+										//$(this).find(".waspngqty").addClass("bg-success");
+										//$(this).find("input").prop("checked",true);
 										other.methods.confirmSend(this);
 									}
 								}
@@ -930,7 +936,7 @@ other={
           	clearTimeout(other.data.btn_send_auto);
             other.data.btn_send_auto = setTimeout(function (){
 				 $("#search_c #btn_send").trigger( "click" );
-			}, 60000);
+			}, 30000);
 		},
 		datetimepickerDate(){
 			//日期時間格式
@@ -1065,10 +1071,31 @@ other={
 			}
 			return false;
 		},
-		//修改後回傳
-		otherModifyReturn(){
-			clearTimeout(other.data.btn_send_auto);
-			other.methods.searchDetailSend();
+		//細節查詢
+		searchDetailSend(){
+			var entityJson= other.data.entityFormatJson;//格式
+			var data={};
+			var req_data={};
+			var searchPageSet={};
+			//查詢(選定的單號)
+			wasclasssn = "";
+			Object.keys(other.data.marksLock).forEach(function(key){
+				wasclasssn+=key.split("_")[1]+"_";
+			});
+			
+			entityJson['wasclasssn']=wasclasssn;	
+			data['entityJson'] = JSON.stringify(entityJson);
+			console.log(data['entityJson']);
+			//換頁
+			searchPageSet['total'] = other.data.searchPageSet.total;//批次數量
+			searchPageSet['batch'] = 0;//第幾批次
+			data['searchPageSet'] = JSON.stringify(searchPageSet);
+			data['callBackFunction'] = "other_detail_search";
+			//包裝
+			req_data['data'] = data;
+			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.ARD";
+			req_data['type'] = "POST";
+			main.methods.ajaxSend(req_data,false);
 		},
 		//一般查詢
 		searchSend(batch){
@@ -1100,32 +1127,7 @@ other={
             other.methods.datetimepickerDate();
 			
 		},
-		//細節查詢
-		searchDetailSend(){
-			var entityJson= other.data.entityFormatJson;//格式
-			var data={};
-			var req_data={};
-			var searchPageSet={};
-			//查詢(選定的單號)
-			wasclasssn = "";
-			Object.keys(other.data.marksLock).forEach(function(key){
-				wasclasssn+=key.split("_")[1]+"_";
-			});
-			
-			entityJson['wasclasssn']=wasclasssn;	
-			data['entityJson'] = JSON.stringify(entityJson);
-			console.log(data['entityJson']);
-			//換頁
-			searchPageSet['total'] = other.data.searchPageSet.total;//批次數量
-			searchPageSet['batch'] = 0;//第幾批次
-			data['searchPageSet'] = JSON.stringify(searchPageSet);
-			data['callBackFunction'] = "other_detail_search";
-			//包裝
-			req_data['data'] = data;
-			req_data['url'] = $('#nav_functional_unit').attr('title')+ ".basil.ARD";
-			req_data['type'] = "POST";
-			main.methods.ajaxSend(req_data,false);
-		},
+		
 		//==========================資料載入==========================
 		otherReLoad(){
 			//還原
@@ -1135,7 +1137,6 @@ other={
 			$('#search_cr .exTbodyTh input').prop( "checked", false );
 			$('#search_cr td').removeClass("bg-warning");
 			$('#search_cr td').removeClass("bg-danger");
-			
 			
 			//Step5.帶入資料
 			var marks = other.data.marks;
@@ -1191,14 +1192,17 @@ other={
 					if(entity['wasstatus']==2){
 						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-danger');
 					}
-				
 				}
-			}
-			
+			}		
 		},
 		//==========================回傳接收==========================
+		//修改後回傳
+		otherModifyReturn(){
+			clearTimeout(other.data.btn_send_auto);
+			other.methods.searchDetailSend();
+		},
+		//查詢後回傳
 		otherReturn(){
-			//查詢回傳
 			console.log("searchReturn");
 			//Step4.分頁歸位
 			if(main.resq_data['entityJson'].length>0){
@@ -1218,13 +1222,11 @@ other={
 				}
 			}
 		},
-		
-		//Step6.更新子目錄資料
+		//細節查詢後回傳
 		otherDetailReturn(){
-			//查詢回傳
 			console.log("otherDetailReturn");
 			if(main.resq_data['entityDetailJson']!="" && main.resq_data['entityDetailJson'].length>0){
-				other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				other.data.searchPageSet.entityDetailOpenJsons = JSON.parse(main.resq_data['entityDetailJson']);
 				//關閉提示
 				if($("#nav_message_color").hasClass("alert-success")){
 					$("#nav_message_close").trigger("click");					
@@ -1232,9 +1234,24 @@ other={
 				var searchPageSet =JSON.parse(main.resq_data['searchPageSet']);
 				//更新子項目
 				if($(".valTbodyTrD").length>0){
-					var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+					var entityDetailJsons = other.data.searchPageSet.entityDetailOpenJsons;
 					console.log(entityDetailJsons);
 					//細節
+					Object.keys(entityDetailJsons).forEach(function(k){
+						var d = entityDetailJsons[k];
+						var target = $('#search_dcr_open .'+d['id']);
+						if(target!=null && d['wasfuser']!="" && d['waspngqty']!=0){
+							target.find('.wasfuser').text(d['wasfuser']);
+							target.find('.waspngqty').text(d['waspngqty']);
+							
+							target.find(".wasfuser").removeClass("bg-warning");
+							target.find(".wasfuser").addClass("bg-success");
+							target.find(".waspngqty").removeClass("bg-warning");
+							target.find(".waspngqty").addClass("bg-success");
+							target.find("input").prop("checked",true);
+						}
+					});
+					
 					$(".valTbodyTrD input").each(function(){
 						var id = $(this).attr('title').split("_")[0];
 						var gid =  $(this).attr('title').split("_")[1];
