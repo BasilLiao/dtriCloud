@@ -63,4 +63,13 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslnb is null or c.bslnb=:bslnb) ")
 	ArrayList<BasicShippingList> findAllByCheckUser(String bslclass, String bslsn, String bslnb);
 
+	//缺料單
+	@Query("SELECT c FROM BasicShippingList c WHERE "//
+			+ "(:bslclass is null or c.bslclass=:bslclass) and "//
+			+ "(:bslsn is null or c.bslsn=:bslsn) and "//
+			+ "(c.bslfuser!='') and "//
+			+ "(c.bslpngqty < c.bslpnqty) and "//
+			+ "(:bslnb is null or c.bslnb=:bslnb) ")
+	ArrayList<BasicShippingList> findAllByCheckShortageList(String bslclass, String bslsn);
+
 }
