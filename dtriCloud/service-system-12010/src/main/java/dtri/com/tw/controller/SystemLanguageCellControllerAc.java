@@ -47,6 +47,7 @@ public class SystemLanguageCellControllerAc extends AbstractControllerAc {
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			loggerWarn(e.toString());
+			loggerWarn(e.getMessage());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");

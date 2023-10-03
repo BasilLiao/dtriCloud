@@ -1,7 +1,5 @@
 package dtri.com.tw.service;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
+import jakarta.persistence.metamodel.EntityType;
 
 @Service
 public class SystemLanguageCellServiceAc {
@@ -445,14 +445,21 @@ public class SystemLanguageCellServiceAc {
 	@Transactional
 	private void languageCellCheckAll() throws ClassNotFoundException {
 		// Prepare.
+		// 只能取得SRC內
 		String packageName = "dtri.com.tw.pgsql.entity";
 		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
+		System.out.println(root);
+		// 取得實際物件
+		EntityManager entityManager = em;
+		Set<EntityType<?>> entitySet = entityManager.getMetamodel().getEntities();
+
 		// Filter .class files.
-		File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".class");
-			}
-		});
+//		File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
+//			public boolean accept(File dir, String name) {
+//				System.out.println(name);
+//				return name.endsWith(".class");
+//			}
+//		});
 		// 基礎屬性
 		JsonArray sysstatusArr = new JsonArray();
 		sysstatusArr.add("normal(正常)_0");
@@ -461,7 +468,7 @@ public class SystemLanguageCellServiceAc {
 		sysstatusArr.add("onlyAdmin(特權)_3");
 		// Find classes implementing ICommand.
 		ArrayList<SystemLanguageCell> languageCells = new ArrayList<>();
-		for (File file : files) {
+		for (EntityType<?> file : entitySet) {
 			String className = file.getName().replaceAll(".class", "");
 			// String className = file.getName();
 			Class<?> cls = Class.forName(packageName + "." + className);
