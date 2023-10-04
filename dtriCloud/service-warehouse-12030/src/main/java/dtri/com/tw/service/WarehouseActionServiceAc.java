@@ -125,8 +125,8 @@ public class WarehouseActionServiceAc {
 
 			// 進料
 			incomingLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 				WarehouseAction e = new WarehouseAction();
 				e.setId(Key);
 				e.setGid(headerKey);
@@ -179,8 +179,8 @@ public class WarehouseActionServiceAc {
 
 			// 領料
 			shippingLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
 				WarehouseAction e = new WarehouseAction();
 				e.setId(Key);
@@ -311,8 +311,8 @@ public class WarehouseActionServiceAc {
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
 				WarehouseAction e = new WarehouseAction();
 				e.setId(Key);
@@ -365,8 +365,8 @@ public class WarehouseActionServiceAc {
 
 			// 領料
 			shippingLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
 				WarehouseAction e = new WarehouseAction();
 				e.setId(Key);
@@ -501,8 +501,8 @@ public class WarehouseActionServiceAc {
 					// Step4-2.資料區分(一般/細節)
 					// 進料
 					incomingLists.forEach(in -> {
-						String headerKey = in.getBilclass() + "-" + in.getBilsn();
-						String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+						String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
+						String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
 						WarehouseAction e = new WarehouseAction();
 						e.setId(Key);
@@ -546,8 +546,8 @@ public class WarehouseActionServiceAc {
 
 					// 領料
 					shippingLists.forEach(sh -> {
-						String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-						String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+						String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
+						String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
 						WarehouseAction e = new WarehouseAction();
 						e.setId(Key);

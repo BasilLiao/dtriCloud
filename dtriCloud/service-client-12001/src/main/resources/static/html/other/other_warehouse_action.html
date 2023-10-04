@@ -40,8 +40,8 @@
 	min-height: 600px;
 	border-collapse: separate;
 	border-spacing: 0px;
-	font-size: 25px;
-	line-height: 30px;
+	font-size: 28px;
+	line-height: 35px;
 }
 /*Table 表格內 背景色*/
 #search_c .table-white {
@@ -405,7 +405,7 @@ other={
 					exTbodytd.addClass('text-start');
 					mergeCell = mergeCell+1;
 				}else{
-					if(mergeCell==5){
+					if(mergeCell==4){
 						mergeCell = 1;
 						//添加
 						$('#search_dcr_open .exTheadth').before(exTheadth);
@@ -853,7 +853,7 @@ other={
 									other.methods.confirmSend(this);
 								}else if(command_sel == "Abnormal"){
 									if($("#command_qty input").val()!=""){
-										$(this).find(".waspngqty").text($("#command_qty").val());
+										$(this).find(".waspngqty").text($("#command_qty input").val());
 										$(this).find(".wasfuser").text(accUser);
 										//$(this).find(".wasfuser").removeClass("bg-warning");
 										//$(this).find(".wasfuser").addClass("bg-success");
