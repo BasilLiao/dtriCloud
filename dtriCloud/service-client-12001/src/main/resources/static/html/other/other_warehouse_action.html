@@ -870,12 +870,16 @@ other={
 						console.log("倉別:"+command_alias +" 物料類型:"+command_val);
 						//比對欄位(單據類型+物料+倉別)
 						$('#search_dcr .valTbodyTrD').each(function() {
-							var wasfromwho = $(this).find(".wasfromwho").text();
+							var wasfromwho = $(this).find(".wastowho").text();
 							var waspnumber = $(this).find(".waspnumber").text();
 							var wastype = $(this).find(".wastype").text();
-							if(wastype=="領料類" && waspnumber==command_val && 
-									wasfromwho.indexOf(command_alias)>=0 &&
-									!$(this).find("input").prop("checked")){
+							//如果是領料
+							if(wastype=="領料類"){
+								wasfromwho = $(this).find(".wasfromwho").text();
+							}
+							if(waspnumber==command_val && 
+								wasfromwho.indexOf(command_alias)>=0 &&
+								!$(this).find("input").prop("checked")){
 								console.log(wasfromwho);
 								if(command_sel == "Normal"){
 									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());

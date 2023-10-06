@@ -298,16 +298,29 @@ public class WarehouseActionServiceAc {
 			WarehouseAction searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseAction.class);
 			String wasclass = null;
 			String wassn = null;
+			String wastype = searchData.getWastype();
 			if (searchData.getWasclasssn() != null && searchData.getWasclasssn().split("-").length == 2) {
 				wasclass = searchData.getWasclasssn().split("-")[0];
 				wassn = searchData.getWasclasssn().split("-")[1];
 			} else {
 				wasclass = searchData.getWasclasssn();
 			}
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+			ArrayList<BasicIncomingList> incomingLists = new ArrayList<>();
+			ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
+
+			if (wastype != null && wastype.equals("領料類")) {
+				shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+			} else if (wastype != null && wastype.equals("入料類")) {
+				incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+			} else {
+				incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+
+				shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+			}
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
