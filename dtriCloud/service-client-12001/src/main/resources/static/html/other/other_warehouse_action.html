@@ -78,6 +78,11 @@
 	width: 24px;
 	height: 24px;
 }
+/*checkbox_24_60*/
+#search_c .checkbox_24_60 {
+	width: 60px;
+	height: 24px;
+}
 
 #search_c .checkbox_20 {
 	width: 20px;
@@ -227,7 +232,7 @@
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
+								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox" class="m-0 form-check-input checkbox_24_60 border border-dark"> <br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Query<br>(AR)
@@ -290,7 +295,7 @@ other={
 			total:100,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:50,//每頁數量(1-20)
+			pageSize:100,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityDetailOpenJsons:[],//展開-細節資料
@@ -636,12 +641,8 @@ other={
 				$(".valTbodyTrD").remove();
 				//準備細節自動查詢用
 				other.data.marksLock=marks;
-				//觸發?
-				$("#command_send input").focus();
-				$('#search_dcr i').trigger('click');
-				$('#search_cr i').trigger('click');
 				
-				//有標記?
+				//Step1.清單->有標記+有資料?
 				if(marks!=null && other.data.searchPageSet.entityDetailJsons!=null){
 					var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
 					var entityIKey = other.data.entityIKey;
@@ -740,10 +741,12 @@ other={
 					}
 					$('.exDetailTbodyTr').addClass('d-none');
 				}
-				//清空(選取)
+				
+				//Step2.清空(選取)
 				other.data.marks ={};
 				$("#search_cr_open input").prop("checked",false);
-				//自動查詢機制(細節 or 清單)?
+				
+				//Step3.自動查詢機制(細節 or 清單)?
 				clearTimeout(other.data.btn_send_auto);
 				if($("#search_dcr_open .valTbodyTrD").length>0){
 					other.data.btn_send_auto = setTimeout(function (){
@@ -754,10 +757,15 @@ other={
 						other.data.btn_send_auto = setTimeout(function (){
 							 $("#search_c #btn_send").trigger( "click" );
 						}, 30000);
+						 $("#search_c #btn_send").trigger( "click" );
 					}else{
 						clearTimeout(other.data.btn_send_auto);
 					}					
 				}
+				//Step4.觸發?
+				$("#command_send input").focus();
+				$('#search_dcr i').trigger('click');
+				$('#search_cr i').trigger('click');
 			});
 			
 			
@@ -915,6 +923,15 @@ other={
 				}
 				$("#command_send input").focus();
 			});
+			
+			//監聽-切換對焦
+			$(document).off("keydown", "#command_qty input");
+			$(document).on("keydown", "#command_qty input", function (e) {
+				if(e.key =='Enter'){
+					$("#command_send input").focus();
+				}
+			});
+			
 			//監聽-(command促發 選單)
 			$(document).off("change", "#command_sel");
 			$(document).on("change", "#command_sel", function (e) {
@@ -925,10 +942,12 @@ other={
 				$('#command_qty input').attr('disabled','disabled');
 				$("#command_sub").addClass("d-none");
 				$('#command_qty').removeClass("d-none");
+				$("#command_send input").focus();
 				if($(e.target).val()=='Abnormal'){
 					//異常模式
 					$('#command_qty input').removeAttr('disabled');
 					$("#command_sub").addClass("d-none");
+					$("#command_qty input").focus();
 				}else if($(e.target).val()=='Sub-storage'){
 					//登記子儲位模式
 					$("#command_sub").removeClass("d-none");
@@ -936,9 +955,7 @@ other={
 				}else{
 					//一般模式
 				}			
-				$("#command_send input").focus();
 			});
-			
 			
 			//時間格式
             other.methods.datetimepickerDate();
@@ -1097,7 +1114,7 @@ other={
 			
 			entityJson['wasclasssn']=wasclasssn;	
 			data['entityJson'] = JSON.stringify(entityJson);
-			console.log(data['entityJson']);
+			//console.log(data['entityJson']);
 			//換頁
 			searchPageSet['total'] = other.data.searchPageSet.total;//批次數量
 			searchPageSet['batch'] = 0;//第幾批次
@@ -1293,6 +1310,8 @@ other={
 			
 			$(document).off("change", "#command_sel");
 			$(document).off("keydown", "#command_send input");
+			$(document).off("keydown", "#command_qty input");
+			
 			$(document).off("click", "#search_c #btn_detail");
 			$(document).off("click", "#search_c #exthDetailAll");
 			$(document).off("click", "#search_c #exthAll");

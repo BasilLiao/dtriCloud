@@ -39,8 +39,10 @@ import jakarta.persistence.Table;
  *      bil_p_number:物料號 Ex:50-117-238132<br>
  *      bil_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bil_p_specification:物料規格<br>
- *      bil_pn_qty:數量<br>
+ *      bil_pn_qty:須入數量<br>
  *      bil_pn_g_qty:已入數量<br>
+ *      bil_pn_a_qty:提前領取量<br>
+ *      bil_pn_o_qty:超入量<br>  
  *      bil_to_command:單據指令對象 json [] A511-123456....<br>
  *      bil_from_command:單據指令來源 json [] A511-123456....<br>
  *      bil_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
@@ -88,6 +90,7 @@ public class BasicIncomingList {
 		this.bilpnqty = 0;
 		this.bilpngqty = 0;
 		this.bilpnaqty = 0;
+		this.setBilpnoqty(0);
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";
@@ -160,6 +163,8 @@ public class BasicIncomingList {
 	private Integer bilpnaqty;
 	@Column(name = "bil_pn_g_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bilpngqty;
+	@Column(name = "bil_pn_o_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bilpnoqty;
 
 	@Column(name = "bil_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String biltocommand;
@@ -490,6 +495,14 @@ public class BasicIncomingList {
 
 	public void setBilmuser(String bilmuser) {
 		this.bilmuser = bilmuser;
+	}
+
+	public Integer getBilpnoqty() {
+		return bilpnoqty;
+	}
+
+	public void setBilpnoqty(Integer bilpnoqty) {
+		this.bilpnoqty = bilpnoqty;
 	}
 
 }

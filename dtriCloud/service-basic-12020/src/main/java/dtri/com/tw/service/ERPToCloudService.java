@@ -60,9 +60,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTh030().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTh007());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTh007());// 已入庫量
+			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -82,9 +82,10 @@ public class ERPToCloudService {
 
 		// 而外匹配 [單別]
 		String bilfromcommand = "_採購單";
-		String wtfcode = m.getTh001_th002().split("-")[0];
-		if (wTFs.containsKey(wtfcode)) {
-			bilfromcommand = "_" + wTFs.get(wtfcode).getWtfname();
+		if (wTFs.containsKey(o.getBilclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBilclass()).getWtfname();
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
 		}
 		o.setBilfromcommand("[" + m.getTh011_th012_th013() + bilfromcommand + "]");// 單據來源 [_採購單]
 		o.setBiltocommand("[_]");
@@ -120,9 +121,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTb004());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTb004());// 已入庫量
+			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -147,8 +148,10 @@ public class ERPToCloudService {
 
 		// 而外匹配 [單別]
 		String bilfromcommand = "_製令單";
-		if (wTFs.containsKey(m.getTa001_ta002().split("-")[0])) {
-			bilfromcommand = "_" + wTFs.get(m.getTa001_ta002().split("-")[0]).getWtfname();
+		if (wTFs.containsKey(o.getBilclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBilclass()).getWtfname();
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
 		}
 		o.setBilfromcommand("[" + m.getTa001_ta002() + bilfromcommand + "]");// 單據來源 [_製令單]
 		o.setBiltocommand("[_]");
@@ -184,9 +187,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-			o.setBslpngqty(m.getTb004());// 已取庫量
-			o.setBslcuser("System(ERP_Auto)");
-			o.setBslfuser("System(ERP_Auto)");
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTb004());// 已領庫量
+			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -202,6 +205,11 @@ public class ERPToCloudService {
 		o.setBslpnqty(m.getTb004());// 數量
 		o.setSysstatus(sysstatus);// 0=尚未結束,1=結案
 		o.setSysnote(m.getTe014());// 備註
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
+
 		// 預計領料日
 		if (m.getTa009() != null) {
 			o.setBsledate(Fm_T.toYMDate(m.getTa009()));
@@ -243,9 +251,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTg011());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTg011());// 已入庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTg001_tg002_tg003().split("-")[0]);// 入庫單[別]
@@ -263,8 +271,10 @@ public class ERPToCloudService {
 		o.setSysnote(m.getTg020());// 備註
 		// 而外匹配 [單別]
 		String bilfromcommand = "_製令單";
-		if (wTFs.containsKey(m.getTg014_tg015().split("-")[0])) {
-			bilfromcommand = "_" + wTFs.get(m.getTg014_tg015().split("-")[0]).getWtfname();
+		if (wTFs.containsKey(o.getBilclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBilclass()).getWtfname();
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
 		}
 		o.setBilfromcommand("[" + m.getTg014_tg015() + bilfromcommand + "]");// 單據來源 [_製令單]
 		o.setBiltocommand("[_]");
@@ -301,9 +311,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi037().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTi007());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTi007());// 已入庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTi001_ti002_ti003().split("-")[0]);// 入庫單[別]
@@ -322,8 +332,10 @@ public class ERPToCloudService {
 
 		// 而外匹配 [單別]
 		String bilfromcommand = "_製令單";
-		if (wTFs.containsKey(m.getTi013_ti014().split("-")[0])) {
-			bilfromcommand = "_" + wTFs.get(m.getTi013_ti014().split("-")[0]).getWtfname();
+		if (wTFs.containsKey(o.getBilclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBilclass()).getWtfname();
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
 		}
 		o.setBilfromcommand("[" + m.getTi013_ti014() + bilfromcommand + "]");// 單據來源 [_製令單]
 		o.setBiltocommand("[_]");
@@ -359,9 +371,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTg009());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTg009());// 已入庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTg001_tg002_tg003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
@@ -377,7 +389,10 @@ public class ERPToCloudService {
 		o.setBiledate(new Date());// 預計入料日
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());
-
+		if (wTFs.containsKey(o.getBilclass())) {
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
+		}
 		// 而外匹配 [單別]
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");// 單據對象 [_]
@@ -412,9 +427,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			o.setBslpngqty(m.getTg009());// 已領庫量
-			o.setBslcuser("System(ERP_Auto)");
-			o.setBslfuser("System(ERP_Auto)");
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTg009());// 已領庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTg001_tg002_tg003().split("-")[0]);// 借出庫單[別]
@@ -430,7 +445,10 @@ public class ERPToCloudService {
 		o.setBsledate(new Date());// 預計日
 		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
-
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
 		// 而外匹配 [單別]
 		o.setBslfromcommand("[_]");//
 		o.setBsltocommand("[_]");//
@@ -466,9 +484,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("3")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTi009());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTi009());// 已入庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTi001_ti002_ti003().split("-")[0]);// 借入庫單[別]
@@ -487,8 +505,10 @@ public class ERPToCloudService {
 
 		// 而外匹配 [單別]
 		String bilfromcommand = "_借出單";
-		if (wTFs.containsKey(m.getTi014_ti015_ti016().split("-")[0])) {
-			bilfromcommand = "_" + wTFs.get(m.getTi014_ti015_ti016().split("-")[0]).getWtfname();
+		if (wTFs.containsKey(o.getBilclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBilclass()).getWtfname();
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
 		}
 		o.setBilfromcommand("[" + m.getTi014_ti015_ti016() + bilfromcommand + "]");// 單據來源 [_借出單]
 		o.setBiltocommand("[_]");
@@ -524,9 +544,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("Y")) {
 			sysstatus = 1;
-			o.setBslpngqty(m.getTi009());// 已領庫量
-			o.setBslcuser("System(ERP_Auto)");
-			o.setBslfuser("System(ERP_Auto)");
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTi009());// 已領庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTi001_ti002_ti003().split("-")[0].replaceAll("\\s", ""));// 借出庫單[別]
@@ -545,8 +565,10 @@ public class ERPToCloudService {
 
 		// 而外匹配 [單別]
 		String bilfromcommand = "_借入單";
-		if (wTFs.containsKey(m.getTi014_ti015_ti016().split("-")[0])) {
-			bilfromcommand = "_" + wTFs.get(m.getTi014_ti015_ti016().split("-")[0]).getWtfname();
+		if (wTFs.containsKey(o.getBslclass())) {
+			bilfromcommand = "_" + wTFs.get(o.getBslclass()).getWtfname();
+			// 單據急迫性
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
 		}
 		o.setBslfromcommand("[" + m.getTi014_ti015_ti016() + bilfromcommand + "]");// 單據來源 [_借入單]
 		o.setBsltocommand("[_]");//
@@ -582,9 +604,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-			o.setBilpngqty(m.getTb007());// 已入庫量
-			o.setBilcuser("System(ERP_Auto)");
-			o.setBilfuser("System(ERP_Auto)");
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTb007());// 已入庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBilclass(m.getTb001_tb002_tb003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
@@ -600,7 +622,10 @@ public class ERPToCloudService {
 		o.setBiledate(new Date());// 預計入料日
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());
-
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBilclass())) {
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
+		}
 		// 而外匹配 [單別]
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");
@@ -640,9 +665,9 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-			o.setBslpngqty(m.getTb007());// 已領庫量
-			o.setBslcuser("System(ERP_Auto)");
-			o.setBslfuser("System(ERP_Auto)");
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTb007());// 已領庫量
+			}
 		}
 		o.setChecksum(checkSum);
 		o.setBslclass(m.getTb001_tb002_tb003().split("-")[0].replaceAll("\\s", ""));// 借出庫單[別]
@@ -657,7 +682,10 @@ public class ERPToCloudService {
 		o.setBslpnqty(m.getTb007());// 數量
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());
-
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
 		// 而外匹配 [單別]
 		o.setBslfromcommand("[_]");// 單據來源 [_]
 		o.setBsltocommand("[_]");//

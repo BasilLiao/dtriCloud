@@ -3,21 +3,14 @@ package dtri.com.tw.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.gson.JsonObject;
 
-import dtri.com.tw.login.CustomerUserDetails;
-import dtri.com.tw.login.JwtUtilities;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.SystemGroup;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
@@ -31,8 +24,8 @@ import dtri.com.tw.shared.PackageService;
 
 @Service
 public class IndexService {
-	@Autowired
-	private JwtUtilities jwtUtilities;
+//	@Autowired
+//	private JwtUtilities jwtUtilities;
 
 	@Autowired
 	private PackageService packageService;
@@ -75,34 +68,34 @@ public class IndexService {
 	}
 
 	/** Token 令牌取得 */
-	public String getToken() throws Exception {
-		// Step1.取得使用者
-		List<String> rolesGroup = new ArrayList<String>();
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		CustomerUserDetails userDetails = new CustomerUserDetails();
-		if (!(authentication instanceof AnonymousAuthenticationToken)) {
-			userDetails = (CustomerUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		}
-		// Step2.權限清單
-		userDetails.getSystemGroup().forEach(systemGroup -> {
-			String role = systemGroup.getSystemPermission().getSpcontrol().replaceAll("\\.", "_") //
-					+ "_"//
-					+ systemGroup.getSystemPermission().getSppermission();
-			rolesGroup.add(role);
-		});
-		// Step3.寫入(令牌)token
-		/*
-		 * authentication = authenticationManager .authenticate(new
-		 * UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-		 * userDetails.getPassword()));
-		 * SecurityContextHolder.getContext().setAuthentication(authentication);
-		 */
-		// Step4.建立(令牌)token 憑證
-		String token = jwtUtilities.generateToken(userDetails.getUsername(), rolesGroup);
-		JsonObject innerObject = new JsonObject();
-		innerObject.addProperty("token", token);
-		return token;
-	}
+//	public String getToken() throws Exception {
+//		// Step1.取得使用者
+//		List<String> rolesGroup = new ArrayList<String>();
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		CustomerUserDetails userDetails = new CustomerUserDetails();
+//		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+//			userDetails = (CustomerUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		}
+//		// Step2.權限清單
+//		userDetails.getSystemGroup().forEach(systemGroup -> {
+//			String role = systemGroup.getSystemPermission().getSpcontrol().replaceAll("\\.", "_") //
+//					+ "_"//
+//					+ systemGroup.getSystemPermission().getSppermission();
+//			rolesGroup.add(role);
+//		});
+//		// Step3.寫入(令牌)token
+//		/*
+//		 * authentication = authenticationManager .authenticate(new
+//		 * UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+//		 * userDetails.getPassword()));
+//		 * SecurityContextHolder.getContext().setAuthentication(authentication);
+//		 */
+//		// Step4.建立(令牌)token 憑證
+//		String token = jwtUtilities.generateToken(userDetails.getUsername(), rolesGroup);
+//		JsonObject innerObject = new JsonObject();
+//		innerObject.addProperty("token", token);
+//		return token;
+//	}
 
 	/** 測試 包裝/解包範例 */
 	public PackageBean getTest(PackageBean packageBean) throws Exception {

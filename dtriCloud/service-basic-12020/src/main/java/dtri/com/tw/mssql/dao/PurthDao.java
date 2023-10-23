@@ -15,7 +15,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	(PURTH.TH011+'-'+PURTH.TH012+'-'+PURTH.TH013) AS TH011_TH012_TH013,"// --採購單
 			+ "	(PURTH.TH001+'-'+PURTH.TH002) AS TH001_TH002,"// --進貨單
 			+ "	PURTH.TH003, "// --進貨單序號
-			+ "	PURTH.TH007, "// --數量
+			+ "	CEILING(PURTH.TH007) AS TH007, "// --數量
 			+ "	PURTH.TH009, "// --庫別
 			+ "	PURTH.TH014, "// --驗收時間
 			+ "	PURTH.TH028, "// --檢驗狀態0.免檢,1.待驗,2.合格,3.不良,4.特採

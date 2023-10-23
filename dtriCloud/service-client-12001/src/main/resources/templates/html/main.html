@@ -137,7 +137,7 @@ body {
 					$("#loading").addClass("d-none");
 				},
 				error(event) {
-					console.log("ajax to fail:" + JSON.stringify(event));
+					//console.log("ajax to fail:" + JSON.stringify(event));
 					var mainAlertM=nav_alert.methods;
 					if (event.status == 200) {//沒有session 拒絕
 						mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");

@@ -14,7 +14,7 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "	ROW_NUMBER() OVER(order by INVTI.TI001) AS INVTH_ID,"//
 			+ "	(INVTI.TI001+'-'+TRIM(INVTI.TI002)+'-'+INVTI.TI003) AS TI001_TI002_TI003,"// ---借出歸還單
 			+ "	(INVTI.TI014+'-'+TRIM(INVTI.TI015)+'-'+INVTI.TI016) AS TI014_TI015_TI016,"// --來源
-			+ "	INVTI.TI009, "// --數量
+			+ "	CEILING(INVTI.TI009) AS TI009, "// --數量
 			+ "	INVTI.TI022,"// --確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVTI.TI007,"// --轉出庫別
 			+ "	INVTI.TI008,"// --轉入庫別

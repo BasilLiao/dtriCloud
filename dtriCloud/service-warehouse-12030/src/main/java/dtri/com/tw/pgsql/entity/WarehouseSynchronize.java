@@ -29,7 +29,8 @@ import java.util.Date;
  *      wss_p_number : 物料號<br>
  *      wss_p_name : 品名<br>
  *      wss_pn_qty : 數量<br>
- *      wss_pn_g_qty : 已取數量<br>
+ *      wss_pn_g_qty : 已(領入)數量<br>
+ *      wss_pn_o_qty : 超(領入)數量<br>
  */
 
 public class WarehouseSynchronize {
@@ -50,6 +51,7 @@ public class WarehouseSynchronize {
 		// 倉儲區域清單-清單
 		this.wsserptqty = 0;// : (帳務)此區域物料數量<br>
 		this.wsstqty = 0;// : (實際)此區域物料數量<br>
+		this.wsspnoqty = 0;// 超領量
 	}
 
 	// 共用型
@@ -80,6 +82,7 @@ public class WarehouseSynchronize {
 	private String wsspnumber;// : 物料號<br>
 	private Integer wsspnqty;// : 需(領/取)數量<br>
 	private Integer wsspngqty;// : 已(領/取)數量<br>
+	private Integer wsspnoqty;// : 超(領/取)數量<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -255,5 +258,13 @@ public class WarehouseSynchronize {
 
 	public void setWsspngqty(Integer wsspngqty) {
 		this.wsspngqty = wsspngqty;
+	}
+
+	public Integer getWsspnoqty() {
+		return wsspnoqty;
+	}
+
+	public void setWsspnoqty(Integer wsspnoqty) {
+		this.wsspnoqty = wsspnoqty;
 	}
 }

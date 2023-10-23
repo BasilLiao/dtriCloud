@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-	@Autowired
-	JwtAuthenticationFilter jwtAuthenticationFilter;
+//	@Autowired
+//	JwtAuthenticationFilter jwtAuthenticationFilter;
 	@Autowired
 	CutomerUserDetailsService customerUserDetailsService;
 
@@ -249,7 +249,7 @@ public class WebSecurityConfig {
 				// 登出-移除Cookies
 				.deleteCookies();
 		// JWT 先攔截
-		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		//http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		// 關閉CSRF跨域
 		http.csrf().disable();
 		return http.build();

@@ -39,8 +39,10 @@ import jakarta.persistence.Table;
  *      bsl_p_number:物料號 Ex:50-117-238132<br>
  *      bsl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bsl_p_specification:物料規格<br>
- *      bsl_pn_qty:數量<br>
+ *      bsl_pn_qty:領數量<br>
  *      bsl_pn_g_qty:已領數量<br>
+ *      bsl_pn_o_qty:超領量<br>
+ *      bsl_pn_a_qty:提前領取量<br>
  *      bsl_to_command:單據指令對象 json [] A511-123456....<br>
  *      bsl_from_command:單據指令來源 json [] A511-123456....<br>
  *      bsl_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
@@ -88,6 +90,7 @@ public class BasicShippingList {
 		this.bslpnqty = 0;
 		this.bslpngqty = 0;
 		this.bslpnaqty = 0;
+		this.setBslpnoqty(0);
 		this.bsltocommand = "[]";
 		this.bsltowho = "[]";
 		this.bslfromcommand = "[]";
@@ -160,6 +163,9 @@ public class BasicShippingList {
 	private Integer bslpnaqty;
 	@Column(name = "bsl_pn_g_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpngqty;
+	@Column(name = "bsl_pn_o_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bslpnoqty;
+	
 
 	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltocommand;
@@ -489,6 +495,14 @@ public class BasicShippingList {
 
 	public void setBslmuser(String bslmuser) {
 		this.bslmuser = bslmuser;
+	}
+
+	public Integer getBslpnoqty() {
+		return bslpnoqty;
+	}
+
+	public void setBslpnoqty(Integer bslpnoqty) {
+		this.bslpnoqty = bslpnoqty;
 	}
 
 }

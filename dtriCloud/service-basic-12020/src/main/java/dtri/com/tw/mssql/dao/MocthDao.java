@@ -14,7 +14,7 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "	ROW_NUMBER() OVER(order by MOCTI.TI001) AS MOCTH_ID,"//
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003) AS TI001_TI002_TI003,"// --委外進貨單
 			+ "	(MOCTI.TI013+'-'+TRIM(MOCTI.TI014)) AS TI013_TI014,"// --製令單
-			+ "	MOCTI.TI007,"// --進貨數量
+			+ "	CEILING(MOCTI.TI007) AS TI007,"// --進貨數量
 			+ "	MOCTI.TI009,"// --進貨庫別
 			+ "	MOCTI.TI035,"// --1.待驗,Y(2).檢驗合格,N(3).檢驗不合格,0.免檢
 			+ " MOCTI.TI037,"// --確認碼 Y/N/V

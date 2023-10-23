@@ -57,7 +57,7 @@ public class IndexController extends AbstractController {
 		try {
 			PackageBean packageBean = new PackageBean();
 			// Step0. 取得令牌=>
-			indexService.getToken();
+			//indexService.getToken();
 			// Step1.解包=>轉換 PackageBean=>檢查=>Pass
 
 			// Step2.執行=>服務項目

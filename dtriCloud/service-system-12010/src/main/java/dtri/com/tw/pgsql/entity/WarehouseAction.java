@@ -2,6 +2,10 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * @author Basil
  * @see ---共用型---<br>
@@ -32,7 +36,7 @@ import java.util.Date;
  *      was_status : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      was_e_date : 預計領料日 <br>
  */
-
+@Entity
 public class WarehouseAction {
 	public WarehouseAction() {
 		// 共用型
@@ -56,7 +60,7 @@ public class WarehouseAction {
 	private String sysmuser;
 
 	private String sysnote;
-
+	@Id
 	private String id;// 單別+單號+序號
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單

@@ -40,7 +40,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass% ) and "//
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
-			+ "(c.bslpnqty !=c.bslpngqty) and "// 領的數量不同於需求量
+			+ "(c.bslpnqty !=c.bslpngqty or c.bslpnoqty !=0) and "// 領的數量不同於需求量
 			+ "(c.bslfuser != '') ") // 已完成
 	ArrayList<BasicShippingList> findAllBySearchSynchronize(String bslclass, String bslsn, String bsltype, Pageable pageable);
 
@@ -63,13 +63,13 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslnb is null or c.bslnb=:bslnb) ")
 	ArrayList<BasicShippingList> findAllByCheckUser(String bslclass, String bslsn, String bslnb);
 
-	//缺料單
+	// 缺料單
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass=:bslclass) and "//
 			+ "(:bslsn is null or c.bslsn=:bslsn) and "//
+			+ "(:bslnb is null or c.bslnb=:bslnb) and "//
 			+ "(c.bslfuser!='') and "//
-			+ "(c.bslpngqty < c.bslpnqty) and "//
-			+ "(:bslnb is null or c.bslnb=:bslnb) ")
-	ArrayList<BasicShippingList> findAllByCheckShortageList(String bslclass, String bslsn);
+			+ "(c.bslpngqty < c.bslpnqty)") //
+	ArrayList<BasicShippingList> findAllByCheckShortageList(String bslclass, String bslsn, String bslnb, Pageable pageable);
 
 }

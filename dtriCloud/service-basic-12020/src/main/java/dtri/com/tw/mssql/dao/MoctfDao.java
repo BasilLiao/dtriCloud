@@ -15,7 +15,7 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "	(MOCTG.TG001+ '-' + TRIM(MOCTG.TG002) +'-'+ MOCTG.TG003) AS TG001_TG002_TG003,"// --入庫單
 			+ "	MOCTG.TG014+'-'+MOCTG.TG015 AS TG014_TG015,"// --製令單
 			+ "	MOCTG.TG010,"// -- 入庫別
-			+ "	MOCTG.TG011,"// --入庫數量
+			+ "	CEILING(MOCTG.TG011) AS TG011,"// --入庫數量
 			+ "	MOCTG.TG016,"// --入庫代驗(1.待驗,Y.檢驗合格,N.檢驗不合格,0.免檢)
 			+ "	MOCTG.TG020, "// --備註
 			+ "	MOCTG.TG022, "// --簽核確認碼 Y/N/V

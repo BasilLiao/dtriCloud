@@ -476,6 +476,9 @@ public class SystemLanguageCellServiceAc {
 			System.out.println(className);
 			// 每個欄位
 			for (Field fieldOne : fields) {
+				if("WarehouseSynchronize".equals(className)) {
+					System.out.println(className);					
+				}
 				if (languageDao.findAllByLanguageCellSame(className, fieldOne.getName(), 0).size() == 0) {
 					// 查詢比對後->自動建置->預設值
 					// System.out.println(fieldOne.getName());

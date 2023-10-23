@@ -22,7 +22,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA035, "// --產品規格
 			+ "	MOCTB.TB004, "// --需領用
 			+ "	MOCTB.TB005, "// --已領用
-			+ "	MOCTB.TB009, "// --庫別
+			+ "	MOCTE.TE008 AS TB009, "// --(改為 領調/退料單的)庫別
 			+ "	MOCTC.TC008, "// --單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			+ "	MOCTC.TC016, "// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]傳送次數[DEF:0]
 			+ "	MOCTE.TE013, "// --領料說明(可領用量)

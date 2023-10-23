@@ -2,6 +2,10 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * @author Basil
  * @see ---共用型---<br>
@@ -35,7 +39,7 @@ import java.util.Date;
  *      was_e_date : 預計領料日 <br>
  *      was_from_command : 指示來源<br>
  */
-
+@Entity
 public class WarehouseAssignment {
 	public WarehouseAssignment() {
 		// 共用型
@@ -70,7 +74,7 @@ public class WarehouseAssignment {
 	private Integer sysstatus;
 	private Integer syssort;
 	private String sysnote;
-
+	@Id
 	private String id;// 單別+單號+序號
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單

@@ -102,11 +102,11 @@ public class ERPSynchronizeService {
 	private Map<String, WarehouseTypeFilter> wTFs = new HashMap<>();// 單別清單
 	private Map<String, WarehouseKeeper> wKs = new HashMap<>();// 負責人
 	private Map<String, WarehouseConfig> wCs = new HashMap<>();// 倉別
+
 	// 物料自動化 修正(單據/倉別/物料)<wa_alias_wmpnb,wa_t_qty>
 	private Map<String, Integer> wAsSave = new HashMap<>();// 自動更新清單
 
 	public void initERPSynchronizeService() {
-
 		areaDao.findAll().forEach(x -> {
 			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
 				wAs.put(x.getWaaliasawmpnb(), x);
