@@ -34,7 +34,10 @@ import jakarta.persistence.Table;
  *      bil_checkin : 核單 / 核項目 0=未核單 1=已核單<br>
  *      bil_c_user: 核准人<br>
  *      bil_f_user: 完成人<br>
+ *      bil_s_user: 最後-同步人<br>
  *      bil_m_user: 分配-負責人<br>
+ *      
+ *      bil_p_already:打印過?0=尚未1=已經<br>
  *      bil_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
  *      bil_p_number:物料號 Ex:50-117-238132<br>
  *      bil_p_name:物料品名 Ex:DT504T Mix Color ...<br>
@@ -83,6 +86,7 @@ public class BasicIncomingList {
 		this.bilcheckin = 0;
 		this.bilcuser = "";
 		this.bilfuser = "";
+		this.bilsuser = "";
 		this.bilacceptance = 0;
 		this.bilpnumber = "";
 		this.bilpname = "";
@@ -99,6 +103,7 @@ public class BasicIncomingList {
 		this.bilfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.biledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.biltfilter = false;
+		this.bilpalready = 0;
 	}
 
 	// 共用型
@@ -145,9 +150,13 @@ public class BasicIncomingList {
 	private String bilcuser;
 	@Column(name = "bil_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilfuser;
+	@Column(name = "bil_s_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bilsuser;
 	@Column(name = "bil_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilmuser;
 
+	@Column(name = "bil_p_already", nullable = false, columnDefinition = "int default 0")
+	private Integer bilpalready;
 	@Column(name = "bil_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bilacceptance;
 
@@ -495,6 +504,30 @@ public class BasicIncomingList {
 
 	public void setBilmuser(String bilmuser) {
 		this.bilmuser = bilmuser;
+	}
+
+	public Integer getBilpnoqty() {
+		return bilpnoqty;
+	}
+
+	public void setBilpnoqty(Integer bilpnoqty) {
+		this.bilpnoqty = bilpnoqty;
+	}
+
+	public String getBilsuser() {
+		return bilsuser;
+	}
+
+	public void setBilsuser(String bilsuser) {
+		this.bilsuser = bilsuser;
+	}
+
+	public Integer getBilpalready() {
+		return bilpalready;
+	}
+
+	public void setBilpalready(Integer bilpalready) {
+		this.bilpalready = bilpalready;
 	}
 
 }

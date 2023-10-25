@@ -47,7 +47,7 @@ public class ERPAutoCheckService {
 			if (!wTFs.get(o.getBilclass()).getWtfmrcheck()) {
 				o.setBilcuser("System(Type_Pass)");
 			}
-			// 欄位管理人(攔截)->沒有勾起來 自動Pass
+			// 儲位負責人(攔截)->沒有勾起來 自動Pass
 			if (!wTFs.get(o.getBilclass()).getWtfsepncheck()) {
 				o.setBilfuser("System(Type_Pass)");
 			}
@@ -98,7 +98,7 @@ public class ERPAutoCheckService {
 				}
 			}
 			// 單據管理人(攔截)->沒有勾起來 自動Pass
-			if (wTFs.get(o.getBslclass()).getWtfmrcheck()) {
+			if (!wTFs.get(o.getBslclass()).getWtfmrcheck()) {
 				o.setBslcuser("System(Type_Pass)");
 			}
 			// 欄位管理人(攔截)->沒有勾起來 自動Pass

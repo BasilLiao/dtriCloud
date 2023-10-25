@@ -28,6 +28,7 @@ import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseSynchronize;
+import dtri.com.tw.pgsql.entity.WarehouseSynchronizeDetail;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -63,7 +64,7 @@ public class WarehouseSynchronizeServiceAc {
 		// Step1.批次分頁
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 9999;
+		int total = 99999;
 		int batch = 0;
 
 		// Step2.排序
@@ -82,6 +83,7 @@ public class WarehouseSynchronizeServiceAc {
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseSynchronize> entitys = new ArrayList<WarehouseSynchronize>();
+		ArrayList<WarehouseSynchronizeDetail> entityDetails = new ArrayList<WarehouseSynchronizeDetail>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -102,6 +104,10 @@ public class WarehouseSynchronizeServiceAc {
 			//
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(null, null, null, inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(null, null, null, shPageable);
+			// 細節(清單)
+			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(null, null, null, inPageable);
+			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(null, null, null, shPageable);
+
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
@@ -174,20 +180,96 @@ public class WarehouseSynchronizeServiceAc {
 				e.setSysstatus(sh.getSysstatus());
 				entitys.add(e);
 			});
+			// 細節(完成清單)
+			Map<String, Integer> listTotail = new HashMap<>();
+			Map<String, Integer> listFinish = new HashMap<>();
+			incomingDetailLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					e.setId(headerKey);
+					// 進料單
+					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+
+					// System
+					e.setSyscdate(in.getSyscdate());
+					e.setSyscuser(in.getSyscuser());
+					e.setSysmdate(in.getSysmdate());
+					e.setSysmuser(in.getSysmuser());
+					e.setSysnote(in.getSysnote());
+					e.setSysstatus(in.getSysstatus());
+					// header
+					entityDetails.add(e);
+				} else {
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+
+			});
+			shippingDetailLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					e.setId(headerKey);
+					// 領料單
+					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+					// System
+					e.setSyscdate(sh.getSyscdate());
+					e.setSyscuser(sh.getSyscuser());
+					e.setSysmdate(sh.getSysmdate());
+					e.setSysmuser(sh.getSysmuser());
+					e.setSysnote(sh.getSysnote());
+					e.setSysstatus(sh.getSysstatus());
+					// header
+					entityDetails.add(e);
+				} else {
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+			});
+			// 進度
+			entityDetails.forEach(ent -> {
+				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+			});
 
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJsonDatas);
-			packageBean.setEntityDetailJson("{}");
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
 			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronize", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
+			});
+			// 細節翻譯
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeList", null, 2);
+			languagesDetail.forEach(x -> {
+				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
 			// 動態->覆蓋寫入->修改UI選項
 
@@ -204,6 +286,7 @@ public class WarehouseSynchronizeServiceAc {
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
+			resultDetailTJsons = packageService.resultSet(fields, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wssclasssn", "Ex:單別-單號?", true, //
@@ -303,7 +386,6 @@ public class WarehouseSynchronizeServiceAc {
 					if (areaMaps.containsKey(areaKey)) {
 						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-
 					}
 				}
 				// System

@@ -44,6 +44,14 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(c.bslfuser != '') ") // 已完成
 	ArrayList<BasicShippingList> findAllBySearchSynchronize(String bslclass, String bslsn, String bsltype, Pageable pageable);
 
+	// 同步查詢用(單據完成率)
+	@Query("SELECT c FROM BasicShippingList c WHERE "//
+			+ "(:bslclass is null or c.bslclass LIKE %:bslclass%) and "//
+			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
+			+ "(:bsltype is null or c.bsltype LIKE %:bsltype%) and "//
+			+ "(c.bslcuser != '') and (c.bslsuser = '')") // 已核准人+最後-同步人
+	ArrayList<BasicShippingList> findAllBySearchDetailSynchronize(String bslclass, String bslsn, String bsltype, Pageable pageable);
+
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass=:bslclass) and "//
 			+ "(:bslsn is null or c.bslsn=:bslsn) and "//

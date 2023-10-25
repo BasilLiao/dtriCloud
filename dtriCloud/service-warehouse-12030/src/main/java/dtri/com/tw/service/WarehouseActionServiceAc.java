@@ -81,6 +81,7 @@ public class WarehouseActionServiceAc {
 		// Step2.排序
 		List<Order> inOrders = new ArrayList<>();
 		inOrders.add(new Order(Direction.DESC, "bilstatus"));// 急迫性(越大越急)
+		inOrders.add(new Order(Direction.ASC, "biledate"));// 時間
 		inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
 		inOrders.add(new Order(Direction.ASC, "bilsn"));// 單號
 		inOrders.add(new Order(Direction.ASC, "biltowho"));// 供應對象
@@ -88,6 +89,7 @@ public class WarehouseActionServiceAc {
 
 		List<Order> shOrders = new ArrayList<>();
 		shOrders.add(new Order(Direction.DESC, "bslstatus"));// 急迫性(越大越急)
+		shOrders.add(new Order(Direction.ASC, "bsledate"));// 時間
 		shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
 		shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
 		shOrders.add(new Order(Direction.ASC, "bslfromwho"));// 供應來源
@@ -255,7 +257,7 @@ public class WarehouseActionServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseAction_Detail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseActionDetail", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -728,6 +730,7 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
+					
 					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
 					entityHistories.add(history);
 				}

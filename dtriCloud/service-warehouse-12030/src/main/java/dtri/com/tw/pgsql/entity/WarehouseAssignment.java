@@ -2,6 +2,9 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * @author Basil
  * @see ---共用型---<br>
@@ -35,7 +38,7 @@ import java.util.Date;
  *      was_e_date : 預計領料日 <br>
  *      was_from_command : 指示來源<br>
  */
-
+@Entity
 public class WarehouseAssignment {
 	public WarehouseAssignment() {
 		// 共用型
@@ -55,7 +58,7 @@ public class WarehouseAssignment {
 		this.waserptqty = 0;// : (帳務)此區域物料數量<br>
 		this.wastqty = 0;// : (實際)此區域物料數量<br>
 		this.wasqcqty = 0;// : 進貨待驗<br>
-
+		this.wasschedule = "0/0";
 	}
 
 	// 共用型
@@ -71,6 +74,7 @@ public class WarehouseAssignment {
 	private Integer syssort;
 	private String sysnote;
 
+	@Id
 	private String id;// 單別+單號+序號
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單
@@ -95,6 +99,8 @@ public class WarehouseAssignment {
 	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	private String wasstatusname;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	private Date wasedate;// : 預計領/入料日
+	private String wasschedule;// 進度(50/100)
+	private String waspalready;// 是否已打印(已打印/未打印)
 
 	private String wastocommand;// 單據指令對象 json [] A511-123456....<br>
 	private String wasfromcommand;// 單據指令來源 json [] A511-123456....<br>
@@ -371,6 +377,22 @@ public class WarehouseAssignment {
 
 	public void setWascuser(String wascuser) {
 		this.wascuser = wascuser;
+	}
+
+	public String getWasschedule() {
+		return wasschedule;
+	}
+
+	public void setWasschedule(String wasschedule) {
+		this.wasschedule = wasschedule;
+	}
+
+	public String getWaspalready() {
+		return waspalready;
+	}
+
+	public void setWaspalready(String waspalready) {
+		this.waspalready = waspalready;
 	}
 
 }

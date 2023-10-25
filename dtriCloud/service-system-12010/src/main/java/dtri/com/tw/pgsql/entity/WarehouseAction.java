@@ -2,7 +2,6 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 

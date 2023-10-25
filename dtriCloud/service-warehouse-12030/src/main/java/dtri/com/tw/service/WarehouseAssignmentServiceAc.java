@@ -92,6 +92,8 @@ public class WarehouseAssignmentServiceAc {
 		ArrayList<WarehouseAssignment> entitys = new ArrayList<WarehouseAssignment>();
 		ArrayList<WarehouseAssignment> entityDetails = new ArrayList<WarehouseAssignment>();
 		Map<String, String> entityChecks = new HashMap<>();
+		Map<String, Integer> entitySchedulTotail = new HashMap<>();
+		Map<String, Integer> entitySchedulFinish = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -133,6 +135,8 @@ public class WarehouseAssignmentServiceAc {
 				e.setWaspname(in.getBilpname());// : 品名<br>
 				e.setWaspnqty(in.getBilpnqty());// : 數量<br>
 				e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				e.setWaspalready(in.getBilpalready() == 0 ? "位打印" : "已打印");
+
 				switch (in.getBilstatus()) {
 				case 0:
 					e.setWasstatusname("預設(3天)");
@@ -177,10 +181,17 @@ public class WarehouseAssignmentServiceAc {
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
 					entityChecks.put(headerKey, headerKey);
+					entitySchedulTotail.put(headerKey, 0);
+					entitySchedulFinish.put(headerKey, 0);
 					entitys.add(e);
 				}
 				// body
 				entityDetails.add(e);
+				// 進度判別
+				entitySchedulTotail.put(headerKey, entitySchedulTotail.get(headerKey) + 1);
+				if (!e.getWasfuser().equals("")) {
+					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
+				}
 			});
 
 			// 領料
@@ -204,6 +215,7 @@ public class WarehouseAssignmentServiceAc {
 				e.setWaspname(sh.getBslpname());// : 品名<br>
 				e.setWaspnqty(sh.getBslpnqty());// : 數量<br>
 				e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+				e.setWaspalready(sh.getBslpalready() == 0 ? "位打印" : "已打印");
 				switch (sh.getBslstatus()) {
 				case 0:
 					e.setWasstatusname("預設(3天)");
@@ -248,11 +260,24 @@ public class WarehouseAssignmentServiceAc {
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
 					entityChecks.put(headerKey, headerKey);
+					entitySchedulTotail.put(headerKey, 0);
+					entitySchedulFinish.put(headerKey, 0);
 					entitys.add(e);
 				}
 				// body
 				entityDetails.add(e);
+				// 進度判別
+				entitySchedulTotail.put(headerKey, entitySchedulTotail.get(headerKey) + 1);
+				if (!e.getWasfuser().equals("")) {
+					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
+				}
 
+			});
+			// 進度添加
+			entitys.forEach(h -> {
+				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
+					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / " + entitySchedulTotail.get(h.getWasclasssn()));
+				}
 			});
 
 			// 類別(一般模式)
@@ -411,10 +436,17 @@ public class WarehouseAssignmentServiceAc {
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
 					entityChecks.put(headerKey, headerKey);
+					entitySchedulTotail.put(headerKey, 0);
+					entitySchedulFinish.put(headerKey, 0);
 					entitys.add(e);
 				}
 				// body
 				entityDetails.add(e);
+				// 進度判別
+				entitySchedulTotail.put(headerKey, entitySchedulTotail.get(headerKey) + 1);
+				if (!e.getWasfuser().equals("")) {
+					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
+				}
 			});
 
 			// 領料
@@ -482,11 +514,23 @@ public class WarehouseAssignmentServiceAc {
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
 					entityChecks.put(headerKey, headerKey);
+					entitySchedulTotail.put(headerKey, 0);
+					entitySchedulFinish.put(headerKey, 0);
 					entitys.add(e);
 				}
 				// body
 				entityDetails.add(e);
-
+				// 進度判別
+				entitySchedulTotail.put(headerKey, entitySchedulTotail.get(headerKey) + 1);
+				if (!e.getWasfuser().equals("")) {
+					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
+				}
+			});
+			// 進度添加
+			entitys.forEach(h -> {
+				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
+					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / " + entitySchedulTotail.get(h.getWasclasssn()));
+				}
 			});
 
 			// 類別(一般模式)

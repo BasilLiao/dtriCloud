@@ -34,7 +34,10 @@ import jakarta.persistence.Table;
  *      bsl_checkin : 核單 / 核項目 0=未核單 1=已核單<br>
  *      bsl_c_user: 核准人<br>
  *      bsl_f_user: 完成人<br>
+ *      bsl_s_user: 最後-同步人<br>
  *      bsl_m_user:分配負責人<br>
+ *      
+ *      bsl_p_already: 使否已打印<br>
  *      bsl_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
  *      bsl_p_number:物料號 Ex:50-117-238132<br>
  *      bsl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
@@ -83,6 +86,7 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
+		this.bslsuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
 		this.bslpname = "";
@@ -99,6 +103,7 @@ public class BasicShippingList {
 		this.bslfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsltfilter = false;
+		this.bslpalready = 0;
 	}
 
 	// 共用型
@@ -145,8 +150,13 @@ public class BasicShippingList {
 	private String bslcuser;
 	@Column(name = "bsl_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslfuser;
+	@Column(name = "bsl_s_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bslsuser;
 	@Column(name = "bsl_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslmuser;
+	
+	@Column(name = "bsl_p_already", nullable = false, columnDefinition = "int default 0")
+	private Integer bslpalready;
 
 	@Column(name = "bsl_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bslacceptance;
@@ -503,6 +513,22 @@ public class BasicShippingList {
 
 	public void setBslpnoqty(Integer bslpnoqty) {
 		this.bslpnoqty = bslpnoqty;
+	}
+
+	public String getBslsuser() {
+		return bslsuser;
+	}
+
+	public void setBslsuser(String bslsuser) {
+		this.bslsuser = bslsuser;
+	}
+
+	public Integer getBslpalready() {
+		return bslpalready;
+	}
+
+	public void setBslpalready(Integer bslpalready) {
+		this.bslpalready = bslpalready;
 	}
 
 }

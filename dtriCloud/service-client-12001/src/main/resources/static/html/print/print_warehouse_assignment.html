@@ -114,7 +114,7 @@ print={
             
             printWindow.document.write('<html><head><title>DIV Contents</title>');
             printWindow.document.write('<style> @media print{.noprint{display:none;}}</style>');
-            printWindow.document.write('</head><body style="font-size: 13px; margin: 1;line-height: 14px;">');
+            printWindow.document.write('</head><body style="font-size: 13px; margin: 1;line-height: 14px;font-family: math;">');
             printWindow.document.write(divContents);
             printWindow.document.write('</body></html>');
           	//查詢
@@ -122,7 +122,9 @@ print={
 				console.log(this.id);
 				var id = this.id;
 				var pr_bslpnumber = $(this).find(".pr_bslpnumber").text();
-            	$(printWindow.document).find('#'+id+' .pr_qrcode').qrcode({width: 50,height: 50,text: pr_bslpnumber});
+				var  pr_bslfromwho = $(this).find(".pr_bslfromwho").text().replaceAll("[","").replaceAll("]","");
+				pr_bslfromwho = pr_bslfromwho.split("_")[0];
+            	$(printWindow.document).find('#'+id+' .pr_qrcode').qrcode({width: 50,height: 50,text: pr_bslfromwho+"_"+pr_bslpnumber});
 			});
             printWindow.document.close();
             printWindow.print();
@@ -136,7 +138,7 @@ print={
 			//排序整理
 			var sortJson ={};
 			Object.keys(dataBody).forEach(function(k){
-				sortJson[dataBody[k]['wasmuser']+dataBody[k]['wasfromwho']] = dataBody[k];
+				sortJson[dataBody[k]['wasmuser']+dataBody[k]['wasfromwho']+dataBody[k]['id']] = dataBody[k];
 			});
 			sortJson = main.methods.orderedSort(sortJson);
 			

@@ -92,7 +92,7 @@ public class SystemConfigServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("SystemConfig_Detail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("SystemConfigDetail", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});

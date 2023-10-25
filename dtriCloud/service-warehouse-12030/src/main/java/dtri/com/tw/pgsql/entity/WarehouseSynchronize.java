@@ -2,6 +2,9 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * @author Basil
  * @see ---共用型---<br>
@@ -32,7 +35,7 @@ import java.util.Date;
  *      wss_pn_g_qty : 已(領入)數量<br>
  *      wss_pn_o_qty : 超(領入)數量<br>
  */
-
+@Entity
 public class WarehouseSynchronize {
 	public WarehouseSynchronize() {
 		// 共用型
@@ -66,7 +69,7 @@ public class WarehouseSynchronize {
 	private Integer sysstatus;
 	private Integer syssort;
 	private String sysnote;
-
+	@Id
 	private String id;// 單別+單號+序號
 	// 倉儲區域清單-清單
 	private Integer wsserptqty;// : (帳務)此區域物料數量<br>

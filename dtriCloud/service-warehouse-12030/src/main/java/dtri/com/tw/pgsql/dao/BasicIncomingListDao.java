@@ -45,6 +45,14 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(c.bilfuser != '') ") // 已完成
 	ArrayList<BasicIncomingList> findAllBySearchSynchronize(String bilclass, String bilsn, String biltype, Pageable pageable);
 
+	// 同步查詢用(單據完成率)
+	@Query("SELECT c FROM BasicIncomingList c WHERE "//
+			+ "(:bilclass is null or c.bilclass LIKE %:bilclass%) and "//
+			+ "(:bilsn is null or c.bilsn LIKE %:bilsn%) and "//
+			+ "(:biltype is null or c.biltype LIKE %:biltype%) and "//
+			+ "(c.bilcuser != '') and (c.bilsuser = '') ") // 已核准人+最後-同步人
+	ArrayList<BasicIncomingList> findAllBySearchDetailSynchronize(String bilclass, String bilsn, String biltype, Pageable pageable);
+
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass=:bilclass) and "//
 			+ "(:bilsn is null or c.bilsn=:bilsn) and "//

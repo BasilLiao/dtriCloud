@@ -2,6 +2,9 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 /**
  * @author Basil
  * @see ---共用型---<br>
@@ -20,9 +23,9 @@ import java.util.Date;
  *      wsl_type : 單據類型(領料類/入料類)<br>
  *      wsl_schedule : 進度<br>
  */
-
-public class WarehouseSynchronizeList {
-	public WarehouseSynchronizeList() {
+@Entity
+public class WarehouseSynchronizeDetail {
+	public WarehouseSynchronizeDetail() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -35,6 +38,7 @@ public class WarehouseSynchronizeList {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
+		this.wslschedule = "0/0";
 	}
 
 	// 共用型
@@ -49,7 +53,7 @@ public class WarehouseSynchronizeList {
 	private Integer sysstatus;
 	private Integer syssort;
 	private String sysnote;
-
+	@Id
 	private String id;// 單別+單號+序號
 	// 單據
 	private String wslclassname;// :單據名稱<br>

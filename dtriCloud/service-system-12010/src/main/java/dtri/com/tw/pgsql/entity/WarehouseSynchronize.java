@@ -54,7 +54,7 @@ public class WarehouseSynchronize {
 		// 倉儲區域清單-清單
 		this.wsserptqty = 0;// : (帳務)此區域物料數量<br>
 		this.wsstqty = 0;// : (實際)此區域物料數量<br>
-		this.wsspnoqty = 0;
+		this.wsspnoqty = 0;// 超領量
 	}
 
 	// 共用型

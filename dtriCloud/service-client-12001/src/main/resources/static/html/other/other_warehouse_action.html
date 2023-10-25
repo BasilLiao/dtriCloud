@@ -1229,6 +1229,9 @@ other={
 		otherModifyReturn(){
 			clearTimeout(other.data.btn_send_auto);
 			other.methods.searchDetailSend();
+			//重新對焦
+			$("#command_send input").focus();
+			$("#command_sel").val("Normal").change();
 		},
 		//查詢後回傳
 		otherReturn(){
