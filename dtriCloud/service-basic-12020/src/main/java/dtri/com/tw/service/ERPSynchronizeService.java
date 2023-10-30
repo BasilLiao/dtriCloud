@@ -88,6 +88,8 @@ public class ERPSynchronizeService {
 	ERPToCloudService erpToCloudService;
 	@Autowired
 	ERPAutoCheckService erpAutoCheckService;
+	@Autowired
+	ERPAutoRemoveService autoRemoveService;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -163,11 +165,12 @@ public class ERPSynchronizeService {
 				String nChecksum = erpMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBclfuser().equals("")) {
 					Mocta m = erpMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
-					commandLists.add(erpToCloudService.commandOne(o, m, checkSum));
+					erpToCloudService.commandOne(o, m, checkSum);
+					commandLists.add(o);
 				}
 			} else {
 				// 匹配不到->已結案
@@ -197,9 +200,10 @@ public class ERPSynchronizeService {
 		Map<String, Purth> erpInMaps = new HashMap<>();// [ERP]資料
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Purth m : erpInEntitys) {
-			String nKey = m.getTh001_th002() + "-" + m.getTh003() + "-" + m.getMb001();
+			String nKey = m.getTh001_th002() + "-" + m.getTh003();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setTh001_th002(m.getTh001_th002().replaceAll("\\s", ""));
@@ -210,16 +214,15 @@ public class ERPSynchronizeService {
 		// Step2.[ERP vs Cloud]舊資料匹配
 		// 入料
 		entityOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
-				// 標記:不是新的
-				erpInMaps.get(oKey).setNewone(false);
+				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Purth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -241,10 +244,18 @@ public class ERPSynchronizeService {
 				saveLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeLists.add(o);
+			}
+		});
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
+		incomingListDao.saveAll(removeLists);
 
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -260,12 +271,15 @@ public class ERPSynchronizeService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+
 		// Step1.資料整理
 		for (Mocte m : erpEntitys) {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
-			String nKey = m.getTa026_ta027_ta028() + "-" + m.getMb001();
+			String nKey = m.getTa026_ta027_ta028();
 			m.setNewone(true);
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
@@ -285,15 +299,15 @@ public class ERPSynchronizeService {
 		// Step2.[ERP vs Cloud]舊資料匹配
 		// 入料
 		entityInOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Mocte m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -304,15 +318,15 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb() + "-" + o.getBslpnumber();
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
 					Mocte m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -347,10 +361,25 @@ public class ERPSynchronizeService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityInOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+		entityShOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);
+			}
+		});
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -362,9 +391,11 @@ public class ERPSynchronizeService {
 		Map<String, Moctf> erpInMaps = new HashMap<>();
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+
 		// Step1.資料整理
 		for (Moctf m : erpEntitys) {
-			String nKey = m.getTg001_tg002_tg003() + "-" + m.getMb001();
+			String nKey = m.getTg001_tg002_tg003();
 			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
 			m.setTg014_tg015(m.getTg014_tg015().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
@@ -383,9 +414,8 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Moctf m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -407,9 +437,19 @@ public class ERPSynchronizeService {
 				saveLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -421,9 +461,10 @@ public class ERPSynchronizeService {
 		Map<String, Mocth> erpInMaps = new HashMap<>();
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Mocth m : erpEntitys) {
-			String nKey = m.getTi001_ti002_ti003() + "-" + m.getMb001();
+			String nKey = m.getTi001_ti002_ti003();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
 			m.setTi013_ti014(m.getTi013_ti014().replaceAll("\\s", ""));
@@ -436,15 +477,14 @@ public class ERPSynchronizeService {
 		// 入料
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Mocth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -467,9 +507,19 @@ public class ERPSynchronizeService {
 				saveLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -485,9 +535,11 @@ public class ERPSynchronizeService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invtg m : erpEntitys) {
-			String nKey = m.getTg001_tg002_tg003() + "-" + m.getMb001();
+			String nKey = m.getTg001_tg002_tg003();
 			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
@@ -507,17 +559,16 @@ public class ERPSynchronizeService {
 		// 入料
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Invtg m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
-					o.setChecksum(checkSum);
 					// 資料轉換
 					erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -527,14 +578,14 @@ public class ERPSynchronizeService {
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb() + "-" + o.getBslpnumber();
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
 					Invtg m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -543,7 +594,6 @@ public class ERPSynchronizeService {
 				}
 			}
 		});
-
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
 		erpInMaps.forEach((key, v) -> {
@@ -569,11 +619,25 @@ public class ERPSynchronizeService {
 				saveShLists.add(n);
 			}
 		});
-
-		// Step4. 存入資料
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityInOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+		entityShOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);
+			}
+		});
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -589,9 +653,11 @@ public class ERPSynchronizeService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invth m : erpEntitys) {
-			String nKey = m.getTi001_ti002_ti003() + "-" + m.getMb001();
+			String nKey = m.getTi001_ti002_ti003();
 			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
 			m.setTi014_ti015_ti016(m.getTi014_ti015_ti016().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
@@ -612,14 +678,14 @@ public class ERPSynchronizeService {
 		// 入料
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Invth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -638,7 +704,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
 					Invth m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -672,11 +738,25 @@ public class ERPSynchronizeService {
 				saveShLists.add(n);
 			}
 		});
-
-		// Step4. 存入資料
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityInOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+		entityShOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);
+			}
+		});
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -692,9 +772,11 @@ public class ERPSynchronizeService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invta m : erpEntitys) {
-			String nKey = m.getTb001_tb002_tb003() + "-" + m.getMb001();
+			String nKey = m.getTb001_tb002_tb003();
 			m.setTb001_tb002_tb003(m.getTb001_tb002_tb003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
@@ -727,19 +809,18 @@ public class ERPSynchronizeService {
 		// 進料
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
 					Invta m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
 					erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
-
 					saveInLists.add(o);
 				}
 			}
@@ -747,7 +828,7 @@ public class ERPSynchronizeService {
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb() + "-" + o.getBslpnumber();
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 
 			// 同一筆資料?
@@ -755,7 +836,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
 					Invta m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -789,11 +870,26 @@ public class ERPSynchronizeService {
 				saveShLists.add(n);
 			}
 		});
+		// Step4.[ERP vs Cloud]被移除的資料?
+		entityInOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);
+			}
+		});
+		entityShOlds.forEach(o -> {
+			if (!o.getCheckUp()) {
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);
+			}
+		});
 
-		// Step4. 存入資料
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
-		// Step5. 自動結算
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 

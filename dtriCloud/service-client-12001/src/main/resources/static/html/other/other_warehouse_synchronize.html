@@ -113,12 +113,12 @@
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-7 col-lg-5 p-1">
+				<div class="col-12 col-lg-6 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
 							<button id="btn_detail" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>Detail<br>()
+								<b>Document<br>list()
 								</b>
 							</button>
 							<button id="btn_synchronize_qty" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -131,6 +131,10 @@
 							</button>
 							<button id="btn_synchronize_remove" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
 								<b>Synchronize<br>removeAll(S3)
+								</b>
+							</button>
+							<button id="btn_synchronize_check" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>Synchronize<br>check.OK!(S4)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
@@ -210,7 +214,7 @@
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="search_dcr_open" class="row m-0 collapse">
+		<div id="search_dcr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
 			<table class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -256,7 +260,7 @@ other={
 			total:100,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:100,//每頁數量(1-20)
+			pageSize:200,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityIKey:"",//ID
@@ -298,6 +302,9 @@ other={
 			}
 			if(ps[3] != 1){//修改(S3)3
 				$("#btn_synchronize_remove").addClass("disabled");
+			}
+			if(ps[2] != 1){//修改(S4)2
+				$("#btn_synchronize_check").addClass("disabled");
 			}
 			
 			
@@ -398,8 +405,9 @@ other={
 				$('#search_dcr_open .exTbodytd').before(exTbodytd);
 			});
 			
-			//Step3.查詢內容-格式
-			for(var b=1;b<=100;b++){
+			//Step3.查詢內容-格式(一般)
+			var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+			for(var b=1;b<=pageSize;b++){
 				var exTbodyTr = $('.exTbodyTr').clone();
 				exTbodyTr.removeClass('exTbodyTr');
 				exTbodyTr.removeClass('d-none');
@@ -408,6 +416,16 @@ other={
 				$('.exTbodyTr').before(exTbodyTr);
 			}
 			$('.exTbodyTr').addClass('d-none');
+			//Step3.查詢內容-格式(細節)
+			for(var b=1;b<=pageSize;b++){
+				var exTbodyTr = $('.exDetailTbodyTr').clone();
+				exTbodyTr.removeClass('exDetailTbodyTr');
+				exTbodyTr.removeClass('d-none');
+				exTbodyTr.addClass('valTbodyDetailTr_'+b);
+				exTbodyTr.find('input').attr("alt","row_"+b);
+				$('.exDetailTbodyTr').before(exTbodyTr);
+			}
+			$('.exDetailTbodyTr').addClass('d-none');
 			
 			//Step4.查詢條件
 			for(var t=0;t<searchSetJson['searchSet'].length;t++){
@@ -671,6 +689,7 @@ other={
 				$('.wsspnumber').removeClass("text-danger");
 				$('.wsspnumber').removeClass("text-warning");
 				$('.wsspnumber').removeClass("text-success");
+				$('.wslclasssn').removeClass("text-info");	
 				$('.wsspnumber').addClass("text-success");
 			});
 			//監聽-同步單據項目
@@ -681,6 +700,7 @@ other={
 				$('.wsspnumber').removeClass("text-danger");
 				$('.wsspnumber').removeClass("text-warning");
 				$('.wsspnumber').removeClass("text-success");
+				$('.wslclasssn').removeClass("text-info");	
 				$('.wsspnumber').addClass("text-warning");
 			});
 			//監聽-移除所有單據
@@ -692,11 +712,22 @@ other={
 				$('.wsspnumber').removeClass("text-warning");
 				$('.wsspnumber').removeClass("text-success");
 				$('.wsspnumber').addClass("text-danger");
+				$('.wslclasssn').removeClass("text-info");	
 			});
-			
-			
-			
-			
+			//監聽-選取最後確認
+			$(document).off("click", "#search_c #btn_synchronize_check");
+			$(document).on("click", "#search_c #btn_synchronize_check", function (event) {
+				console.log("btn_synchronize_check");
+				console.log(other.data.markDetails);
+				$('#search_dcr_open tbody tr').each(function( index ) {
+					//有勾選的
+						if($(this).find('input').prop("checked")){
+							other.data.action="Finish";
+							$(this).find(".wslclasssn").addClass("text-info");					
+						}
+				});
+			});
+
 			//監聽-標記移除
 			$(document).off("click", "#search_c #btn_markCancel");
 			$(document).on("click", "#search_c #btn_markCancel", function (event) {
@@ -704,6 +735,10 @@ other={
 				other.data.marks=[];
 				other.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
+				$('.wsspnumber').removeClass("text-danger");
+				$('.wsspnumber').removeClass("text-warning");
+				$('.wsspnumber').removeClass("text-success");
+				$('.wslclasssn').removeClass("text-info");	
 				
 			});
 			//監聽-打印
@@ -837,24 +872,35 @@ other={
 			var searchPageSet={};
 			if(other.data.action=="Qty"){
 				action = "S1";//同步倉庫數量
-				//傳送....
 				data = {};
-				other.data.action ="";
+				data['entityJson'] = JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify('{}');
+				//傳送....
+				other.data.action ="Qty";
 			}else if(other.data.action=="Item"){
 				action = "S2";//同步單據項目
-				//傳送....
 				data = {};
-				other.data.action ="";
+				data['entityJson'] = JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify('{}');
+				//傳送....
+				other.data.action ="Item";
 			}else if(other.data.action=="Remove"){
 				action = "S3";//移除數量
+				data = {};
+				data['entityJson'] = JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify('{}');
 				//傳送....
 				data = {};
-				other.data.action ="";
+				other.data.action ="Remove";
+			}else if("Finish"){
+				action = "S4";//完成
+				data = {};
+				data['entityJson'] = JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify(other.data.markDetails);
+				other.data.action ="Finish";
 			}
 			if(data!=null){
 				//包裝
-				data['entityJson'] = JSON.stringify('{}');
-				data['entityDetailJson'] = JSON.stringify('{}');
 				data['callBackFunction'] = "other_modify";
 				req_data['data'] = data;
 				req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
@@ -902,10 +948,16 @@ other={
 			$('.exTbodyTh input').attr("disabled","disabled");
 			$('.exTbodyTh input').attr("title","IKey_GKey");
 			$('.exTbodyTh input').prop( "checked", false );
+			$('.wsspnumber').removeClass("text-danger");
+			$('.wsspnumber').removeClass("text-warning");
+			$('.wsspnumber').removeClass("text-success");
+			$('.wslclasssn').removeClass("text-info");	
 			
 			//Step5.帶入資料
 			var marks = other.data.marks;
 			var entityJsons = other.data.searchPageSet.entityJsons;
+			var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+			
 			var entityIKey = other.data.entityIKey;
 			var entityGKey = other.data.entityGKey;
 			var entityDateTime =  other.data.entityDateTime;
@@ -952,6 +1004,48 @@ other={
 					});
 				}
 			}
+			
+			//細節
+			for(var x = 0 ; x < pageSize ;x++){
+				//筆數還夠
+				if(pageSN+x < entityDetailJsons.length){
+					var entity = entityDetailJsons[pageSN+x];//((目前頁碼-1)*每頁數量)+x
+					var iKey = "";
+					var gKey = "";
+					Object.keys(entity).forEach(function(k){
+						//欄位計數
+						var valTrNb = x+1;
+						$('.valTbodyDetailTr_'+valTrNb+' th input').removeAttr("disabled");
+						//是否IKEY?
+							if(entityIKey==k){iKey= entity[k];}	
+						//是否GKEY?
+							if(entityGKey==k){gKey= entity[k];}	
+						//是否時間格式?
+						if(entityDateTime.indexOf(k)>=0){
+							 var dF = new Date(entity[k]);
+							 var dateF = dF.getFullYear()+"-";
+							 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
+							 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
+							 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
+							 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
+							 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
+							$('.valTbodyDetailTr_'+valTrNb+' .'+k).text(dateF);
+						}else{
+							$('.valTbodyDetailTr_'+valTrNb+' .'+k).text(entity[k]);
+						}
+						
+						//marks標記?
+						$('.valTbodyDetailTr_'+valTrNb+' input').attr("title",iKey+"_"+gKey);
+						//帶入
+						for(var m = 0 ; m < marks.length ;m++){
+							if(marks[m].Ikey_Gkey==iKey+"_"+gKey){
+								$('.valTbodyDetailTr_'+valTrNb+' input').prop( "checked", true );
+								break;
+							}
+						}
+					});
+				}
+			}
 		},
 		//==========================回傳接收==========================
 		otherReturn(){
@@ -968,10 +1062,10 @@ other={
 				//Step5.帶入資料
 				if(main.resq_data['entityJson']!=""){
 					other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);				
+					if(main.resq_data['entityDetailJson']!=""){
+						other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+					}
 					other.methods.otherReLoad();
-				}
-				if(main.resq_data['entityDetailJson']!=""){
-					other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 				}
 			}
 		},
@@ -987,6 +1081,8 @@ other={
 			$(document).off("click", "#search_c #btn_urgency");
 			$(document).off("click", "#search_c #btn_synchronize_qty");
 			$(document).off("click", "#search_c #btn_synchronize_item");
+			$(document).off("click", "#search_c #btn_synchronize_check");
+			
 
 			$(document).off("click", "#search_c #exthDetailAll");
 			$(document).off("click", "#search_c #exthAll");

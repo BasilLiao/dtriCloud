@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -104,6 +107,7 @@ public class BasicIncomingList {
 		this.biledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.biltfilter = false;
 		this.bilpalready = 0;
+		this.checkUp = false;
 	}
 
 	// 共用型
@@ -195,6 +199,10 @@ public class BasicIncomingList {
 
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@JsonIgnore
+	@Transient
+	private Boolean checkUp;// 檢查更新
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -528,6 +536,14 @@ public class BasicIncomingList {
 
 	public void setBilpalready(Integer bilpalready) {
 		this.bilpalready = bilpalready;
+	}
+
+	public Boolean getCheckUp() {
+		return checkUp;
+	}
+
+	public void setCheckUp(Boolean checkUp) {
+		this.checkUp = checkUp;
 	}
 
 }

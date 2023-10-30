@@ -20,7 +20,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA021, "// --生產產線別
 			+ "	MOCTA.TA034, "// --產品品名
 			+ "	MOCTA.TA035, "// --產品規格
-			+ "	MOCTB.TB004, "// --需領用
+			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004, "// --(需領用 - 已領用) = 未領用
 			+ "	MOCTB.TB005, "// --已領用
 			+ "	MOCTE.TE008 AS TB009, "// --(改為 領調/退料單的)庫別
 			+ "	MOCTC.TC008, "// --單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
@@ -44,7 +44,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	[DTR_TW].[dbo].MOCTE AS MOCTE"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身
-			+ "	ON (MOCTE.TE011+'_'+MOCTE.TE012+'_'+MOCTE.TE004) = (MOCTB.TB001+'_'+TRIM(MOCTB.TB002)+'_'+MOCTB.TB003)"//
+			+ "	ON (MOCTE.TE011+'_'+MOCTE.TE012+'_'+MOCTE.TE004+'_'+MOCTE.TE009) = (MOCTB.TB001+'_'+TRIM(MOCTB.TB002)+'_'+TRIM(MOCTB.TB003)+'_'+MOCTB.TB006)"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTA AS MOCTA "// --製令單頭
 			+ "	ON (MOCTB.TB001+'-'+TRIM(MOCTB.TB002)) =(MOCTA.TA001+'-'+MOCTA.TA002) "//

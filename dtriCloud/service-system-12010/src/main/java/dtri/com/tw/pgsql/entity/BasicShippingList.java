@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -104,6 +107,7 @@ public class BasicShippingList {
 		this.bsledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsltfilter = false;
 		this.bslpalready = 0;
+		this.checkUp = false;
 	}
 
 	// 共用型
@@ -154,7 +158,7 @@ public class BasicShippingList {
 	private String bslsuser;
 	@Column(name = "bsl_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslmuser;
-	
+
 	@Column(name = "bsl_p_already", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpalready;
 
@@ -175,7 +179,6 @@ public class BasicShippingList {
 	private Integer bslpngqty;
 	@Column(name = "bsl_pn_o_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpnoqty;
-	
 
 	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltocommand;
@@ -196,6 +199,10 @@ public class BasicShippingList {
 	private Boolean bsltfilter;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@JsonIgnore
+	@Transient
+	private Boolean checkUp;// 檢查更新
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -529,6 +536,14 @@ public class BasicShippingList {
 
 	public void setBslpalready(Integer bslpalready) {
 		this.bslpalready = bslpalready;
+	}
+
+	public Boolean getCheckUp() {
+		return checkUp;
+	}
+
+	public void setCheckUp(Boolean checkUp) {
+		this.checkUp = checkUp;
 	}
 
 }

@@ -49,6 +49,7 @@ public class ERPToCloudService {
 		}
 		e.setSysstatus(0);// 未完成
 		e.setSysmdate(new Date());// 日期
+		e.setCheckUp(true);// 有更新
 		return e;
 	}
 
@@ -110,6 +111,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -177,6 +179,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -239,7 +242,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
-
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -299,7 +302,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -360,6 +363,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -417,6 +421,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -473,6 +478,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -533,7 +539,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -593,6 +599,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -655,6 +662,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -715,6 +723,7 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
+		o.setCheckUp(true);// 有更新
 		return o;
 	}
 }

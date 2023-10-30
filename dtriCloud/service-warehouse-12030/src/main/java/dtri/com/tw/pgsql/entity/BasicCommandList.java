@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -12,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -92,6 +95,7 @@ public class BasicCommandList {
 		this.bclstatus = 0;
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.checkUp = false;
 	}
 
 	// 共用型
@@ -171,6 +175,10 @@ public class BasicCommandList {
 	private Date bclfdate;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@JsonIgnore
+	@Transient
+	private Boolean checkUp;// 檢查更新
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -445,6 +453,14 @@ public class BasicCommandList {
 
 	public void setBclpnaqty(Integer bclpnaqty) {
 		this.bclpnaqty = bclpnaqty;
+	}
+
+	public Boolean getCheckUp() {
+		return checkUp;
+	}
+
+	public void setCheckUp(Boolean checkUp) {
+		this.checkUp = checkUp;
 	}
 
 }

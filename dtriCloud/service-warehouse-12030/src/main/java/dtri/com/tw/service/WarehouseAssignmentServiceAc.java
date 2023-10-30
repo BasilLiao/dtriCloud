@@ -135,7 +135,7 @@ public class WarehouseAssignmentServiceAc {
 				e.setWaspname(in.getBilpname());// : 品名<br>
 				e.setWaspnqty(in.getBilpnqty());// : 數量<br>
 				e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
-				e.setWaspalready(in.getBilpalready() == 0 ? "位打印" : "已打印");
+				e.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
 
 				switch (in.getBilstatus()) {
 				case 0:
@@ -215,7 +215,7 @@ public class WarehouseAssignmentServiceAc {
 				e.setWaspname(sh.getBslpname());// : 品名<br>
 				e.setWaspnqty(sh.getBslpnqty());// : 數量<br>
 				e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
-				e.setWaspalready(sh.getBslpalready() == 0 ? "位打印" : "已打印");
+				e.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 				switch (sh.getBslstatus()) {
 				case 0:
 					e.setWasstatusname("預設(3天)");
