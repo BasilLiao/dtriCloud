@@ -53,7 +53,7 @@
 						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start"
 							style="page-break-after: always; width: 370px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<div>
-								<div style="display: inline-block; width: 310px;">
+								<div style="display: inline-block; width: 315px; font-stretch: condensed;">
 									<!-- 單據-來源 -->
 									<div class="">
 										<b>製號：</b><font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1] </font>
@@ -64,7 +64,7 @@
 									</div>-->
 									<!-- 單據 -->
 									<div class="">
-										<b>領號：</b><font class="pr_bslclass_bslsn_bslnb">A551-230829006-0001</font>
+										<b>領號：</b><font class="pr_bslclass_bslsn_bslnb">A551-230829006-0001</font><b>：</b><font class="pr_sysnote">備註</font>
 									</div>
 									<!-- 物料號 / 數量  -->
 									<div class="" style="font-size: 15px">
@@ -73,7 +73,7 @@
 								</div>
 								<div style="display: inline-block; top: 20px" class="pr_qrcode"></div>
 								<!-- 倉儲-位 -->
-								<div class="" style="font-size: 15px">
+								<div class="" style="font-size: 15px; font-stretch: condensed;">
 									<b>來源：</b><font class="pr_bslfromwho">[A0002_原物料倉]</font>／<b>負責：</b><font class="pr_user">Nobody</font>
 								</div>
 							</div>
@@ -110,7 +110,7 @@ print={
 		printLabel(){
 			//$('#print_qrcode').qrcode({width: 60,height: 60,text: "01-255-610073"});
 	     	var divContents = $("#printContent").html();
-            var printWindow = window.open('', '', 'height=800,width=400');
+            var printWindow = window.open('', '', 'height=800,width=500');
             
             printWindow.document.write('<html><head><title>DIV Contents</title>');
             printWindow.document.write('<style> @media print{.noprint{display:none;}}</style>');
@@ -155,9 +155,11 @@ print={
 				print_ex.find(".pr_bslpnqty").text(h.waspnqty);//數量
 			//	print_ex.find(".pr_bslpname").text(h.waspname);//物料名稱
 				print_ex.find(".pr_bslclass_bslsn_bslnb").text(h.id);//單據號
-				print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand);//單據號
+				print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand);//單據來源
 				print_ex.find(".pr_bslfromwho").text(h.wasfromwho);//來源
 				print_ex.find(".pr_user").text(h.wasmuser);//負責人
+				print_ex.find(".pr_sysnote").text(h.sysnote);//備註
+				
 				$('#print_l #print_start').after(print_ex);
 				
 			});

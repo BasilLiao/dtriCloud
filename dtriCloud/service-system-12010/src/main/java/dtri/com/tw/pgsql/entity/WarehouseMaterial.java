@@ -32,6 +32,8 @@ import jakarta.persistence.Table;
  *      wmimg : 圖片<br>
  *      wmadqty :自動減少<br>
  *      wmaiqty :自動增加<br>
+ *      wmmrcheck  :攔截<br>
+		wmsepncheck  :攔截?<br>
  */
 
 @Entity
@@ -59,6 +61,8 @@ public class WarehouseMaterial {
 		this.wmimg = "";
 		this.wmadqty = false;
 		this.wmaiqty = false;
+		this.wmmrcheck = true;
+		this.wmsepncheck = true;
 	}
 
 	// 共用型
@@ -106,6 +110,11 @@ public class WarehouseMaterial {
 	private Boolean wmaiqty;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@Column(name = "wm_mr_check", nullable = true, columnDefinition = "boolean default true")
+	private Boolean wmmrcheck;
+	@Column(name = "wm_se_pn_check", nullable = true, columnDefinition = "boolean default true")
+	private Boolean wmsepncheck;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -257,6 +266,22 @@ public class WarehouseMaterial {
 
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
+	}
+
+	public Boolean getWmmrcheck() {
+		return wmmrcheck;
+	}
+
+	public void setWmmrcheck(Boolean wmmrcheck) {
+		this.wmmrcheck = wmmrcheck;
+	}
+
+	public Boolean getWmsepncheck() {
+		return wmsepncheck;
+	}
+
+	public void setWmsepncheck(Boolean wmsepncheck) {
+		this.wmsepncheck = wmsepncheck;
 	}
 
 }

@@ -63,7 +63,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ " WHERE "//
 			+ "	(MOCTE.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
-			+ "	AND MOCTB.TB004 > 0 "// --數量不為0
+			+ "	AND MOCTB.TB004-MOCTB.TB005 > 0 "// --數量不為0
 			+ "ORDER BY "//
 			+ " MOCTC.TC008 asc, "//
 			+ "	(MOCTE.TE001 + MOCTE.TE002+MOCTE.TE003) asc"// --單號+序號

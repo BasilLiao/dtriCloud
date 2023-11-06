@@ -691,16 +691,22 @@ public class WarehouseActionServiceAc {
 					incomingList.setBilfuser(x.getWasfuser());
 					incomingList.setSysmuser(x.getWasfuser());
 					incomingList.setSysmdate(new Date());
-					// 超入(須入量<實入量)
-					if (x.getWaspnqty() < x.getWaspngqty()) {
-						incomingList.setBilpnoqty(x.getWaspngqty() - x.getWaspnqty());
-					}
-					incomingList.setBilpngqty(x.getWaspngqty());
-					incomingLists.add(incomingList);
+					// 如果 有同步數量/或已經撿了
+					if (incomingList.getBilpngqty() == incomingList.getBilpnqty()) {
+						// 只登記人->不做數量修正
 
-					// 庫存更新
-					area.setWatqty(area.getWatqty() + x.getWaspngqty());
-					areaDao.save(area);
+					} else {
+						// 超入(須入量<實入量)
+						if (x.getWaspnqty() < x.getWaspngqty()) {
+							incomingList.setBilpnoqty(x.getWaspngqty() - x.getWaspnqty());
+						}
+						incomingList.setBilpngqty(x.getWaspngqty());
+						incomingLists.add(incomingList);
+
+						// 庫存更新
+						area.setWatqty(area.getWatqty() + x.getWaspngqty());
+						areaDao.save(area);
+					}
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
@@ -730,7 +736,7 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
-					
+
 					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
 					entityHistories.add(history);
 				}

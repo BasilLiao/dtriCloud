@@ -49,7 +49,6 @@ public class ERPToCloudService {
 		}
 		e.setSysstatus(0);// 未完成
 		e.setSysmdate(new Date());// 日期
-		e.setCheckUp(true);// 有更新
 		return e;
 	}
 
@@ -111,7 +110,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -165,7 +163,7 @@ public class ERPToCloudService {
 			biltowho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
 		o.setBiltowho("[" + biltowho + "]");
-		o.setBilfromwho("[_生產線]");// 目的來源[_生產線]
+		o.setBilfromwho("[_" + m.getTa021() + "]");// 目的來源[_生產線]
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
 		for (String wkey : wKs.keySet()) {
@@ -179,7 +177,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -227,7 +224,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
-		o.setBsltowho("[_生產線]");// 目的[_生產線]
+		o.setBsltowho("[_" + m.getTa021() + "]");// 目的[_生產線]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";
@@ -242,7 +239,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -302,7 +298,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -363,7 +358,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -421,7 +415,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -478,7 +471,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -539,7 +531,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -599,7 +590,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -662,7 +652,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 
@@ -723,7 +712,6 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
-		o.setCheckUp(true);// 有更新
 		return o;
 	}
 }

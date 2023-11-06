@@ -30,6 +30,8 @@ import jakarta.persistence.Table;
  *      wc_wk_a_name 倉庫別名 Ex:原物料倉<br>
  *      wc_a_d_qty 該倉儲-單據是否 自動扣除數量<br>
  *      wc_a_i_qty該倉儲-單據是否 自動增加數量<br>
+ *      wc_mr_check = 經手_單據管理(通知+管理);<br>
+ *      wc_se_pn_check = 經手_儲位負責(通知+執行);<br>
  * 
  */
 
@@ -55,6 +57,8 @@ public class WarehouseConfig {
 		this.wcwkaname = "";
 		this.wcadqty = false;
 		this.wcaiqty = false;
+		this.wcmrcheck = true;
+		this.wcsepncheck = true;
 	}
 
 	// 共用型
@@ -94,6 +98,11 @@ public class WarehouseConfig {
 	private Boolean wcadqty;
 	@Column(name = "wc_a_i_qty", nullable = false, columnDefinition = "boolean default false")
 	private Boolean wcaiqty;
+
+	@Column(name = "wc_mr_check", nullable = true, columnDefinition = "boolean default true")
+	private Boolean wcmrcheck;
+	@Column(name = "wc_se_pn_check", nullable = true, columnDefinition = "boolean default true")
+	private Boolean wcsepncheck;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -213,6 +222,22 @@ public class WarehouseConfig {
 
 	public void setWcaiqty(Boolean wcaiqty) {
 		this.wcaiqty = wcaiqty;
+	}
+
+	public Boolean getWcmrcheck() {
+		return wcmrcheck;
+	}
+
+	public void setWcmrcheck(Boolean wcmrcheck) {
+		this.wcmrcheck = wcmrcheck;
+	}
+
+	public Boolean getWcsepncheck() {
+		return wcsepncheck;
+	}
+
+	public void setWcsepncheck(Boolean wcsepncheck) {
+		this.wcsepncheck = wcsepncheck;
 	}
 
 }

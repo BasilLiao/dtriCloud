@@ -84,6 +84,7 @@ public class WarehouseSynchronizeServiceAc {
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseSynchronize> entitys = new ArrayList<WarehouseSynchronize>();
 		ArrayList<WarehouseSynchronizeDetail> entityDetails = new ArrayList<WarehouseSynchronizeDetail>();
+		ArrayList<WarehouseSynchronizeDetail> entityDetailOks = new ArrayList<WarehouseSynchronizeDetail>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -246,13 +247,18 @@ public class WarehouseSynchronizeServiceAc {
 			// 進度
 			entityDetails.forEach(ent -> {
 				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+				int lfh = listFinish.get(ent.getId());
+				int ltl = listTotail.get(ent.getId());
+				if (lfh == ltl) {
+					entityDetailOks.add(ent);
+				}
 			});
 
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJsonDatas);
-			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			String entityJsonDetails = packageService.beanToJson(entityDetailOks);
 			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
@@ -542,6 +548,14 @@ public class WarehouseSynchronizeServiceAc {
 				x.setSysmdate(new Date());
 			});
 			areaDao.saveAll(areas);
+
+			// 入料單-進行(匹配)->將數量修正 寫入
+			ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
+			reAll.forEach(bil -> {
+				bil.setBilpngqty(bil.getBilpnqty());
+			});
+			incomingListDao.saveAll(reAll);
+
 		}
 		if (action.equals("Remove")) {
 			incomingListDao.deleteAll();

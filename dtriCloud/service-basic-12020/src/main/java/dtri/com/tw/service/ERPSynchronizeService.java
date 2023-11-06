@@ -46,6 +46,7 @@ import dtri.com.tw.pgsql.entity.WarehouseConfig;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
+import dtri.com.tw.shared.Fm_T;
 
 @Service
 public class ERPSynchronizeService {
@@ -102,6 +103,7 @@ public class ERPSynchronizeService {
 	// 事先準備匹配
 	private Map<String, WarehouseArea> wAs = new HashMap<>();// 庫別清單
 	private Map<String, WarehouseTypeFilter> wTFs = new HashMap<>();// 單別清單
+	private Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
 	private Map<String, WarehouseKeeper> wKs = new HashMap<>();// 負責人
 	private Map<String, WarehouseConfig> wCs = new HashMap<>();// 倉別
 
@@ -114,17 +116,25 @@ public class ERPSynchronizeService {
 				wAs.put(x.getWaaliasawmpnb(), x);
 			}
 		});
+		// 單別
 		filterDao.findAll().forEach(y -> {
 			wTFs.put(y.getWtfcode(), y);
 		});
+		// 負責人
 		keeperDao.findAll().forEach(z -> {
 			if (!z.getWksuaccount().equals("") && !z.getWkglist().equals("") && !z.getWkwaslocation().equals("")) {
 				wKs.put(z.getWksuaccount() + "_" + z.getWkglist() + "_" + z.getWkwaslocation(), z);
 			}
 		});
+		// 倉別
 		configDao.findAll().forEach(w -> {
 			wCs.put(w.getWcalias(), w);
 		});
+		// 物料號
+		materialDao.findAll().forEach(m -> {
+			wMs.put(m.getWmpnb(), m);
+		});
+
 		wAsSave = new HashMap<>();// 自動更新清單
 	}
 
@@ -200,7 +210,7 @@ public class ERPSynchronizeService {
 		Map<String, Purth> erpInMaps = new HashMap<>();// [ERP]資料
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Purth m : erpInEntitys) {
 			String nKey = m.getTh001_th002() + "-" + m.getTh003();
@@ -229,6 +239,12 @@ public class ERPSynchronizeService {
 					o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A341") || o.getBilclass().equals("A342") || o.getBilclass().equals("A343")
+							|| o.getBilclass().equals("A345"))) {
+				// 同一天 /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -240,20 +256,14 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.incomingOnePurth(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動扣除
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeLists.add(o);
-			}
-		});
+
 		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
-		incomingListDao.saveAll(removeLists);
+		incomingListDao.saveAll(removeInLists);
 
 		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
@@ -314,6 +324,11 @@ public class ERPSynchronizeService {
 					o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A561") || o.getBilclass().equals("A571"))) {
+				// 同一天 /A561 廠內退料單/ A571 委外退料單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// 領料
@@ -333,6 +348,11 @@ public class ERPSynchronizeService {
 					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A541") || o.getBslclass().equals("A542") || o.getBslclass().equals("A551"))) {
+				// 同一天 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud] 全新資料?
@@ -344,7 +364,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.incomingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動扣除
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveInLists.add(n);
 			}
 		});
@@ -357,29 +377,16 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.shippingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動扣除
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveShLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityInOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
-		entityShOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);
-			}
-		});
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -408,7 +415,7 @@ public class ERPSynchronizeService {
 		// 入料
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb() + "-" + o.getBilpnumber();
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
@@ -422,6 +429,11 @@ public class ERPSynchronizeService {
 					o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A581"))) {
+				// A581 生產入庫單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -433,23 +445,15 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.incomingOneMoctf(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動扣除
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
 		});
 
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
-
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -491,6 +495,11 @@ public class ERPSynchronizeService {
 					o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A591"))) {
+				// A591 委外進貨單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -503,23 +512,16 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.incomingOneMocth(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動扣除
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
 
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
 
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -573,6 +575,11 @@ public class ERPSynchronizeService {
 					erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A141"))) {
+				// A141 庫存借入單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// 領料
@@ -592,6 +599,11 @@ public class ERPSynchronizeService {
 					erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A131"))) {
+				// A131 庫存借出單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -603,7 +615,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.incomingOneInvtg(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveInLists.add(n);
 			}
 		});
@@ -615,29 +627,16 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvtg(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs);
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveShLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityInOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
-		entityShOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);
-			}
-		});
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -692,12 +691,17 @@ public class ERPSynchronizeService {
 					erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A151"))) {
+				// 借出歸還A151
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
-			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb() + "-" + o.getBslpnumber();
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
@@ -711,6 +715,11 @@ public class ERPSynchronizeService {
 					erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A161"))) {
+				// A161 庫存借出單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -722,7 +731,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.incomingOneInvth(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveInLists.add(n);
 			}
 		});
@@ -734,29 +743,16 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvth(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveShLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityInOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
-		entityShOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);
-			}
-		});
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
@@ -802,6 +798,17 @@ public class ERPSynchronizeService {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
+			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {
+				if (m.getTb007() < 0) {
+					// 領
+					m.setTk000("領料類");
+					m.setTb007(Math.abs(m.getTb007()));
+				} else if (m.getTb007() > 0) {
+					// 入
+					m.setTk000("入料類");
+				}
+				erpShMaps.put(nKey, m);
+
 			}
 		}
 
@@ -823,7 +830,13 @@ public class ERPSynchronizeService {
 					erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A112") || o.getBilclass().equals("A119") || o.getBilclass().equals("A121"))) {
+				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
 			}
+
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
@@ -843,7 +856,13 @@ public class ERPSynchronizeService {
 					erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
 				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A111") || o.getBslclass().equals("A119") || o.getBslclass().equals("A121"))) {
+				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
 			}
+
 		});
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
@@ -854,7 +873,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.incomingOneInvta(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveInLists.add(n);
 			}
 		});
@@ -866,30 +885,16 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvta(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveShLists.add(n);
 			}
 		});
-		// Step4.[ERP vs Cloud]被移除的資料?
-		entityInOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);
-			}
-		});
-		entityShOlds.forEach(o -> {
-			if (!o.getCheckUp()) {
-				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);
-			}
-		});
-
-		// Step5. 存入資料
+		// Step4. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step6. 自動結算
+		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 

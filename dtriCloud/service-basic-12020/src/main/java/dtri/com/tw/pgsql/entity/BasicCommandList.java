@@ -14,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -95,7 +94,7 @@ public class BasicCommandList {
 		this.bclstatus = 0;
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
-		this.checkUp = false;
+		this.checkrm = true;
 	}
 
 	// 共用型
@@ -177,8 +176,8 @@ public class BasicCommandList {
 	private String checksum;
 
 	@JsonIgnore
-	@Transient
-	private Boolean checkUp;// 檢查更新
+	@Column(name = "check_rm", nullable = false, columnDefinition = "boolean default true")
+	private Boolean checkrm;// 檢查移除
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -455,12 +454,12 @@ public class BasicCommandList {
 		this.bclpnaqty = bclpnaqty;
 	}
 
-	public Boolean getCheckUp() {
-		return checkUp;
+	public Boolean getCheckrm() {
+		return checkrm;
 	}
 
-	public void setCheckUp(Boolean checkUp) {
-		this.checkUp = checkUp;
+	public void setCheckrm(Boolean checkrm) {
+		this.checkrm = checkrm;
 	}
 
 }

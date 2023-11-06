@@ -101,6 +101,10 @@
 .bg-show {
 	background: #ffc1073b;
 }
+
+.bg-show-note {
+	background: #dc3545;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
 	<!-- 查詢-細節結果 -->
@@ -708,11 +712,14 @@ other={
 							if(s=="wasfromwho" && entity['wastype']=="領料類"){
 								exTbodyTr.find('.'+s).addClass("bg-show");
 							}
-							if(s=="waspnqty" || s=="sysnote" || s=="waspnumber" || s=="wasclasssn"){
+							if(s=="waspnqty" ||  s=="waspnumber" || s=="wasclasssn"){
 								exTbodyTr.find('.'+s).addClass("bg-show");
 							}
 							if(s=="waspngqty" || s=="wasfuser"){
 								exTbodyTr.find('.'+s).addClass("bg-warning");
+							}
+							if(s=="sysnote"&& entity[s]!="" ){
+								exTbodyTr.find('.'+s).addClass("bg-show-note");
 							}
 							//是否時間格式?
 							if(entityDateTime.indexOf(s)>=0){
