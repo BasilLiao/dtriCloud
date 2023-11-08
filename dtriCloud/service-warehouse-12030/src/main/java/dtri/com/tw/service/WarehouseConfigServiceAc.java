@@ -188,7 +188,9 @@ public class WarehouseConfigServiceAc {
 				entityDataOld.setWcwkaname(x.getWcwkaname());
 				entityDataOld.setWcadqty(x.getWcadqty());
 				entityDataOld.setWcaiqty(x.getWcaiqty());
-
+				entityDataOld.setWcmrcheck(x.getWcmrcheck());
+				entityDataOld.setWcsepncheck(x.getWcsepncheck());
+				
 				saveDatas.add(entityDataOld);
 			}
 		});

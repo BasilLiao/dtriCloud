@@ -583,11 +583,7 @@ public class WarehouseAssignmentServiceAc {
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
-						// 記錄用
-						WarehouseHistory history = new WarehouseHistory();
-						history.setWhtype("入料類");
-						history.setWhwmpnb(t.getBilpnumber());
-						history.setWhwmslocation(t.getBiltowho());
+
 						//
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
@@ -595,8 +591,6 @@ public class WarehouseAssignmentServiceAc {
 						case "Agree":
 							t.setBilcuser(x.getWascuser());
 							// 紀錄
-							history.setWhcontent(x.getWascuser() + "_Agree_&_Pname:" + t.getBilpname() + "_&_Qty:" + t.getBilpnqty());
-							entityHistories.add(history);
 							break;
 						case "PassAll":
 							t.setBilcuser(x.getWascuser());
@@ -611,11 +605,7 @@ public class WarehouseAssignmentServiceAc {
 									areas.get(0).setWatqty(qty + t.getBilpnqty());
 									areaDao.save(areas.get(0));
 								}
-								// 紀錄
-								history.setWhcontent(x.getWascuser() + "_PassAll_&_Pname:" + t.getBilpname() + "_&_Qty:" + t.getBilpnqty());
-								entityHistories.add(history);
 							}
-
 							break;
 						case "ReturnAll":
 							t.setBilcuser(x.getWascuser());
@@ -646,20 +636,26 @@ public class WarehouseAssignmentServiceAc {
 								// 而外匹配 [儲位負責]
 								o.setBslmuser(t.getBilmuser());
 								arrayListNew.add(o);
-								// 紀錄
-								history.setWhcontent(x.getWascuser() + "_ReturnAll_&_Pname:" + t.getBilpname() + "_&_Qty:" + t.getBilpnqty());
-								entityHistories.add(history);
 							}
 							break;
 						case "Urgency":
 							t.setBilstatus(x.getWasstatus());
 							// 紀錄
-							history.setWhcontent(x.getWascuser() + "_Urgency_&_Pname:" + t.getBilpname() + "_&_Qty:" + t.getBilpnqty());
-							entityHistories.add(history);
 							break;
 						default:
 							break;
 						}
+						// 記錄用
+						WarehouseHistory history = new WarehouseHistory();
+						history.setWhtype("指令:入料:(" + action + ")");
+						history.setWhwmslocation(t.getBiltowho());
+						history.setWhcontent(t.getBilclass() + "-" + //
+								t.getBilsn() + "-" + //
+								t.getBilnb() + "*" + t.getBilpnqty());
+						history.setWhwmpnb(t.getBilpnumber());
+						history.setWhfuser(t.getBilfuser());
+						history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
+						entityHistories.add(history);
 					});
 				}
 				// =======================資料儲存=======================
@@ -675,19 +671,12 @@ public class WarehouseAssignmentServiceAc {
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
 						// 記錄用
-						WarehouseHistory history = new WarehouseHistory();
-						history.setWhtype("領料類");
-						history.setWhwmpnb(t.getBslpnumber());
-						history.setWhwmslocation(t.getBslfromwho());
 						//
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
 						switch (action) {
 						case "Agree":
 							t.setBslcuser(x.getWascuser());
-							// 紀錄
-							history.setWhcontent(x.getWascuser() + "_Agree_&_Pname:" + t.getBslpname() + "_&_Qty:" + t.getBslpnqty());
-							entityHistories.add(history);
 							break;
 						case "PassAll":
 							t.setBslcuser(x.getWascuser());
@@ -703,9 +692,6 @@ public class WarehouseAssignmentServiceAc {
 									areas.get(0).setWatqty(qty);
 									areaDao.save(areas.get(0));
 								}
-								// 紀錄
-								history.setWhcontent(x.getWascuser() + "_PassAll_&_Pname:" + t.getBslpname() + "_&_Qty:" + t.getBslpnqty());
-								entityHistories.add(history);
 							}
 							break;
 						case "ReturnAll":
@@ -737,20 +723,25 @@ public class WarehouseAssignmentServiceAc {
 								// 而外匹配 [儲位負責]
 								o.setBilmuser(t.getBslmuser());
 								arrayListNew.add(o);
-								// 紀錄
-								history.setWhcontent(x.getWascuser() + "_ReturnAll_&_Pname:" + t.getBslpname() + "_&_Qty:" + t.getBslpnqty());
-								entityHistories.add(history);
 							}
 							break;
 						case "Urgency":
 							t.setBslstatus(x.getWasstatus());
-							// 紀錄
-							history.setWhcontent(x.getWascuser() + "_Urgency_&_Pname:" + t.getBslpname() + "_&_Qty:" + t.getBslpnqty());
-							entityHistories.add(history);
 							break;
 						default:
 							break;
 						}
+						// 記錄用
+						WarehouseHistory history = new WarehouseHistory();
+						history.setWhtype("指令:領料:(" + action + ")");
+						history.setWhwmslocation(t.getBslfromwho());
+						history.setWhcontent(t.getBslclass() + "-" + //
+								t.getBslsn() + "-" + //
+								t.getBslnb() + "*" + t.getBslpnqty());
+						history.setWhwmpnb(t.getBslpnumber());
+						history.setWhfuser(t.getBslfuser());
+						history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
+						entityHistories.add(history);
 					});
 				}
 				// =======================資料儲存=======================

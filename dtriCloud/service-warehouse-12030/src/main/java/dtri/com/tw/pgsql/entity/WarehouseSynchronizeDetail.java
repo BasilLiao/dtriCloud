@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -42,24 +43,36 @@ public class WarehouseSynchronizeDetail {
 	}
 
 	// 共用型
+	@Transient
 	private Date syscdate;
+	@Transient
 	private String syscuser;
+	@Transient
 	private Date sysmdate;
+	@Transient
 	private String sysmuser;
+	@Transient
 	private Date sysodate;
+	@Transient
 	private String sysouser;
-
+	@Transient
 	private Boolean sysheader;
+	@Transient
 	private Integer sysstatus;
+	@Transient
 	private Integer syssort;
+	@Transient
 	private String sysnote;
 	@Id
 	private String id;// 單別+單號+序號
 	// 單據
+	@Transient
 	private String wslclassname;// :單據名稱<br>
-	//
+	@Transient
 	private String wslclasssn;// :單別+單號<br>
+	@Transient
 	private String wsltype;// : 單據類型(領料類/入料類)<br>
+	@Transient
 	private String wslschedule;// 進度(已完成/總數項目)
 
 	public Date getSyscdate() {

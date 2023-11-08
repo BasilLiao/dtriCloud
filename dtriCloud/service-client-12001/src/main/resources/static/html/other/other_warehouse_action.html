@@ -848,6 +848,7 @@ other={
 					var command_sel =$("#command_sel").val();
 					if(re.exec(command_val)){
 						//儲位類型
+						var sendData = [];
 						console.log("倉別:"+command_alias +" 儲位類型:"+command_val);
 						$('#search_dcr .valTbodyTrD').each(function() {
 							//比對欄位(單據類型+儲位+倉別)
@@ -860,30 +861,26 @@ other={
 								if(command_sel == "Normal"){
 									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 									$(this).find(".wasfuser").text(accUser);
-									//$(this).find(".wasfuser").removeClass("bg-warning");
-									//$(this).find(".wasfuser").addClass("bg-success");
-									//$(this).find(".waspngqty").removeClass("bg-warning");
-									//$(this).find(".waspngqty").addClass("bg-success");
-									//$(this).find("input").prop("checked",true);
-									other.methods.confirmSend(this);
+									
+									sendData.push(this);
+									//other.methods.confirmSend(this);
 								}else if(command_sel == "Abnormal"){
 									if($("#command_qty input").val()!=""){
 										$(this).find(".waspngqty").text($("#command_qty input").val());
 										$(this).find(".wasfuser").text(accUser);
-										//$(this).find(".wasfuser").removeClass("bg-warning");
-										//$(this).find(".wasfuser").addClass("bg-success");
-										//$(this).find(".waspngqty").removeClass("bg-warning");
-										//$(this).find(".waspngqty").addClass("bg-success");
-										//$(this).find("input").prop("checked",true);
-										other.methods.confirmSend(this);
+										sendData.push(this);
+										//other.methods.confirmSend(this);
 									}
 								}
 							}
 						});
+						other.methods.confirmSend(sendData);
 					}else{
 						//物料類型
 						console.log("倉別:"+command_alias +" 物料類型:"+command_val);
+						var sendData = [];
 						//比對欄位(單據類型+物料+倉別)
+						
 						$('#search_dcr .valTbodyTrD').each(function() {
 							var wasfromwho = $(this).find(".wastowho").text();
 							var waspnumber = $(this).find(".waspnumber").text();
@@ -899,26 +896,19 @@ other={
 								if(command_sel == "Normal"){
 									$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 									$(this).find(".wasfuser").text(accUser);
-									//$(this).find(".wasfuser").removeClass("bg-warning");
-									//$(this).find(".wasfuser").addClass("bg-success");
-									//$(this).find(".waspngqty").removeClass("bg-warning");
-									//$(this).find(".waspngqty").addClass("bg-success");
-									//$(this).find("input").prop("checked",true);
-									other.methods.confirmSend(this);
+									sendData.push(this);
+									//other.methods.confirmSend(this);
 								}else if(command_sel == "Abnormal"){
 									if($("#command_qty input").val()!=""){
 										$(this).find(".waspngqty").text($("#command_qty input").val());
 										$(this).find(".wasfuser").text(accUser);
-										//$(this).find(".wasfuser").removeClass("bg-warning");
-										//$(this).find(".wasfuser").addClass("bg-success");
-										//$(this).find(".waspngqty").removeClass("bg-warning");
-										//$(this).find(".waspngqty").addClass("bg-success");
-										//$(this).find("input").prop("checked",true);
-										other.methods.confirmSend(this);
+										sendData.push(this);
+										//other.methods.confirmSend(this);
 									}
 								}
 							}						
 						});
+						other.methods.confirmSend(sendData);
 					}
 					$("#command_send input").val("");
 				}else if(e.key =='Shift'){
@@ -1053,17 +1043,20 @@ other={
 			
 			//單一筆資料-送出
 			if(onlyOne!=null){
-				var entityJosn={};
-				$(onlyOne).find('.valTbodytd div').each(function(index){ 
-					var val = $(this).text()=="[N/A]"?"":$(this).text();
-					var name = $(this).attr('class').split(' ')[0];
-					//可能是時間格式
-					if(entityDateTime.indexOf(name)>=0){
-						val = new Date(val).getTime();	
-					}
-					entityJosn[name] = val;
+				//可能合併備料
+				$(onlyOne).each(function(row_index){ 
+					var entityJosn={};
+					$(this).find('.valTbodytd div').each(function(index){ 
+						var val = $(this).text()=="[N/A]"?"":$(this).text();
+						var name = $(this).attr('class').split(' ')[0];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeader.push(entityJosn);
 				});
-				dataHeader.push(entityJosn);
 			}else{
 				//多筆資料-確認選取
 				$('#search_dcr_open tbody tr').each(function() {

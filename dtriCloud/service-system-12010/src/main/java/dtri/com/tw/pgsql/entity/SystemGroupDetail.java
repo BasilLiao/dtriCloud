@@ -48,23 +48,35 @@ public class SystemGroupDetail {
 	}
 
 	// 共用型
+	@Transient
 	private Date syscdate;
+	@Transient
 	private String syscuser;
+	@Transient
 	private Date sysmdate;
+	@Transient
 	private String sysmuser;
+	@Transient
 	private Date sysodate;
+	@Transient
 	private String sysouser;
-
+	@Transient
 	private Boolean sysheader;
+	@Transient
 	private Integer sysstatus;
+	@Transient
 	private Integer syssort;
+	@Transient
 	private String sysnote;
 
 	// 群組型
 	@Id
 	private Long sgid;
+	@Transient
 	private Long sggid;
+	@Transient
 	private String sgname;
+	@Transient
 	private String sgpermission;
 
 	// UI使用(權限名稱/ID/Permission List)

@@ -194,6 +194,8 @@ public class WarehouseMaterialServiceAc {
 				entityDataOld.setWmspecification(x.getWmspecification());
 				entityDataOld.setWmadqty(x.getWmadqty());
 				entityDataOld.setWmaiqty(x.getWmaiqty());
+				entityDataOld.setWmmrcheck(x.getWmmrcheck());
+				entityDataOld.setWmsepncheck(x.getWmsepncheck());
 				entityDataOld.setChecksum(x.getChecksum());
 
 				saveDatas.add(entityDataOld);

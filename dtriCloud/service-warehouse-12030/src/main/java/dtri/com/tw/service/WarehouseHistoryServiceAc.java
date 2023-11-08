@@ -68,7 +68,7 @@ public class WarehouseHistoryServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, pageable);
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -106,8 +106,17 @@ public class WarehouseHistoryServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "whwmpnb", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "whcontent", "Ex:是件內容?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "whcontent", "Ex:事件內容?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "whtype", "Ex:類型?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "ssyscdate", "Ex:(起)", true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "esyscdate", "Ex:(終)", true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -118,7 +127,8 @@ public class WarehouseHistoryServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseHistory.class);
 
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWhwmpnb(), searchData.getWhcontent(), pageable);
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWhwmpnb(), searchData.getWhcontent(),
+					searchData.getWhtype(), searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

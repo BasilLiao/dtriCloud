@@ -53,24 +53,37 @@ public class SystemConfigDetail {
 	}
 
 	// 共用型
+	@Transient
 	private Date syscdate;
+	@Transient
 	private String syscuser;
+	@Transient
 	private Date sysmdate;
+	@Transient
 	private String sysmuser;
+	@Transient
 	private Date sysodate;
+	@Transient
 	private String sysouser;
-
+	@Transient
 	private Boolean sysheader;
+	@Transient
 	private Integer sysstatus;
+	@Transient
 	private Integer syssort;
+	@Transient
 	private String sysnote;
 
 	// 主體型
 	@Id
 	private Long scid;
+	@Transient
 	private Long scgid;
+	@Transient
 	private String scname;
+	@Transient
 	private String scgname;
+	@Transient
 	private String scvalue;
 
 	// 前端格式-修改/查詢用(翻譯與欄位)

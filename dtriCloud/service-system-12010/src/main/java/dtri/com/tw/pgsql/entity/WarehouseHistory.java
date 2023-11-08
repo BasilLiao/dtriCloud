@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -24,6 +25,7 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
+ * 
  *      ---物料異動-紀錄---<br>
  *      whwmpnb = "";物料號(品號)<br>
  *      whwmslocation = "";物料 主儲位位置 Ex:1F-GG-GG-GG<br>
@@ -31,7 +33,10 @@ import jakarta.persistence.Table;
  *      whcontent = "";事件內容 Ex:XXX使用者_ 從位置XXXX_料號XXXX_ (入料/領料/轉料/清點/其他)的XX數量_
  *      來至於XXX單據<br>
  *      whmac = "";Mac位置 進行事件內容人<br>
- * 
+ *      wheqty:ERP 數量<br>
+ *      whcqty:Cloud 數量<br>
+ *      whfuser:完成人<br>
+ *      whcheckin:是否核單(未核單/已核單)<br>
  * 
  */
 
@@ -58,6 +63,8 @@ public class WarehouseHistory {
 		this.whtype = "";
 		this.whcontent = "";
 		this.whmac = "";
+		this.wheqty = 0;
+		this.whcqty = 0;
 
 	}
 
@@ -100,6 +107,20 @@ public class WarehouseHistory {
 	private String whcontent;
 	@Column(name = "wh_mac", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String whmac;
+
+	@Column(name = "wh_e_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer wheqty;
+	@Column(name = "wh_c_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer whcqty;
+	@Column(name = "wh_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String whfuser;
+	@Column(name = "wh_checkin", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String whcheckin;
+	
+	@Transient
+	private Date ssyscdate;//起始時間
+	@Transient
+	private Date esyscdate;//結束時間
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -227,6 +248,54 @@ public class WarehouseHistory {
 
 	public void setWhmac(String whmac) {
 		this.whmac = whmac;
+	}
+
+	public Integer getWheqty() {
+		return wheqty;
+	}
+
+	public void setWheqty(Integer wheqty) {
+		this.wheqty = wheqty;
+	}
+
+	public Integer getWhcqty() {
+		return whcqty;
+	}
+
+	public void setWhcqty(Integer whcqty) {
+		this.whcqty = whcqty;
+	}
+
+	public String getWhfuser() {
+		return whfuser;
+	}
+
+	public void setWhfuser(String whfuser) {
+		this.whfuser = whfuser;
+	}
+
+	public String getWhcheckin() {
+		return whcheckin;
+	}
+
+	public void setWhcheckin(String whcheckin) {
+		this.whcheckin = whcheckin;
+	}
+
+	public Date getSsyscdate() {
+		return ssyscdate;
+	}
+
+	public void setSsyscdate(Date ssyscdate) {
+		this.ssyscdate = ssyscdate;
+	}
+
+	public Date getEsyscdate() {
+		return esyscdate;
+	}
+
+	public void setEsyscdate(Date esyscdate) {
+		this.esyscdate = esyscdate;
 	}
 
 }

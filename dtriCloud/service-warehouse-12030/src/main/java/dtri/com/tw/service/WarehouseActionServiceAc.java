@@ -710,7 +710,16 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
-					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
+					history.setWhtype("入料");
+					history.setWhwmslocation(incomingList.getBiltowho());
+					history.setWhcontent(incomingList.getBilclass() + "-" + //
+							incomingList.getBilsn() + "-" + incomingList.getBilnb() + "*" + //
+							incomingList.getBilpnqty());
+					history.setWhwmpnb(incomingList.getBilpnumber());
+					history.setWhfuser(incomingList.getBilfuser());
+					history.setWheqty(area.getWaerptqty());
+					history.setWhcqty(area.getWatqty());
+					history.setWhcheckin(incomingList.getBilcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}
 			} else {
@@ -736,8 +745,16 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
-
-					history.setWhcontent(x.getWasfuser() + "_Finished_&_Pname:" + x.getWaspname() + "_&_Qty:" + x.getWaspngqty());
+					history.setWhtype("領料");
+					history.setWhwmslocation(shippingList.getBslfromwho());
+					history.setWhcontent(shippingList.getBslclass() + "-" + //
+							shippingList.getBslsn() + "-" + //
+							shippingList.getBslnb() + "*" + shippingList.getBslpnqty());
+					history.setWhwmpnb(shippingList.getBslpnumber());
+					history.setWhfuser(shippingList.getBslfuser());
+					history.setWheqty(area.getWaerptqty());
+					history.setWhcqty(area.getWatqty());
+					history.setWhcheckin(shippingList.getBslcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}
 			}
