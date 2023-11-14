@@ -692,9 +692,9 @@ public class WarehouseActionServiceAc {
 					incomingList.setSysmuser(x.getWasfuser());
 					incomingList.setSysmdate(new Date());
 					// 如果 有同步數量/或已經撿了
-					if (incomingList.getBilpngqty() == incomingList.getBilpnqty()) {
+					if (incomingList.getBilpngqty().equals(incomingList.getBilpnqty())) {
+						System.out.println(incomingList.getBilpngqty() + ":" + incomingList.getBilpnqty());
 						// 只登記人->不做數量修正
-
 					} else {
 						// 超入(須入量<實入量)
 						if (x.getWaspnqty() < x.getWaspngqty()) {

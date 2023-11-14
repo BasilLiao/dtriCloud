@@ -378,6 +378,7 @@ public class WarehouseAssignmentServiceAc {
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
 			Field[] fields = WarehouseAssignment.class.getDeclaredFields();
+			Field[] fieldDetails = WarehouseAssignmentDetail.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			exceptionCell.add("material");
@@ -385,7 +386,7 @@ public class WarehouseAssignmentServiceAc {
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 			// 欄位翻譯(細節)
-			resultDetailTJsons = packageService.resultSet(fields, exceptionCell, mapLanguagesDetail);
+			resultDetailTJsons = packageService.resultSet(fieldDetails, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //

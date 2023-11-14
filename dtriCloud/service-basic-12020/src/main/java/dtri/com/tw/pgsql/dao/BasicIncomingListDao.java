@@ -21,4 +21,14 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilpnumber is null or c.bilpnumber=:bilpnumber) ")
 	ArrayList<BasicIncomingList> findAllBySearch(String bilclass, String bilsn, String bilpnumber, Pageable pageable);
 
+	@Query("SELECT c FROM BasicIncomingList c WHERE "//
+			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
+			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
+			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "// 類型
+			+ "(:bilmuser is null or (c.bilmuser LIKE %:bilmuser% or c.bilmuser='')) and "// 負責人
+			+ "(c.bilcuser !='') and " // 核准人
+			+ "(c.bilcheckin =1) and " // 已核單
+			+ "(:bilfuser is null or c.bilfuser =:bilfuser) ") // 已完成-負責人
+	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser, String bilfuser,
+			Pageable pageable);
 }

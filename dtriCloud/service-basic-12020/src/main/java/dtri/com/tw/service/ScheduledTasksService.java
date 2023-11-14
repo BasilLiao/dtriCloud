@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,12 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.bean.FtpUtilBean;
+import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
+import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.SystemConfig;
+import dtri.com.tw.pgsql.entity.WarehouseArea;
 
 /***
  * https://polinwei.com/spring-boot-scheduling-tasks/ 排程 cron:
@@ -42,6 +47,10 @@ public class ScheduledTasksService {
 	private SystemConfigDao sysDao;
 	@Value("${catalina.home}")
 	private String apache_path;
+	@Autowired
+	private WarehouseAreaDao areaDao;
+	@Autowired
+	private BasicIncomingListDao incomingListDao;
 
 	@Autowired
 	ERPSynchronizeService synchronizeService;
@@ -159,6 +168,27 @@ public class ScheduledTasksService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	// 每日(30)06:00分執行一次
+	// 自動同步
+	@Async
+	@Scheduled(cron = "0 30 06 * * ? ")
+	public void updateAreasAndIncoming() {
+		List<WarehouseArea> areas = areaDao.findAll();
+		areas.forEach(x -> {
+			x.setWatqty(x.getWaerptqty());
+			x.setSysmuser("system");
+			x.setSysmdate(new Date());
+		});
+		areaDao.saveAll(areas);
+		// 入料單-進行(匹配)->將數量修正 寫入
+		ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
+		reAll.forEach(bil -> {
+			bil.setBilpngqty(bil.getBilpnqty());
+		});
+		incomingListDao.saveAll(reAll);
+
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

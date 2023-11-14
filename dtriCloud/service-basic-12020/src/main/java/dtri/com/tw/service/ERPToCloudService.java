@@ -147,7 +147,7 @@ public class ERPToCloudService {
 		o.setSysmdate(new Date());
 		o.setSysnote(m.getTe014());
 		o.setBilerpcuser(m.getCreator());// 開單人
-		o.setSyshnote(m.getTa029());//單頭備註
+		o.setSyshnote(m.getTc007());// 單頭備註
 		// 預計入料日
 		if (m.getTa009() != null) {
 			o.setBiledate(Fm_T.toYMDate(m.getTa009()));
@@ -214,6 +214,7 @@ public class ERPToCloudService {
 		o.setSysstatus(sysstatus);// 0=尚未結束,1=結案
 		o.setSysnote(m.getTe014());// 備註
 		o.setBslerpcuser(m.getCreator());// 開單人
+		o.setSyshnote(m.getTc007());//單據備註
 		// 單據急迫性
 		if (wTFs.containsKey(o.getBslclass())) {
 			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
