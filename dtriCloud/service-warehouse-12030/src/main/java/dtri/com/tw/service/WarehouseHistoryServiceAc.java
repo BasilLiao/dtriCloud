@@ -68,7 +68,7 @@ public class WarehouseHistoryServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null, pageable);
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -112,6 +112,9 @@ public class WarehouseHistoryServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "whtype", "Ex:類型?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "whfuser", "Ex:人類名稱?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "ssyscdate", "Ex:(起)", true, //
 					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
@@ -127,8 +130,8 @@ public class WarehouseHistoryServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseHistory.class);
 
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWhwmpnb(), searchData.getWhcontent(),
-					searchData.getWhtype(), searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWhfuser(), searchData.getWhwmpnb(),
+					searchData.getWhcontent(), searchData.getWhtype(), searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -205,6 +208,9 @@ public class WarehouseHistoryServiceAc {
 
 			cellName = cellName.replace("wh_wmpnb", "wh_wm_p_nb");
 			cellName = cellName.replace("wh_wmslocation", "wh_wm_s_location");
+			cellName = cellName.replace("wh_fuser", "wh_f_user");
+			cellName = cellName.replace("wh_cqty", "wh_c_qty");
+			cellName = cellName.replace("wh_eqty", "wh_e_qty");
 
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白

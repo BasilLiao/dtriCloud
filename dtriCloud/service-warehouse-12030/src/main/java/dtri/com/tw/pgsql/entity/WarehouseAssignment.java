@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -42,6 +43,7 @@ import jakarta.persistence.Id;
 public class WarehouseAssignment {
 	public WarehouseAssignment() {
 		// 共用型
+
 		this.syscdate = new Date();
 		this.syscuser = "system";
 		this.sysmdate = new Date();
@@ -53,59 +55,87 @@ public class WarehouseAssignment {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
+		this.syshnote = "";// 單據備註
 		// 倉儲區域清單-清單
-		this.setWasaliaswmpnb("");// : 倉儲_物料號<br>
-		this.waserptqty = 0;// : (帳務)此區域物料數量<br>
-		this.wastqty = 0;// : (實際)此區域物料數量<br>
-		this.wasqcqty = 0;// : 進貨待驗<br>
+		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
 		this.wasschedule = "0/0";
+		this.waserpcuser = "";
 	}
 
 	// 共用型
+	@Transient
 	private Date syscdate;
+	@Transient
 	private String syscuser;
+	@Transient
 	private Date sysmdate;
+	@Transient
 	private String sysmuser;
+	@Transient
 	private Date sysodate;
+	@Transient
 	private String sysouser;
-
+	@Transient
 	private Boolean sysheader;
+	@Transient
 	private Integer sysstatus;
+	@Transient
 	private Integer syssort;
+	@Transient
 	private String sysnote;
+	@Transient
+	private String syshnote;
 
 	@Id
-	private String id;// 單別+單號+序號
+	private String id;
+	@Transient // 單別+單號+序號
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單
-	private String wasaliaswmpnb;// : 倉儲+物料號<br>
-	private Integer waserptqty;// : (帳務)此區域物料數量<br>
-	private Integer wastqty;// : (實際)此區域物料數量<br>
-	private Integer wasqcqty;// : 進貨待驗<br>
-
+	@Transient
+	private String wasaliaswmpnb;
 	// 單據
+	@Transient
 	private String wasclassname;// :單據名稱<br>
 	//
+	@Transient
 	private String wasclasssn;// :單別+單號<br>
+	@Transient
 	private String wasnb;// : 序號<br>
+	@Transient
 	private String wastype;// : 單據類型(領料類/入料類)<br>
+	@Transient
 	private String wascuser;// 核准人
+	@Transient
 	private String wasmuser;// : 可分配-負責人<br>
+	@Transient
 	private String wasfuser;// : 完成人<br>
+	@Transient
 	private String wasacceptance;// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+	@Transient
 	private String waspnumber;// : 物料號<br>
+	@Transient
 	private String waspname;// : 品名<br>
-	private Integer waspnqty;// : 數量<br>
-	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
-	private String wasstatusname;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
-	private Date wasedate;// : 預計領/入料日
-	private String wasschedule;// 進度(50/100)
-	private String waspalready;// 是否已打印(已打印/未打印)
 
+	@Transient
+	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+	@Transient
+	private String wasstatusname;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+	@Transient
+	private Date wasedate;// : 預計領/入料日
+	@Transient
+	private String wasschedule;// 進度(50/100)
+	@Transient
+	private String waspalready;// 是否已打印(已打印/未打印)
+	@Transient
 	private String wastocommand;// 單據指令對象 json [] A511-123456....<br>
+	@Transient
 	private String wasfromcommand;// 單據指令來源 json [] A511-123456....<br>
+	@Transient
 	private String wasfromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
+	@Transient
 	private String wastowho;// 物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
+	@Transient
+	private String waserpcuser;// 單據開單人....<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -259,14 +289,6 @@ public class WarehouseAssignment {
 		this.waspname = waspname;
 	}
 
-	public Integer getWaspnqty() {
-		return waspnqty;
-	}
-
-	public void setWaspnqty(Integer waspnqty) {
-		this.waspnqty = waspnqty;
-	}
-
 	public Integer getWasstatus() {
 		return wasstatus;
 	}
@@ -297,30 +319,6 @@ public class WarehouseAssignment {
 
 	public void setGid(String gid) {
 		this.gid = gid;
-	}
-
-	public Integer getWaserptqty() {
-		return waserptqty;
-	}
-
-	public void setWaserptqty(Integer waserptqty) {
-		this.waserptqty = waserptqty;
-	}
-
-	public Integer getWastqty() {
-		return wastqty;
-	}
-
-	public void setWastqty(Integer wastqty) {
-		this.wastqty = wastqty;
-	}
-
-	public Integer getWasqcqty() {
-		return wasqcqty;
-	}
-
-	public void setWasqcqty(Integer wasqcqty) {
-		this.wasqcqty = wasqcqty;
 	}
 
 	public String getWasnb() {
@@ -393,6 +391,22 @@ public class WarehouseAssignment {
 
 	public void setWaspalready(String waspalready) {
 		this.waspalready = waspalready;
+	}
+
+	public String getWaserpcuser() {
+		return waserpcuser;
+	}
+
+	public void setWaserpcuser(String waserpcuser) {
+		this.waserpcuser = waserpcuser;
+	}
+
+	public String getSyshnote() {
+		return syshnote;
+	}
+
+	public void setSyshnote(String syshnote) {
+		this.syshnote = syshnote;
 	}
 
 }

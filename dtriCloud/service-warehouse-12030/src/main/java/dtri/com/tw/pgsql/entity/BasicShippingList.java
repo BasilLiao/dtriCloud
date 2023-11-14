@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
  *      sys_m_user : 修改人名<br>
  *      sys_ver : 修改版本<br>
  *      sys_note : 備註<br>
+ *      sys_h_note : 表單頭備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
  *      ---入料單-清單---<br>
@@ -79,6 +80,7 @@ public class BasicShippingList {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
+		this.syshnote = "";
 		// 入料單-清單
 		this.bslid = null;
 		this.bslnb = "";
@@ -107,6 +109,7 @@ public class BasicShippingList {
 		this.bsltfilter = false;
 		this.bslpalready = 0;
 		this.checkrm = true;
+		this.bslerpcuser = "";
 	}
 
 	// 共用型
@@ -131,6 +134,8 @@ public class BasicShippingList {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
+	private String syshnote;
 
 	// 入料單-清單
 	@Id
@@ -149,6 +154,8 @@ public class BasicShippingList {
 
 	@Column(name = "bsl_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bslcheckin;
+	@Column(name = "bsl_erp_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bslerpcuser;
 	@Column(name = "bsl_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslcuser;
 	@Column(name = "bsl_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -543,6 +550,22 @@ public class BasicShippingList {
 
 	public void setCheckrm(Boolean checkrm) {
 		this.checkrm = checkrm;
+	}
+
+	public String getSyshnote() {
+		return syshnote;
+	}
+
+	public void setSyshnote(String syshnote) {
+		this.syshnote = syshnote;
+	}
+
+	public String getBslerpcuser() {
+		return bslerpcuser;
+	}
+
+	public void setBslerpcuser(String bslerpcuser) {
+		this.bslerpcuser = bslerpcuser;
 	}
 
 }

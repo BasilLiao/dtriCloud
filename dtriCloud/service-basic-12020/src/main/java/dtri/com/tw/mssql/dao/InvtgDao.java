@@ -30,8 +30,11 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
-			+ "	'領料類'  AS TK000 "//
-			+ "FROM "//
+			+ "	'領料類' AS TK000 ,"//
+			+ "	INVTG.CREATE_DATE,"//--建立單據時間
+			+ "	INVTG.MODI_DATE,"//--修改單據時間
+			+ "	INVTG.CREATOR "//--建立單據者
+			+ " FROM "//
 			+ "	[DTR_TW].[dbo].INVTF"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].INVTG AS INVTG "// ---借出單身

@@ -20,6 +20,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA021, "// --生產產線別
 			+ "	MOCTA.TA034, "// --產品品名
 			+ "	MOCTA.TA035, "// --產品規格
+			+ "	MOCTA.TA029, "// --產品備註
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004, "// --(需領用 - 已領用) = 未領用
 			+ "	MOCTB.TB005, "// --已領用
 			+ "	MOCTE.TE008 AS TB009, "// --(改為 領調/退料單的)庫別
@@ -39,8 +40,11 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ " COALESCE(PURMA.MA002,'') AS MA002,  "// --供應商名稱
-			+ "	'入料類'  AS TK000 "//
-			+ "FROM "//
+			+ "	'入料類'  AS TK000, "//
+			+ " MOCTE.CREATE_DATE, "//--建立單據時間
+			+ "	MOCTE.MODI_DATE,"//--修改單據時間
+			+ "	MOCTE.CREATOR "//--建立單據者
+			+ " FROM "//
 			+ "	[DTR_TW].[dbo].MOCTE AS MOCTE"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身

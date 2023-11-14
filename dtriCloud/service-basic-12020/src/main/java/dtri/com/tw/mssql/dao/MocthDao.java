@@ -31,8 +31,11 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
-			+ "	'入料類'  AS TK000 "//
-			+ "FROM"//
+			+ "	'入料類' AS TK000,"//
+			+ "	MOCTI.CREATE_DATE,"// --建立單據時間
+			+ "	MOCTI.MODI_DATE,"// --修改單據時間
+			+ "	MOCTI.CREATOR "// --建立單據者
+			+ " FROM "//
 			+ "	[DTR_TW].[dbo].MOCTH"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTI AS MOCTI "// --委外單身

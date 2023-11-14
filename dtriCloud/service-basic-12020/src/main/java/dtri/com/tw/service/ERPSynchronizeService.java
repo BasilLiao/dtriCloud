@@ -175,7 +175,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBclfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBclfuser().equals("") || o.getBclfuser().equals("ERP_Remove(Auto)"))) {
 					Mocta m = erpMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -232,7 +232,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Purth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -317,7 +317,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Mocte m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -341,7 +341,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
 					Mocte m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -422,7 +422,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Moctf m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -488,7 +488,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Mocth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -568,7 +568,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Invtg m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -592,7 +592,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
 					Invtg m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -684,7 +684,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Invth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -708,7 +708,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
 					Invth m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -823,7 +823,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBilfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
 					Invta m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -849,7 +849,7 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && o.getBslfuser().equals("")) {
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
 					Invta m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換

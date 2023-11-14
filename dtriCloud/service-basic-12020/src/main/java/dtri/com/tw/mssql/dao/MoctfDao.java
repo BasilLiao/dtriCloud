@@ -21,7 +21,8 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "	MOCTG.TG022, "// --簽核確認碼 Y/N/V
 			+ "	MOCTF.TF014, "// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]傳送次數[DEF:0]
 			+ "	MOCTF.TF003,"// --入庫時間
-
+			+ "	MOCTF.TF005,"// --單頭備註
+			
 			+ "	INVMB.MB001,"// --品號
 			+ "	INVMB.MB002,"// --品名
 			+ "	INVMB.MB003,"// --規格
@@ -32,8 +33,11 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "	INVMB.MB040,"// --主要-補貨倍量
 			+ "	CMSMC.MC002,"// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002,"// --供應商名稱
-			+ "	'入料類'  AS TK000 "//
-			+ "FROM "//
+			+ "	'入料類'  AS TK000, "// --
+			+ "	MOCTF.CREATE_DATE, "// --建立單據時間
+			+ "	MOCTF.MODI_DATE, "// --修改單據時間
+			+ "	MOCTF.CREATOR "// --建立單據者
+			+ " FROM "//
 			+ "	[DTR_TW].[dbo].MOCTF"// --入庫單頭
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTG AS MOCTG "// --入庫單身

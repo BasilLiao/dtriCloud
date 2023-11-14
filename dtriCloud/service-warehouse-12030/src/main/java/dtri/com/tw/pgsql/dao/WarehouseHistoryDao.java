@@ -15,10 +15,13 @@ public interface WarehouseHistoryDao extends JpaRepository<WarehouseHistory, Lon
 	@Query("SELECT c FROM WarehouseHistory c WHERE "//
 			+ "(:whwmpnb is null or c.whwmpnb LIKE %:whwmpnb%) and "//
 			+ "(:whcontent is null or c.whcontent LIKE %:whcontent%) and " //
+			+ "(:whfuser is null or c.whfuser LIKE %:whfuser%) and " //
 			+ "(cast(:ssyscdate as date) is null or c.syscdate >= :ssyscdate) and " //
 			+ "(cast(:esyscdate as date) is null or c.syscdate <= :esyscdate) and " //
 			+ "(:whtype is null or c.whtype LIKE %:whtype%)") //
-	ArrayList<WarehouseHistory> findAllBySearch(String whwmpnb, String whcontent, String whtype, Date ssyscdate, Date esyscdate, Pageable pageable);
+	ArrayList<WarehouseHistory> findAllBySearch(String whfuser,
+			String whwmpnb, String whcontent, String whtype, Date ssyscdate, Date esyscdate,
+			Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM WarehouseHistory c WHERE "//

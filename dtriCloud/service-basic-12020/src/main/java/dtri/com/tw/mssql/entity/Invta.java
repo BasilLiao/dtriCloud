@@ -61,6 +61,12 @@ public class Invta implements Cloneable {
 	private String ma002;// 供應商名稱
 	@Column(name = "TK000")
 	private String tk000;// 入庫單
+	@Column(name = "CREATE_DATE")
+	private String createdate;// 單據建立時間
+	@Column(name = "MODI_DATE")
+	private String modidate;// 單據修改時間
+	@Column(name = "CREATOR")
+	private String creator;// 單據建立者
 
 	// 檢查新的?
 	@Transient
@@ -216,6 +222,30 @@ public class Invta implements Cloneable {
 
 	public void setNewone(boolean newone) {
 		this.newone = newone;
+	}
+
+	public String getCreatedate() {
+		return createdate;
+	}
+
+	public void setCreatedate(String createdate) {
+		this.createdate = createdate;
+	}
+
+	public String getModidate() {
+		return modidate;
+	}
+
+	public void setModidate(String modidate) {
+		this.modidate = modidate;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 
 	@Override

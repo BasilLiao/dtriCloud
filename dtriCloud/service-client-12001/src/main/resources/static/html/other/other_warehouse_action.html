@@ -661,7 +661,7 @@ other={
 						//所有的細節資料
 						for(var d=0;d<entityDetailJsons.length;d++){
 							if(entityDetailJsons[d][entityGKey]==k.split("_")[1]){
-								var wasmuser = entityDetailJsons[d].wasmuser;
+								var waspnumber = entityDetailJsons[d].waspnumber;
 								var was_tofrom_who =  "";
 								var wasclasssn = entityDetailJsons[d].wasclasssn;
 								var wasnb = entityDetailJsons[d].wasnb;
@@ -670,7 +670,7 @@ other={
 								}else{
 									was_tofrom_who = entityDetailJsons[d].wasfromwho;
 								}
-								sortEntity[wasmuser+was_tofrom_who+"_"+wasclasssn+"_"+wasnb] = entityDetailJsons[d];
+								sortEntity[was_tofrom_who+"_"+waspnumber+"_"+wasclasssn+"_"+wasnb] = entityDetailJsons[d];
 							}
 						}
 					}

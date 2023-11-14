@@ -31,7 +31,10 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
-			+ "	'入料類'  AS TK000"//
+			+ "	'入料類'  AS TK000,"//
+			+ "	PURTH.CREATE_DATE,"// --建立單據時間
+			+ "	PURTH.MODI_DATE,"// --修改單據時間
+			+ "	PURTH.CREATOR "// --建立單據者
 			+ " FROM "//
 			+ "	[DTR_TW].[dbo].PURTH AS PURTH "// --進貨單身
 			+ "	LEFT JOIN "//
@@ -47,7 +50,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	PURTH.TH028 != '3' "// 除了 不合格
 			+ "	AND (PURTH.TH030 LIKE 'N' OR PURTH.TH030 LIKE 'Y' ) "// 已結項目 與 未結項目
 			+ "	AND PURTH.TH007 > 0 "// 數量大於0
-			+ "	AND (PURTH.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)"//
+			+ "	AND (PURTH.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
 			+ "	OR PURTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//
 			+ "	PURTH.TH001+'-'+PURTH.TH002+'-'+PURTH.TH003 ASC ,"// --進貨單號

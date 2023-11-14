@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
  *      sys_m_user : 修改人名<br>
  *      sys_ver : 修改版本<br>
  *      sys_note : 備註<br>
+ *      sys_h_note : 表單頭備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
  *      ---入料單-清單---<br>
@@ -79,6 +80,7 @@ public class BasicIncomingList {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
+		this.syshnote = "";
 		// 入料單-清單
 		this.bilid = null;
 		this.bilnb = "";
@@ -107,6 +109,7 @@ public class BasicIncomingList {
 		this.biltfilter = false;
 		this.bilpalready = 0;
 		this.checkrm = false;
+		this.bilerpcuser = "";
 	}
 
 	// 共用型
@@ -131,6 +134,8 @@ public class BasicIncomingList {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
+	private String syshnote;
 
 	// 入料單-清單
 	@Id
@@ -149,6 +154,8 @@ public class BasicIncomingList {
 
 	@Column(name = "bil_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bilcheckin;
+	@Column(name = "bil_erp_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bilerpcuser;
 	@Column(name = "bil_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilcuser;
 	@Column(name = "bil_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -543,6 +550,22 @@ public class BasicIncomingList {
 
 	public void setCheckrm(Boolean checkrm) {
 		this.checkrm = checkrm;
+	}
+
+	public String getSyshnote() {
+		return syshnote;
+	}
+
+	public void setSyshnote(String syshnote) {
+		this.syshnote = syshnote;
+	}
+
+	public String getBilerpcuser() {
+		return bilerpcuser;
+	}
+
+	public void setBilerpcuser(String bilerpcuser) {
+		this.bilerpcuser = bilerpcuser;
 	}
 
 }

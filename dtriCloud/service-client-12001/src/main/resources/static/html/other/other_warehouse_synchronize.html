@@ -122,19 +122,19 @@
 								</b>
 							</button>
 							<button id="btn_synchronize_qty" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Synchronize<br>qty(S1)
+								<b>Synchronize<br>Qty(S1)
 								</b>
 							</button>
 							<button id="btn_synchronize_item" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Synchronize<br>item(S2)
+								<b>Synchronize<br>Item.OK(S2)
 								</b>
 							</button>
 							<button id="btn_synchronize_remove" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Synchronize<br>removeAll(S3)
+								<b>Synchronize<br>RemoveAll(S3)
 								</b>
 							</button>
-							<button id="btn_synchronize_check" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Synchronize<br>check.OK!(S4)
+							<button id="btn_synchronize_doc" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>Synchronize<br>Doc.OK!(S4)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
@@ -144,10 +144,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-4 col-lg-1 p-1">
+				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
+							<div id="check_confirm" class="lh-1 col p-1 m-1 h3">None</div>
 							<button id="btn_confirm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Confirm<br>send()
 								</b>
@@ -304,7 +305,7 @@ other={
 				$("#btn_synchronize_remove").addClass("disabled");
 			}
 			if(ps[2] != 1){//修改(S4)2
-				$("#btn_synchronize_check").addClass("disabled");
+				$("#btn_synchronize_doc").addClass("disabled");
 			}
 			
 			
@@ -686,39 +687,54 @@ other={
 			$(document).on("click", "#search_c #btn_synchronize_qty", function (event) {
 				console.log("btn_synchronize_qty");
 				other.data.action ="Qty";
-				$('.wsspnumber').removeClass("text-danger");
-				$('.wsspnumber').removeClass("text-warning");
-				$('.wsspnumber').removeClass("text-success");
-				$('.wslclasssn').removeClass("text-info");	
-				$('.wsspnumber').addClass("text-success");
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').removeClass("text-info");	
+				$('#check_confirm').addClass("text-success");
+				$('#check_confirm').text("Qty");
 			});
-			//監聽-同步單據項目
+			//監聽-同步單據項目->指定 確認
 			$(document).off("click", "#search_c #btn_synchronize_item");
 			$(document).on("click", "#search_c #btn_synchronize_item", function (event) {
 				console.log("btn_synchronize_item");
-				other.data.action ="Item";
-				$('.wsspnumber').removeClass("text-danger");
-				$('.wsspnumber').removeClass("text-warning");
-				$('.wsspnumber').removeClass("text-success");
-				$('.wslclasssn').removeClass("text-info");	
-				$('.wsspnumber').addClass("text-warning");
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').removeClass("text-info");	
+				$('#check_confirm').addClass("text-warning");
+				$('#check_confirm').text("Item.OK");
+				$('#search_cr_open tbody tr').each(function( index ) {
+					//有勾選的
+					if($(this).find('input').prop("checked")){
+						other.data.action ="Item";
+						$(this).find(".wsspnumber").addClass("text-warning");					
+					}
+				});
 			});
 			//監聽-移除所有單據
 			$(document).off("click", "#search_c #btn_synchronize_remove");
 			$(document).on("click", "#search_c #btn_synchronize_remove", function (event) {
 				console.log("btn_synchronize_remove");
 				other.data.action ="Remove";
-				$('.wsspnumber').removeClass("text-danger");
-				$('.wsspnumber').removeClass("text-warning");
-				$('.wsspnumber').removeClass("text-success");
-				$('.wsspnumber').addClass("text-danger");
-				$('.wslclasssn').removeClass("text-info");	
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').addClass("text-danger");
+				$('#check_confirm').removeClass("text-info");	
+				$('#check_confirm').text("Remove");
 			});
 			//監聽-選取最後確認
-			$(document).off("click", "#search_c #btn_synchronize_check");
-			$(document).on("click", "#search_c #btn_synchronize_check", function (event) {
-				console.log("btn_synchronize_check");
+			$(document).off("click", "#search_c #btn_synchronize_doc");
+			$(document).on("click", "#search_c #btn_synchronize_doc", function (event) {
+				console.log("btn_synchronize_doc");
 				console.log(other.data.markDetails);
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').addClass("text-info");	
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').text("Doc.OK");
 				$('#search_dcr_open tbody tr').each(function( index ) {
 					//有勾選的
 						if($(this).find('input').prop("checked")){
@@ -735,10 +751,11 @@ other={
 				other.data.marks=[];
 				other.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
-				$('.wsspnumber').removeClass("text-danger");
-				$('.wsspnumber').removeClass("text-warning");
-				$('.wsspnumber').removeClass("text-success");
-				$('.wslclasssn').removeClass("text-info");	
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').removeClass("text-info");	
+				$('#check_confirm').text("None");
 				
 			});
 			//監聽-打印
@@ -753,7 +770,11 @@ other={
 			$(document).on("click", "#search_c #btn_confirm", function (event) {
 				console.log("btn_confirm");
 				other.methods.confirmSend();
-				
+				$('#check_confirm').removeClass("text-danger");
+				$('#check_confirm').removeClass("text-warning");
+				$('#check_confirm').removeClass("text-success");
+				$('#check_confirm').removeClass("text-info");	
+				$('#check_confirm').text("None");
 			});
 			//監聽-查詢
 			$(document).off("click", "#search_c #btn_send");
@@ -878,9 +899,9 @@ other={
 				//傳送....
 				other.data.action ="Qty";
 			}else if(other.data.action=="Item"){
-				action = "S2";//同步單據項目
+				action = "S2";//單據項目->解決
 				data = {};
-				data['entityJson'] = JSON.stringify('{}');
+				data['entityJson'] = JSON.stringify(other.data.marks);
 				data['entityDetailJson'] = JSON.stringify('{}');
 				//傳送....
 				other.data.action ="Item";
@@ -1081,7 +1102,7 @@ other={
 			$(document).off("click", "#search_c #btn_urgency");
 			$(document).off("click", "#search_c #btn_synchronize_qty");
 			$(document).off("click", "#search_c #btn_synchronize_item");
-			$(document).off("click", "#search_c #btn_synchronize_check");
+			$(document).off("click", "#search_c #btn_synchronize_doc");
 			
 
 			$(document).off("click", "#search_c #exthDetailAll");

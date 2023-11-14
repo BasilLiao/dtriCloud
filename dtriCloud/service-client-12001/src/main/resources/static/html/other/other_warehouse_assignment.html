@@ -678,7 +678,7 @@ other={
 				console.log("btn_agree");
 				other.methods.searchToModify("btn_agree");
 			});
-			//監聽-暫停
+			//監聽-略過
 			$(document).off("click", "#search_c #btn_passAll");
 			$(document).on("click", "#search_c #btn_passAll", function (event) {
 				console.log("btn_passAll");
@@ -704,6 +704,13 @@ other={
 				other.data.marks=[];
 				other.data.markDetails=[];
 				$('.exTbodyTh input').prop("checked",false);
+				//移除資料
+				$('#search_cr_open .wasclasssn').removeClass('text-primary');
+				$('#search_cr_open .wasclasssn').removeClass('text-success');
+				$('#search_cr_open .wasclasssn').removeClass('text-danger');
+				$('#search_cr_open .wasclasssn').removeClass('text-warning');
+				
+				$("#btn_send").trigger("click");
 				
 			});
 			//監聽-打印
@@ -795,47 +802,44 @@ other={
 					
 					switch(order){
 					case "btn_agree":
-						$('.'+this.className+' .wascuser').removeClass('text-success');
-						$('.'+this.className+' .wasfuser').removeClass('text-success');
-						if($('.'+this.className+' .wascuser').hasClass('text-primary')){	
-							$('.'+this.className+' .wascuser').text("");
-							$('.'+this.className+' .wasfuser').text("");
-							$('.'+this.className+' .wascuser').removeClass('text-primary');
-						}else{
-							$('.'+this.className+' .wasfuser').text("");
-							$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
-							$('.'+this.className+' .wascuser').addClass('text-primary');
-						}
+						//異動資料
+						$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
+						//標記顏色
+						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
+						$('.'+this.className+' .wasclasssn').removeClass('text-success');
+						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
+						$('.'+this.className+' .wasclasssn').addClass('text-primary');
 					break;
 					case "btn_passAll":
-						$('.'+this.className+' .wascuser').removeClass('text-primary');
-						if($('.'+this.className+' .wascuser').hasClass('text-success')){	
-							$('.'+this.className+' .wascuser').text("");
-							$('.'+this.className+' .wasfuser').text("");
-							$('.'+this.className+' .wascuser').removeClass('text-success');
-							$('.'+this.className+' .wasfuser').removeClass('text-success');
-						}else{
-							$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
-							$('.'+this.className+' .wasfuser').text($('#menu_login_name').text());
-							$('.'+this.className+' .wascuser').addClass('text-success');
-							$('.'+this.className+' .wasfuser').addClass('text-success');
-						}
+						//異動資料
+						$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
+						$('.'+this.className+' .wasfuser').text($('#menu_login_name').text());
+						//標記顏色
+						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
+						$('.'+this.className+' .wasclasssn').removeClass('text-success');
+						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
+						$('.'+this.className+' .wasclasssn').addClass('text-success');
+						
 					break;
 					case "btn_urgency":
-						$('.'+this.className+' .wasstatus').text("0");
-						if($('.'+this.className+' .wasstatusname').hasClass('text-warning')){	
-							$('.'+this.className+' .wasstatusname').removeClass('text-warning');
-						}else{
-							$('.'+this.className+' .wasstatus').text("1");
-							$('.'+this.className+' .wasstatusname').addClass('text-warning');
-						}
+						//異動資料
+						$('.'+this.className+' .wasstatus').text("1");
+						//標記顏色
+						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
+						$('.'+this.className+' .wasclasssn').removeClass('text-success');
+						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
+						$('.'+this.className+' .wasclasssn').addClass('text-warning');
 					break;
 					case "btn_returnAll":
-						if($('.'+this.className+' .wasclasssn ').hasClass('text-danger')){	
-							$('.'+this.className+' .wasclasssn ').removeClass('text-danger');
-						}else{
-							$('.'+this.className+' .wasclasssn ').addClass('text-danger');
-						}
+						//標記顏色
+						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
+						$('.'+this.className+' .wasclasssn').removeClass('text-success');
+						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
+						$('.'+this.className+' .wasclasssn').addClass('text-danger');
 					break;
 					}
 				}
@@ -898,7 +902,7 @@ other={
 			//確認選取
 			$('#search_cr_open tbody tr').each(function() {
 				//同意:核准人
-				if($('.'+this.className+' .wascuser').hasClass('text-primary')){
+				if($('.'+this.className+' .wasclasssn').hasClass('text-primary')){
 					var entityJosn={};
 					$(this).find('.valTbodytd').each(function(index){ 
 						var val = $(this).text();
@@ -912,7 +916,7 @@ other={
 					dataHeaderAgree.push(entityJosn);
 				}
 				//同意:略過此單據
-				if($('.'+this.className+' .wascuser').hasClass('text-success')){
+				if($('.'+this.className+' .wasclasssn').hasClass('text-success')){
 					var entityJosn={};
 					$(this).find('.valTbodytd').each(function(index){ 
 						var val = $(this).text();
@@ -927,7 +931,7 @@ other={
 					
 				}
 				//登記:急單
-				if($('.'+this.className+' .wasstatusname').hasClass('text-warning')){
+				if($('.'+this.className+' .wasclasssn').hasClass('text-warning')){
 					var entityJosn={};
 					$(this).find('.valTbodytd').each(function(index){ 
 						var val = $(this).text();
@@ -942,7 +946,7 @@ other={
 					
 				}
 				//登記:返回
-				if($('.'+this.className+' .wasclasssn ').hasClass('text-danger')){
+				if($('.'+this.className+' .wasclasssn').hasClass('text-danger')){
 					var entityJosn={};
 					$(this).find('.valTbodytd').each(function(index){ 
 						var val = $(this).text();
@@ -954,9 +958,7 @@ other={
 						entityJosn[name] = val;
 					});
 					dataHeaderReturnAll.push(entityJosn);
-					
 				}
-
 			});
 			console.log(dataHeaderAgree);
 			console.log(dataHeaderPassAll);

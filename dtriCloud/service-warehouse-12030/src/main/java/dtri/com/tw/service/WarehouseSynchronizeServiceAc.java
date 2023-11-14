@@ -210,7 +210,7 @@ public class WarehouseSynchronizeServiceAc {
 					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
 				}
 				// 登記完成項目?
-				if (in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
+				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
 			});
@@ -240,7 +240,7 @@ public class WarehouseSynchronizeServiceAc {
 					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
 				}
 				// 登記完成項目?
-				if (sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
+				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
 			});
@@ -447,7 +447,7 @@ public class WarehouseSynchronizeServiceAc {
 					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
 				}
 				// 登記完成項目?
-				if (in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
+				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
 			});
@@ -477,7 +477,7 @@ public class WarehouseSynchronizeServiceAc {
 					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
 				}
 				// 登記完成項目?
-				if (sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
+				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
 			});
@@ -486,11 +486,21 @@ public class WarehouseSynchronizeServiceAc {
 				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
 			});
 
+			// 進度
+			entityDetails.forEach(ent -> {
+				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+				int lfh = listFinish.get(ent.getId());
+				int ltl = listTotail.get(ent.getId());
+				if (lfh == ltl) {
+					entityDetailOks.add(ent);
+				}
+			});
+
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJsonDatas);
-			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			String entityJsonDetails = packageService.beanToJson(entityDetailOks);
 			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// 查不到資料
@@ -522,24 +532,38 @@ public class WarehouseSynchronizeServiceAc {
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
 		if (action.equals("Item")) {
-			incomingLists.forEach(x -> {
-				if (x.getBilpngqty() != 0 && x.getBilfuser().equals("")) {
-					x.setBilpngqty(x.getBilpnqty());
-					x.setBilfuser("System(Synchronize_Pass)");
-					x.setSysmuser(packageBean.getUserAccount());
-					x.setSysmdate(new Date());
+			String finishItem = packageBean.getEntityJson().replaceAll("_", "");
+			JsonObject object = packageService.StringToJson(finishItem);
+			Date updateDate = new Date();
+			object.keySet().forEach((k) -> {
+				System.out.println(k);
+				// 入料
+				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], k.split("-")[2]);
+				if (ins.size() > 0) {
+					ins.forEach((update_in) -> {
+						update_in.setBilsuser(packageBean.getUserAccount());
+						update_in.setSysmuser(packageBean.getUserAccount());
+						update_in.setSysmdate(updateDate);
+						if (update_in.getBilfuser().equals("")) {
+							update_in.setBilfuser(packageBean.getUserAccount());
+						}
+					});
+					incomingListDao.saveAll(ins);
+				}
+				// 領料
+				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], k.split("-")[2]);
+				if (shs.size() > 0) {
+					shs.forEach((update_sh) -> {
+						update_sh.setBslsuser(packageBean.getUserAccount());
+						update_sh.setSysmuser(packageBean.getUserAccount());
+						update_sh.setSysmdate(updateDate);
+						if (update_sh.getBslfuser().equals("")) {
+							update_sh.setBslfuser(packageBean.getUserAccount());
+						}
+					});
+					shippingListDao.saveAll(shs);
 				}
 			});
-			shippingLists.forEach(x -> {
-				if (x.getBslpngqty() != 0 && x.getBslfuser().equals("")) {
-					x.setBslpngqty(x.getBslpnqty());
-					x.setBslfuser("System(Synchronize_Pass)");
-					x.setSysmuser(packageBean.getUserAccount());
-					x.setSysmdate(new Date());
-				}
-			});
-			incomingListDao.saveAll(incomingLists);
-			shippingListDao.saveAll(shippingLists);
 		}
 		if (action.equals("Qty")) {
 			areas.forEach(x -> {

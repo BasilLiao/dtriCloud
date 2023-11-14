@@ -42,7 +42,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
 			+ "(c.bilpnqty !=c.bilpngqty or c.bilpnoqty !=0) and "// 領的數量不同於需求量
-			+ "(c.bilfuser != '') and (c.bilsuser = '') and (c.bilsuser = '') ") // 已完成+最後-同步人
+			+ "(c.bilfuser != 'ERP_Remove(Auto)') and (c.bilfuser != '') and (c.bilsuser = '') and (c.bilsuser = '') ") // 已完成+最後-同步人
 	ArrayList<BasicIncomingList> findAllBySearchSynchronize(String bilclass, String bilsn, String biltype, Pageable pageable);
 
 	// 同步查詢用(單據完成率)

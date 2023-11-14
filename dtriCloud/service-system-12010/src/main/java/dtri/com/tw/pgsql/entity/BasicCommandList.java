@@ -72,6 +72,7 @@ public class BasicCommandList {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
+		this.syshnote = "";
 		// 入料單-清單
 		this.bclid = null;
 		this.bclnb = "";
@@ -79,6 +80,7 @@ public class BasicCommandList {
 		this.bclsn = "";
 		this.bcltype = "";
 		this.bclcheckin = 0;
+		this.bclerpcuser = "";
 		this.bclcuser = "";
 		this.bclfuser = "";
 		this.bclacceptance = 0;
@@ -119,6 +121,8 @@ public class BasicCommandList {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
+	private String syshnote;
 
 	// 入料單-清單
 	@Id
@@ -139,6 +143,8 @@ public class BasicCommandList {
 
 	@Column(name = "bcl_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bclcheckin;
+	@Column(name = "bcl_erp_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bclerpcuser;
 	@Column(name = "bcl_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bclcuser;
 	@Column(name = "bcl_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -460,6 +466,22 @@ public class BasicCommandList {
 
 	public void setCheckrm(Boolean checkrm) {
 		this.checkrm = checkrm;
+	}
+
+	public String getSyshnote() {
+		return syshnote;
+	}
+
+	public void setSyshnote(String syshnote) {
+		this.syshnote = syshnote;
+	}
+
+	public String getBclerpcuser() {
+		return bclerpcuser;
+	}
+
+	public void setBclerpcuser(String bclerpcuser) {
+		this.bclerpcuser = bclerpcuser;
 	}
 
 }

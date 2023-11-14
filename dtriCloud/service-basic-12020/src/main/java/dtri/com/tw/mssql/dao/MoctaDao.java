@@ -31,7 +31,10 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	INVMB.MB040, "// --主要-補貨倍量
 			+ "	COALESCE(CMSMC.MC002,'') AS MC002, "// --倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
-			+ "	'製令類' AS TK000"//
+			+ "	'製令類' AS TK000 ,"//
+			+ "	MOCTB.CREATE_DATE,"// --建立單據時間
+			+ "	MOCTB.MODI_DATE,"// --修改單據時間
+			+ "	MOCTB.CREATOR "// --建立單據者
 			+ " FROM "//
 			+ "	[DTR_TW].[dbo].MOCTA AS MOCTA "// --製令單頭
 			+ "	LEFT JOIN "//

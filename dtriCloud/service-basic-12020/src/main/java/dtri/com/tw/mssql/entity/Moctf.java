@@ -38,6 +38,8 @@ public class Moctf {
 	private String tf003;// --入庫時間
 	@Column(name = "TF014")
 	private String tf014;// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]傳送次數[DEF:0]
+	@Column(name = "TF005")
+	private String tf005;// --單頭備註
 
 	@Column(name = "MB001")
 	private String mb001;// 品號
@@ -61,6 +63,12 @@ public class Moctf {
 	private String ma002;// 主要-供應商名稱
 	@Column(name = "TK000")
 	private String tk000;// 入庫單
+	@Column(name = "CREATE_DATE")
+	private String createdate;// 單據建立時間
+	@Column(name = "MODI_DATE")
+	private String modidate;// 單據修改時間
+	@Column(name = "CREATOR")
+	private String creator;// 單據建立者
 
 	// 檢查新的?
 	@Transient
@@ -240,6 +248,38 @@ public class Moctf {
 
 	public void setTg022(String tg022) {
 		this.tg022 = tg022;
+	}
+
+	public String getTf005() {
+		return tf005;
+	}
+
+	public void setTf005(String tf005) {
+		this.tf005 = tf005;
+	}
+
+	public String getCreatedate() {
+		return createdate;
+	}
+
+	public void setCreatedate(String createdate) {
+		this.createdate = createdate;
+	}
+
+	public String getModidate() {
+		return modidate;
+	}
+
+	public void setModidate(String modidate) {
+		this.modidate = modidate;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 
 	@Override

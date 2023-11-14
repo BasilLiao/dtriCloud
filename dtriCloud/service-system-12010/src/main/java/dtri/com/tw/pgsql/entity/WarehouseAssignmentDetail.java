@@ -40,10 +40,9 @@ import jakarta.persistence.Transient;
  *      was_from_command : 指示來源<br>
  */
 @Entity
-public class WarehouseAssignment {
-	public WarehouseAssignment() {
+public class WarehouseAssignmentDetail {
+	public WarehouseAssignmentDetail() {
 		// 共用型
-
 		this.syscdate = new Date();
 		this.syscuser = "system";
 		this.sysmdate = new Date();
@@ -55,11 +54,12 @@ public class WarehouseAssignment {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		this.syshnote = "";// 單據備註
 		// 倉儲區域清單-清單
-		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
+		this.setWasaliaswmpnb("");// : 倉儲_物料號<br>
+		this.waserptqty = 0;// : (帳務)此區域物料數量<br>
+		this.wastqty = 0;// : (實際)此區域物料數量<br>
+		this.wasqcqty = 0;// : 進貨待驗<br>
 		this.wasschedule = "0/0";
-		this.waserpcuser = "";
 	}
 
 	// 共用型
@@ -83,16 +83,21 @@ public class WarehouseAssignment {
 	private Integer syssort;
 	@Transient
 	private String sysnote;
-	@Transient
-	private String syshnote;
 
 	@Id
-	private String id;
-	@Transient // 單別+單號+序號
+	private String id;// 單別+單號+序號
+	@Transient
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單
 	@Transient
-	private String wasaliaswmpnb;
+	private String wasaliaswmpnb;// : 倉儲+物料號<br>
+	@Transient
+	private Integer waserptqty;// : (帳務)此區域物料數量<br>
+	@Transient
+	private Integer wastqty;// : (實際)此區域物料數量<br>
+	@Transient
+	private Integer wasqcqty;// : 進貨待驗<br>
+
 	// 單據
 	@Transient
 	private String wasclassname;// :單據名稱<br>
@@ -115,7 +120,8 @@ public class WarehouseAssignment {
 	private String waspnumber;// : 物料號<br>
 	@Transient
 	private String waspname;// : 品名<br>
-
+	@Transient
+	private Integer waspnqty;// : 數量<br>
 	@Transient
 	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	@Transient
@@ -134,8 +140,6 @@ public class WarehouseAssignment {
 	private String wasfromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
 	@Transient
 	private String wastowho;// 物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
-	@Transient
-	private String waserpcuser;// 單據開單人....<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -289,6 +293,14 @@ public class WarehouseAssignment {
 		this.waspname = waspname;
 	}
 
+	public Integer getWaspnqty() {
+		return waspnqty;
+	}
+
+	public void setWaspnqty(Integer waspnqty) {
+		this.waspnqty = waspnqty;
+	}
+
 	public Integer getWasstatus() {
 		return wasstatus;
 	}
@@ -319,6 +331,30 @@ public class WarehouseAssignment {
 
 	public void setGid(String gid) {
 		this.gid = gid;
+	}
+
+	public Integer getWaserptqty() {
+		return waserptqty;
+	}
+
+	public void setWaserptqty(Integer waserptqty) {
+		this.waserptqty = waserptqty;
+	}
+
+	public Integer getWastqty() {
+		return wastqty;
+	}
+
+	public void setWastqty(Integer wastqty) {
+		this.wastqty = wastqty;
+	}
+
+	public Integer getWasqcqty() {
+		return wasqcqty;
+	}
+
+	public void setWasqcqty(Integer wasqcqty) {
+		this.wasqcqty = wasqcqty;
 	}
 
 	public String getWasnb() {
@@ -391,22 +427,6 @@ public class WarehouseAssignment {
 
 	public void setWaspalready(String waspalready) {
 		this.waspalready = waspalready;
-	}
-
-	public String getWaserpcuser() {
-		return waserpcuser;
-	}
-
-	public void setWaserpcuser(String waserpcuser) {
-		this.waserpcuser = waserpcuser;
-	}
-
-	public String getSyshnote() {
-		return syshnote;
-	}
-
-	public void setSyshnote(String syshnote) {
-		this.syshnote = syshnote;
 	}
 
 }

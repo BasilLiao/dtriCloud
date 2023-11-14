@@ -41,6 +41,8 @@ public class Mocte {
 	private String ta034;// 成品品名
 	@Column(name = "TA035")
 	private String ta035;// 成品規格
+	@Column(name = "TA029")
+	private String ta029;// 單頭備註
 
 	@Column(name = "TB004")
 	private Integer tb004;// 需領用
@@ -82,6 +84,12 @@ public class Mocte {
 	private String ma002;// 主要-供應商名稱
 	@Column(name = "TK000")
 	private String tk000;// 製令單
+	@Column(name = "CREATE_DATE")
+	private String createdate;// 單據建立時間
+	@Column(name = "MODI_DATE")
+	private String modidate;// 單據修改時間
+	@Column(name = "CREATOR")
+	private String creator;// 單據建立者
 
 	// 檢查新的?
 	@Transient
@@ -317,6 +325,38 @@ public class Mocte {
 
 	public void setTe019(String te019) {
 		this.te019 = te019;
+	}
+
+	public String getTa029() {
+		return ta029;
+	}
+
+	public void setTa029(String ta029) {
+		this.ta029 = ta029;
+	}
+
+	public String getCreatedate() {
+		return createdate;
+	}
+
+	public void setCreatedate(String createdate) {
+		this.createdate = createdate;
+	}
+
+	public String getModidate() {
+		return modidate;
+	}
+
+	public void setModidate(String modidate) {
+		this.modidate = modidate;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 
 	@Override
