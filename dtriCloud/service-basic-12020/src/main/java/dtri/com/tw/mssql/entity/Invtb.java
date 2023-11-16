@@ -15,7 +15,11 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "INVTB")
 @EntityListeners(AuditingEntityListener.class)
-public class Invtb {
+public class Invtb implements Cloneable {
+	public Invtb() {
+		this.newone = true;
+	}
+
 	@Id
 	@Column(name = "INVTB_ID")
 	private Long mocid;
@@ -52,6 +56,11 @@ public class Invtb {
 	// 檢查新的?
 	@Transient
 	private boolean newone;
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	public Long getMocid() {
 		return mocid;

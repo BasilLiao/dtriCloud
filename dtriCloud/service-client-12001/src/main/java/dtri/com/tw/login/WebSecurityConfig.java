@@ -155,9 +155,10 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_ass).hasAuthority(actionRole(warehouse_ass, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_ass + ".AR").hasAuthority(actionRole(warehouse_ass, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".SS1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1->打印標記)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S2").hasAuthority(actionRole(warehouse_ass, "S2"))// (修改S2)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S3").hasAuthority(actionRole(warehouse_ass, "S3"))// (修改S3)
-				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S4").hasAuthority(actionRole(warehouse_ass, "s4"))// (修改S4)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S4").hasAuthority(actionRole(warehouse_ass, "S4"))// (修改S4)
 
 				// -客製化
 				// ----請求-warehouse_action-(訪問) ----

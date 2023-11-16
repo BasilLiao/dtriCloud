@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import dtri.com.tw.mssql.entity.Bomtd;
+import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
@@ -214,7 +216,7 @@ public class ERPToCloudService {
 		o.setSysstatus(sysstatus);// 0=尚未結束,1=結案
 		o.setSysnote(m.getTe014());// 備註
 		o.setBslerpcuser(m.getCreator());// 開單人
-		o.setSyshnote(m.getTc007());//單據備註
+		o.setSyshnote(m.getTc007());// 單據備註
 		// 單據急迫性
 		if (wTFs.containsKey(o.getBslclass())) {
 			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
@@ -744,6 +746,246 @@ public class ERPToCloudService {
 			String wkeyLocal = wkey.split("_")[2];
 			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
 					&& wkeyWarehouse.equals(m.getTb012())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
+			}
+		}
+		o.setBslmuser(bilmuser);
+		return o;
+	}
+
+	// ============ -OK 組合單/A421 ============
+	// 入料類-轉換(Bomtd)
+	public BasicIncomingList incomingOneBomtd(BasicIncomingList o, Bomtd m, String checkSum, //
+			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+		// 是否結單?
+		int sysstatus = 0;
+		if (m.getTd016().equals("Y")) {
+			sysstatus = 1;
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTd007());// 已入庫量
+			}
+		}
+		// 資料匹配
+		o.setChecksum(checkSum);
+		o.setBilfuser("");
+		o.setBilclass(m.getTe001_te002_te003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
+		o.setBilsn(m.getTe001_te002_te003().split("-")[1].replaceAll("\\s", ""));// 借入庫單[號]
+		o.setBilnb(m.getTe001_te002_te003().split("-")[2].replaceAll("\\s", ""));// 序號
+		o.setBiltype(m.getTk000());// 入庫單
+		o.setBilcheckin(sysstatus);// 0=未核單 1=已核單
+		o.setBilacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBilpnumber(m.getMb001());// 物料號品號
+		o.setBilpname(m.getMb002());// 品名
+		o.setBilpspecification(m.getMb003());// 規格
+		o.setBilpnqty(m.getTd007());// 數量
+		o.setBiledate(new Date());// 預計入料日
+		o.setSysstatus(0);// 未完成
+		o.setSysmdate(new Date());
+		o.setBilerpcuser(m.getCreator());// 開單人
+		if (wTFs.containsKey(o.getBilclass())) {
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
+		}
+		// 而外匹配 [單別]
+		o.setBilfromcommand("[_]");// 單據來源 [_]
+		o.setBiltocommand("[_]");// 單據對象 [_]
+		// 而外匹配 [倉別代號+倉別名稱+位置]
+		String biltowho = m.getTd010() + "_";
+		String wAsKey = m.getTd010() + "_" + m.getMb001();
+		if (wAs.containsKey(wAsKey)) {
+			biltowho = m.getTd010() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+		}
+		o.setBiltowho("[" + biltowho + "]");
+		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
+		// 而外匹配 [儲位負責]
+		String bilmuser = "";
+		for (String wkey : wKs.keySet()) {
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTd010())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
+			}
+		}
+		o.setBilmuser(bilmuser);
+		return o;
+	}
+
+	// 領料類-轉換(Bomtd)
+	public BasicShippingList shippingOneBomtd(BasicShippingList o, Bomtd m, String checkSum, //
+			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+		// 是否結單?
+		int sysstatus = 0;
+		if (m.getTe010().equals("Y")) {
+			sysstatus = 1;
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTe008());// 已領庫量
+			}
+		}
+		// 資料匹配
+		o.setChecksum(checkSum);
+		o.setBslfuser("");
+		o.setBslclass(m.getTe001_te002_te003().split("-")[0]);// 借出庫單[別]
+		o.setBslsn(m.getTe001_te002_te003().split("-")[1]);// 借出庫單[號]
+		o.setBslnb(m.getTe001_te002_te003().split("-")[2]);// 序號
+		o.setBsltype(m.getTk000());// 入庫單
+		o.setBslcheckin(sysstatus);// 0=未核單 1=已核單
+		o.setBslacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBslpnumber(m.getMb001());// 物料號品號
+		o.setBslpname(m.getMb002());// 品名
+		o.setBslpspecification(m.getMb003());// 規格
+		o.setBslpnqty(m.getTe008());// 數量
+		o.setBsledate(new Date());// 預計日
+		o.setSysstatus(sysstatus);// 未完成
+		o.setSysmdate(new Date());
+		o.setBslerpcuser(m.getCreator());// 開單人
+
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
+		// 而外匹配 [單別]
+		o.setBslfromcommand("[_]");//
+		o.setBsltocommand("[_]");//
+		// 而外匹配 [倉別代號+倉別名稱+位置]
+		String bilfromwho = m.getTe007() + "_";
+		String wAsKey = m.getTe007() + "_" + m.getMb001();
+		if (wAs.containsKey(wAsKey)) {
+			bilfromwho = m.getTe007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+		}
+		o.setBsltowho("[_" + m.getTd004() + "]");// 目的[_對象]
+		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
+		// 而外匹配 [儲位負責]
+		String bilmuser = "";
+		for (String wkey : wKs.keySet()) {
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTe007())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
+			}
+		}
+		o.setBslmuser(bilmuser);
+		return o;
+	}
+
+	// ============ -OK 拆解單/A431 ============
+	// 入料類-轉換(Bomtf)
+	public BasicIncomingList incomingOneBomtf(BasicIncomingList o, Bomtf m, String checkSum, //
+			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+		// 是否結單?
+		int sysstatus = 0;
+		if (m.getTg010().equals("Y")) {
+			sysstatus = 1;
+			if (o.getBilpngqty() == 0) {
+				o.setBilpngqty(m.getTg008());// 已入庫量
+			}
+		}
+		// 資料匹配
+		o.setChecksum(checkSum);
+		o.setBilfuser("");
+		o.setBilclass(m.getTg001_tg002_tg003().split("-")[0].replaceAll("\\s", ""));// 借入庫單[別]
+		o.setBilsn(m.getTg001_tg002_tg003().split("-")[1].replaceAll("\\s", ""));// 借入庫單[號]
+		o.setBilnb(m.getTg001_tg002_tg003().split("-")[2].replaceAll("\\s", ""));// 序號
+		o.setBiltype(m.getTk000());// 入庫單
+		o.setBilcheckin(sysstatus);// 0=未核單 1=已核單
+		o.setBilacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBilpnumber(m.getMb001());// 物料號品號
+		o.setBilpname(m.getMb002());// 品名
+		o.setBilpspecification(m.getMb003());// 規格
+		o.setBilpnqty(m.getTg008());// 數量
+		o.setBiledate(new Date());// 預計入料日
+		o.setSysstatus(0);// 未完成
+		o.setSysmdate(new Date());
+		o.setBilerpcuser(m.getCreator());// 開單人
+		if (wTFs.containsKey(o.getBilclass())) {
+			// 單據急迫性
+			o.setBilstatus(wTFs.get(o.getBilclass()).getWtfurgency());
+		}
+		// 而外匹配 [單別]
+		o.setBilfromcommand("[_]");// 單據來源 [_]
+		o.setBiltocommand("[_]");// 單據對象 [_]
+		// 而外匹配 [倉別代號+倉別名稱+位置]
+		String biltowho = m.getTg007() + "_";
+		String wAsKey = m.getTg007() + "_" + m.getMb001();
+		if (wAs.containsKey(wAsKey)) {
+			biltowho = m.getTg007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+		}
+		o.setBiltowho("[" + biltowho + "]");
+		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
+		// 而外匹配 [儲位負責]
+		String bilmuser = "";
+		for (String wkey : wKs.keySet()) {
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && biltowho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTg007())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
+			}
+		}
+		o.setBilmuser(bilmuser);
+		return o;
+	}
+
+	// 領料類-轉換(Bomtd)
+	public BasicShippingList shippingOneBomtf(BasicShippingList o, Bomtf m, String checkSum, //
+			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+		// 是否結單?
+		int sysstatus = 0;
+		if (m.getTg010().equals("Y")) {
+			sysstatus = 1;
+			if (o.getBslpngqty() == 0) {
+				o.setBslpngqty(m.getTf007());// 已領庫量
+			}
+		}
+		// 資料匹配
+		o.setChecksum(checkSum);
+		o.setBslfuser("");
+		o.setBslclass(m.getTg001_tg002_tg003().split("-")[0]);// 借出庫單[別]
+		o.setBslsn(m.getTg001_tg002_tg003().split("-")[1]);// 借出庫單[號]
+		o.setBslnb(m.getTg001_tg002_tg003().split("-")[2]);// 序號
+		o.setBsltype(m.getTk000());// 入庫單
+		o.setBslcheckin(sysstatus);// 0=未核單 1=已核單
+		o.setBslacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBslpnumber(m.getMb001());// 物料號品號
+		o.setBslpname(m.getMb002());// 品名
+		o.setBslpspecification(m.getMb003());// 規格
+		o.setBslpnqty(m.getTf007());// 數量
+		o.setBsledate(new Date());// 預計日
+		o.setSysstatus(sysstatus);// 未完成
+		o.setSysmdate(new Date());
+		o.setBslerpcuser(m.getCreator());// 開單人
+
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
+		// 而外匹配 [單別]
+		o.setBslfromcommand("[_]");//
+		o.setBsltocommand("[_]");//
+		// 而外匹配 [倉別代號+倉別名稱+位置]
+		String bilfromwho = m.getTf007() + "_";
+		String wAsKey = m.getTf007() + "_" + m.getMb001();
+		if (wAs.containsKey(wAsKey)) {
+			bilfromwho = m.getTf007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+		}
+		o.setBsltowho("[_" + m.getTf008() + "]");// 目的[_對象]
+		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
+		// 而外匹配 [儲位負責]
+		String bilmuser = "";
+		for (String wkey : wKs.keySet()) {
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTf008())) {
 				bilmuser += wkeyAccount + "_";
 				// break;
 			}

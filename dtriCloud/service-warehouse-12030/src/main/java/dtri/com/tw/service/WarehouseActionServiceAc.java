@@ -31,6 +31,7 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseAction;
+import dtri.com.tw.pgsql.entity.WarehouseActionDetail;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseShortageList;
@@ -100,7 +101,7 @@ public class WarehouseActionServiceAc {
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseAction> entitys = new ArrayList<WarehouseAction>();
-		ArrayList<WarehouseAction> entityDetails = new ArrayList<WarehouseAction>();
+		ArrayList<WarehouseActionDetail> entityDetails = new ArrayList<WarehouseActionDetail>();
 		Map<String, String> entityChecks = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
@@ -130,7 +131,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				WarehouseAction e = new WarehouseAction();
+				WarehouseActionDetail e = new WarehouseActionDetail();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -176,8 +177,33 @@ public class WarehouseActionServiceAc {
 				if (entityChecks.size() < 50) {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
-						// 限制大小20張單
-						entitys.add(e);
+						// 限制大小50張單
+						WarehouseAction eh = new WarehouseAction();
+						eh.setId(Key);
+						eh.setGid(headerKey);
+						eh.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+						eh.setWasclasssn(headerKey);// 單據+單據號
+						eh.setWasnb(sh.getBslnb());// 序號
+						eh.setWastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+						eh.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+						eh.setWasfuser(sh.getBslfuser());// 完成人
+						eh.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
+						eh.setWaspname(sh.getBslpname());// : 品名<br>
+						eh.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+						eh.setWasedate(sh.getBsledate());// 預計領料/預計入料
+						eh.setWastocommand(sh.getBsltocommand());// 指令(對象)
+						eh.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
+						eh.setWastowho(sh.getBsltowho());// 物件(對象)
+						eh.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+						//
+						eh.setWasaliaswmpnb(e.getWasaliaswmpnb());// 倉儲_物料號
+						//
+						eh.setSyscdate(sh.getSyscdate());
+						eh.setSyscuser(sh.getSyscuser());
+						eh.setSysmdate(sh.getSysmdate());
+						eh.setSysmuser(sh.getSysmuser());
+						eh.setSysnote(sh.getSyshnote());
+						entitys.add(eh);
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
@@ -190,7 +216,7 @@ public class WarehouseActionServiceAc {
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
-				WarehouseAction e = new WarehouseAction();
+				WarehouseActionDetail e = new WarehouseActionDetail();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -231,7 +257,33 @@ public class WarehouseActionServiceAc {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
-						entitys.add(e);
+						// 限制大小50張單
+						WarehouseAction eh = new WarehouseAction();
+						eh.setId(Key);
+						eh.setGid(headerKey);
+						eh.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+						eh.setWasclasssn(headerKey);// 單據+單據號
+						eh.setWasnb(in.getBilnb());// 序號
+						eh.setWastype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+						eh.setWasmuser(in.getBilmuser());// : 可分配-負責人<br>
+						eh.setWasfuser(in.getBilfuser());// 完成人
+						eh.setWaspnumber(in.getBilpnumber());// : 物料號<br>
+						eh.setWaspname(in.getBilpname());// : 品名<br>
+						eh.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+						eh.setWasedate(in.getBiledate());// 預計領料/預計入料
+						eh.setWastocommand(in.getBiltocommand());// 指令(對象)
+						eh.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
+						eh.setWastowho(in.getBiltowho());// 物件(對象)
+						eh.setWasfromwho(in.getBilfromwho());// 物件(來源)
+						//
+						eh.setWasaliaswmpnb(e.getWasaliaswmpnb());// 倉儲_物料號
+						//
+						eh.setSyscdate(in.getSyscdate());
+						eh.setSyscuser(in.getSyscuser());
+						eh.setSysmdate(in.getSysmdate());
+						eh.setSysmuser(in.getSysmuser());
+						eh.setSysnote(in.getSyshnote());
+						entitys.add(eh);
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
@@ -271,6 +323,8 @@ public class WarehouseActionServiceAc {
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
 			Field[] fields = WarehouseAction.class.getDeclaredFields();
+			Field[] fieldDteails = WarehouseActionDetail.class.getDeclaredFields();
+
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			exceptionCell.add("material");
@@ -278,7 +332,7 @@ public class WarehouseActionServiceAc {
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 			// 欄位翻譯(細節)
-			resultDetailTJsons = packageService.resultSet(fields, exceptionCell, mapLanguagesDetail);
+			resultDetailTJsons = packageService.resultSet(fieldDteails, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
@@ -330,7 +384,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				WarehouseAction e = new WarehouseAction();
+				WarehouseActionDetail e = new WarehouseActionDetail();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -370,7 +424,33 @@ public class WarehouseActionServiceAc {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
-						entitys.add(e);
+						// 限制大小50張單
+						WarehouseAction eh = new WarehouseAction();
+						eh.setId(Key);
+						eh.setGid(headerKey);
+						eh.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+						eh.setWasclasssn(headerKey);// 單據+單據號
+						eh.setWasnb(sh.getBslnb());// 序號
+						eh.setWastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+						eh.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+						eh.setWasfuser(sh.getBslfuser());// 完成人
+						eh.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
+						eh.setWaspname(sh.getBslpname());// : 品名<br>
+						eh.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+						eh.setWasedate(sh.getBsledate());// 預計領料/預計入料
+						eh.setWastocommand(sh.getBsltocommand());// 指令(對象)
+						eh.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
+						eh.setWastowho(sh.getBsltowho());// 物件(對象)
+						eh.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+						//
+						eh.setWasaliaswmpnb(e.getWasaliaswmpnb());// 倉儲_物料號
+						//
+						eh.setSyscdate(sh.getSyscdate());
+						eh.setSyscuser(sh.getSyscuser());
+						eh.setSysmdate(sh.getSysmdate());
+						eh.setSysmuser(sh.getSysmuser());
+						eh.setSysnote(sh.getSyshnote());
+						entitys.add(eh);
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
@@ -383,7 +463,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
-				WarehouseAction e = new WarehouseAction();
+				WarehouseActionDetail e = new WarehouseActionDetail();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -423,7 +503,33 @@ public class WarehouseActionServiceAc {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
-						entitys.add(e);
+						// 限制大小50張單
+						WarehouseAction eh = new WarehouseAction();
+						eh.setId(Key);
+						eh.setGid(headerKey);
+						eh.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+						eh.setWasclasssn(headerKey);// 單據+單據號
+						eh.setWasnb(in.getBilnb());// 序號
+						eh.setWastype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+						eh.setWasmuser(in.getBilmuser());// : 可分配-負責人<br>
+						eh.setWasfuser(in.getBilfuser());// 完成人
+						eh.setWaspnumber(in.getBilpnumber());// : 物料號<br>
+						eh.setWaspname(in.getBilpname());// : 品名<br>
+						eh.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
+						eh.setWasedate(in.getBiledate());// 預計領料/預計入料
+						eh.setWastocommand(in.getBiltocommand());// 指令(對象)
+						eh.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
+						eh.setWastowho(in.getBiltowho());// 物件(對象)
+						eh.setWasfromwho(in.getBilfromwho());// 物件(來源)
+						//
+						eh.setWasaliaswmpnb(e.getWasaliaswmpnb());// 倉儲_物料號
+						//
+						eh.setSyscdate(in.getSyscdate());
+						eh.setSyscuser(in.getSyscuser());
+						eh.setSysmdate(in.getSysmdate());
+						eh.setSysmuser(in.getSysmuser());
+						eh.setSysnote(in.getSyshnote());
+						entitys.add(eh);
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
@@ -484,7 +590,7 @@ public class WarehouseActionServiceAc {
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseAction> entitys = new ArrayList<WarehouseAction>();
-		ArrayList<WarehouseAction> entityDetails = new ArrayList<WarehouseAction>();
+		ArrayList<WarehouseActionDetail> entityDetails = new ArrayList<WarehouseActionDetail>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -519,7 +625,7 @@ public class WarehouseActionServiceAc {
 						String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 						String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
-						WarehouseAction e = new WarehouseAction();
+						WarehouseActionDetail e = new WarehouseActionDetail();
 						e.setId(Key);
 						e.setGid(headerKey);
 						// 進料單
@@ -564,7 +670,7 @@ public class WarehouseActionServiceAc {
 						String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 						String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-						WarehouseAction e = new WarehouseAction();
+						WarehouseActionDetail e = new WarehouseActionDetail();
 						e.setId(Key);
 						e.setGid(headerKey);
 						// 進料單
@@ -633,14 +739,14 @@ public class WarehouseActionServiceAc {
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<WarehouseHistory> entityHistories = new ArrayList<>();
-		ArrayList<WarehouseAction> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseActionDetail> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<WarehouseAction>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<WarehouseActionDetail>>() {
 			});
 			// Step2.資料檢查
-			for (WarehouseAction entityData : entityDatas) {
+			for (WarehouseActionDetail entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
 				ArrayList<BasicIncomingList> checkIncomingDatas = incomingListDao.findAllByCheckUser(//
 						entityData.getWasclasssn().split("-")[0], //

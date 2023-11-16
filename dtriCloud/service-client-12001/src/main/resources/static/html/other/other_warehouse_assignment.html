@@ -149,7 +149,7 @@
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
 							<button id="btn_printerForm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Printer<br>form()
+								<b>Printer<br>form(S1)
 								</b>
 							</button>
 							<button id="btn_confirm" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -709,6 +709,7 @@ other={
 				$('#search_cr_open .wasclasssn').removeClass('text-success');
 				$('#search_cr_open .wasclasssn').removeClass('text-danger');
 				$('#search_cr_open .wasclasssn').removeClass('text-warning');
+				$('#search_cr_open .wasclasssn').removeClass('text-info');
 				
 				$("#btn_send").trigger("click");
 				
@@ -718,6 +719,7 @@ other={
 			$(document).on("click", "#search_c #btn_printerForm", function (event) {
 				console.log("btn_printerForm");
 				other.methods.searchToPrint(null);
+				other.methods.searchToModify("btn_printerForm");
 				
 			});
 			//監聽-修改傳送
@@ -799,16 +801,16 @@ other={
 			$('#search_cr_open tbody tr').each(function() {
 				if($('.'+this.className+' input').prop("checked")){
 					//console.log(this.className+" "+ $('.'+this.className+' input').prop("checked"));
-					
+						$('.'+this.className+' .wasclasssn').removeClass('text-info');
+						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
+						$('.'+this.className+' .wasclasssn').removeClass('text-success');
+						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
 					switch(order){
 					case "btn_agree":
 						//異動資料
 						$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
 						//標記顏色
-						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
-						$('.'+this.className+' .wasclasssn').removeClass('text-success');
-						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
-						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
 						$('.'+this.className+' .wasclasssn').addClass('text-primary');
 					break;
 					case "btn_passAll":
@@ -816,10 +818,6 @@ other={
 						$('.'+this.className+' .wascuser').text($('#menu_login_name').text());
 						$('.'+this.className+' .wasfuser').text($('#menu_login_name').text());
 						//標記顏色
-						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
-						$('.'+this.className+' .wasclasssn').removeClass('text-success');
-						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
-						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
 						$('.'+this.className+' .wasclasssn').addClass('text-success');
 						
 					break;
@@ -827,20 +825,18 @@ other={
 						//異動資料
 						$('.'+this.className+' .wasstatus').text("1");
 						//標記顏色
-						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
-						$('.'+this.className+' .wasclasssn').removeClass('text-success');
-						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
-						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
 						$('.'+this.className+' .wasclasssn').addClass('text-warning');
 					break;
 					case "btn_returnAll":
 						//標記顏色
-						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
-						$('.'+this.className+' .wasclasssn').removeClass('text-success');
-						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
-						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
 						$('.'+this.className+' .wasclasssn').addClass('text-danger');
 					break;
+					case "btn_printerForm":
+						//標記顏色
+						$('.'+this.className+' .wasclasssn').addClass('text-info');
+					break;
+					
+					
 					}
 				}
 			});
@@ -894,6 +890,7 @@ other={
 			var entityGKey = other.data.entityGKey;
 			var entityDateTime = other.data.entityDateTime;
 			
+			var dataHeaderPrint = [];
 			var dataHeaderAgree = [];
 			var dataHeaderPassAll = [];
 			var dataHeaderUrgency = [];
@@ -901,6 +898,20 @@ other={
 			
 			//確認選取
 			$('#search_cr_open tbody tr').each(function() {
+				//標記:以打印
+				if($('.'+this.className+' .wasclasssn').hasClass('text-info')){
+					var entityJosn={};
+					$(this).find('.valTbodytd').each(function(index){ 
+						var val = $(this).text();
+						var name = $(this).attr('class').split(' ')[1];
+						//可能是時間格式
+						if(entityDateTime.indexOf(name)>=0){
+							val = new Date(val).getTime();	
+						}
+						entityJosn[name] = val;
+					});
+					dataHeaderPrint.push(entityJosn);
+				}
 				//同意:核准人
 				if($('.'+this.className+' .wasclasssn').hasClass('text-primary')){
 					var entityJosn={};
@@ -964,6 +975,8 @@ other={
 			console.log(dataHeaderPassAll);
 			console.log(dataHeaderReturnAll);
 			console.log(dataHeaderUrgency);
+			console.log(dataHeaderPrint);
+			
 			//移除
 			$('#search_cr_open .valTbodytd').
 			removeClass('text-success').removeClass('text-primary').
@@ -998,7 +1011,14 @@ other={
 				data = {};
 				data['entityJson'] = JSON.stringify(dataHeaderUrgency);
 				data['entityDetailJson'] = JSON.stringify('{}');
+			}else if(dataHeaderPrint.length>0){
+				action = "SS1";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify(dataHeaderPrint);
+				data['entityDetailJson'] = JSON.stringify('{}');
 			}
+			
 			if(data!=null){
 				//包裝
 				data['callBackFunction'] = "other_modify";
@@ -1019,6 +1039,13 @@ other={
 			var data={};
 			var req_data={};
 			var searchPageSet={};
+			//移除除標記
+			$('#search_cr_open .wasclasssn').removeClass('text-primary');
+			$('#search_cr_open .wasclasssn').removeClass('text-success');
+			$('#search_cr_open .wasclasssn').removeClass('text-danger');
+			$('#search_cr_open .wasclasssn').removeClass('text-warning');
+			$('#search_cr_open .wasclasssn').removeClass('text-info');
+			
 			//查詢
 			$("#searchItem .searchVal").each(function( index ) {
 				//console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());

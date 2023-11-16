@@ -46,10 +46,8 @@ public class WarehouseAction {
 
 		this.sysnote = "";
 		// 倉儲區域清單-清單
-		this.setWasaliaswmpnb("");// : 倉儲_物料號<br>
-		this.waserptqty = 0;// : (帳務)此區域物料數量<br>
-		this.wastqty = 0;// : (實際)此區域物料數量<br>
-		this.wasqcqty = 0;// : 進貨待驗<br>
+		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
+
 	}
 
 	// 共用型
@@ -64,9 +62,6 @@ public class WarehouseAction {
 	private String gid;// 別+單號
 	// 倉儲區域清單-清單
 	private String wasaliaswmpnb;// : 倉儲+物料號<br>
-	private Integer waserptqty;// : (帳務)此區域物料數量<br>
-	private Integer wastqty;// : (實際)此區域物料數量<br>
-	private Integer wasqcqty;// : 進貨待驗<br>
 
 	// 單據
 	private String wasclassname;// :單據名稱<br>
@@ -78,8 +73,6 @@ public class WarehouseAction {
 	private String wasfuser;// : 完成人<br>
 	private String waspnumber;// : 物料號<br>
 	private String waspname;// : 品名<br>
-	private Integer waspnqty;// : 數量<br>
-	private Integer waspngqty;// : 已完成數量<br>
 	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	private Date wasedate;// : 預計領/入料日
 
@@ -152,30 +145,6 @@ public class WarehouseAction {
 		this.wasaliaswmpnb = wasaliaswmpnb;
 	}
 
-	public Integer getWaserptqty() {
-		return waserptqty;
-	}
-
-	public void setWaserptqty(Integer waserptqty) {
-		this.waserptqty = waserptqty;
-	}
-
-	public Integer getWastqty() {
-		return wastqty;
-	}
-
-	public void setWastqty(Integer wastqty) {
-		this.wastqty = wastqty;
-	}
-
-	public Integer getWasqcqty() {
-		return wasqcqty;
-	}
-
-	public void setWasqcqty(Integer wasqcqty) {
-		this.wasqcqty = wasqcqty;
-	}
-
 	public String getWasclassname() {
 		return wasclassname;
 	}
@@ -240,14 +209,6 @@ public class WarehouseAction {
 		this.waspname = waspname;
 	}
 
-	public Integer getWaspnqty() {
-		return waspnqty;
-	}
-
-	public void setWaspnqty(Integer waspnqty) {
-		this.waspnqty = waspnqty;
-	}
-
 	public Integer getWasstatus() {
 		return wasstatus;
 	}
@@ -296,11 +257,4 @@ public class WarehouseAction {
 		this.wastowho = wastowho;
 	}
 
-	public Integer getWaspngqty() {
-		return waspngqty;
-	}
-
-	public void setWaspngqty(Integer waspngqty) {
-		this.waspngqty = waspngqty;
-	}
 }

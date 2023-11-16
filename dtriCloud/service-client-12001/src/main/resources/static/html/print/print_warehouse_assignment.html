@@ -111,7 +111,7 @@ print={
 			//$('#print_qrcode').qrcode({width: 60,height: 60,text: "01-255-610073"});
 	     	var divContents = $("#printContent").html();
             var printWindow = window.open('', '', 'height=800,width=500');
-            
+            //新視窗處理
             printWindow.document.write('<html><head><title>DIV Contents</title>');
             printWindow.document.write('<style> @media print{.noprint{display:none;}}</style>');
             printWindow.document.write('</head><body style="font-size: 12px; margin: 1;line-height: 17px;font-family: sans-serif;">');
@@ -130,7 +130,7 @@ print={
             printWindow.print();
 		},
 		printPrepare(dataHeader,dataBody,entityIKey,entityGKey){
-			//
+			//打印
 			$('#print_title').trigger('click');
 			$(".printList").remove();
 			console.log(dataHeader);
@@ -159,12 +159,9 @@ print={
 				print_ex.find(".pr_bslfromwho").text(h.wasfromwho);//來源
 				print_ex.find(".pr_user").text(h.wasmuser);//負責人
 				print_ex.find(".pr_sysnote").text(h.sysnote);//備註
-				
 				$('#print_l #print_start').after(print_ex);
-				
 			});
 			//細節
-			
 		},
 		destroy() {
 			//銷毀

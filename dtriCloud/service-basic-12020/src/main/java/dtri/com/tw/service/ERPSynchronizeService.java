@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dtri.com.tw.mssql.dao.BomtdDao;
+import dtri.com.tw.mssql.dao.BomtfDao;
 import dtri.com.tw.mssql.dao.InvtaDao;
 import dtri.com.tw.mssql.dao.InvtbDao;
 import dtri.com.tw.mssql.dao.InvtgDao;
@@ -21,6 +23,8 @@ import dtri.com.tw.mssql.dao.MocteDao;
 import dtri.com.tw.mssql.dao.MoctfDao;
 import dtri.com.tw.mssql.dao.MocthDao;
 import dtri.com.tw.mssql.dao.PurthDao;
+import dtri.com.tw.mssql.entity.Bomtd;
+import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtb;
 import dtri.com.tw.mssql.entity.Invtg;
@@ -50,6 +54,11 @@ import dtri.com.tw.shared.Fm_T;
 
 @Service
 public class ERPSynchronizeService {
+
+	@Autowired
+	BomtdDao bomtdDao;
+	@Autowired
+	BomtfDao bomtfDao;
 	@Autowired
 	InvtaDao invtaDao;
 	@Autowired
@@ -269,11 +278,17 @@ public class ERPSynchronizeService {
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
-	// ============ A541 廠內領料單/ A542 補料單/ A551 委外領料單/ A561 廠內退料單/ A571 委外退料單
+	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571
+	// 委外退料單
 	public void erpSynchronizeMocte() {
 		logger.info("===erpSynchronizeMocte: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Mocte> erpEntitys = mocteDao.findAllByMocte();
+		ArrayList<Mocte> erpoEntitys = mocteDao.findAllByMocteo();
+		// 放入內容
+		erpoEntitys.forEach(teo -> {
+			erpEntitys.add(teo);
+		});
 		Map<String, Mocte> erpInMaps = new HashMap<>();
 		Map<String, Mocte> erpShMaps = new HashMap<>();
 		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
@@ -349,7 +364,8 @@ public class ERPSynchronizeService {
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
-					(o.getBslclass().equals("A541") || o.getBslclass().equals("A542") || o.getBslclass().equals("A551"))) {
+					(o.getBslclass().equals("A541") || o.getBslclass().equals("A542") || //
+							o.getBslclass().equals("A543") || o.getBslclass().equals("A551"))) {
 				// 同一天 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
 				o = autoRemoveService.shippingAuto(o);
 				removeShLists.add(o);// 標記:無此資料
@@ -781,12 +797,13 @@ public class ERPSynchronizeService {
 			if (m.getTb001_tb002_tb003().indexOf("A111") >= 0) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
-				wTFsSave.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 1);
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
 			} else if (m.getTb001_tb002_tb003().indexOf("A112") >= 0) {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
-				wTFsSave.put(m.getTb001_tb002_tb003().replaceAll("\\s", "").split("-")[0], 0);
-			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {// 轉
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 0);
+			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {
+				// 轉
 				Invta mIn = new Invta();
 				try {
 					mIn = (Invta) m.clone();
@@ -799,6 +816,7 @@ public class ERPSynchronizeService {
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
 			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {
+				// 轉
 				if (m.getTb007() < 0) {
 					// 領
 					m.setTk000("領料類");
@@ -807,8 +825,8 @@ public class ERPSynchronizeService {
 					// 入
 					m.setTk000("入料類");
 				}
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
 				erpShMaps.put(nKey, m);
-
 			}
 		}
 
@@ -898,6 +916,252 @@ public class ERPSynchronizeService {
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
+	// ============ 組合單/A421 ============
+	public void erpSynchronizeBomtd() {
+		logger.info("===erpSynchronizeBomtd: 時間:{}", dateFormat.format(new Date()));
+		// Step0.資料準備
+		ArrayList<Bomtd> erpEntitys = bomtdDao.findAllByBomtd();
+		Map<String, Bomtd> erpInMaps = new HashMap<>();
+		Map<String, Bomtd> erpShMaps = new HashMap<>();
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		// 存入資料物件
+		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		// Step1.資料整理
+		String nKeyCheckSame = "";// 同一張單?
+		for (Bomtd m : erpEntitys) {
+			String nKey = m.getTe001_te002_te003();
+			m.setTe001_te002_te003(m.getTe001_te002_te003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			nKey = nKey.replaceAll("\\s", "");
+			m.setNewone(true);
+			// 不同一張工單?
+			if (!nKeyCheckSame.equals(nKey.split("-")[0] + "-" + nKey.split("-")[1])) {
+				nKeyCheckSame = nKey.split("-")[0] + "-" + nKey.split("-")[1];
+				try {
+					Bomtd mIn = (Bomtd) m.clone();
+					mIn.setTk000("入料類");
+					erpInMaps.put(nKey, mIn);
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+				m.setTk000("領料類");
+				erpShMaps.put(nKey, m);
+				wTFsSave.put(m.getTe001_te002_te003().replaceAll("\\s", "").split("-")[0], 2);
+			} else {
+				m.setTk000("領料類");
+				erpShMaps.put(nKey, m);
+			}
+		}
+		// Step2.[ERP vs Cloud]舊資料匹配
+		// 入料
+		entityInOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpInMaps.containsKey(oKey)) {
+				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 內容不同=>更新
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+					Bomtd m = erpInMaps.get(oKey);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 資料轉換
+					erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					saveInLists.add(o);
+				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A421"))) {
+				// A141 庫存借入單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
+			}
+		});
+		// 領料
+		entityShOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpShMaps.containsKey(oKey)) {
+				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 內容不同=>更新
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+					Bomtd m = erpShMaps.get(oKey);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 資料轉換
+					erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					saveShLists.add(o);
+				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A421"))) {
+				// A131 庫存借出單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
+			}
+		});
+		// Step3.[ERP vs Cloud]全新資料?
+		// 入料
+		erpInMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("入料類")) {
+				BasicIncomingList n = new BasicIncomingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				// 資料轉換
+				n = erpToCloudService.incomingOneBomtd(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
+				saveInLists.add(n);
+			}
+		});
+		// 領料
+		erpShMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("領料類")) {
+				BasicShippingList n = new BasicShippingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				// 資料轉換
+				erpToCloudService.shippingOneBomtd(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				saveShLists.add(n);
+			}
+		});
+		// Step4. 存入資料
+		incomingListDao.saveAll(saveInLists);
+		shippingListDao.saveAll(saveShLists);
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step5. 自動結算
+		erpAutoCheckService.settlementAuto(wAsSave);
+	}
+
+	// ============ OK 拆解單/A431 ============
+	public void erpSynchronizeBomtf() {
+		logger.info("===erpSynchronizeBomtf: 時間:{}", dateFormat.format(new Date()));
+		// Step0.資料準備
+		ArrayList<Bomtf> erpEntitys = bomtfDao.findAllByBomtf();
+		Map<String, Bomtf> erpInMaps = new HashMap<>();
+		Map<String, Bomtf> erpShMaps = new HashMap<>();
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		// 存入資料物件
+		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		// Step1.資料整理
+		String nKeyCheckSame = "";// 同一張單?
+		for (Bomtf m : erpEntitys) {
+			String nKey = m.getTg001_tg002_tg003();
+			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			nKey = nKey.replaceAll("\\s", "");
+			m.setNewone(true);
+			// 不同一張工單?
+			if (!nKeyCheckSame.equals(nKey.split("-")[0] + "-" + nKey.split("-")[1])) {
+				nKeyCheckSame = nKey.split("-")[0] + "-" + nKey.split("-")[1];
+				try {
+					Bomtf mSh = (Bomtf) m.clone();
+					mSh.setTk000("領料類");
+					erpShMaps.put(nKey, mSh);
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+				m.setTk000("入料類");
+				erpInMaps.put(nKey, m);
+				wTFsSave.put(m.getTg001_tg002_tg003().split("-")[0], 2);
+			} else {
+				m.setTk000("入料類");
+				erpInMaps.put(nKey, m);
+			}
+		}
+		// Step2.[ERP vs Cloud]舊資料匹配
+		// 入料
+		entityInOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpInMaps.containsKey(oKey)) {
+				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 內容不同=>更新
+				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+					Bomtf m = erpInMaps.get(oKey);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 資料轉換
+					erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					saveInLists.add(o);
+				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBilclass().equals("A431"))) {
+				// A141 庫存借入單
+				o = autoRemoveService.incomingAuto(o);
+				removeInLists.add(o);// 標記:無此資料
+			}
+		});
+		// 領料
+		entityShOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpShMaps.containsKey(oKey)) {
+				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 內容不同=>更新
+				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+					Bomtf m = erpShMaps.get(oKey);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 資料轉換
+					erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					saveShLists.add(o);
+				}
+			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+					(o.getBslclass().equals("A421"))) {
+				// A131 庫存借出單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
+			}
+		});
+		// Step3.[ERP vs Cloud]全新資料?
+		// 入料
+		erpInMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("入料類")) {
+				BasicIncomingList n = new BasicIncomingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				// 資料轉換
+				n = erpToCloudService.incomingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
+				saveInLists.add(n);
+			}
+		});
+		// 領料
+		erpShMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("領料類")) {
+				BasicShippingList n = new BasicShippingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				// 資料轉換
+				erpToCloudService.shippingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				saveShLists.add(n);
+			}
+		});
+		// Step4. 存入資料
+		incomingListDao.saveAll(saveInLists);
+		shippingListDao.saveAll(saveShLists);
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step5. 自動結算
+		erpAutoCheckService.settlementAuto(wAsSave);
+	}
+
 	// ============ 物料+儲位同步 ============
 	public void erpSynchronizeInvtb() {
 		logger.info("===erpSynchronizeInvtb: 時間:{}", dateFormat.format(new Date()));
@@ -910,11 +1174,11 @@ public class ERPSynchronizeService {
 		String checkSame = "";
 		for (Invtb m : erpEntitys) {
 			// 物料號+倉別號+位置
-			String nKey = m.getMc002() + "_" + m.getMb001();
-			nKey = nKey.replaceAll("\\s", "");
+
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s", ""));
 			m.setMb003(m.getMb003().replaceAll("\\s", ""));
+			m.setNewone(true);
 			// ERP 倉別異常Null
 			if (m.getMc002() == null) {
 				m.setMc002(m.getMb017());// --倉別代號
@@ -922,18 +1186,30 @@ public class ERPSynchronizeService {
 				m.setMc003("FF-FF-FF-FF");// --儲位
 				m.setMc007(0);// 數量
 			} else {
-				m.setMc002(m.getMc002().replaceAll("\\s", ""));
+				m.setMc002(m.getMc002().replaceAll("\\s", ""));// --倉別代號
 			}
-			m.setNewone(true);
-			// list(只有唯一物料)
+
+			// list(物料清單)-物料
 			if (!checkSame.equals(m.getMb001())) {
 				checkSame = m.getMb001();
 				erpListMaps.put(m.getMb001(), m);
 			}
-			// item(所有項目)
-			erpItemMaps.put(nKey, m);
-			// config(倉別清單)
-			erpConfigMaps.put(m.getMc002(), m.getCmc002());
+
+			// item(區域清單)-物料儲位
+			String nKey = m.getMc002() + "_" + m.getMb001();
+			nKey = nKey.replaceAll("\\s", "");
+			try {
+				Invtb cloneM;
+				cloneM = (Invtb) m.clone();
+				erpItemMaps.put(nKey, cloneM);
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+
+			// config(倉別清單)-儲位
+			if (m.getMc002() != null && !m.getMc002().equals("")) {
+				erpConfigMaps.put(m.getMc002(), m.getCmc002());
+			}
 		}
 
 		// Step1. 取得[Cloud] 有效 物料+區域+倉儲設定
@@ -980,9 +1256,12 @@ public class ERPSynchronizeService {
 		Map<String, WarehouseArea> areaSameMap = new HashMap<>();
 		areaOlds.forEach(a -> {// 區域庫別代號_物料號_
 			String aKey = a.getWaaliasawmpnb();
-
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
+				//測試用
+//				if (aKey.equals("A0002_81-105-361134")) {
+//					System.out.println(aKey);
+//				}
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
 				Invtb av = erpItemMaps.get(aKey);
 				String checkSum = av.toString().replaceAll("\\s", "");
@@ -1006,6 +1285,10 @@ public class ERPSynchronizeService {
 
 		// Step4-2. [物料位置] 全新資料?
 		erpItemMaps.forEach((key, v) -> {
+			// 測試用
+			if (key.equals("A0002_81-105-361134")) {
+				System.out.println(key);
+			}
 			if (v.isNewone()) {
 				// 可能重複?
 				if (areaSameMap.containsKey(v.getMc002() + "_" + v.getMb001())) {
@@ -1072,7 +1355,7 @@ public class ERPSynchronizeService {
 			if (!oldEntity.containsKey(key)) {
 				WarehouseTypeFilter newEntity = new WarehouseTypeFilter();
 				newEntity.setWtfcode(key);
-				newEntity.setWtftype(val);
+				newEntity.setWtftype(val);// 單據類型 0=入庫 / 1=出庫 / 2=轉移
 				saveFilters.add(newEntity);
 			}
 		});

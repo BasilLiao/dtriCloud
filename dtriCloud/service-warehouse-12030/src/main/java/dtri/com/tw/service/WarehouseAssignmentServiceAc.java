@@ -723,6 +723,10 @@ public class WarehouseAssignmentServiceAc {
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
 						switch (action) {
+						case "Print":
+							t.setBilpalready(1);
+							// 紀錄
+							break;
 						case "Agree":
 							t.setBilcuser(x.getWascuser());
 							// 紀錄
@@ -812,6 +816,9 @@ public class WarehouseAssignmentServiceAc {
 						switch (action) {
 						case "Agree":
 							t.setBslcuser(x.getWascuser());
+							break;
+						case "Print":
+							t.setBslpalready(1);
 							break;
 						case "PassAll":
 							t.setBslcuser(x.getWascuser());
