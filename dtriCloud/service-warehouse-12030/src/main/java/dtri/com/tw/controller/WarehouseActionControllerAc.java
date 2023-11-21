@@ -25,8 +25,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 
@@ -35,19 +36,21 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.getSearch(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -57,8 +60,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/getSearchDetail" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearchDetail(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 
@@ -67,19 +71,21 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.getSearchDetail(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -89,8 +95,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -99,8 +106,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -109,8 +117,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/setModifyNormal" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyNormal(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 
@@ -119,21 +128,23 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.setModify(packageBean);
 			// 檢查是否結單?->是否缺料?
 			serviceAc.setModifyCheck(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -143,8 +154,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -153,8 +165,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -163,8 +176,9 @@ public class WarehouseActionControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseAction/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;

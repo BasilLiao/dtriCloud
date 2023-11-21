@@ -20,6 +20,44 @@ public class ERPAutoCheckService {
 	@Autowired
 	private WarehouseAreaDao areaDao;
 
+	// 入料類-自動化(歸還)
+	public BasicIncomingList incomingAutoRe(BasicIncomingList o, //
+			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
+			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
+
+		// 取得Key
+		String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
+		String wAsKey = wcKey + "_" + o.getBilpnumber();
+		// 已經有?
+		if (wAsSave.containsKey(wAsKey)) {
+			int s = wAsSave.get(wAsKey) - o.getBilpnqty();
+			wAsSave.put(wAsKey, s);
+		} else {
+			int s = -o.getBilpnqty();
+			wAsSave.put(wAsKey, s);
+		}
+		return o;
+	}
+
+	// 領料類-自動化(歸還)
+	public BasicShippingList shippingAutoRe(BasicShippingList o, //
+			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
+			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
+		String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
+		String wAsKey = wcKey + "_" + o.getBslpnumber();
+		// 已經有?
+		if (wAsSave.containsKey(wAsKey)) {
+			int s = wAsSave.get(wAsKey) + o.getBslpnqty();
+			wAsSave.put(wAsKey, s);
+		} else {
+			int s = o.getBslpnqty();
+			wAsSave.put(wAsKey, s);
+		}
+		o.setBslfuser("");
+		o.setBslcuser("");
+		return o;
+	}
+
 	// 入料類-自動化
 	public BasicIncomingList incomingAuto(BasicIncomingList o, //
 			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
@@ -29,6 +67,10 @@ public class ERPAutoCheckService {
 		boolean wTFsCheck = true;// 單據自動(true->繼續/false->停止)
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
+		// 測試用
+		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
+			System.out.println("A121-231117002-0001");
+		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定
@@ -139,6 +181,10 @@ public class ERPAutoCheckService {
 		boolean wTFsCheck = true;// 單據自動(true->繼續/false->停止)
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
+		// 測試用
+		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A121-231117002")) {
+			System.out.println("A121-231117002-0001");
+		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定+自動減少
@@ -158,7 +204,7 @@ public class ERPAutoCheckService {
 				if (wAsSave.containsKey(wAsKey)) {
 					wAsSave.put(wAsKey, wAsSave.get(wAsKey) - o.getBslpnqty());
 				} else {
-					wAsSave.put(wAsKey, o.getBslpnqty());
+					wAsSave.put(wAsKey, -o.getBslpnqty());
 				}
 				wTFsCheck = false;// 停止
 			} else {

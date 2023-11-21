@@ -54,17 +54,17 @@
 							style="page-break-after: always; width: 370px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<div>
 								<div style="display: inline-block; width: 315px; font-stretch: condensed;">
-									<!-- 單據-來源 -->
-									<div class="">
-										<b>製號：</b><font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1] </font>
-									</div>
 									<!-- 物料名 
 									<div class="">
 										<b>物料名：</b><font class="pr_bslpname">10K_1%/0402_THERMISTOR</font>
 									</div>-->
 									<!-- 單據 -->
 									<div class="">
-										<b>領號：</b><font class="pr_bslclass_bslsn_bslnb">A551-230829006-0001</font><b>：</b><font class="pr_sysnote">備註</font>
+										<font style="font-size: 17px;" class="pr_bslnb">0001</font><b>／領號：</b><font class="pr_bslclass_bslsn">A551-230829006</font><b>：</b><font class="pr_sysnote">備註</font>
+									</div>
+									<!-- 單據-來源 -->
+									<div class="">
+										<b>製號：</b><font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1] </font>
 									</div>
 									<!-- 物料號 / 數量  -->
 									<div class="" style="font-size: 15px">
@@ -154,8 +154,9 @@ print={
 				print_ex.find(".pr_bslpnumber").text(h.waspnumber);//物料號
 				print_ex.find(".pr_bslpnqty").text(h.waspnqty);//數量
 			//	print_ex.find(".pr_bslpname").text(h.waspname);//物料名稱
-				print_ex.find(".pr_bslclass_bslsn_bslnb").text(h.id);//單據號
-				print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand);//單據來源
+				print_ex.find(".pr_bslclass_bslsn").text(h.id.split("-")[0]+"-"+h.id.split("-")[1]);//單據號
+				print_ex.find(".pr_bslnb").text(h.id.split("-")[2]);//單據序
+				print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand.replaceAll("*","＊"));//單據來源
 				print_ex.find(".pr_bslfromwho").text(h.wasfromwho);//來源
 				print_ex.find(".pr_user").text(h.wasmuser);//負責人
 				print_ex.find(".pr_sysnote").text(h.sysnote);//備註

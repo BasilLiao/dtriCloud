@@ -1,5 +1,7 @@
 package dtri.com.tw.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -41,14 +43,31 @@ public abstract class AbstractController {
 		System.out.println("===>>> controller : [" + sysClass + "][" + sysFunction + "] Check");
 	}
 
+	// 一般提示Log
+	public void loggerInf(String ms, String userAcc) {
+		logger.info("===>>> [" + userAcc + "]" + ms);
+		System.out.println("===>>> [" + userAcc + "]" + ms);
+	}
+
 	// 錯誤Log
-	public void loggerErr(String ms) {
-		logger.error("===>>> " + ms);
+	public void loggerErr(String ms, String userAcc) {
+		logger.error("===>>> [" + userAcc + "]" + ms);
+		System.out.println("===>>> [" + userAcc + "]" + ms);
 	}
 
 	// 異常Log
-	public void loggerWarn(String ms) {
-		logger.warn("===>>> " + ms);
+	public void loggerWarn(String ms, String userAcc) {
+		logger.warn("===>>> [" + userAcc + "]" + ms);
+		System.out.println("===>>> [" + userAcc + "]" + ms);
+	}
+
+	/** 轉換文字 **/
+	public static String eStktToSg(Exception e) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		e.printStackTrace(ps);
+		ps.close();
+		return baos.toString();
 	}
 
 	abstract String access(@RequestBody String jsonObject);

@@ -15,12 +15,14 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "order by c.bilclass asc, c.bilpnumber asc")
 	ArrayList<BasicIncomingList> findAllByStatus(Integer sysstatus);
 
+	// 單據分配處理用
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and"//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
-			+ "(:bilcuser is null or (:bilcuser ='true'  and c.bilcuser != '') or (:bilcuser ='false'  and c.bilcuser = '')) and "// 已核准人// 未核准人
+			+ "(c.bilfuser != 'ERP_Remove(Auto)') and "//
+			+ "(:bilcuser is null or (:bilcuser ='true' and c.bilcuser != '') or (:bilcuser ='false'  and c.bilcuser = '')) and "// 已核准人// 未核准人
 			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
 	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand, String biltype, String bilcuser,
 			Integer sysstatus, Pageable pageable);

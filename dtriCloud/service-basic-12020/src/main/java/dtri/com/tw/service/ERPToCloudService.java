@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 
@@ -60,7 +61,7 @@ public class ERPToCloudService {
 	// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
 	// 入料類-轉換(Purth)
 	public BasicIncomingList incomingOnePurth(BasicIncomingList o, Purth m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTh030().equals("Y")) {
@@ -122,7 +123,7 @@ public class ERPToCloudService {
 	// ============ A541 廠內領料單/ A542 補料單/ A551 委外領料單/ A561 廠內退料單/ A571 委外退料單
 	// 入料類-轉換(Mocte)
 	public BasicIncomingList incomingOneMocte(BasicIncomingList o, Mocte m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
@@ -191,7 +192,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Mocte)
 	public BasicShippingList shippingOneMocte(BasicShippingList o, Mocte m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
@@ -257,7 +258,7 @@ public class ERPToCloudService {
 	// ============A581 生產入庫單 ============
 	// 入料類-轉換(Mocte)
 	public BasicIncomingList incomingOneMoctf(BasicIncomingList o, Moctf m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
@@ -321,7 +322,7 @@ public class ERPToCloudService {
 	// ============ A591 委外進貨單 ============
 	// 入料類-轉換(Mocth)
 	public BasicIncomingList incomingOneMocth(BasicIncomingList o, Mocth m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTi037().equals("Y")) {
@@ -384,7 +385,7 @@ public class ERPToCloudService {
 	// ============ A131 庫存借出單/ A141 庫存借入單 ============
 	// 入料類-轉換(Invtg)
 	public BasicIncomingList incomingOneInvtg(BasicIncomingList o, Invtg m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
@@ -443,7 +444,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Invtg)
 	public BasicShippingList shippingOneInvtg(BasicShippingList o, Invtg m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
@@ -504,7 +505,7 @@ public class ERPToCloudService {
 	// ============ 借出歸還A151/借入歸還單A161 ============
 	// 入料類-轉換(Invth)
 	public BasicIncomingList incomingOneInvth(BasicIncomingList o, Invth m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTi022().equals("3")) {
@@ -566,7 +567,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Invth)
 	public BasicShippingList shippingOneInvth(BasicShippingList o, Invth m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTi022().equals("Y")) {
@@ -629,7 +630,7 @@ public class ERPToCloudService {
 	// ============ A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單 ============
 	// 入料類-轉換(Invta)
 	public BasicIncomingList incomingOneInvta(BasicIncomingList o, Invta m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
@@ -693,7 +694,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Invta)
 	public BasicShippingList shippingOneInvta(BasicShippingList o, Invta m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
@@ -757,7 +758,7 @@ public class ERPToCloudService {
 	// ============ -OK 組合單/A421 ============
 	// 入料類-轉換(Bomtd)
 	public BasicIncomingList incomingOneBomtd(BasicIncomingList o, Bomtd m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTd016().equals("Y")) {
@@ -816,7 +817,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Bomtd)
 	public BasicShippingList shippingOneBomtd(BasicShippingList o, Bomtd m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTe010().equals("Y")) {
@@ -877,7 +878,7 @@ public class ERPToCloudService {
 	// ============ -OK 拆解單/A431 ============
 	// 入料類-轉換(Bomtf)
 	public BasicIncomingList incomingOneBomtf(BasicIncomingList o, Bomtf m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {
@@ -936,7 +937,7 @@ public class ERPToCloudService {
 
 	// 領料類-轉換(Bomtd)
 	public BasicShippingList shippingOneBomtf(BasicShippingList o, Bomtf m, String checkSum, //
-			Map<String, WarehouseTypeFilter> wTFs, Map<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs, Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {

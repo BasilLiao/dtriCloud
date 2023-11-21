@@ -29,13 +29,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -47,10 +49,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getConfigSearch(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -61,7 +63,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -70,13 +72,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -88,10 +92,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getConfigSearch(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -102,7 +106,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -111,13 +115,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -129,10 +135,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getConfigReport(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -143,7 +149,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -152,13 +158,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -170,9 +178,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.setConfigAdd(packageService.beanToJson(packageBean));
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -183,7 +192,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -192,13 +201,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -210,10 +221,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.setConfigModify(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -224,7 +235,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -233,12 +244,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+		
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -250,10 +264,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.setConfigInvalid(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -264,7 +278,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}
@@ -273,12 +287,15 @@ public class WarehouseConfigController extends AbstractController {
 	@RequestMapping(value = { "/ajax/warehouse_config.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+		
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -290,10 +307,10 @@ public class WarehouseConfigController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.setConfigDetele(packageService.beanToJson(packageBean));
-			
+			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
@@ -304,7 +321,7 @@ public class WarehouseConfigController extends AbstractController {
 			packageJson = packageService.beanToJson(packageBean);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
 		return packageJson;
 	}

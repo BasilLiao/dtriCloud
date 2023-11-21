@@ -25,29 +25,31 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
-
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.getSearch(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -57,8 +59,9 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -67,8 +70,9 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -78,29 +82,31 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifySynchronizeQty(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
-
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.setModify(packageBean, "Qty");
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -111,29 +117,31 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifySynchronizeItem(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
-
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.setModify(packageBean, "Item");
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -144,29 +152,31 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifySynchronizeRemove(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
-
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.setModify(packageBean, "Remove");
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -177,29 +187,31 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifySynchronizeFinish(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
-
 		try {
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			packageBean = serviceAc.setModify(packageBean, "Finish");
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(e.toString());
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
-			loggerWarn(e.toString());
 			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -209,8 +221,9 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -219,8 +232,9 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;
@@ -229,8 +243,9 @@ public class WarehouseSynchronizeControllerAc extends AbstractControllerAc {
 	@RequestMapping(value = { "/warehouseSynchronize/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
-		sysFunction(new Object() {
-		}.getClass().getEnclosingMethod().getName());
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
 		// Step0.資料準備
 		PackageBean packageBean = new PackageBean();
 		return packageBean;

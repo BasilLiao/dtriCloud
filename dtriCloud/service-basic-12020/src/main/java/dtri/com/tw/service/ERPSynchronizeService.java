@@ -6,10 +6,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import dtri.com.tw.mssql.dao.BomtdDao;
@@ -113,7 +118,7 @@ public class ERPSynchronizeService {
 	private Map<String, WarehouseArea> wAs = new HashMap<>();// 庫別清單
 	private Map<String, WarehouseTypeFilter> wTFs = new HashMap<>();// 單別清單
 	private Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
-	private Map<String, WarehouseKeeper> wKs = new HashMap<>();// 負責人
+	private TreeMap<String, WarehouseKeeper> wKs = new TreeMap<>();// 負責人
 	private Map<String, WarehouseConfig> wCs = new HashMap<>();// 倉別
 
 	// 物料自動化 修正(單據/倉別/物料)<wa_alias_wmpnb,wa_t_qty>
@@ -130,11 +135,19 @@ public class ERPSynchronizeService {
 			wTFs.put(y.getWtfcode(), y);
 		});
 		// 負責人
-		keeperDao.findAll().forEach(z -> {
+		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "wksuaccount"));// 帳號
+		orders.add(new Order(Direction.ASC, "wkglist"));// 區域關鍵
+
+		Map<String, WarehouseKeeper> keepers = new HashMap<>();// 負責人
+		PageRequest pageable = PageRequest.of(0, 99999, Sort.by(orders));
+		keeperDao.findAllBySearch(null, null, pageable).forEach(z -> {
 			if (!z.getWksuaccount().equals("") && !z.getWkglist().equals("") && !z.getWkwaslocation().equals("")) {
-				wKs.put(z.getWksuaccount() + "_" + z.getWkglist() + "_" + z.getWkwaslocation(), z);
+				keepers.put(z.getWksuaccount() + "_" + z.getWkglist() + "_" + z.getWkwaslocation(), z);
 			}
 		});
+		wKs.putAll(keepers);
+
 		// 倉別
 		configDao.findAll().forEach(w -> {
 			wCs.put(w.getWcalias(), w);
@@ -241,9 +254,15 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Purth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
+
 					// 資料轉換
 					o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
@@ -332,9 +351,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum)
+						&& (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Mocte m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -356,9 +380,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Mocte m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -438,9 +467,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Moctf m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
@@ -504,9 +538,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Mocth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
 					saveLists.add(o);
@@ -584,9 +623,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Invtg m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -608,9 +652,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Invtg m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -700,9 +749,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Invth m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -724,9 +778,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Invth m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -841,9 +900,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Invta m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -867,9 +931,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Invta m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -967,9 +1036,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Bomtd m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -991,9 +1065,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Bomtd m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -1090,9 +1169,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBilfuser().equals("") || o.getBilfuser().equals("ERP_Remove(Auto)") || o.getBilfuser().indexOf("System") >= 0)) {
 					Bomtf m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
 					saveInLists.add(o);
@@ -1114,9 +1198,14 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum) && (o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)"))) {
+				if (!o.getChecksum().equals(nChecksum) && //
+						(o.getBslfuser().equals("") || o.getBslfuser().equals("ERP_Remove(Auto)") || o.getBslfuser().indexOf("System") >= 0)) {
 					Bomtf m = erpShMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
 					// 資料轉換
 					erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
 					saveShLists.add(o);
@@ -1258,7 +1347,7 @@ public class ERPSynchronizeService {
 			String aKey = a.getWaaliasawmpnb();
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
-				//測試用
+				// 測試用
 //				if (aKey.equals("A0002_81-105-361134")) {
 //					System.out.println(aKey);
 //				}
