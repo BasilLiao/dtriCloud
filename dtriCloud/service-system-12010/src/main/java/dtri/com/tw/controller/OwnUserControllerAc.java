@@ -46,7 +46,7 @@ public class OwnUserControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -81,7 +81,7 @@ public class OwnUserControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();

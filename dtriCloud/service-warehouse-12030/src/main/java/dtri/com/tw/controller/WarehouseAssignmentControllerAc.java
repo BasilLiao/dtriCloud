@@ -46,7 +46,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -103,7 +103,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -113,6 +113,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		}
 		return packageBean;
 	}
+
 	@RequestMapping(value = { "/warehouseAssignment/setModifyPrint" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyPrint(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -137,7 +138,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -172,7 +173,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -183,7 +184,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModifyReturnAll" }, method = {
+	@RequestMapping(value = { "/warehouseAssignment/setModifyReturnSelect" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyReturnAll(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -199,7 +200,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
 			loggerInf(funName + "[Start]", packageBean.getUserAccount());
-			packageBean = serviceAc.setModify(packageBean, "ReturnAll");
+			packageBean = serviceAc.setModify(packageBean, "ReturnSelect");
 			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報
@@ -208,7 +209,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();
@@ -243,7 +244,7 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		} catch (CloudExceptionService e) {
 			// StepX-2. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// StepX-3. 未知-故障回報
 			e.printStackTrace();

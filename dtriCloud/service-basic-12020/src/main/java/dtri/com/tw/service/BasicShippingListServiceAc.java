@@ -164,7 +164,7 @@ public class BasicShippingListServiceAc {
 			// Step2.資料檢查
 			for (BasicShippingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllBySearch(entityData.getBslclass(), entityData.getBslsn(),
+				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(), entityData.getBslsn(),
 						entityData.getBslpnumber(), null);
 				for (BasicShippingList checkData : checkDatas) {
 					if (checkData.getBslid().compareTo(entityData.getBslid()) != 0) {
@@ -217,7 +217,7 @@ public class BasicShippingListServiceAc {
 			// Step2.資料檢查
 			for (BasicShippingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllBySearch(entityData.getBslclass(), entityData.getBslsn(),
+				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(), entityData.getBslsn(),
 						entityData.getBslpnumber(), null);
 				for (BasicShippingList checkData : checkDatas) {
 					if (checkData.getBslid().compareTo(entityData.getBslid()) != 0) {

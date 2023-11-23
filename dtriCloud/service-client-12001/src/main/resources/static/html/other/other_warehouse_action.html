@@ -128,7 +128,7 @@
 					</tr>
 				</thead>
 				<tbody class="table-white">
-					<tr class="exDetailTbodyTr">
+					<tr class="exDetailTbodyTr" style="height: 146px;">
 						<th class="fixedC1 exTbodyTh" style="max-width: 50px;">
 							<div>
 								<input disabled="disabled" type="checkbox" alt="row_x" title="IKey_GKey" class="m-0 form-check-input checkbox_36 border border-dark">
@@ -835,6 +835,7 @@ other={
 				other.methods.confirmSend(null);
 				
 			});
+			
 			//監聽-查詢
 			$(document).off("click", "#search_c #btn_send");
 			$(document).on("click", "#search_c #btn_send", function (event) {
@@ -900,6 +901,8 @@ other={
 							}
 						});
 						other.methods.confirmSend(sendData);
+						var st = $('#search_dcr table').scrollTop();
+						$('#search_dcr table').scrollTop(st+146);
 					}else{
 						//物料類型
 						console.log("倉別:"+command_alias +" 物料類型:"+command_val);
@@ -934,6 +937,8 @@ other={
 							}						
 						});
 						other.methods.confirmSend(sendData);
+						var st = $('#search_dcr table').scrollTop();
+						$('#search_dcr table').scrollTop(st+146);
 					}
 					$("#command_send input").val("");
 				}else if(e.key =='Shift'){

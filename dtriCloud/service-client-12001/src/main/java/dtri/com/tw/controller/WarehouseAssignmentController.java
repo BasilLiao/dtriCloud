@@ -268,7 +268,7 @@ public class WarehouseAssignmentController extends AbstractController {
 
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.S3" }, method = { RequestMethod.PUT })
-	String modifyReturnAll(@RequestBody String jsonObject) {
+	String modifyReturnSelect(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -289,7 +289,7 @@ public class WarehouseAssignmentController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setAssignmentModifyReturnAll(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setAssignmentModifyReturnSelect(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報

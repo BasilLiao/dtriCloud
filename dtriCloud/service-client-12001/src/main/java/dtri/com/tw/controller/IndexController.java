@@ -74,7 +74,7 @@ public class IndexController extends AbstractController {
 		} catch (CloudExceptionService e) {
 			// Step4-1. 已知-故障回報
 			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			loggerInf(e.toString(), packageBean.getUserAccount());
 		} catch (Exception e) {
 			// Step4-2. 未知-故障回報
 			e.printStackTrace();

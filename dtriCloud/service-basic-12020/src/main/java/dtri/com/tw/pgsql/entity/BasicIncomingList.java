@@ -162,7 +162,7 @@ public class BasicIncomingList {
 	private String bilfuser;
 	@Column(name = "bil_s_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bilsuser;
-	@Column(name = "bil_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bil_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
 	private String bilmuser;
 
 	@Column(name = "bil_p_already", nullable = false, columnDefinition = "int default 0")

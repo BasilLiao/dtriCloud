@@ -415,6 +415,10 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
+			//測試用
+//			if(key.indexOf("A541-231122019")>=0) {
+//				System.out.println(key);
+//			}
 			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTe019().equals("N")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -852,6 +856,10 @@ public class ERPSynchronizeService {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
+			//測試用
+//			if(nKey.indexOf("A121-231122005-0001")>=0) {
+//				System.out.println(nKey);
+//			}
 			// 單據性質別:借出歸還A151+借入歸還單A161
 			if (m.getTb001_tb002_tb003().indexOf("A111") >= 0) {
 				m.setTk000("領料類");
@@ -954,6 +962,10 @@ public class ERPSynchronizeService {
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
 		erpInMaps.forEach((key, v) -> {
+			//測試用
+//			if(key.indexOf("A121-231122005-0001")>=0) {
+//				System.out.println(key);
+//			}
 			if (v.isNewone() && v.getTk000().equals("入料類")) {
 				BasicIncomingList n = new BasicIncomingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -966,7 +978,11 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTb018().equals("N")) {
+			//測試用
+//			if(key.indexOf("A121-231122005-0001")>=0) {
+//				System.out.println(key);
+//			}
+			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換

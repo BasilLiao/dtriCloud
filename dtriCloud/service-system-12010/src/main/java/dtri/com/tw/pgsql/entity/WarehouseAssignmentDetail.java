@@ -34,7 +34,8 @@ import jakarta.persistence.Transient;
  *      was_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      was_p_number : 物料號<br>
  *      was_p_name : 品名<br>
- *      was_pn_qty : 數量<br>
+ *      was_pn_qty : (領/入)數量<br>
+ *      was_pn_g_qty :已(領/入)數量<br>
  *      was_status : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      was_e_date : 預計領料日 <br>
  *      was_from_command : 指示來源<br>
@@ -60,6 +61,8 @@ public class WarehouseAssignmentDetail {
 		this.wastqty = 0;// : (實際)此區域物料數量<br>
 		this.wasqcqty = 0;// : 進貨待驗<br>
 		this.wasschedule = "0/0";
+		this.waspnqty = 0;
+		this.waspngqty = 0;
 	}
 
 	// 共用型
@@ -122,6 +125,8 @@ public class WarehouseAssignmentDetail {
 	private String waspname;// : 品名<br>
 	@Transient
 	private Integer waspnqty;// : 數量<br>
+	@Transient
+	private Integer waspngqty;// : 已(取/入)數量<br>
 	@Transient
 	private Integer wasstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	@Transient
@@ -427,6 +432,14 @@ public class WarehouseAssignmentDetail {
 
 	public void setWaspalready(String waspalready) {
 		this.waspalready = waspalready;
+	}
+
+	public Integer getWaspngqty() {
+		return waspngqty;
+	}
+
+	public void setWaspngqty(Integer waspngqty) {
+		this.waspngqty = waspngqty;
 	}
 
 }

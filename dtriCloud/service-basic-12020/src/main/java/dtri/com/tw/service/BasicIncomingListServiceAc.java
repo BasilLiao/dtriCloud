@@ -165,7 +165,7 @@ public class BasicIncomingListServiceAc {
 			// Step2.資料檢查
 			for (BasicIncomingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllBySearch(entityData.getBilclass(), entityData.getBilsn(),
+				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(), entityData.getBilsn(),
 						entityData.getBilpnumber(), null);
 				for (BasicIncomingList checkData : checkDatas) {
 					if (checkData.getBilid().compareTo(entityData.getBilid()) != 0) {
@@ -218,7 +218,7 @@ public class BasicIncomingListServiceAc {
 			// Step2.資料檢查
 			for (BasicIncomingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllBySearch(entityData.getBilclass(), entityData.getBilsn(),
+				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(), entityData.getBilsn(),
 						entityData.getBilpnumber(), null);
 				for (BasicIncomingList checkData : checkDatas) {
 					if (checkData.getBilid().compareTo(entityData.getBilid()) != 0) {

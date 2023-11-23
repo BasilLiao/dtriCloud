@@ -162,7 +162,7 @@ public class BasicShippingList {
 	private String bslfuser;
 	@Column(name = "bsl_s_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslsuser;
-	@Column(name = "bsl_m_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bsl_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
 	private String bslmuser;
 
 	@Column(name = "bsl_p_already", nullable = false, columnDefinition = "int default 0")

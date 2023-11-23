@@ -129,8 +129,8 @@
 								<b>Pass all<br>(S2)
 								</b>
 							</button>
-							<button id="btn_returnAll" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Return all<br>(S3)
+							<button id="btn_returnSelect" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Return<br>select(S3)
 								</b>
 							</button>
 							<button id="btn_urgency" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
@@ -303,7 +303,7 @@ other={
 				$("#btn_passAll").addClass("disabled");
 			}
 			if(ps[3] != 1){//修改(S3)3
-				$("#btn_returnAll").addClass("disabled");
+				$("#btn_returnSelect").addClass("disabled");
 			}
 			if(ps[2] != 1){//修改(S4)2
 				$("#btn_urgency").addClass("disabled");
@@ -685,10 +685,10 @@ other={
 				other.methods.searchToModify("btn_passAll");
 			});
 			//監聽-歸還
-			$(document).off("click", "#search_c #btn_returnAll");
-			$(document).on("click", "#search_c #btn_returnAll", function (event) {
-				console.log("btn_returnAll");
-				other.methods.searchToModify("btn_returnAll");
+			$(document).off("click", "#search_c #btn_returnSelect");
+			$(document).on("click", "#search_c #btn_returnSelect", function (event) {
+				console.log("btn_returnSelect");
+				other.methods.searchToModify("btn_returnSelect");
 			});
 			//監聽-急迫
 			$(document).off("click", "#search_c #btn_urgency");
@@ -804,8 +804,9 @@ other={
 						$('.'+this.className+' .wasclasssn').removeClass('text-info');
 						$('.'+this.className+' .wasclasssn').removeClass('text-primary');
 						$('.'+this.className+' .wasclasssn').removeClass('text-success');
-						$('.'+this.className+' .wasclasssn').removeClass('text-danger');
+						$('#search_dcr_open .wasclasssn').removeClass('text-danger');
 						$('.'+this.className+' .wasclasssn').removeClass('text-warning');
+						$('#search_dcr_open .wasclasssn').removeClass('text-danger');
 					switch(order){
 					case "btn_agree":
 						//異動資料
@@ -827,9 +828,16 @@ other={
 						//標記顏色
 						$('.'+this.className+' .wasclasssn').addClass('text-warning');
 					break;
-					case "btn_returnAll":
+					case "btn_returnSelect":
+						//標記顏色 
+						$('.'+this.className+' .wasstatus').text("1");
 						//標記顏色
-						$('.'+this.className+' .wasclasssn').addClass('text-danger');
+						$('#search_dcr_open tbody tr').each(function() {
+							if($(this).find('input').prop("checked")){
+								//console.log(this);
+								$(this).find('.wasclasssn').addClass('text-danger');
+							}
+						});
 					break;
 					case "btn_printerForm":
 						//標記顏色
@@ -956,8 +964,11 @@ other={
 					dataHeaderUrgency.push(entityJosn);
 					
 				}
-				//登記:返回
-				if($('.'+this.className+' .wasclasssn').hasClass('text-danger')){
+			});
+			//登記:返回
+			$('#search_dcr_open tbody tr').each(function(index){ 
+				if($(this).find('input').prop("checked")){
+					//每個欄位
 					var entityJosn={};
 					$(this).find('.valTbodytd').each(function(index){ 
 						var val = $(this).text();
@@ -971,6 +982,7 @@ other={
 					dataHeaderReturnAll.push(entityJosn);
 				}
 			});
+			
 			console.log(dataHeaderAgree);
 			console.log(dataHeaderPassAll);
 			console.log(dataHeaderReturnAll);

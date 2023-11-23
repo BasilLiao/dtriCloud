@@ -51,7 +51,7 @@
 					<div id="printContent">
 						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
 						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start"
-							style="page-break-after: always; width: 370px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
+							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<div>
 								<div style="display: inline-block; width: 315px; font-stretch: condensed;">
 									<!-- 物料名 
@@ -122,9 +122,10 @@ print={
 				console.log(this.id);
 				var id = this.id;
 				var pr_bslpnumber = $(this).find(".pr_bslpnumber").text();
-				var  pr_bslfromwho = $(this).find(".pr_bslfromwho").text().replaceAll("[","").replaceAll("]","");
+				var pr_bslfromwho = $(this).find(".pr_bslfromwho").text().replaceAll("[","").replaceAll("]","");
 				pr_bslfromwho = pr_bslfromwho.split("_")[0];
             	$(printWindow.document).find('#'+id+' .pr_qrcode').qrcode({width: 50,height: 50,text: pr_bslfromwho+"_"+pr_bslpnumber});
+            	$(printWindow.document).find('.printList').css("width","370px");
 			});
             printWindow.document.close();
             printWindow.print();

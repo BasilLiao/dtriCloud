@@ -24,9 +24,15 @@ public interface BasicCommandListDao extends JpaRepository<BasicCommandList, Lon
 	ArrayList<BasicCommandList> findAllByStatus(Integer sysstatus);
 
 	@Query("SELECT c FROM BasicCommandList c WHERE "//
+			+ "(:bclclass is null or c.bclclass LIKE %:bclclass%) and "//
+			+ "(:bclsn is null or c.bclsn LIKE %:bclsn%) and "//
+			+ "(:bclpnumber is null or c.bclpnumber LIKE %:bclpnumber%) ")
+	ArrayList<BasicCommandList> findAllBySearch(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
+	
+	@Query("SELECT c FROM BasicCommandList c WHERE "//
 			+ "(:bclclass is null or c.bclclass=:bclclass) and "//
 			+ "(:bclsn is null or c.bclsn=:bclsn) and "//
 			+ "(:bclpnumber is null or c.bclpnumber=:bclpnumber) ")
-	ArrayList<BasicCommandList> findAllBySearch(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
+	ArrayList<BasicCommandList> findAllByCheck(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
 
 }

@@ -347,5 +347,4 @@ public class WarehouseSynchronizeController extends AbstractController {
 		String packageJson = "{}";
 		return packageJson;
 	}
-
 }

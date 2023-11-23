@@ -83,6 +83,7 @@ public class BasicCommandList {
 		this.bclerpcuser = "";
 		this.bclcuser = "";
 		this.bclfuser = "";
+		this.bclmuser = "";
 		this.bclacceptance = 0;
 		this.bclpnumber = "";
 		this.bclpname = "";
@@ -149,6 +150,9 @@ public class BasicCommandList {
 	private String bclcuser;
 	@Column(name = "bcl_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bclfuser;
+	@Column(name = "bcl_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
+	private String bclmuser;
+	
 	@Column(name = "bcl_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bclacceptance;
 
@@ -482,6 +486,14 @@ public class BasicCommandList {
 
 	public void setBclerpcuser(String bclerpcuser) {
 		this.bclerpcuser = bclerpcuser;
+	}
+
+	public String getBclmuser() {
+		return bclmuser;
+	}
+
+	public void setBclmuser(String bclmuser) {
+		this.bclmuser = bclmuser;
 	}
 
 }
