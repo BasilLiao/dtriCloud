@@ -972,12 +972,12 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[_]");//
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTf007() + "_";
-		String wAsKey = m.getTf007() + "_" + m.getMb001();
+		String bilfromwho = m.getTf008() + "_";
+		String wAsKey = m.getTf008() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
-			bilfromwho = m.getTf007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+			bilfromwho = m.getTf008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
-		o.setBsltowho("[_" + m.getTf008() + "]");// 目的[_對象]
+		o.setBsltowho("[_]");// 目的[_對象]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
 		String bilmuser = "";

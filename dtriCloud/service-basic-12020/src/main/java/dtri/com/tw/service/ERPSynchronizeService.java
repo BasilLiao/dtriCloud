@@ -415,7 +415,7 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			//測試用
+			// 測試用
 //			if(key.indexOf("A541-231122019")>=0) {
 //				System.out.println(key);
 //			}
@@ -856,7 +856,7 @@ public class ERPSynchronizeService {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
-			//測試用
+			// 測試用
 //			if(nKey.indexOf("A121-231122005-0001")>=0) {
 //				System.out.println(nKey);
 //			}
@@ -962,7 +962,7 @@ public class ERPSynchronizeService {
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
 		erpInMaps.forEach((key, v) -> {
-			//測試用
+			// 測試用
 //			if(key.indexOf("A121-231122005-0001")>=0) {
 //				System.out.println(key);
 //			}
@@ -978,7 +978,7 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			//測試用
+			// 測試用
 //			if(key.indexOf("A121-231122005-0001")>=0) {
 //				System.out.println(key);
 //			}
@@ -1034,9 +1034,11 @@ public class ERPSynchronizeService {
 					e.printStackTrace();
 				}
 				m.setTk000("領料類");
+				m.setMb001(m.getTe004());//領(元件號)
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTe001_te002_te003().replaceAll("\\s", "").split("-")[0], 2);
 			} else {
+				m.setMb001(m.getTe004());//領(元件號)
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 			}
@@ -1162,6 +1164,7 @@ public class ERPSynchronizeService {
 				try {
 					Bomtf mSh = (Bomtf) m.clone();
 					mSh.setTk000("領料類");
+					mSh.setMb001(m.getTe004());
 					erpShMaps.put(nKey, mSh);
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();

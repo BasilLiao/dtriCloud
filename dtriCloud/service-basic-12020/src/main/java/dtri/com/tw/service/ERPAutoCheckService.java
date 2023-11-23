@@ -68,9 +68,9 @@ public class ERPAutoCheckService {
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
-		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
-			System.out.println("A121-231117002-0001");
-		}
+//		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
+//			System.out.println("A121-231117002-0001");
+//		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定
@@ -182,9 +182,9 @@ public class ERPAutoCheckService {
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
-		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A121-231117002")) {
-			System.out.println("A121-231117002-0001");
-		}
+//		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A121-231117002")) {
+//			System.out.println("A121-231117002-0001");
+//		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定+自動減少
@@ -225,7 +225,7 @@ public class ERPAutoCheckService {
 		}
 		// 倉別自動?
 		// Step2. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
-		else if (o.getBsltowho().split("_").length == 3 && wTFsCheck) {
+		if (o.getBsltowho().split("_").length == 3 && wTFsCheck) {
 			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			// 此倉儲+自動添加

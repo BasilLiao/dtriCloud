@@ -105,6 +105,10 @@
 .bg-show-note {
 	background: #dc3545;
 }
+
+.bg-warning-30 {
+	background: #4dcf938f;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
 	<!-- 查詢-細節結果 -->
@@ -1196,6 +1200,8 @@ other={
 			$('#search_cr .exTbodyTh input').prop( "checked", false );
 			$('#search_cr td div').removeClass("bg-warning");
 			$('#search_cr td div').removeClass("bg-danger");
+			$('#search_cr td div').removeClass("bg-warning-30");
+			
 			
 			//Step5.帶入資料
 			var marks = other.data.marks;
@@ -1247,9 +1253,10 @@ other={
 					//急單?
 					if(entity['wasstatus']==1){
 						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-warning');
-					}
-					if(entity['wasstatus']==2){
+					}else if(entity['wasstatus']==2){
 						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-danger');
+					}else {
+						$('.valTbodyTr_'+valTrNb+' .wasclasssn').addClass('bg-warning-30');
 					}
 				}
 			}		
