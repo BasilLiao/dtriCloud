@@ -743,8 +743,12 @@ public class WarehouseAssignmentServiceAc {
 							// 紀錄
 							break;
 						case "PassAll":
-							t.setBilcuser(x.getWascuser());
-							t.setBilfuser(x.getWasfuser());
+							if (t.getBilcuser().equals("")) {
+								t.setBilcuser(x.getWascuser());
+							}
+							if (t.getBilfuser().equals("")) {
+								t.setBilfuser(x.getWasfuser());
+							}
 							t.setBilpngqty(t.getBilpnqty());
 							if (t.getBiltowho().split("_").length > 1) {
 								String areaKey = t.getBiltowho().split("_")[0].replace("[", "") + "_" + t.getBilpnumber();
@@ -800,8 +804,12 @@ public class WarehouseAssignmentServiceAc {
 							t.setBslpalready(1);
 							break;
 						case "PassAll":
-							t.setBslcuser(x.getWascuser());
-							t.setBslfuser(x.getWasfuser());
+							if (t.getBslcuser().equals("")) {
+								t.setBslcuser(x.getWascuser());
+							}
+							if (t.getBslfuser().equals("")) {
+								t.setBslfuser(x.getWasfuser());
+							}
 							t.setBslpngqty(t.getBslpnqty());
 							if (t.getBslfromwho().split("_").length > 1) {
 								String areaKey = t.getBslfromwho().split("_")[0].replace("[", "") + "_" + t.getBslpnumber();

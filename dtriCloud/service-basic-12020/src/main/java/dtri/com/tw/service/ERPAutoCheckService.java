@@ -226,7 +226,7 @@ public class ERPAutoCheckService {
 		// 倉別自動?
 		// Step2. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
 		if (o.getBsltowho().split("_").length == 3 && wTFsCheck) {
-			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
+			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			// 此倉儲+自動添加
 			if (wCs.containsKey(wcKey)) {

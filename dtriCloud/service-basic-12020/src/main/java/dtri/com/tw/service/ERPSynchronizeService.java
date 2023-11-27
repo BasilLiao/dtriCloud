@@ -979,9 +979,9 @@ public class ERPSynchronizeService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-//			if(key.indexOf("A121-231122005-0001")>=0) {
-//				System.out.println(key);
-//			}
+			if(key.indexOf("A121-231113022-0001")>=0) {
+				System.out.println(key);
+			}
 			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
