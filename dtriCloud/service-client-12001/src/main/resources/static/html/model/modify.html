@@ -759,7 +759,7 @@ modify={
 					//過濾沒開啟的 
 					if($( this ).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
 						//過濾沒資料的
-						if(replaceVal!="" && replaceVal !=null && batchVal!='' && batchVal!=null){
+						if(replaceVal!="" && replaceVal !=null){
 							//關鍵字取代
 							tigger.each(function( indexCell ) {
 								$( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  

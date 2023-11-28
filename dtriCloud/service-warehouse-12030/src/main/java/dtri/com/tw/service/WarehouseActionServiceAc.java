@@ -309,7 +309,8 @@ public class WarehouseActionServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseActionDetail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao
+					.findAllByLanguageCellSame("WarehouseActionDetail", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -366,16 +367,20 @@ public class WarehouseActionServiceAc {
 
 			if (wastype != null && wastype.equals("領料類")) {
 				shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
+						shPageable);
 			} else if (wastype != null && wastype.equals("入料類")) {
 				incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
+						inPageable);
 			} else {
 				incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
+						inPageable);
 
 				shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
+						shPageable);
 			}
 			// Step4-2.資料區分(一般/細節)
 
@@ -615,10 +620,12 @@ public class WarehouseActionServiceAc {
 				if (r.split("-").length >= 2) {
 					String wasclass = r.split("-")[0];
 					String wassn = r.split("-")[1];
-					ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn, null,
-							packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), null, inPageable);
-					ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn, null,
-							packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), null, shPageable);
+					ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchAction(wasclass, wassn,
+							null, packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(),
+							null, inPageable);
+					ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(wasclass, wassn,
+							null, packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(),
+							null, shPageable);
 					// Step4-2.資料區分(一般/細節)
 					// 進料
 					incomingLists.forEach(in -> {
@@ -692,7 +699,8 @@ public class WarehouseActionServiceAc {
 						e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
 						// 倉儲(必須符合格式)
 						if (sh.getBslfromwho().split("_").length > 1) {
-							String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+							String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_"
+									+ sh.getBslpnumber();
 							if (areaMaps.containsKey(areaKey)) {
 								e.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 								e.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
@@ -743,8 +751,9 @@ public class WarehouseActionServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<WarehouseActionDetail>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<WarehouseActionDetail>>() {
+					});
 			// Step2.資料檢查
 			for (WarehouseActionDetail entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
@@ -783,6 +792,7 @@ public class WarehouseActionServiceAc {
 			String wasSn = x.getId().split("-")[1];
 			String wasNb = x.getId().split("-")[2];
 			String wasType = x.getWastype();
+
 			// 庫存數
 			List<WarehouseArea> areaLists = areaDao.findAllByWaaliasawmpnb(x.getWasaliaswmpnb());
 			WarehouseArea area = new WarehouseArea();
@@ -796,6 +806,7 @@ public class WarehouseActionServiceAc {
 					BasicIncomingList incomingList = arrayList.get(0);
 					incomingList.setBilfuser(x.getWasfuser());
 					incomingList.setSysmuser(x.getWasfuser());
+					incomingList.setSysnote(x.getSysnote());
 					incomingList.setSysmdate(new Date());
 					// 如果 有同步數量/或已經撿了
 					if (incomingList.getBilpngqty().equals(incomingList.getBilpnqty())) {
@@ -805,6 +816,9 @@ public class WarehouseActionServiceAc {
 						// 超入(須入量<實入量)
 						if (x.getWaspnqty() < x.getWaspngqty()) {
 							incomingList.setBilpnoqty(x.getWaspngqty() - x.getWaspnqty());
+						} else if (x.getWaspnqty() > x.getWaspngqty() && x.getSysnote().indexOf("進貨料短少") < 0) {
+							// 來料缺(須入量>實入量)+沒做標記
+							incomingList.setSysnote(incomingList.getSysnote() + "[異常:進貨料短少]");
 						}
 						incomingList.setBilpngqty(x.getWaspngqty());
 						incomingLists.add(incomingList);
@@ -818,9 +832,9 @@ public class WarehouseActionServiceAc {
 					WarehouseHistory history = new WarehouseHistory();
 					history.setWhtype("入料");
 					history.setWhwmslocation(incomingList.getBiltowho());
-					history.setWhcontent(incomingList.getBilclass() + "-" + //
-							incomingList.getBilsn() + "-" + incomingList.getBilnb() + "*" + //
-							incomingList.getBilpnqty());
+					history.setWhcontent(//
+							incomingList.getBilclass() + "-" + incomingList.getBilsn() + "-" + //
+									incomingList.getBilnb() + "*" + incomingList.getBilpnqty());
 					history.setWhwmpnb(incomingList.getBilpnumber());
 					history.setWhfuser(incomingList.getBilfuser());
 					history.setWheqty(area.getWaerptqty());
@@ -837,24 +851,31 @@ public class WarehouseActionServiceAc {
 					// 單據更新
 					shippingList.setBslfuser(x.getWasfuser());
 					shippingList.setSysmuser(x.getWasfuser());
+					shippingList.setSysnote(x.getSysnote());
 					shippingList.setSysmdate(new Date());
 					// 超領(庫存量<實領量)
-					if (area.getWatqty() < x.getWaspngqty()) {
+					if (area.getWatqty() < x.getWaspngqty() && x.getSysnote().indexOf("庫存量不足") < 0) {
 						shippingList.setBslpnoqty(x.getWaspngqty() - area.getWatqty());
+						shippingList.setSysnote(shippingList.getSysnote() + "[異常:庫存量不足]");
 					}
 					shippingList.setBslpngqty(x.getWaspngqty());
 					shippingLists.add(shippingList);
 
-					// 庫存更新
-					area.setWatqty(area.getWatqty() - x.getWaspngqty() < 0 ? 0 : area.getWatqty() - x.getWaspngqty());
+					// 庫存更新(夠扣?)
+					if (area.getWatqty() - x.getWaspngqty() < 0) {
+						area.setWatqty(0);
+					} else {
+						area.setWatqty(area.getWatqty() - x.getWaspngqty());
+					}
+
 					areaDao.save(area);
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
 					history.setWhtype("領料");
 					history.setWhwmslocation(shippingList.getBslfromwho());
-					history.setWhcontent(shippingList.getBslclass() + "-" + //
-							shippingList.getBslsn() + "-" + //
+					history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
+							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + //領料單
 							shippingList.getBslnb() + "*" + shippingList.getBslpnqty());
 					history.setWhwmpnb(shippingList.getBslpnumber());
 					history.setWhfuser(shippingList.getBslfuser());
@@ -880,16 +901,17 @@ public class WarehouseActionServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<WarehouseAction>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<WarehouseAction>>() {
+					});
 			// =======================資料整理=======================
 			// Step3.一般資料->寫入
 			Map<String, Boolean> wasClassSn = new HashMap<>();
 			entityDatas.forEach(x -> {
 				if (!wasClassSn.containsKey(x.getWasclasssn())) {
 					// 只能找已經全部完成的
-					ArrayList<BasicShippingList> checkSize = shippingListDao.findAllByCheckUser(x.getWasclasssn().split("-")[0],
-							x.getWasclasssn().split("-")[1], null);
+					ArrayList<BasicShippingList> checkSize = shippingListDao
+							.findAllByCheckUser(x.getWasclasssn().split("-")[0], x.getWasclasssn().split("-")[1], null);
 					if (checkSize.size() == 0 && x.getWastype().equals("領料類")) {
 						wasClassSn.put(x.getWasclasssn(), true);
 					}
@@ -903,8 +925,8 @@ public class WarehouseActionServiceAc {
 				shOrders.add(new Order(Direction.ASC, "bslfromwho"));// 供應來源
 				shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
 				PageRequest shPageable = PageRequest.of(0, 99999, Sort.by(shOrders));
-				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckShortageList(x.split("-")[0], x.split("-")[1], null,
-						shPageable);
+				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckShortageList(x.split("-")[0],
+						x.split("-")[1], null, shPageable);
 				// 缺料登記(取量 小於 需求量)
 				arrayList.forEach(z -> {
 					WarehouseShortageList shortageList = new WarehouseShortageList();
