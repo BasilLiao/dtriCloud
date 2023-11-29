@@ -265,9 +265,10 @@ public class ERPSynchronizeService {
 					if (o.getBilfuser().indexOf("System") >= 0) {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
-
 					// 資料轉換
 					o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -286,7 +287,7 @@ public class ERPSynchronizeService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				n = erpToCloudService.incomingOnePurth(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動扣除
+				// 自動完成
 				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
@@ -365,6 +366,8 @@ public class ERPSynchronizeService {
 					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -395,6 +398,8 @@ public class ERPSynchronizeService {
 					}
 					// 資料轉換
 					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -413,7 +418,7 @@ public class ERPSynchronizeService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				n = erpToCloudService.incomingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動扣除
+				// 自動完成
 				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveInLists.add(n);
 			}
@@ -430,7 +435,7 @@ public class ERPSynchronizeService {
 				n.setChecksum(checkSum);
 				// 資料轉換
 				n = erpToCloudService.shippingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動扣除
+				// 自動完成
 				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveShLists.add(n);
 			}
@@ -487,6 +492,8 @@ public class ERPSynchronizeService {
 					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -504,7 +511,7 @@ public class ERPSynchronizeService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				n = erpToCloudService.incomingOneMoctf(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動扣除
+				// 自動完成
 				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
@@ -559,6 +566,8 @@ public class ERPSynchronizeService {
 					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -577,7 +586,7 @@ public class ERPSynchronizeService {
 				n.setChecksum(checkSum);
 				// 資料轉換
 				n = erpToCloudService.incomingOneMocth(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動扣除
+				// 自動完成
 				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
 				saveLists.add(n);
 			}
@@ -644,7 +653,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -674,7 +685,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -772,7 +785,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -802,7 +817,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -929,7 +946,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -962,7 +981,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -1079,7 +1100,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -1109,7 +1132,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -1215,12 +1240,14 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
 					(o.getBilclass().equals("A431"))) {
-				// A141 庫存借入單
+				// A431 拆解
 				o = autoRemoveService.incomingAuto(o);
 				removeInLists.add(o);// 標記:無此資料
 			}
@@ -1245,7 +1272,9 @@ public class ERPSynchronizeService {
 						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
-					erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
@@ -1263,9 +1292,12 @@ public class ERPSynchronizeService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				n = erpToCloudService.incomingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動完成
-				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
-				saveInLists.add(n);
+				// 如果已經是完成(則不寫入)
+				if (!n.getSysstatus().equals(1)) {
+					// 自動完成
+					erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs);
+					saveInLists.add(n);
+				}
 			}
 		});
 		// 領料
@@ -1275,9 +1307,12 @@ public class ERPSynchronizeService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				erpToCloudService.shippingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
-				// 自動完成
-				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
-				saveShLists.add(n);
+				// 如果已經是完成(則不寫入)
+				if (!n.getSysstatus().equals(1)) {
+					// 自動完成
+					erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+					saveShLists.add(n);
+				}
 			}
 		});
 		// Step4. 存入資料

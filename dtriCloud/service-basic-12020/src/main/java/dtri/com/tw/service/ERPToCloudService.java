@@ -66,7 +66,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTh030().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTh007());// 已入庫量
 			}
 		}
@@ -128,7 +128,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTb004());// 已入庫量
 			}
 		}
@@ -197,7 +197,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTb004());// 已領庫量
 			}
 		}
@@ -263,7 +263,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTg011());// 已入庫量
 			}
 		}
@@ -327,7 +327,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi037().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTi007());// 已入庫量
 			}
 		}
@@ -390,7 +390,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTg009());// 已入庫量
 			}
 		}
@@ -449,7 +449,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTg009());// 已領庫量
 			}
 		}
@@ -510,7 +510,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("3")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTi009());// 已入庫量
 			}
 		}
@@ -572,7 +572,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTi009());// 已領庫量
 			}
 		}
@@ -635,7 +635,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTb007());// 已入庫量
 			}
 		}
@@ -699,7 +699,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTb007());// 已領庫量
 			}
 		}
@@ -763,7 +763,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTd016().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTd007());// 已入庫量
 			}
 		}
@@ -822,7 +822,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe010().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTe008());// 已領庫量
 			}
 		}
@@ -883,7 +883,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBilpngqty() == 0) {
+			if (o.getBilpngqty().equals(0)) {
 				o.setBilpngqty(m.getTg008());// 已入庫量
 			}
 		}
@@ -942,7 +942,7 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {
 			sysstatus = 1;
-			if (o.getBslpngqty() == 0) {
+			if (o.getBslpngqty().equals(0)) {
 				o.setBslpngqty(m.getTf007());// 已領庫量
 			}
 		}

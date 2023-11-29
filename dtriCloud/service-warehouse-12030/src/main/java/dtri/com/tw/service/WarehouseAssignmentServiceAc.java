@@ -77,14 +77,14 @@ public class WarehouseAssignmentServiceAc {
 		List<Order> inOrders = new ArrayList<>();
 		inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
 		inOrders.add(new Order(Direction.ASC, "bilsn"));// 單號
-		inOrders.add(new Order(Direction.ASC, "biledate"));// 預計時間
 		inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
+		inOrders.add(new Order(Direction.ASC, "biledate"));// 預計時間
 
 		List<Order> shOrders = new ArrayList<>();
 		shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
 		shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
-		shOrders.add(new Order(Direction.ASC, "bsledate"));// 預計時間
 		shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
+		shOrders.add(new Order(Direction.ASC, "bsledate"));// 預計時間
 
 		// 一般模式
 		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
@@ -721,7 +721,7 @@ public class WarehouseAssignmentServiceAc {
 		entityDatas.forEach(x -> {
 			String wasClass = x.getWasclasssn().split("-")[0];
 			String wasSn = x.getWasclasssn().split("-")[1];
-			String wasNb = x.getWasnb();
+			//String wasNb = x.getWasnb();
 			String wasType = x.getWastype();
 			if (wasType.equals("入料類")) {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, null);

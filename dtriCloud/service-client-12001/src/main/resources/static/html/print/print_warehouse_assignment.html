@@ -64,7 +64,7 @@
 									</div>-->
 									<!-- 單據 -->
 									<div class="">
-										<font style="font-size: 17px;" class="pr_bslnb">0001</font><b>／領:</b>
+										<font style="font-size: 17px;" class="pr_bslnb">0001</font><b class="pr_type">／領:</b>
 										<font class="pr_bslclass_bslsn">A551-230829006</font><b>：</b>
 										<font class="pr_sysnote">備註</font>
 									</div>
@@ -84,7 +84,7 @@
 								<!-- 倉儲-位 -->
 								<div class="" style="font-size: 15px; font-stretch: condensed;">
 									<b>量:</b>
-									<font class="pr_bslpnqty">500</font><b>／源:</b>
+									<font class="pr_bslpnqty">500</font><b class="pr_kind">／源:</b>
 									<font class="pr_bslfromwho">[A0002_原物料倉]</font>／<b>責:</b>
 									<font class="pr_user">Nobody</font>
 								</div>
@@ -175,6 +175,15 @@
 					//[A0002_原物料倉_2F-BH-04-02]
 					var pr_bslfromwho = h.wasfromwho.replaceAll("[", "").replaceAll("]", "");
 					pr_bslfromwho = pr_bslfromwho.split("_")[1] + "_" + pr_bslfromwho.split("_")[2];
+
+					//入料類型:須修正
+					if (h.wastype == "入料類") {
+						pr_bslfromwho = h.wastowho.replaceAll("[", "").replaceAll("]", "");
+						pr_bslfromwho = pr_bslfromwho.split("_")[1] + "_" + pr_bslfromwho.split("_")[2];
+						print_ex.find(".pr_kind").text("／象:");
+						print_ex.find(".pr_type").text("／退:");
+					}
+
 					print_ex.find(".pr_bslfromwho").text(pr_bslfromwho);//來源
 					print_ex.find(".pr_bslpname").text(h.waspname);//品名
 
