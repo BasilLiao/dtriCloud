@@ -114,6 +114,11 @@ public class ERPAutoCheckService {
 		if (o.getBiltowho().split("_").length == 3 && wTFsCheck) {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
+			//測試用
+//			if(wAsKey.equals("A0041_81-105-38210G")) {
+//				System.out.println(wAsKey);
+//			}
+			
 			// 此倉儲+自動添加
 			if (wCs.containsKey(wcKey)) {
 				if (wCs.get(wcKey).getWcaiqty()) {
@@ -182,8 +187,8 @@ public class ERPAutoCheckService {
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
-//		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A121-231117002")) {
-//			System.out.println("A121-231117002-0001");
+//		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A542-231130004")) {
+//			System.out.println("A542-231130004");
 //		}
 
 		// 單據自動?
@@ -225,7 +230,7 @@ public class ERPAutoCheckService {
 		}
 		// 倉別自動?
 		// Step2. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
-		if (o.getBsltowho().split("_").length == 3 && wTFsCheck) {
+		if (o.getBslfromwho().split("_").length == 3 && wTFsCheck) {
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			// 此倉儲+自動添加
@@ -289,9 +294,13 @@ public class ERPAutoCheckService {
 	public Map<String, Integer> settlementAuto(Map<String, Integer> wAsSave) {
 		ArrayList<WarehouseArea> arraySave = new ArrayList<>();
 		wAsSave.forEach((key, val) -> {
+			//測試用
+//			if(key.equals("A0041_81-105-38210G")) {
+//				System.out.println(key);
+//			}
 			ArrayList<WarehouseArea> arrayList = areaDao.findAllByWaaliasawmpnb(key);
 			if (arrayList.size() > 0) {
-				val = arrayList.get(0).getWatqty() - val;
+				val = arrayList.get(0).getWatqty() + val;
 				val = val < 0 ? 0 : val;
 				arrayList.get(0).setWatqty(val);
 				arraySave.add(arrayList.get(0));

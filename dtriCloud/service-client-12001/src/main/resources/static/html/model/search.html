@@ -456,8 +456,9 @@ search={
 					searchTextEx.find('input').attr("placeholder",searchSet['placeholder']);
 					searchTextEx.find('input').addClass("searchVal");
 					Object.keys(resultThead).forEach(function(k){
+						
 						//如果有翻譯
-						if(k.indexOf(searchSet['searchName'])>=0){
+						if(k.split("_")[1]==(searchSet['searchName'])){
 							if(resultThead[k].cellLanguage!=''){
 								var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 								searchTextEx.find('.searchTitle').text(cellName==""?searchSet['searchName']:cellName);

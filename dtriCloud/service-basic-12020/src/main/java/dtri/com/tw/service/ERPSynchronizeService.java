@@ -910,18 +910,20 @@ public class ERPSynchronizeService {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
-			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {
+			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {//料號調整單
 				// 轉
 				if (m.getTb007() < 0) {
 					// 領
 					m.setTk000("領料類");
 					m.setTb007(Math.abs(m.getTb007()));
+					erpShMaps.put(nKey, m);
 				} else if (m.getTb007() > 0) {
 					// 入
 					m.setTk000("入料類");
+					m.setTb013(m.getTb012());
+					erpInMaps.put(nKey, m);
 				}
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
-				erpShMaps.put(nKey, m);
 			}
 		}
 
@@ -1335,8 +1337,11 @@ public class ERPSynchronizeService {
 		Map<String, String> erpConfigMaps = new HashMap<>();// A1000+原物料倉
 		String checkSame = "";
 		for (Invtb m : erpEntitys) {
+			//測試用
+//			if(m.getMb001().replaceAll("\\s", "").equals("81-105-38210G") && m.getMb017().equals("A0041")) {
+//				System.out.println(m.getMb001());
+//			}
 			// 物料號+倉別號+位置
-
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s", ""));
 			m.setMb003(m.getMb003().replaceAll("\\s", ""));
