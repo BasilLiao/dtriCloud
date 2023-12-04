@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -34,6 +35,7 @@ import jakarta.persistence.Id;
  *      wss_pn_qty : 數量<br>
  *      wss_pn_g_qty : 已(領入)數量<br>
  *      wss_pn_o_qty : 超(領入)數量<br>
+ *      wss_pn_erp_qty : 領退料(帳務)數量<br>
  */
 @Entity
 public class WarehouseSynchronize {
@@ -50,42 +52,65 @@ public class WarehouseSynchronize {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		this.setWsspngqty(0);
+		this.wsspngqty = 0;
 		// 倉儲區域清單-清單
 		this.wsserptqty = 0;// : (帳務)此區域物料數量<br>
 		this.wsstqty = 0;// : (實際)此區域物料數量<br>
 		this.wsspnoqty = 0;// 超領量
+		this.wsspnerpqty = 0;//
 	}
 
 	// 共用型
+	@Transient
 	private Date syscdate;
+	@Transient
 	private String syscuser;
+	@Transient
 	private Date sysmdate;
+	@Transient
 	private String sysmuser;
+	@Transient
 	private Date sysodate;
+	@Transient
 	private String sysouser;
-
+	@Transient
 	private Boolean sysheader;
+	@Transient
 	private Integer sysstatus;
+	@Transient
 	private Integer syssort;
+	@Transient
 	private String sysnote;
 	@Id
 	private String id;// 單別+單號+序號
 	// 倉儲區域清單-清單
+	@Transient
 	private Integer wsserptqty;// : (帳務)此區域物料數量<br>
+	@Transient
 	private Integer wsstqty;// : (實際)此區域物料數量<br>
 	// 單據
+	@Transient
 	private String wssclassname;// :單據名稱<br>
-	//
+	@Transient
 	private String wssclasssn;// :單別+單號<br>
+	@Transient
 	private String wssnb;// : 序號<br>
+	@Transient
 	private String wsstype;// : 單據類型(領料類/入料類)<br>
+	@Transient
 	private String wsscuser;// 核准人
+	@Transient
 	private String wssfuser;// : 完成人<br>
+	@Transient
 	private String wsspnumber;// : 物料號<br>
+	@Transient
 	private Integer wsspnqty;// : 需(領/取)數量<br>
+	@Transient
 	private Integer wsspngqty;// : 已(領/取)數量<br>
+	@Transient
 	private Integer wsspnoqty;// : 超(領/取)數量<br>
+	@Transient
+	private Integer wsspnerpqty;// : 領退料(帳務)數量<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -269,5 +294,13 @@ public class WarehouseSynchronize {
 
 	public void setWsspnoqty(Integer wsspnoqty) {
 		this.wsspnoqty = wsspnoqty;
+	}
+
+	public Integer getWsspnerpqty() {
+		return wsspnerpqty;
+	}
+
+	public void setWsspnerpqty(Integer wsspnerpqty) {
+		this.wsspnerpqty = wsspnerpqty;
 	}
 }

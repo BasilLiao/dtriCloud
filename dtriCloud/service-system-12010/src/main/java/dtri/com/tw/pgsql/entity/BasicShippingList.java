@@ -99,6 +99,7 @@ public class BasicShippingList {
 		this.bslpngqty = 0;
 		this.bslpnaqty = 0;
 		this.setBslpnoqty(0);
+		this.setBslpnerpqty(0);
 		this.bsltocommand = "[]";
 		this.bsltowho = "[]";
 		this.bslfromcommand = "[]";
@@ -185,6 +186,8 @@ public class BasicShippingList {
 	private Integer bslpngqty;
 	@Column(name = "bsl_pn_o_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpnoqty;
+	@Column(name = "bsl_pn_erp_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bslpnerpqty;
 
 	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltocommand;
@@ -452,9 +455,10 @@ public class BasicShippingList {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(bslacceptance, bslcheckin, bslclass, bslcuser, bsledate, bslfdate, bslfromcommand, bslfromwho, bslfuser, bslid, bslnb,
-				bslpname, bslpnqty, bslpnumber, bslpspecification, bslsn, bslstatus, bsltocommand, bsltowho, bsltype, syscdate, syscuser, sysheader,
-				sysmdate, sysmuser, sysnote, sysodate, sysouser, syssort, sysstatus);
+		return Objects.hash(bslacceptance, bslcheckin, bslclass, bslcuser, bsledate, bslfdate, bslfromcommand,
+				bslfromwho, bslfuser, bslid, bslnb, bslpname, bslpnqty, bslpnumber, bslpspecification, bslsn, bslstatus,
+				bsltocommand, bsltowho, bsltype, syscdate, syscuser, sysheader, sysmdate, sysmuser, sysnote, sysodate,
+				sysouser, syssort, sysstatus);
 	}
 
 	@Override
@@ -467,16 +471,19 @@ public class BasicShippingList {
 			return false;
 		BasicShippingList other = (BasicShippingList) obj;
 		return Objects.equals(bslacceptance, other.bslacceptance) && Objects.equals(bslcheckin, other.bslcheckin)
-				&& Objects.equals(bslclass, other.bslclass) && Objects.equals(bslcuser, other.bslcuser) && Objects.equals(bsledate, other.bsledate)
-				&& Objects.equals(bslfdate, other.bslfdate) && Objects.equals(bslfromcommand, other.bslfromcommand)
-				&& Objects.equals(bslfromwho, other.bslfromwho) && Objects.equals(bslfuser, other.bslfuser) && Objects.equals(bslid, other.bslid)
-				&& Objects.equals(bslnb, other.bslnb) && Objects.equals(bslpname, other.bslpname) && Objects.equals(bslpnqty, other.bslpnqty)
-				&& Objects.equals(bslpnumber, other.bslpnumber) && Objects.equals(bslpspecification, other.bslpspecification)
-				&& Objects.equals(bslsn, other.bslsn) && Objects.equals(bslstatus, other.bslstatus)
-				&& Objects.equals(bsltocommand, other.bsltocommand) && Objects.equals(bsltowho, other.bsltowho)
-				&& Objects.equals(bsltype, other.bsltype) && Objects.equals(syscdate, other.syscdate) && Objects.equals(syscuser, other.syscuser)
-				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate) && Objects.equals(sysmuser, other.sysmuser)
-				&& Objects.equals(sysnote, other.sysnote) && Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
+				&& Objects.equals(bslclass, other.bslclass) && Objects.equals(bslcuser, other.bslcuser)
+				&& Objects.equals(bsledate, other.bsledate) && Objects.equals(bslfdate, other.bslfdate)
+				&& Objects.equals(bslfromcommand, other.bslfromcommand) && Objects.equals(bslfromwho, other.bslfromwho)
+				&& Objects.equals(bslfuser, other.bslfuser) && Objects.equals(bslid, other.bslid)
+				&& Objects.equals(bslnb, other.bslnb) && Objects.equals(bslpname, other.bslpname)
+				&& Objects.equals(bslpnqty, other.bslpnqty) && Objects.equals(bslpnumber, other.bslpnumber)
+				&& Objects.equals(bslpspecification, other.bslpspecification) && Objects.equals(bslsn, other.bslsn)
+				&& Objects.equals(bslstatus, other.bslstatus) && Objects.equals(bsltocommand, other.bsltocommand)
+				&& Objects.equals(bsltowho, other.bsltowho) && Objects.equals(bsltype, other.bsltype)
+				&& Objects.equals(syscdate, other.syscdate) && Objects.equals(syscuser, other.syscuser)
+				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate)
+				&& Objects.equals(sysmuser, other.sysmuser) && Objects.equals(sysnote, other.sysnote)
+				&& Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
 				&& Objects.equals(syssort, other.syssort) && Objects.equals(sysstatus, other.sysstatus);
 	}
 
@@ -566,6 +573,14 @@ public class BasicShippingList {
 
 	public void setBslerpcuser(String bslerpcuser) {
 		this.bslerpcuser = bslerpcuser;
+	}
+
+	public Integer getBslpnerpqty() {
+		return bslpnerpqty;
+	}
+
+	public void setBslpnerpqty(Integer bslpnerpqty) {
+		this.bslpnerpqty = bslpnerpqty;
 	}
 
 }

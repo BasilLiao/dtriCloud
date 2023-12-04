@@ -44,8 +44,10 @@ public class Mocte {
 	@Column(name = "TC007")
 	private String tc007;// 領單頭備註
 
+	@Column(name = "TE005")
+	private Integer te005;// 領退料數量(ERP)
 	@Column(name = "TB004")
-	private Integer tb004;// 需領用
+	private Integer tb004;// 需領退用
 	@Column(name = "TB005")
 	private Integer tb005;// 已領用
 	@Column(name = "TB009")
@@ -366,6 +368,14 @@ public class Mocte {
 				+ ", tc008=" + tc008 + ", tc016=" + tc016 + ", te013=" + te013 + ", te014=" + te014 + ", te019=" + te019 + ", mb001=" + mb001
 				+ ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039
 				+ ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+	}
+
+	public Integer getTe005() {
+		return te005;
+	}
+
+	public void setTe005(Integer te005) {
+		this.te005 = te005;
 	}
 
 }

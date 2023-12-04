@@ -99,6 +99,8 @@ public class BasicIncomingList {
 		this.bilpngqty = 0;
 		this.bilpnaqty = 0;
 		this.bilpnoqty = 0;
+		this.bilpnerpqty = 0;
+		
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";
@@ -184,6 +186,8 @@ public class BasicIncomingList {
 	private Integer bilpngqty;
 	@Column(name = "bil_pn_o_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bilpnoqty;
+	@Column(name = "bil_pn_erp_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bilpnerpqty;
 
 	@Column(name = "bil_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String biltocommand;
@@ -566,6 +570,14 @@ public class BasicIncomingList {
 
 	public void setBilerpcuser(String bilerpcuser) {
 		this.bilerpcuser = bilerpcuser;
+	}
+
+	public Integer getBilpnerpqty() {
+		return bilpnerpqty;
+	}
+
+	public void setBilpnerpqty(Integer bilpnerpqty) {
+		this.bilpnerpqty = bilpnerpqty;
 	}
 
 }

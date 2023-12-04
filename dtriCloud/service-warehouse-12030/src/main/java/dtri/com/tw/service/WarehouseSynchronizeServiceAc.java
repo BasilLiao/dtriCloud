@@ -152,7 +152,7 @@ public class WarehouseSynchronizeServiceAc {
 
 				WarehouseSynchronize e = new WarehouseSynchronize();
 				e.setId(Key);
-				// 進料單
+				// 領
 				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
 				e.setWssclasssn(headerKey);// 單據+單據號
 				e.setWssnb(sh.getBslnb());// 序號
@@ -163,6 +163,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
 				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
+				e.setWsspnerpqty(sh.getBslpnerpqty());//ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();

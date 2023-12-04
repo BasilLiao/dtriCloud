@@ -307,11 +307,6 @@ public class ERPSynchronizeService {
 		logger.info("===erpSynchronizeMocte: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Mocte> erpEntitys = mocteDao.findAllByMocte();
-		ArrayList<Mocte> erpoEntitys = mocteDao.findAllByMocteo();
-		// 放入內容
-		erpoEntitys.forEach(teo -> {
-			erpEntitys.add(teo);
-		});
 		Map<String, Mocte> erpInMaps = new HashMap<>();
 		Map<String, Mocte> erpShMaps = new HashMap<>();
 		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
@@ -329,6 +324,11 @@ public class ERPSynchronizeService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			m.setNewone(true);
+			//單別性質(退料類 需抓取 物料領退用量)
+			String classNb = m.getTa026_ta027_ta028().split("-")[0];
+			if(classNb.equals("A543") || classNb.equals("A561") || classNb.equals("A571")) {
+				m.setTb004(m.getTe005());
+			}
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
 				m.setTk000("領料類");

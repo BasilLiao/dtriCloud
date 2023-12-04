@@ -147,6 +147,7 @@ public class ERPToCloudService {
 		o.setBilpname(m.getMb002());// 品名
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTb004());// 數量
+		o.setBilpnerpqty(m.getTe005());// 數量(領退料數量ERP)
 		o.setSysstatus(0);// 未完成
 		o.setSysnote(m.getTe014());// 備註
 		o.setSysmdate(new Date());
@@ -217,6 +218,7 @@ public class ERPToCloudService {
 		o.setBslpname(m.getMb002());// 品名
 		o.setBslpspecification(m.getMb003());// 規格
 		o.setBslpnqty(m.getTb004());// 數量
+		o.setBslpnerpqty(m.getTe005());// 數量(領退料數量ERP)
 		o.setSysstatus(sysstatus);// 0=尚未結束,1=結案
 		o.setSysnote(m.getTe014());// 備註
 		o.setBslerpcuser(m.getCreator());// 開單人
