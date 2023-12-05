@@ -77,7 +77,7 @@ public class WarehouseActionServiceAc {
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
 		int total = 9999;
-		int batch = 0;
+		int batch = 0; 
 
 		// Step2.排序
 		List<Order> inOrders = new ArrayList<>();
