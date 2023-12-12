@@ -22,19 +22,19 @@ import com.google.gson.JsonObject;
 
 import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
+import dtri.com.tw.pgsql.dao.ScheduleShortageListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseHistoryDao;
-import dtri.com.tw.pgsql.dao.WarehouseShortageListDao;
 import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
+import dtri.com.tw.pgsql.entity.ScheduleShortageList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseAction;
 import dtri.com.tw.pgsql.entity.WarehouseActionDetail;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
-import dtri.com.tw.pgsql.entity.WarehouseShortageList;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -68,7 +68,7 @@ public class WarehouseActionServiceAc {
 	private WarehouseHistoryDao historyDao;
 
 	@Autowired
-	private WarehouseShortageListDao shortageListDao;
+	private ScheduleShortageListDao shortageListDao;
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
@@ -896,7 +896,7 @@ public class WarehouseActionServiceAc {
 	@Transactional
 	public void setModifyCheck(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		List<WarehouseShortageList> shortageLists = new ArrayList<>();
+		List<ScheduleShortageList> shortageLists = new ArrayList<>();
 		ArrayList<WarehouseActionDetail> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
@@ -929,14 +929,14 @@ public class WarehouseActionServiceAc {
 						x.split("-")[1], null, shPageable);
 				// 缺料登記(取量 小於 需求量)
 				arrayList.forEach(z -> {
-					WarehouseShortageList shortageList = new WarehouseShortageList();
-					shortageList.setWslbslsnnb(z.getBslclass() + "-" + z.getBslsn() + "-" + z.getBslnb());
-					shortageList.setWslfuser(z.getBslfuser());
-					shortageList.setWslpnumber(z.getBslpnumber());
-					shortageList.setWslpname(z.getBslpname());
-					shortageList.setWslpngqty(z.getBslpngqty());
-					shortageList.setWslpnqty(z.getBslpnqty());
-					shortageList.setWslpnlqty(z.getBslpnqty() - z.getBslpngqty());
+					ScheduleShortageList shortageList = new ScheduleShortageList();
+					shortageList.setSslbslsnnb(z.getBslclass() + "-" + z.getBslsn() + "-" + z.getBslnb());
+					shortageList.setSslfuser(z.getBslfuser());
+					shortageList.setSslpnumber(z.getBslpnumber());
+					shortageList.setSslpname(z.getBslpname());
+					shortageList.setSslpngqty(z.getBslpngqty());
+					shortageList.setSslpnqty(z.getBslpnqty());
+					shortageList.setSslpnlqty(z.getBslpnqty() - z.getBslpngqty());
 					shortageList.setSysnote(z.getSysnote());
 					shortageLists.add(shortageList);
 				});

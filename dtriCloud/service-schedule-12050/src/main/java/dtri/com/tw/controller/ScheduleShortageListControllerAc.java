@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.WarehouseShortageListServiceAc;
+import dtri.com.tw.service.ScheduleShortageListServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class WarehouseShortageListControllerAc extends AbstractControllerAc {
+public class ScheduleShortageListControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private WarehouseShortageListServiceAc serviceAc;
+	private ScheduleShortageListServiceAc serviceAc;
 
-	@RequestMapping(value = { "/warehouseShortageList/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/scheduleShortageList/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -57,7 +57,7 @@ public class WarehouseShortageListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseShortageList/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/scheduleShortageList/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -92,7 +92,7 @@ public class WarehouseShortageListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseShortageList/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/scheduleShortageList/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {

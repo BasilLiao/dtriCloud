@@ -202,15 +202,6 @@ public interface WarehouseServiceFeign {
 	@RequestMapping(value = { "/warehouseArea/setDetele" }, method = RequestMethod.POST)
 	PackageBean setAreaDetele(@RequestBody String jsonPackageBean);
 
-	// ================================通用-須補料單================================
-	@RequestMapping(value = { "/warehouseShortageList/getSearch" }, method = RequestMethod.POST)
-	PackageBean getShortageListSearch(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseShortageList/getReport" }, method = RequestMethod.POST)
-	PackageBean getShortageListReport(@RequestBody String jsonPackageBean);
-
-	@RequestMapping(value = { "/warehouseShortageList/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setShortageListInvalid(@RequestBody String jsonPackageBean);
 
 	// ================================通用-物料清單================================
 	@RequestMapping(value = { "/warehouseMaterial/getSearch" }, method = RequestMethod.POST)

@@ -187,24 +187,24 @@ public class ScheduledTasksService {
 
 	// 每日(30)06:00分執行一次
 	// 自動同步
-	@Async
-	@Scheduled(cron = "0 30 06 * * ? ")
-	public void updateAreasAndIncoming() {
-		List<WarehouseArea> areas = areaDao.findAll();
-		areas.forEach(x -> {
-			x.setWatqty(x.getWaerptqty());
-			x.setSysmuser("system");
-			x.setSysmdate(new Date());
-		});
-		areaDao.saveAll(areas);
-		// 入料單-進行(匹配)->將數量修正 寫入
-		ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
-		reAll.forEach(bil -> {
-			bil.setBilpngqty(bil.getBilpnqty());
-		});
-		incomingListDao.saveAll(reAll);
-
-	}
+//	@Async
+//	@Scheduled(cron = "0 30 06 * * ? ")
+//	public void updateAreasAndIncoming() {
+//		List<WarehouseArea> areas = areaDao.findAll();
+//		areas.forEach(x -> {
+//			x.setWatqty(x.getWaerptqty());
+//			x.setSysmuser("system");
+//			x.setSysmdate(new Date());
+//		});
+//		areaDao.saveAll(areas);
+//		// 入料單-進行(匹配)->將數量修正 寫入
+//		ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
+//		reAll.forEach(bil -> {
+//			bil.setBilpngqty(bil.getBilpnqty());
+//		});
+//		incomingListDao.saveAll(reAll);
+//
+//	}
 
 	/** 轉換文字 **/
 	public static String eStktToSg(Exception e) {

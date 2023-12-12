@@ -23,9 +23,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
-import dtri.com.tw.pgsql.dao.WarehouseShortageListDao;
+import dtri.com.tw.pgsql.dao.ScheduleShortageListDao;
+import dtri.com.tw.pgsql.entity.ScheduleShortageList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
-import dtri.com.tw.pgsql.entity.WarehouseShortageList;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -38,7 +38,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class WarehouseShortageListServiceAc {
+public class ScheduleShortageListServiceAc {
 
 	@Autowired
 	private PackageService packageService;
@@ -47,7 +47,7 @@ public class WarehouseShortageListServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
-	private WarehouseShortageListDao hortageListDao;
+	private ScheduleShortageListDao hortageListDao;
 
 	@Autowired
 	private EntityManager em;
@@ -62,7 +62,7 @@ public class WarehouseShortageListServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "wslbslsnnb"));// 倉庫別
+		orders.add(new Order(Direction.ASC, "sslbslsnnb"));// 倉庫別
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -70,7 +70,7 @@ public class WarehouseShortageListServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<WarehouseShortageList> entitys = hortageListDao.findAllBySearch(null, null, 0, pageable);
+			ArrayList<ScheduleShortageList> entitys = hortageListDao.findAllBySearch(null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -84,7 +84,7 @@ public class WarehouseShortageListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseShortageList", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleShortageList", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -96,7 +96,7 @@ public class WarehouseShortageListServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseShortageList.class.getDeclaredFields();
+			Field[] fields = ScheduleShortageList.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			// exceptionCell.add("material");
@@ -105,10 +105,10 @@ public class WarehouseShortageListServiceAc {
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wslbslsnnb", "Ex:單別-單號-單序?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "sslbslsnnb", "Ex:單別-單號-單序?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wslpnumber", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "sslpnumber", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
@@ -124,9 +124,9 @@ public class WarehouseShortageListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseShortageList searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseShortageList.class);
+			ScheduleShortageList searchData = packageService.jsonToBean(packageBean.getEntityJson(), ScheduleShortageList.class);
 
-			ArrayList<WarehouseShortageList> entitys = hortageListDao.findAllBySearch(searchData.getWslbslsnnb(), searchData.getWslpnumber(),
+			ArrayList<ScheduleShortageList> entitys = hortageListDao.findAllBySearch(searchData.getSslbslsnnb(), searchData.getSslpnumber(),
 					searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
@@ -144,10 +144,10 @@ public class WarehouseShortageListServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseShortageList());
+		String entityFormatJson = packageService.beanToJson(new ScheduleShortageList());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("wslid_");
+		packageBean.setEntityIKeyGKey("sslid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
@@ -156,21 +156,21 @@ public class WarehouseShortageListServiceAc {
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<WarehouseShortageList> entityDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageList> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseShortageList>>() {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<ScheduleShortageList>>() {
 			});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<WarehouseShortageList> saveDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageList> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getWslid() != null) {
-				WarehouseShortageList entityDataOld = hortageListDao.findById(x.getWslid()).get();
+			if (x.getSslid() != null) {
+				ScheduleShortageList entityDataOld = hortageListDao.findById(x.getSslid()).get();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
@@ -189,11 +189,11 @@ public class WarehouseShortageListServiceAc {
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<WarehouseShortageList> entitys = new ArrayList<>();
+		List<ScheduleShortageList> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM warehouse_shortage_list e Where ";
+		String nativeQuery = "SELECT e.* FROM schedule_shortage_list e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];
@@ -201,14 +201,14 @@ public class WarehouseShortageListServiceAc {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("wsl", "wsl_");
-			cellName = cellName.replace("wsl_bslsnnb", "wsl_bsl_sn_nb");
-			cellName = cellName.replace("wsl_pnumber", "wsl_p_number");
-			cellName = cellName.replace("wsl_pname", "wsl_p_name");
-			cellName = cellName.replace("wsl_pnqty", "wsl_pn_qty");
-			cellName = cellName.replace("wsl_pngqty", "wsl_pn_g_qty");
-			cellName = cellName.replace("wsl_pnlqty", "wsl_pn_l_qty");
-			cellName = cellName.replace("wsl_fuser", "wsl_f_user");
+			cellName = cellName.replace("ssl", "ssl_");
+			cellName = cellName.replace("ssl_bslsnnb", "ssl_bsl_sn_nb");
+			cellName = cellName.replace("ssl_pnumber", "ssl_p_number");
+			cellName = cellName.replace("ssl_pname", "ssl_p_name");
+			cellName = cellName.replace("ssl_pnqty", "ssl_pn_qty");
+			cellName = cellName.replace("ssl_pngqty", "ssl_pn_g_qty");
+			cellName = cellName.replace("ssl_pnlqty", "ssl_pn_l_qty");
+			cellName = cellName.replace("ssl_fuser", "ssl_f_user");
 
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
@@ -243,9 +243,9 @@ public class WarehouseShortageListServiceAc {
 		}
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.wsl_bsl_sn_nb asc";
+		nativeQuery += " order by e.ssl_bsl_sn_nb asc";
 		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, WarehouseShortageList.class);
+		Query query = em.createNativeQuery(nativeQuery, ScheduleShortageList.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {
 			String val = valAndType.split("<_>")[0];

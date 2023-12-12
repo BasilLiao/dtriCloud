@@ -10,23 +10,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.feign.WarehouseServiceFeign;
+import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class WarehouseShortageListController extends AbstractController {
+public class ScheduleShortageListController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
 
 	@Resource
-	WarehouseServiceFeign serviceFeign;
+	ScheduleServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -69,7 +70,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AR" }, method = {
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.AR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -113,7 +114,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.ARR" }, method = {
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.ARR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -157,7 +158,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -170,7 +171,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -183,7 +184,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -226,7 +227,7 @@ public class WarehouseShortageListController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_shortage_list.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/schedule_shortage_list.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {

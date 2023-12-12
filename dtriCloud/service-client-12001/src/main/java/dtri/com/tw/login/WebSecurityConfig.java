@@ -62,8 +62,9 @@ public class WebSecurityConfig {
 	private static final String warehouse_act = "/ajax/warehouse_action.basil";
 	private static final String warehouse_syn = "/ajax/warehouse_synchronize.basil";
 	// 製造
-	
+
 	// 生管
+	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -93,6 +94,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_con + ".AC").hasAuthority(actionRole(system_con, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_con + ".AU").hasAuthority(actionRole(system_con, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_con + ".AD").hasAuthority(actionRole(system_con, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, system_con + ".DD").hasAuthority(actionRole(system_con, "DD"))// (標記移除)
 
 				// ----請求-system_langage-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_lan).hasAuthority(actionRole(system_lan, ""))// (轉跳)
@@ -101,6 +103,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_lan + ".AC").hasAuthority(actionRole(system_lan, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_lan + ".AU").hasAuthority(actionRole(system_lan, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_lan + ".AD").hasAuthority(actionRole(system_lan, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, system_lan + ".DD").hasAuthority(actionRole(system_lan, "DD"))// (標記移除)
 
 				// ----請求-system_permission-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_per).hasAuthority(actionRole(system_per, ""))// (轉跳)
@@ -108,6 +111,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_per + ".AC").hasAuthority(actionRole(system_per, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_per + ".AU").hasAuthority(actionRole(system_per, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_per + ".AD").hasAuthority(actionRole(system_per, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, system_per + ".DD").hasAuthority(actionRole(system_per, "DD"))// (標記移除)
 
 				// ----請求-sys_group-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_gro).hasAuthority(actionRole(system_gro, ""))// (轉跳)
@@ -115,6 +119,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_gro + ".AC").hasAuthority(actionRole(system_gro, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_gro + ".AU").hasAuthority(actionRole(system_gro, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_gro + ".AD").hasAuthority(actionRole(system_gro, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, system_gro + ".DD").hasAuthority(actionRole(system_gro, "DD"))// (標記移除)
 
 				// ----請求-sys_user-(訪問) ----
 				.requestMatchers(HttpMethod.POST, system_use).hasAuthority(actionRole(system_use, ""))// (轉跳)
@@ -122,6 +127,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, system_use + ".AC").hasAuthority(actionRole(system_use, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, system_use + ".AU").hasAuthority(actionRole(system_use, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, system_use + ".AD").hasAuthority(actionRole(system_use, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, system_use + ".DD").hasAuthority(actionRole(system_use, "DD"))// (標記移除)
 
 				// ----請求-sys_user-(訪問) ----
 				.requestMatchers(HttpMethod.POST, own_use).hasAuthority(actionRole(own_use, ""))// (轉跳)
@@ -136,6 +142,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, basic_com + ".AC").hasAuthority(actionRole(basic_com, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, basic_com + ".AU").hasAuthority(actionRole(basic_com, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, basic_com + ".AD").hasAuthority(actionRole(basic_com, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_com + ".DD").hasAuthority(actionRole(basic_com, "DD"))// (標記移除)
 
 				// ----請求-basic_shipping_list-(訪問) ----
 				.requestMatchers(HttpMethod.POST, basic_shi).hasAuthority(actionRole(basic_shi, ""))// (轉跳)
@@ -144,6 +151,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, basic_shi + ".AC").hasAuthority(actionRole(basic_shi, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, basic_shi + ".AU").hasAuthority(actionRole(basic_shi, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, basic_shi + ".AD").hasAuthority(actionRole(basic_shi, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_shi + ".DD").hasAuthority(actionRole(basic_shi, "DD"))// (標記移除)
 
 				// ----請求-basic_incoming_list-(訪問) ----
 				.requestMatchers(HttpMethod.POST, basic_inc).hasAuthority(actionRole(basic_inc, ""))// (轉跳)
@@ -152,6 +160,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, basic_inc + ".AC").hasAuthority(actionRole(basic_inc, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, basic_inc + ".AU").hasAuthority(actionRole(basic_inc, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, basic_inc + ".AD").hasAuthority(actionRole(basic_inc, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_inc + ".DD").hasAuthority(actionRole(basic_inc, "DD"))// (標記移除)
 
 				// 倉庫功能-客製化
 				// ----請求-warehouse_assignment-(訪問) ----
@@ -187,6 +196,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_his + ".AC").hasAuthority(actionRole(warehouse_his, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_his + ".AU").hasAuthority(actionRole(warehouse_his, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_his + ".AD").hasAuthority(actionRole(warehouse_his, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_his + ".DD").hasAuthority(actionRole(warehouse_his, "DD"))// (標記移除)
 
 				// ----請求-warehouse_config-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_con).hasAuthority(actionRole(warehouse_con, ""))// (轉跳)
@@ -195,6 +205,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_con + ".AC").hasAuthority(actionRole(warehouse_con, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_con + ".AU").hasAuthority(actionRole(warehouse_con, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_con + ".AD").hasAuthority(actionRole(warehouse_con, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_con + ".DD").hasAuthority(actionRole(warehouse_con, "DD"))// (標記移除)
 
 				// ----請求-warehouse_type_filter-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_typ).hasAuthority(actionRole(warehouse_typ, ""))// (轉跳)
@@ -203,6 +214,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_typ + ".AC").hasAuthority(actionRole(warehouse_typ, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_typ + ".AU").hasAuthority(actionRole(warehouse_typ, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_typ + ".AD").hasAuthority(actionRole(warehouse_typ, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_typ + ".DD").hasAuthority(actionRole(warehouse_typ, "DD"))// (標記移除)
 
 				// ----請求-warehouse_material-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_mat).hasAuthority(actionRole(warehouse_mat, ""))// (轉跳)
@@ -211,6 +223,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_mat + ".AC").hasAuthority(actionRole(warehouse_mat, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_mat + ".AU").hasAuthority(actionRole(warehouse_mat, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_mat + ".AD").hasAuthority(actionRole(warehouse_mat, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_mat + ".DD").hasAuthority(actionRole(warehouse_mat, "DD"))// (標記移除)
 
 				// ----請求-warehouse_area-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_are).hasAuthority(actionRole(warehouse_are, ""))// (轉跳)
@@ -219,6 +232,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_are + ".AC").hasAuthority(actionRole(warehouse_are, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_are + ".AU").hasAuthority(actionRole(warehouse_are, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_are + ".AD").hasAuthority(actionRole(warehouse_are, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_are + ".DD").hasAuthority(actionRole(warehouse_are, "DD"))// (標記移除)
 
 				// ----請求-warehouse_keeper-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_kee).hasAuthority(actionRole(warehouse_kee, ""))// (轉跳)
@@ -227,7 +241,16 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_kee + ".AC").hasAuthority(actionRole(warehouse_kee, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, warehouse_kee + ".AU").hasAuthority(actionRole(warehouse_kee, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, warehouse_kee + ".AD").hasAuthority(actionRole(warehouse_kee, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, warehouse_kee + ".DD").hasAuthority(actionRole(warehouse_kee, "DD"))// (標記移除)
 
+				// 生管功能
+				.requestMatchers(HttpMethod.POST, schedule_sho).hasAuthority(actionRole(schedule_sho, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, schedule_sho + ".AR").hasAuthority(actionRole(schedule_sho, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, schedule_sho + ".ARR").hasAuthority(actionRole(schedule_sho, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, schedule_sho + ".AC").hasAuthority(actionRole(schedule_sho, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, schedule_sho + ".AU").hasAuthority(actionRole(schedule_sho, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".AD").hasAuthority(actionRole(schedule_sho, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".DD").hasAuthority(actionRole(schedule_sho, "DD"))// (標記移除)
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();
 
