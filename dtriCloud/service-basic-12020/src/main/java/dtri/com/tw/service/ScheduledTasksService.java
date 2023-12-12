@@ -1,9 +1,11 @@
 package dtri.com.tw.service;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +44,7 @@ import dtri.com.tw.pgsql.entity.WarehouseArea;
 public class ScheduledTasksService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
+	private static boolean fixDelay_ERPSynchronizeServiceRun = true;
 	@Autowired
 	private SystemConfigDao sysDao;
 	@Value("${catalina.home}")
@@ -58,27 +60,37 @@ public class ScheduledTasksService {
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Async
 	@Scheduled(fixedDelay = 180000)
-	public void fixDelay_ERPSynchronizeService() {
+	public synchronized void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
-		synchronizeService.erpSynchronizeInvtb();//
-		// 事先準備匹配
-		synchronizeService.initERPSynchronizeService();//
-		// 單據
-		synchronizeService.erpSynchronizeInvta();
-		synchronizeService.erpSynchronizeInvtg();
-		synchronizeService.erpSynchronizeInvth();
+		if (fixDelay_ERPSynchronizeServiceRun) {
+			fixDelay_ERPSynchronizeServiceRun = false;
+			try {
+				synchronizeService.erpSynchronizeInvtb();//
+				// 事先準備匹配
+				synchronizeService.initERPSynchronizeService();//
+				// 單據
+				synchronizeService.erpSynchronizeInvta();
+				synchronizeService.erpSynchronizeInvtg();
+				synchronizeService.erpSynchronizeInvth();
 
-		synchronizeService.erpSynchronizeMocta();
-		synchronizeService.erpSynchronizeMocte();
-		synchronizeService.erpSynchronizeMoctf();
-		synchronizeService.erpSynchronizeMocth();
-		synchronizeService.erpSynchronizeBomtd();
-		synchronizeService.erpSynchronizeBomtf();
+				synchronizeService.erpSynchronizeMocta();
+				synchronizeService.erpSynchronizeMocte();
+				synchronizeService.erpSynchronizeMoctf();
+				synchronizeService.erpSynchronizeMocth();
+				synchronizeService.erpSynchronizeBomtd();
+				synchronizeService.erpSynchronizeBomtf();
 
-		synchronizeService.erpSynchronizePurth();
-		synchronizeService.erpSynchronizeWtypeFilter();
+				synchronizeService.erpSynchronizePurth();
+				synchronizeService.erpSynchronizeWtypeFilter();
 
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.warn("===>>> [System or User]" + eStktToSg(e));
+				fixDelay_ERPSynchronizeServiceRun = true;
+			}
+			fixDelay_ERPSynchronizeServiceRun = true;
+		}
 	}
 
 	// 每日(30)12/22:00分執行一次
@@ -130,8 +142,9 @@ public class ScheduledTasksService {
 		 * "UTF8" "dtrimes"
 		 */
 
-		ProcessBuilder pb = new ProcessBuilder("" + db_pg_dump, "--dbname=" + db_name, "--port=" + db_port, "--no-password", "--verbose",
-				"--format=c", "--blobs", "--encoding=UTF8", "--file=" + apache_path + db_folder_name + db_file_name + "_" + backupDay + ".sql");
+		ProcessBuilder pb = new ProcessBuilder("" + db_pg_dump, "--dbname=" + db_name, "--port=" + db_port,
+				"--no-password", "--verbose", "--format=c", "--blobs", "--encoding=UTF8",
+				"--file=" + apache_path + db_folder_name + db_file_name + "_" + backupDay + ".sql");
 		try {
 			// Step3-1.查資料夾
 			File directory = new File(apache_path + db_folder_name);
@@ -191,6 +204,20 @@ public class ScheduledTasksService {
 		});
 		incomingListDao.saveAll(reAll);
 
+	}
+
+	/** 轉換文字 **/
+	public static String eStktToSg(Exception e) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		e.printStackTrace(ps);
+		ps.close();
+		return baos.toString();
+	}
+
+	/** 同步中? **/
+	public synchronized static boolean isFixDelay_ERPSynchronizeServiceRun() {
+		return fixDelay_ERPSynchronizeServiceRun;
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

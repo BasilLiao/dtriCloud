@@ -726,7 +726,6 @@ public class WarehouseAssignmentServiceAc {
 			if (wasType.equals("入料類")) {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, null);
 				ArrayList<BasicShippingList> arrayListNew = new ArrayList<>();
-
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
@@ -734,13 +733,11 @@ public class WarehouseAssignmentServiceAc {
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
 						switch (action) {
-						case "Print":
-							t.setBilpalready(1);
-							// 紀錄
-							break;
 						case "Agree":
 							t.setBilcuser(x.getWascuser());
-							// 紀錄
+							break;
+						case "Print":
+							t.setBilpalready(1);
 							break;
 						case "PassAll":
 							if (t.getBilcuser().equals("")) {
@@ -763,7 +760,6 @@ public class WarehouseAssignmentServiceAc {
 							break;
 						case "Urgency":
 							t.setBilstatus(x.getWasstatus());
-							// 紀錄
 							break;
 						default:
 							break;
@@ -792,7 +788,6 @@ public class WarehouseAssignmentServiceAc {
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
-						// 記錄用
 						//
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());

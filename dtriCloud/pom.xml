@@ -70,5 +70,8 @@
 		<module>service-system-12010</module>
 		<module>service-basic-12020</module>
 		<module>service-warehouse-12030</module>
+		<module>service-manufacture-12040</module>
+		<module>service-management-12050</module>
+		<module>service-schedule-12050</module>
 	</modules>
 </project>

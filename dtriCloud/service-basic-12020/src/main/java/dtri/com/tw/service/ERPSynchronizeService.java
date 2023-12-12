@@ -124,7 +124,7 @@ public class ERPSynchronizeService {
 	// 物料自動化 修正(單據/倉別/物料)<wa_alias_wmpnb,wa_t_qty>
 	private Map<String, Integer> wAsSave = new HashMap<>();// 自動更新清單
 
-	public void initERPSynchronizeService() {
+	public void initERPSynchronizeService() throws Exception {
 		areaDao.findAll().forEach(x -> {
 			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
 				wAs.put(x.getWaaliasawmpnb(), x);
@@ -161,7 +161,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單 ============
-	public void erpSynchronizeMocta() {
+	public void erpSynchronizeMocta() throws Exception {
 		logger.info("=== erpSynchronizeMocta: 時間:{}", dateFormat.format(new Date()));
 		ArrayList<Mocta> moctas = moctaDao.findAllByMocta();
 		Map<String, Mocta> erpMaps = new HashMap<>();
@@ -227,7 +227,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
-	public void erpSynchronizePurth() {
+	public void erpSynchronizePurth() throws Exception {
 		logger.info("===erpSynchronizePurth: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Purth> erpInEntitys = purthDao.findAllByPurth();// [ERP]資料
@@ -303,7 +303,7 @@ public class ERPSynchronizeService {
 
 	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571
 	// 委外退料單
-	public void erpSynchronizeMocte() {
+	public void erpSynchronizeMocte() throws Exception {
 		logger.info("===erpSynchronizeMocte: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Mocte> erpEntitys = mocteDao.findAllByMocte();
@@ -324,9 +324,9 @@ public class ERPSynchronizeService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			m.setNewone(true);
-			//單別性質(退料類 需抓取 物料領退用量)
+			// 單別性質(退料類 需抓取 物料領退用量)
 			String classNb = m.getTa026_ta027_ta028().split("-")[0];
-			if(classNb.equals("A543") || classNb.equals("A561") || classNb.equals("A571")) {
+			if (classNb.equals("A543") || classNb.equals("A561") || classNb.equals("A571")) {
 				m.setTb004(m.getTe005());
 			}
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
@@ -450,7 +450,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============A581 生產入庫單 ============
-	public void erpSynchronizeMoctf() {
+	public void erpSynchronizeMoctf() throws Exception {
 		logger.info("===erpSynchronizeMoctf: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Moctf> erpEntitys = moctfDao.findAllByMoctf();
@@ -525,7 +525,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ A591 委外進貨單 ============
-	public void erpSynchronizeMocth() {
+	public void erpSynchronizeMocth() throws Exception {
 		logger.info("===erpSynchronizeMocth: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Mocth> erpEntitys = mocthDao.findAllByMocth();
@@ -601,7 +601,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ A131 庫存借出單/ A141 庫存借入單 ============
-	public void erpSynchronizeInvtg() {
+	public void erpSynchronizeInvtg() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invtg> erpEntitys = invtgDao.findAllByMocth();
@@ -732,7 +732,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 借出歸還A151/借入歸還單A161 ============
-	public void erpSynchronizeInvth() {
+	public void erpSynchronizeInvth() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invth> erpEntitys = invthDao.findAllByMocth();
@@ -864,7 +864,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單 ============
-	public void erpSynchronizeInvta() {
+	public void erpSynchronizeInvta() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invta> erpEntitys = invtaDao.findAllByMocta();
@@ -910,7 +910,7 @@ public class ERPSynchronizeService {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
-			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {//料號調整單
+			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {// 料號調整單
 				// 轉
 				if (m.getTb007() < 0) {
 					// 領
@@ -1040,7 +1040,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 組合單/A421 ============
-	public void erpSynchronizeBomtd() {
+	public void erpSynchronizeBomtd() throws Exception {
 		logger.info("===erpSynchronizeBomtd: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Bomtd> erpEntitys = bomtdDao.findAllByBomtd();
@@ -1181,7 +1181,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ OK 拆解單/A431 ============
-	public void erpSynchronizeBomtf() {
+	public void erpSynchronizeBomtf() throws Exception {
 		logger.info("===erpSynchronizeBomtf: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Bomtf> erpEntitys = bomtfDao.findAllByBomtf();
@@ -1327,7 +1327,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 物料+儲位同步 ============
-	public void erpSynchronizeInvtb() {
+	public void erpSynchronizeInvtb() throws Exception {
 		logger.info("===erpSynchronizeInvtb: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		// 取得[頂新] 有效的物料....
@@ -1337,7 +1337,7 @@ public class ERPSynchronizeService {
 		Map<String, String> erpConfigMaps = new HashMap<>();// A1000+原物料倉
 		String checkSame = "";
 		for (Invtb m : erpEntitys) {
-			//測試用
+			// 測試用
 //			if(m.getMb001().replaceAll("\\s", "").equals("81-105-38210G") && m.getMb017().equals("A0041")) {
 //				System.out.println(m.getMb001());
 //			}
@@ -1487,7 +1487,8 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 儲位過濾設定 ============
-	public void erpSynchronizeWconfig(Map<String, String> erpConfigMaps, List<WarehouseConfig> configOlds) {
+	public void erpSynchronizeWconfig(Map<String, String> erpConfigMaps, List<WarehouseConfig> configOlds)
+			throws Exception {
 		ArrayList<WarehouseConfig> saveConfig = new ArrayList<WarehouseConfig>();
 		erpConfigMaps.forEach((key, v) -> {
 			boolean checkNew = true;
@@ -1509,7 +1510,7 @@ public class ERPSynchronizeService {
 	}
 
 	// ============ 單據過濾設定 ============
-	public void erpSynchronizeWtypeFilter() {
+	public void erpSynchronizeWtypeFilter() throws Exception {
 		ArrayList<WarehouseTypeFilter> saveFilters = new ArrayList<WarehouseTypeFilter>();
 		ArrayList<WarehouseTypeFilter> filters = filterDao.findAllBySearch(null, null, null);
 		Map<String, WarehouseTypeFilter> oldEntity = new HashMap<>();

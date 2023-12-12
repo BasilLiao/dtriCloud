@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
+import dtri.com.tw.service.feign.BasicServiceFeign;
 import dtri.com.tw.service.feign.WarehouseServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
@@ -25,8 +26,12 @@ public class WarehouseAssignmentController extends AbstractController {
 	@Resource
 	WarehouseServiceFeign serviceFeign;
 
+	@Resource
+	BasicServiceFeign serviceBasicFeign;
+
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_assignment.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_assignment.basil" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -69,7 +74,8 @@ public class WarehouseAssignmentController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.AR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -112,7 +118,52 @@ public class WarehouseAssignmentController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.ARE" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	String reSynchronize(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceBasicFeign.getReSynchronizeDocument(packageService.beanToJson(packageBean));
+			loggerInf(funName + "[End]", loginUser().getUsername());
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+		}
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.ARR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -180,6 +231,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		}
 		return packageJson;
 	}
+
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/warehouse_assignment.basil.SS1" }, method = { RequestMethod.PUT })
 	String modifyPrint(@RequestBody String jsonObject) {

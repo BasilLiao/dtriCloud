@@ -261,7 +261,7 @@ other={
 			total:100,//批次數量(1-1000)
 			batch:0,//第幾批次(1-1000)
 			pageNew:1,//單前頁碼(1-50)
-			pageSize:200,//每頁數量(1-20)
+			pageSize:100,//每頁數量(1-20)
 			entityJsons:[],//資料
 			entityDetailJsons:[],//細節資料
 			entityIKey:"",//ID
@@ -330,6 +330,11 @@ other={
 				exTbodytd.removeClass('d-none')
 				exTbodytd.addClass('valTbodytd');
 				exTbodytd.addClass(resultThead[k].cellName);
+				//如果是特殊wsspngqty(需顯示 黃標table-warning)
+				if(resultThead[k].cellName=='wsspngqty'){
+					exTbodytd.addClass("border-danger");
+				}
+				
 				//固定第一格式
 				if(check1 && resultThead[k].show==1){
 					check1=false;
@@ -349,6 +354,10 @@ other={
 					exTheadth.css('minWidth',resultThead[k].width+"px");
 					exTbodytd.css('maxWidth',resultThead[k].width+"px");
 				}
+				
+				
+				
+				
 				//如果隱藏
 				if(resultThead[k].show==0){
 					exTheadth.addClass('d-none');

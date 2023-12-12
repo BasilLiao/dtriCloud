@@ -77,7 +77,7 @@ public class WarehouseActionServiceAc {
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
 		int total = 9999;
-		int batch = 0; 
+		int batch = 0;
 
 		// Step2.排序
 		List<Order> inOrders = new ArrayList<>();
@@ -875,7 +875,7 @@ public class WarehouseActionServiceAc {
 					history.setWhtype("領料");
 					history.setWhwmslocation(shippingList.getBslfromwho());
 					history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
-							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + //領料單
+							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + // 領料單
 							shippingList.getBslnb() + "*" + shippingList.getBslpnqty());
 					history.setWhwmpnb(shippingList.getBslpnumber());
 					history.setWhfuser(shippingList.getBslfuser());
@@ -897,12 +897,12 @@ public class WarehouseActionServiceAc {
 	public void setModifyCheck(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		List<WarehouseShortageList> shortageLists = new ArrayList<>();
-		ArrayList<WarehouseAction> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseActionDetail> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
-					new TypeReference<ArrayList<WarehouseAction>>() {
+					new TypeReference<ArrayList<WarehouseActionDetail>>() {
 					});
 			// =======================資料整理=======================
 			// Step3.一般資料->寫入
@@ -924,18 +924,20 @@ public class WarehouseActionServiceAc {
 				shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
 				shOrders.add(new Order(Direction.ASC, "bslfromwho"));// 供應來源
 				shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
-				PageRequest shPageable = PageRequest.of(0, 99999, Sort.by(shOrders));
+				PageRequest shPageable = PageRequest.of(0, 9999, Sort.by(shOrders));
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckShortageList(x.split("-")[0],
 						x.split("-")[1], null, shPageable);
 				// 缺料登記(取量 小於 需求量)
 				arrayList.forEach(z -> {
 					WarehouseShortageList shortageList = new WarehouseShortageList();
-					shortageList.setWslbslsnnb(z.getBslclass() + "-" + z.getBslnb() + "-" + z.getBslsn());
+					shortageList.setWslbslsnnb(z.getBslclass() + "-" + z.getBslsn() + "-" + z.getBslnb());
 					shortageList.setWslfuser(z.getBslfuser());
+					shortageList.setWslpnumber(z.getBslpnumber());
 					shortageList.setWslpname(z.getBslpname());
 					shortageList.setWslpngqty(z.getBslpngqty());
 					shortageList.setWslpnqty(z.getBslpnqty());
 					shortageList.setWslpnlqty(z.getBslpnqty() - z.getBslpngqty());
+					shortageList.setSysnote(z.getSysnote());
 					shortageLists.add(shortageList);
 				});
 			});

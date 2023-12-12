@@ -49,7 +49,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	[DTR_TW].[dbo].MOCTE AS MOCTE"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身
-			+ "	ON (MOCTE.TE011+'_'+MOCTE.TE012+'_'+MOCTE.TE004+'_'+MOCTE.TE009) = (MOCTB.TB001+'_'+TRIM(MOCTB.TB002)+'_'+TRIM(MOCTB.TB003)+'_'+MOCTB.TB006)"//
+			+ "	ON (MOCTE.TE011+'_'+MOCTE.TE012+'_'+TRIM(MOCTE.TE004)+'_'+MOCTE.TE009) = (MOCTB.TB001+'_'+TRIM(MOCTB.TB002)+'_'+TRIM(MOCTB.TB003)+'_'+MOCTB.TB006)"//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTA AS MOCTA "// --製令單頭
 			+ "	ON (MOCTB.TB001+'-'+TRIM(MOCTB.TB002)) =(MOCTA.TA001+'-'+MOCTA.TA002) "//

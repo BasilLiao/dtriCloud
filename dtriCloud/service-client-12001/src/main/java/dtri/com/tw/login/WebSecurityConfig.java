@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,6 +61,9 @@ public class WebSecurityConfig {
 	private static final String warehouse_ass = "/ajax/warehouse_assignment.basil";
 	private static final String warehouse_act = "/ajax/warehouse_action.basil";
 	private static final String warehouse_syn = "/ajax/warehouse_synchronize.basil";
+	// 製造
+	
+	// 生管
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -78,7 +80,8 @@ public class WebSecurityConfig {
 		// 下列-權限驗證
 
 		// thirdparty && img 資料夾靜態資料可 直接 存取 (預設皆有 訪問權限 資料可[匿名]存取)
-		http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/thirdparty/**", "/img/**", "/login.basil", "/login.html").permitAll()
+		http.authorizeHttpRequests()
+				.requestMatchers(HttpMethod.GET, "/thirdparty/**", "/img/**", "/login.basil", "/login.html").permitAll()
 				// ----請求-index-(訪問)----
 				.requestMatchers(HttpMethod.POST, "/ajax/index.basil").hasAuthority(actionRole("index.basil", ""))
 
@@ -154,6 +157,7 @@ public class WebSecurityConfig {
 				// ----請求-warehouse_assignment-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_ass).hasAuthority(actionRole(warehouse_ass, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_ass + ".AR").hasAuthority(actionRole(warehouse_ass, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, warehouse_ass + ".ARE").hasAuthority(actionRole(warehouse_ass, "AR"))// (立即同步單據)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".SS1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1->打印標記)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S2").hasAuthority(actionRole(warehouse_ass, "S2"))// (修改S2)
@@ -165,7 +169,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_act).hasAuthority(actionRole(warehouse_act, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_act + ".AR").hasAuthority(actionRole(warehouse_act, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, warehouse_act + ".S1").hasAuthority(actionRole(warehouse_act, "S1"))// (修改S1)
-				
+
 				// -客製化
 				// ----請求-warehouse_synchronize-(訪問) ----
 				.requestMatchers(HttpMethod.POST, warehouse_syn).hasAuthority(actionRole(warehouse_syn, ""))// (轉跳)
@@ -251,7 +255,8 @@ public class WebSecurityConfig {
 				// 登出-移除Cookies
 				.deleteCookies();
 		// JWT 先攔截
-		//http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		// http.addFilterBefore(jwtAuthenticationFilter,
+		// UsernamePasswordAuthenticationFilter.class);
 		// 關閉CSRF跨域
 		http.csrf().disable();
 		return http.build();

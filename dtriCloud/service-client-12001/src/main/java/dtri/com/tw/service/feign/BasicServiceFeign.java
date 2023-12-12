@@ -17,6 +17,10 @@ import dtri.com.tw.shared.PackageBean;
 @Component
 @FeignClient(value = "SERVICE-BASIC", path = "service-basic")
 public interface BasicServiceFeign {
+	// ================================同步:重新同步單據================================
+	@RequestMapping(value = { "/basicSynchronize/getReSynchronize" }, method = RequestMethod.POST)
+	PackageBean getReSynchronizeDocument(@RequestBody String jsonPackageBean);
+
 	// ================================同步:入料單據================================
 	@RequestMapping(value = { "/basicIncomingList/getSearch" }, method = RequestMethod.POST)
 	PackageBean getIncomingListSearch(@RequestBody String jsonPackageBean);

@@ -14,6 +14,7 @@ public interface WarehouseShortageListDao extends JpaRepository<WarehouseShortag
 	@Query("SELECT c FROM WarehouseShortageList c WHERE "//
 			+ "(:wslbslsnnb is null or c.wslbslsnnb LIKE %:wslbslsnnb%) and "//
 			+ "(:wslpnumber is null or c.wslpnumber LIKE %:wslpnumber%) and "//
+			+ "(c.wslfuser != 'ERP_Remove(Auto)') and "//
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<WarehouseShortageList> findAllBySearch(String wslbslsnnb, String wslpnumber, Integer sysstatus, Pageable pageable);
 
