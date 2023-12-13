@@ -1047,6 +1047,13 @@
 				$('.exTbodyTh input').attr("disabled", "disabled");
 				$('.exTbodyTh input').attr("title", "IKey_GKey");
 				$('.exTbodyTh input').prop("checked", false);
+				//版面預設
+				if ($('#search_dcr_open').hasClass('show')) {
+					$('#search_dcr .btn-outline-white').trigger('click');
+				}
+				if (!$('#search_cr_open').hasClass('show')) {
+					$('#search_cr .btn-outline-white').trigger('click');
+				}
 
 				//Step5.帶入資料
 				var marks = search.data.marks;
