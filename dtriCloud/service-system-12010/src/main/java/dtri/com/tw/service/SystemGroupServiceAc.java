@@ -292,7 +292,7 @@ public class SystemGroupServiceAc {
 				ArrayList<SystemGroup> checkDetails = groupDao.findAllByGroupHeader(entityDetail.getSgname(), permissions.get(0).getSpname(), false,
 						null);
 				for (SystemGroup checkDetail : checkDetails) {
-					if (checkDetail.getSgid() != entityDetail.getSgid()) {
+					if (!checkDetail.getSgid().equals(entityDetail.getSgid())) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 								new String[] { permissions.get(0).getSpname() });
 					}

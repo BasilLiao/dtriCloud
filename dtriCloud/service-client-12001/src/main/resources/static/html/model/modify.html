@@ -1,79 +1,88 @@
 <style>
-/*Table 寬度滾動*/
-#modify_c .table-responsive {
-	display: block;
-	width: 1px;
-	overflow-x: auto;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
-/*Table 表格固定*/
-#modify_c .f_c_1 {
-	left: 0px;
-	position: sticky;
-	z-index: 3;
-}
+	/*Table 寬度滾動*/
+	#modify_c .table-responsive {
+		display: block;
+		width: 1px;
+		overflow-x: auto;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
 
-#modify_c .f_c_2 {
-	left: 30px;
-	position: sticky;
-	z-index: 3;
-}
+	/*Table 表格固定*/
+	#modify_c .f_c_1 {
+		left: 0px;
+		position: sticky;
+		z-index: 3;
+	}
 
-#modify_c .f_c_3 {
-	left: 60px;
-	position: sticky;
-	z-index: 3;
-}
+	#modify_c .f_c_2 {
+		left: 30px;
+		position: sticky;
+		z-index: 3;
+	}
 
-#modify_c .f_c_t {
-	position: sticky;
-	top: 0px;
-	z-index: 5;
-}
+	#modify_c .f_c_3 {
+		left: 60px;
+		position: sticky;
+		z-index: 3;
+	}
 
-/*Table 自動換行*/
-#modify_c .table-responsive th, #modify_c .table-responsive td {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
-/*Table 每隔表格內_框線*/
-#modify_c .table-bordered td, #modify_c .table-bordered th {
-	border: 1px solid #1b76fd;
-	padding: 2px;
-}
+	#modify_c .f_c_t {
+		position: sticky;
+		top: 0px;
+		z-index: 5;
+	}
 
-/*Table 表格外框線*/
-#modify_c #modify_c_batch_revision table {
-	min-height: 95px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
-/*Table 表格外框線*/
-#modify_c #modify_c_list table {
-	min-height: 95px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
-/*Table 表格內 背景色*/
-#modify_c .table-white {
-	--bs-table-bg: #fff;
-}
-/*直立式呈現邊字*/
-#modify_c .wlr {
-	writing-mode: vertical-lr;
-	width: 20px;
-}
-/*標題色彩*/
-#modify_c .title_color {
-	background-color: #cfe2ff;
-}
-/*checkbox_33*/
-#modify_c .checkbox_33 {
-	width: 33px;
-	height: 33px;
-}
+	/*Table 自動換行*/
+	#modify_c .table-responsive th,
+	#modify_c .table-responsive td {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	/*Table 每隔表格內_框線*/
+	#modify_c .table-bordered td,
+	#modify_c .table-bordered th {
+		border: 1px solid #1b76fd;
+		padding: 2px;
+	}
+
+	/*Table 表格外框線*/
+	#modify_c #modify_c_batch_revision table {
+		min-height: 95px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
+
+	/*Table 表格外框線*/
+	#modify_c #modify_c_list table {
+		min-height: 95px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
+
+	/*Table 表格內 背景色*/
+	#modify_c .table-white {
+		--bs-table-bg: #fff;
+	}
+
+	/*直立式呈現邊字*/
+	#modify_c .wlr {
+		writing-mode: vertical-lr;
+		width: 20px;
+	}
+
+	/*標題色彩*/
+	#modify_c .title_color {
+		background-color: #cfe2ff;
+	}
+
+	/*checkbox_33*/
+	#modify_c .checkbox_33 {
+		width: 33px;
+		height: 33px;
+	}
 </style>
 
 <div id="modify_c" class="row m-0 p-0">
@@ -81,7 +90,9 @@
 	<div class="col-lg-12  p-0 m-0">
 		<div id="modify_c_batch_revision_data" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target=".modify_c_batch_revision_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target=".modify_c_batch_revision_open" aria-expanded="false"
+					style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse show modify_c_batch_revision_open" id="">
 				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Data </b>
@@ -89,7 +100,8 @@
 					<!-- 範例內容 -->
 					<div class="col p-1 m-0 row d-none">
 						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Ex </b>
-						<table id="modify_c_ex" class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<table id="modify_c_ex"
+							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-primary">
 								<tr>
 									<th id="modify_c_ex_tm" class="f_c_1" style="min-width: 30px;">AD</th>
@@ -111,29 +123,52 @@
 								<tr>
 									<th id="modify_c_ex_vm" class="f_c_1" style="max-width: 30px;">
 										<div class="col-12 m-0 p-0">
-											<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none" style="width: 24px; height: 24px;"></i>
+											<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none"
+												style="width: 24px; height: 24px;"></i>
 											<div class="d-none"></div>
-											<i class="btn btn-outline-success p-0 bi bi-plus-square" style="width: 24px; height: 24px;"></i>
+											<i class="btn btn-outline-success p-0 bi bi-plus-square"
+												style="width: 24px; height: 24px;"></i>
 										</div>
 									</th>
 									<th id="modify_c_ex_vp" class="f_c_2" style="max-width: 30px;">
 										<div class="col-12 m-0 p-0">
-											<i class="btn btn-outline-primary p-0 bi bi-stickies" title="_" style="width: 24px; height: 24px;"></i>
+											<i class="btn btn-outline-primary p-0 bi bi-stickies" title="_"
+												style="width: 24px; height: 24px;"></i>
 										</div>
 									</th>
-									<th id="modify_c_ex_vkey" style="max-width: 200px;" class="f_c_3"><div class="col-12 m-0 p-1">Key</div></th>
-									<td style="max-width: 200px" id="modify_c_ex_tt"><textarea class="col-12 m-0 p-1 border border-dark form-control" rows="1"></textarea></td>
-									<td style="max-width: 200px" id="modify_c_ex_it"><input class="col-12 m-0 p-1 border border-dark form-control" type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_in"><input class="col-12 m-0 p-1 border border-dark form-control" type="number" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_id"><input class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date" type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_t"><input class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time" type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_icb"><input class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33" type="checkbox" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_ic"><input class="col-12 m-0 p-1 border border-dark form-control" type="password" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_ip"><input class="col-12 m-0 p-1 border border-dark form-control" type="file" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_ii"><i class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
-									<td style="max-width: 200px" id="modify_c_ex_st"><select class="col-12 m-0 p-1 border border-dark form-select">
+									<th id="modify_c_ex_vkey" style="max-width: 200px;" class="f_c_3">
+										<div class="col-12 m-0 p-1">Key</div>
+									</th>
+									<td style="max-width: 200px" id="modify_c_ex_tt"><textarea
+											class="col-12 m-0 p-1 border border-dark form-control" rows="1"></textarea>
+									</td>
+									<td style="max-width: 200px" id="modify_c_ex_it"><input
+											class="col-12 m-0 p-1 border border-dark form-control" type="text" value=""
+											placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_in"><input
+											class="col-12 m-0 p-1 border border-dark form-control" type="number"
+											value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_id"><input
+											class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
+											type="text" value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_t"><input
+											class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
+											type="text" value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_icb"><input
+											class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33"
+											type="checkbox" value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_ic"><input
+											class="col-12 m-0 p-1 border border-dark form-control" type="password"
+											value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_ip"><input
+											class="col-12 m-0 p-1 border border-dark form-control" type="file" value=""
+											placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_ii"><i
+											class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
+									<td style="max-width: 200px" id="modify_c_ex_st"><select
+											class="col-12 m-0 p-1 border border-dark form-select">
 											<option class="modify_st_ex" value="">請選擇(N/A)</option>
-									</select></td>
+										</select></td>
 								</tr>
 							</tbody>
 						</table>
@@ -141,7 +176,8 @@
 					<!-- 表頭批次處理 -->
 					<div id="batchThAll" class="col p-1 m-0 row">
 						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Data </b>
-						<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<table
+							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchThn" class="table-primary">
 								<tr>
 								</tr>
@@ -154,8 +190,10 @@
 					</div>
 					<!-- 取代批次處理 -->
 					<div id="batchTrhAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white" style="font-size: 12px">Replace Data</b>
-						<table class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
+							style="font-size: 12px">Replace Data</b>
+						<table
+							class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchTrhn" class="table-danger">
 								<tr>
 								</tr>
@@ -171,15 +209,19 @@
 		</div>
 		<div id="modify_c_batch_revision_detail" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target=".modify_c_batch_revision_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target=".modify_c_batch_revision_open" aria-expanded="false"
+					style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse modify_c_batch_revision_open" id="">
 				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Detail </b>
 				<div class="col border border-primary m-0 p-0 shadow-sm">
 					<!-- 表身批次處理 -->
 					<div id="batchTdAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Detail </b>
-						<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Detail
+						</b>
+						<table
+							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchTdn" class="table-primary">
 								<tr>
 								</tr>
@@ -193,8 +235,10 @@
 
 					<!-- 取代批次處理 -->
 					<div id="batchTrdAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white" style="font-size: 12px">Replace Detail</b>
-						<table class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
+							style="font-size: 12px">Replace Detail</b>
+						<table
+							class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchTrdn" class="table-danger">
 								<tr>
 								</tr>
@@ -213,7 +257,8 @@
 	<!-- 控制面板 -->
 	<div id="modify_c_controller" class="col-lg-12 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#modify_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#modify_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="modify_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
@@ -223,15 +268,18 @@
 					<div class=" border border-secondary rounded modify_c_batch_revision_open collapse show">
 						<div class="title_color fw-bolder rounded-top">Batch Data</div>
 						<div class="row m-0">
-							<button id="modify_c_date_overwrite" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+							<button id="modify_c_date_overwrite" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 								<b>Overwrite<br>()
 								</b>
 							</button>
-							<button id="modify_c_date_replace" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+							<button id="modify_c_date_replace" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
 								<b>Replace<br>()
 								</b>
 							</button>
-							<button id="modify_c_date_clearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+							<button id="modify_c_date_clearAll" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -239,18 +287,22 @@
 					</div>
 				</div>
 				<div class="col-6 col-lg-3 p-1 ">
-					<div id="cBatchDetail" class=" border border-secondary rounded modify_c_batch_revision_open collapse">
+					<div id="cBatchDetail"
+						class=" border border-secondary rounded modify_c_batch_revision_open collapse">
 						<div class="title_color fw-bolder rounded-top">Batch Detail</div>
 						<div class="row m-0">
-							<button id="modify_c_detail_overwrite" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+							<button id="modify_c_detail_overwrite" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 								<b>Overwrite<br>()
 								</b>
 							</button>
-							<button id="modify_c_detail_replace" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+							<button id="modify_c_detail_replace" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
 								<b>Replace<br>()
 								</b>
 							</button>
-							<button id="modify_c_detail_clearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+							<button id="modify_c_detail_clearAll" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -260,18 +312,21 @@
 				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">State</div>
-						<div id="modify_c_state" title="None_" class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜</div>
+						<div id="modify_c_state" title="None_" class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜
+						</div>
 					</div>
 				</div>
 				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
-							<button id="modify_c_save" type="submit" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+							<button id="modify_c_save" type="submit"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 								<b>Save<br>(*)
 								</b>
 							</button>
-							<button id="modify_c_cancelAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+							<button id="modify_c_cancelAll" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 								<b>Cancel<br>all()
 								</b>
 							</button>
@@ -285,7 +340,8 @@
 		<!-- 一般多筆修正 -->
 		<div id="modify_c_list" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1  text-start rounded-top bg-info text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#modify_c_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#modify_c_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse show" id="modify_c_list_open">
 				<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Modify list </b>
@@ -293,7 +349,8 @@
 					<!-- 表頭修正 -->
 					<div id="modifyThAll" class="col p-1 m-0 row">
 						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Data </b>
-						<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<table
+							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="modifyThn" class="f_c_t table-primary">
 
 							</thead>
@@ -305,7 +362,8 @@
 					<!-- 表身批次處理 -->
 					<div id="modifyTdAll" class="col p-1 m-0 row">
 						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Detail </b>
-						<table class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+						<table
+							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="modifyTdn" class="f_c_t table-primary">
 
 							</thead>
@@ -315,7 +373,8 @@
 						</table>
 					</div>
 					<!-- 隔一筆群組資料-分隔線 -->
-					<div id="nextOne" class="d-none col-md-12 p-0 m-0 bg-info text-center fw-bold text-white" style="font-size: 12px">Next one</div>
+					<div id="nextOne" class="d-none col-md-12 p-0 m-0 bg-info text-center fw-bold text-white"
+						style="font-size: 12px">Next one</div>
 
 				</div>
 			</div>
@@ -324,833 +383,837 @@
 	</form>
 </div>
 <script type="text/javascript">
-//宣告
-//console.log("modify.html(init)");
-modify={
-	//資料
-	data:{
-		entityDateTime:"",//時間欄位
-		entityFormatJson:"",//格式 
-		entityIKey:"",//KEY
-		entityGKey:"",//GKEY 
-	},	
-	//方法
-	methods:{
-		create(){
-			//Step0.初始化
-			console.log("modify.html(created)");
-			//修改項目 
-			//console.log(searchSetJson['resultDetailThead']);
-			//console.log(searchSetJson['resultThead']);
-			modify.data.entityDateTime = main.resq_data['entityDateTime'];
-			modify.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
-			modify.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
-			modify.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
-			
-			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
-			var searchSet = searchSetJson['searchSet'];
-			var resultThead = searchSetJson['resultThead'];
-			var resultDetailThead = searchSetJson['resultDetailThead'];
-			//Step1.修改標題-排序
-			resultThead = main.methods.orderedSort(resultThead);
-			resultDetailThead = main.methods.orderedSort(resultDetailThead);
-			//Step2.修改標題-資料
-			//一般
-			var check1=true;
-			Object.keys(resultThead).forEach(function(k){
-				//如果有翻譯
-				var cloneBht = $("#modify_c_ex_tkey").clone();
-				cloneBht.attr("id","");
-				cloneBht.removeClass("f_c_3");
-				//Step2-1.標題
-				cloneBht.css('minWidth',resultThead[k].width+"px");
-				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
-				if(resultThead[k].cellLanguage!=''){
-					var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-					cloneBht.text(cellName==""?resultThead[k].cellName:cellName);
-				}else{
-					cloneBht.text(resultThead[k].cellName);
-				}
-				//Step2-3.欄位類型?
-				var cloneBhv = "";
-				switch(resultThead[k].m_type){
-					case"text":
-						cloneBhv = $("#modify_c_ex_it").clone();
-						break;
-					case"textarea":
-						cloneBhv = $("#modify_c_ex_tt").clone();
-						break;
-					case"number":
-						cloneBhv = $("#modify_c_ex_in").clone();
-						break;
-					case"datetime":
-						cloneBhv = $("#modify_c_ex_id").clone();
-						break;
-					case"time":
-						cloneBhv = $("#modify_c_ex_t").clone();
-						break;
-					case"checkbox":
-						cloneBhv = $("#modify_c_ex_icb").clone();
-						break;
-					case"password":
-						cloneBhv = $("#modify_c_ex_ic").clone();
-					break;
-					case"file":
-						cloneBhv = $("#modify_c_ex_ip").clone();
-					break;
-					case"select":
-						cloneBhv = $("#modify_c_ex_st").clone();
-						//比對是否有匹配選項
-						var arrSelect = JSON.parse(resultThead[k].m_select);
-						//選項
-						for(var s = 0;s<arrSelect.length;s++){
-							var key = arrSelect[s].split("_")[0];
-							var val = arrSelect[s].split("_")[1];
-							selectEx = $('.modify_st_ex').clone();
-							selectEx.removeClass("modify_st_ex");
-							selectEx.removeAttr("selected");
-							selectEx.text(key);
-							selectEx.val(val);
-							selectEx.appendTo(cloneBhv.find('select'));
-						}	
-						cloneBhv.find('.modify_st_ex').removeClass("modify_st_ex");
-						break;
-					default:
-						cloneBhv = $("#modify_c_ex_it").clone();
-						break;
-				}
-				
-				cloneBhv.attr("id","");
-				cloneBhv.removeClass("f_c_3");
-				//Step2-4.第一筆?
-				if(check1 && resultThead[k].m_show!=0){
-					check1= false;
-					cloneBht.addClass("f_c_1");
-					cloneBhv.addClass("f_c_1");
-				}
-				//Step2-5.如果隱藏
-				if(resultThead[k].m_show==0){
-					cloneBht.addClass('d-none');
-					cloneBhv.addClass('d-none');
-				}
-				//Step2-6.如果固定?
-				if(resultThead[k].m_fixed==1){
-					cloneBhv.find("checkbox").addClass("m_fixed").attr("disabled","disabled");
-					cloneBhv.find("select").addClass("m_fixed").attr("disabled","disabled");
-					cloneBhv.find("input").addClass("m_fixed").attr("disabled","disabled");
-					cloneBhv.find("textarea").addClass("m_fixed").attr("disabled","disabled");
-				}
-				//Step2-7.如果必填? 
-				if(resultThead[k].m_must==1){
-					cloneBhv.find("select").attr('alt','must').attr('required','required');
-					cloneBhv.find("input").attr('alt','must').attr('required','required');
-					cloneBhv.find("textarea").attr('alt','must').attr('required','required');
-				}
-				
-				//Step2-8.如果預設值?
-				if(resultThead[k].m_defval!="" && resultThead[k].m_defval!=null){
-					cloneBhv.find("select option[value="+resultThead[k].m_defval+"]").attr('selected','selected');
-					cloneBhv.find("input").val(resultThead[k].m_defval);
-					cloneBhv.find("textarea").val(resultThead[k].m_defval);
-				}
-				//Step2-9.如果提示值?
-				cloneBhv.find("select").attr("placeholder",resultThead[k].m_placeholder);
-				cloneBhv.find("input").attr("placeholder",resultThead[k].m_placeholder);
-				cloneBhv.find("textarea").attr("placeholder",resultThead[k].m_placeholder);
-				//Step2-10.定義Class? 
-				cloneBhv.find("checkbox").addClass(resultThead[k].cellName).addClass('entityVal').attr("title",resultThead[k].cellName);
-				cloneBhv.find("select").addClass(resultThead[k].cellName).addClass('entityVal').attr("title",resultThead[k].cellName);
-				cloneBhv.find("input").addClass(resultThead[k].cellName).addClass('entityVal').attr("title",resultThead[k].cellName);
-				cloneBhv.find("textarea").addClass(resultThead[k].cellName).addClass('entityVal').attr("title",resultThead[k].cellName);
-				//Step2-11.定義Name? 
-				cloneBhv.find("checkbox").attr('name',resultThead[k].cellName);
-				cloneBhv.find("select").attr('name',resultThead[k].cellName);
-				cloneBhv.find("input").attr('name',resultThead[k].cellName);
-				cloneBhv.find("textarea").attr('name',resultThead[k].cellName);
-				
-				cloneBhv.css('maxWidth',resultThead[k].width+"px");
-				
-				//Step2-N.創建
-				cloneBht.appendTo($("#batchThn tr"));
-				cloneBhv.appendTo($("#batchThv tr"));
-			});
-			//細節 
-			check1=true;
-			if(JSON.stringify(resultDetailThead)=='{}'){
-				$('#modifyTdAll').addClass('d-none');
-				$('#modify_c_batch_revision_detail').addClass('d-none');
-				$('#cBatchDetail').addClass('d-none');
-			}
-			
-			Object.keys(resultDetailThead).forEach(function(k){//如果有翻譯
-				var cloneBdt = $("#modify_c_ex_tkey").clone();
-				cloneBdt.attr("id","");
-				cloneBdt.removeClass("f_c_3");
-				//Step2-1.標題
-				cloneBdt.css('minWidth',resultDetailThead[k].width+"px");
-				//Step2-2.翻譯(Batch(H/B) Modify(H/B))
-				if(resultDetailThead[k].cellLanguage!=''){
-					var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
-					cloneBdt.text(cellName==""?resultDetailThead[k].cellName:cellName);
-				}else{
-					cloneBdt.text(resultDetailThead[k].cellName);
-				}
-				//Step2-3.欄位類型?
-				var cloneBdv = "";
-				switch(resultDetailThead[k].m_type){
-					case"text":
-						cloneBdv = $("#modify_c_ex_it").clone();
-						break;
-					case"textarea":
-						cloneBdv = $("#modify_c_ex_tt").clone();
-						break;
-					case"number":
-						cloneBdv = $("#modify_c_ex_in").clone();
-						break;
-					case"datetime":
-						cloneBdv = $("#modify_c_ex_id").clone();
-						break;
-					case"time":
-						cloneBdv = $("#modify_c_ex_t").clone();
-						break;
-					case"checkbox":
-						cloneBdv = $("#modify_c_ex_icb").clone();
-						break;
-					case"password":
-						cloneBdv = $("#modify_c_ex_ic").clone();
-					break;
-					case"file":
-						cloneBdv = $("#modify_c_ex_ip").clone();
-					break;
-					case"select":
-						cloneBdv = $("#modify_c_ex_st").clone();
-						//比對是否有匹配選項
-						var arrSelect = JSON.parse(resultDetailThead[k].m_select);
-						//console.log(searchSet[t].select);
-						//選項
-						for(var s = 0;s<arrSelect.length;s++){
-							var key = arrSelect[s].split("_")[0];
-							var val = arrSelect[s].split("_")[1];
-							selectEx = $('.modify_st_ex').clone();
-							selectEx.removeClass("modify_st_ex");
-							selectEx.removeAttr("selected");
-							selectEx.text(key);
-							selectEx.val(val);
-							selectEx.appendTo(cloneBdv.find('select'));
-						}
-						cloneBdv.find('.modify_st_ex').removeClass("modify_st_ex");
-						break;
-					default:
-						cloneBdv = $("#modify_c_ex_it").clone();
-						break;
-				}
-				cloneBdv.attr("id","");
-				cloneBdv.removeClass("f_c_3");
-				//Step2-4.第一筆?
-				if(check1 && resultDetailThead[k].m_show!=0){
-					check1= false;
-					cloneBdt.addClass("f_c_1");
-					cloneBdv.addClass("f_c_1");
-				}
-				//Step2-5.如果隱藏
-				if(resultDetailThead[k].m_show==0){
-					cloneBdt.addClass('d-none');
-					cloneBdv.addClass('d-none');
-				}
-				//Step2-6.如果固定?
-				if(resultDetailThead[k].m_fixed==1){
-					cloneBdv.find("checkbox").addClass("m_fixed").attr("disabled","disabled");
-					cloneBdv.find("select").addClass("m_fixed").attr("disabled","disabled");
-					cloneBdv.find("input").addClass("m_fixed").attr("disabled","disabled");
-					cloneBdv.find("textarea").addClass("m_fixed").attr("disabled","disabled");
-				}
-				//Step2-7.如果必填? 
-				if(resultDetailThead[k].m_must==1){
-					//cloneBdv.find("checkbox").attr('alt','must').attr('required','required');
-					cloneBdv.find("select").attr('alt','must').attr('required','required');
-					cloneBdv.find("input").attr('alt','must').attr('required','required');
-					cloneBdv.find("textarea").attr('alt','must').attr('required','required');
-				}
-				//Step2-8.如果預設值?
-				if(resultDetailThead[k].m_defval!="" && resultDetailThead[k].m_defval!=null){
-					cloneBdv.find("select option[value="+resultDetailThead[k].m_defval+"]").attr('selected','selected');
-					cloneBdv.find("select").val(resultDetailThead[k].m_defval);
-					cloneBdv.find("input").val(resultDetailThead[k].m_defval);
-					cloneBdv.find("textarea").val(resultDetailThead[k].m_defval);
-				}
-				//Step2-9.如果提示值?
-				cloneBdv.find("select").attr("placeholder",resultDetailThead[k].m_placeholder);
-				cloneBdv.find("input").attr("placeholder",resultDetailThead[k].m_placeholder);
-				cloneBdv.find("textarea").attr("placeholder",resultDetailThead[k].m_placeholder);
-				//Step2-10.定義Class?
-				cloneBdv.find("checkbox").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title",resultDetailThead[k].cellName);
-				cloneBdv.find("select").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title",resultDetailThead[k].cellName);
-				cloneBdv.find("input").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title",resultDetailThead[k].cellName);
-				cloneBdv.find("textarea").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title",resultDetailThead[k].cellName);
-				cloneBdv.css('maxWidth',resultDetailThead[k].width+"px");
-				//Step2-N.創建
-				cloneBdt.appendTo($("#batchTdn tr"));
-				cloneBdv.appendTo($("#batchTdv tr"));
-			});
-			
-			//複寫-Replace Data/Detail
-			$('#batchThn tr').clone().appendTo("#batchTrhn");
-			$('#batchThv tr').clone().appendTo("#batchTrhv");
-			$('#batchTdn tr').clone().appendTo("#batchTrdn");
-			$('#batchTdv tr').clone().appendTo("#batchTrdv");
-			
-			//修改-Modify list
-			$('#batchThn tr').clone().appendTo("#modifyThn");
-			$('#batchThv tr').clone().appendTo("#modifyThv");
-			$("#modifyThn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
-			$("#modifyThv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
-			$('#modify_c_ex_tp').clone().attr("id","").prependTo("#modifyThn tr");
-			$('#modify_c_ex_tm').clone().attr("id","").prependTo("#modifyThn tr");
-			$('#modify_c_ex_vp').clone().attr("id","").prependTo("#modifyThv tr");
-			$('#modify_c_ex_vm').clone().attr("id","").prependTo("#modifyThv tr");
-			$('#modifyThv tr').addClass('modifyThvEx');
-			$('#modifyThv tr checkbox').attr("disabled","disabled");
-			$('#modifyThv tr input').attr("disabled","disabled");
-			$('#modifyThv tr select').attr("disabled","disabled");
-			$('#modifyThv tr textarea').attr("disabled","disabled");
-			
-			$('#batchTdn tr').clone().appendTo("#modifyTdn");
-			$('#batchTdv tr').clone().appendTo("#modifyTdv");
-			$("#modifyTdn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
-			$("#modifyTdv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
-			$('#modify_c_ex_tp').clone().attr("id","").prependTo("#modifyTdn tr");
-			$('#modify_c_ex_tm').clone().attr("id","").prependTo("#modifyTdn tr");
-			$('#modify_c_ex_vp').clone().attr("id","").prependTo("#modifyTdv tr");
-			$('#modify_c_ex_vm').clone().attr("id","").prependTo("#modifyTdv tr");
-			$('#modifyTdv tr').addClass('modifyTdvEx');
-			$('#modifyTdv tr checkbox').attr("disabled","disabled");
-			$('#modifyTdv tr input').attr("disabled","disabled");
-			$('#modifyTdv tr select').attr("disabled","disabled");
-			$('#modifyTdv tr textarea').attr("disabled","disabled");
-			//時間格式
-			modify.methods.datetimepickerDate();
-			//==========================監聽==========================
-			//監聽-Modify list
-			//Data
-			$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
-			$(document).on("click", "#modifyThAll .modifyThvEx .bi-plus-square", function (event) {
-				console.log("modifyThAll bi-plus-square");
-				var modifyThvEx = $('.modifyThvEx').clone();
-				modifyThvEx.removeClass('modifyThvEx');
-				modifyThvEx.find(".bi-plus-square").addClass('d-none');
-				modifyThvEx.find(".bi-dash-square").removeClass('d-none');
-				modifyThvEx.addClass('modifyThvM');
-				//固定-鎖定?
-				modifyThvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
-				modifyThvEx.find("input").not('.m_fixed').removeAttr("disabled");
-				modifyThvEx.find("select").not('.m_fixed').removeAttr("disabled");
-				modifyThvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
-				//注入
-				modifyThvEx.appendTo("#modifyThv");
-				modify.methods.datetimepickerDate();
-				
-			});
-			$(document).off("click", "#modifyThAll .modifyThvM .bi-dash-square");//--
-			$(document).on("click", "#modifyThAll .modifyThvM .bi-dash-square", function (event) {
-				console.log("modifyThAll bi-dash-square");
-				$(event.target.parentElement.parentElement.parentElement).remove();
-			});
-			$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
-			$(document).on("click", "#modifyThAll .modifyThvM .bi-stickies", function (event) {
-				console.log("modifyThAll bi-stickies");
-				var copyTarget = $(event.target.parentElement.parentElement.parentElement);
-				var copy = copyTarget.clone();
-				//Data : 將現有ID /GID 清除
-				var id = copy.find('.bi-stickies').attr('title').split("_")[0];
-				var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
-				if(id!=""){copy.find('.'+id).val("");}
-				if(gid!=""){copy.find('.'+gid).val("");}
-				//select : 如果有選單複製
-				var select = copyTarget.find("select");
-				select.each(function( index ) {
-					console.log($(this).attr("title"));
-					copy.find('.'+$(this).attr("title")).val($(this).val());
-				})
-				copy.removeClass('modifyTdvEx');
-				copy.removeClass('modifyThvEx');
-				copy.find(".bi-plus-square").addClass('d-none');
-				copy.find(".bi-dash-square").removeClass('d-none');
-				copy.addClass('modifyThvM');
-				console.log();
-				copy.appendTo("#modifyThv");
-				modify.methods.datetimepickerDate();
-				
-			});
-			//Detail
-			$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
-			$(document).on("click", "#modifyTdAll .modifyTdvEx .bi-plus-square", function (event) {
-				console.log("modifyTdAll bi-plus-square");
-				var modifyTdvEx = $('.modifyTdvEx').clone(); 
-				modifyTdvEx.removeClass('modifyTdvEx');
-				modifyTdvEx.find(".bi-plus-square").addClass('d-none');
-				modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
-				modifyTdvEx.addClass('modifyTdvM');
-				//固定-鎖定?
-				modifyTdvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
-				modifyTdvEx.find("input").not('.m_fixed').removeAttr("disabled");
-				modifyTdvEx.find("select").not('.m_fixed').removeAttr("disabled");
-				modifyTdvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
-				//注入
-				modifyTdvEx.appendTo("#modifyTdv");
-				modify.methods.datetimepickerDate();
-			});
-			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-dash-square");//--
-			$(document).on("click", "#modifyTdAll .modifyTdvM .bi-dash-square", function (event) {
-				console.log("modifyTdAll bi-dash-square");
-				$(event.target.parentElement.parentElement.parentElement).remove();
-			});
-			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
-			$(document).on("click", "#modifyTdAll .modifyTdvM .bi-stickies", function (event) {
-				console.log("modifyTdAll bi-stickies");
-				var copyTarget = $(event.target.parentElement.parentElement.parentElement);
-				var copy = copyTarget.clone();
-				//Detail : 將現有ID 
-				var id = copy.find('.bi-stickies').attr('title').split("_")[0];
-				var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
-				if(id!=""){copy.find('.'+id).val("");}
-				//select : 如果有選單複製
-				var select = copyTarget.find("select");
-				select.each(function( index ) {
-					console.log($(this).attr("title"));
-					copy.find('.'+$(this).attr("title")).val($(this).val());
-				})
-				copy.removeClass('modifyTdvEx');
-				copy.find(".bi-plus-square").addClass('d-none');
-				copy.find(".bi-dash-square").removeClass('d-none');
-				copy.addClass('modifyTdvM');
-				copy.insertBefore(".gkey_"+copy.find('.'+gid).val());//添加在該群組範圍內
-				modify.methods.datetimepickerDate();
-			});
-			
-			//複寫Date
-			$(document).off("click", "#modify_c_date_overwrite");
-			$(document).on("click", "#modify_c_date_overwrite", function (event) {
-				console.log("modify_c_date_overwrite");
-				$('#batchThv .entityVal').each(function( index ) {
-					var tigger = $('#modifyThAll .modifyThvM .'+$( this ).attr('title'));
-					//過濾沒開啟的
-					if($(this).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
-						console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-						//過濾沒資料的
-						if( $( this ).val()!='' && $( this ).val()!=null){
-							tigger.val($( this ).val());
-						}
-						//checkbox?
-						if($(this).attr('type')=="checkbox" && $(this).prop('checked')){
-							tigger.prop('checked',true);							
-						}
+	//宣告
+	//console.log("modify.html(init)");
+	modify = {
+		//資料
+		data: {
+			entityDateTime: "",//時間欄位
+			entityFormatJson: "",//格式 
+			entityIKey: "",//KEY
+			entityGKey: "",//GKEY 
+		},
+		//方法
+		methods: {
+			create() {
+				//Step0.初始化
+				console.log("modify.html(created)");
+				//修改項目 
+				//console.log(searchSetJson['resultDetailThead']);
+				//console.log(searchSetJson['resultThead']);
+				modify.data.entityDateTime = main.resq_data['entityDateTime'];
+				modify.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
+				modify.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+				modify.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
+
+				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				var searchSet = searchSetJson['searchSet'];
+				var resultThead = searchSetJson['resultThead'];
+				var resultDetailThead = searchSetJson['resultDetailThead'];
+				//Step1.修改標題-排序
+				resultThead = main.methods.orderedSort(resultThead);
+				resultDetailThead = main.methods.orderedSort(resultDetailThead);
+				//Step2.修改標題-資料
+				//一般
+				var check1 = true;
+				Object.keys(resultThead).forEach(function (k) {
+					//如果有翻譯
+					var cloneBht = $("#modify_c_ex_tkey").clone();
+					cloneBht.attr("id", "");
+					cloneBht.removeClass("f_c_3");
+					//Step2-1.標題
+					cloneBht.css('minWidth', resultThead[k].width + "px");
+					//Step2-2.翻譯(Batch(H/B) Modify(H/B))
+					if (resultThead[k].cellLanguage != '') {
+						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						cloneBht.text(cellName == "" ? resultThead[k].cellName : cellName);
+					} else {
+						cloneBht.text(resultThead[k].cellName);
 					}
-				});
-			});
-			//複寫Date->取代->
-			$(document).off("click", "#modify_c_date_replace");
-			$(document).on("click", "#modify_c_date_replace", function (event) {
-				console.log("modify_c_date_replace");
-				$('#batchThv .entityVal').each(function( index ) {
-					console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-					var tigger = $('#modifyThAll .modifyThvM .'+$( this ).attr('title'));
-					var batchVal = $( this ).val();
-					var replaceVal = $('#batchTrhv .'+$( this ).attr('title')).val();
-					//過濾沒開啟的 
-					if($( this ).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
-						//過濾沒資料的
-						if(replaceVal!="" && replaceVal !=null){
-							//關鍵字取代
-							tigger.each(function( indexCell ) {
-								$( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  
-							});
-						}
+					//Step2-3.欄位類型?
+					var cloneBhv = "";
+					switch (resultThead[k].m_type) {
+						case "text":
+							cloneBhv = $("#modify_c_ex_it").clone();
+							break;
+						case "textarea":
+							cloneBhv = $("#modify_c_ex_tt").clone();
+							break;
+						case "number":
+							cloneBhv = $("#modify_c_ex_in").clone();
+							break;
+						case "datetime":
+							cloneBhv = $("#modify_c_ex_id").clone();
+							break;
+						case "time":
+							cloneBhv = $("#modify_c_ex_t").clone();
+							break;
+						case "checkbox":
+							cloneBhv = $("#modify_c_ex_icb").clone();
+							break;
+						case "password":
+							cloneBhv = $("#modify_c_ex_ic").clone();
+							break;
+						case "file":
+							cloneBhv = $("#modify_c_ex_ip").clone();
+							break;
+						case "select":
+							cloneBhv = $("#modify_c_ex_st").clone();
+							//比對是否有匹配選項
+							var arrSelect = JSON.parse(resultThead[k].m_select);
+							//選項
+							for (var s = 0; s < arrSelect.length; s++) {
+								var key = arrSelect[s].split("_")[0];
+								var val = arrSelect[s].split("_")[1];
+								selectEx = $('.modify_st_ex').clone();
+								selectEx.removeClass("modify_st_ex");
+								selectEx.removeAttr("selected");
+								selectEx.text(key);
+								selectEx.val(val);
+								selectEx.appendTo(cloneBhv.find('select'));
+							}
+							cloneBhv.find('.modify_st_ex').removeClass("modify_st_ex");
+							break;
+						default:
+							cloneBhv = $("#modify_c_ex_it").clone();
+							break;
 					}
-				});
-				$('#batchThv .entityVal').val('');
-				$('#batchThv .entityVal').prop('checked', false);
-				$('#batchTrhv .entityVal').val('');
-				$('#batchTrhv .entityVal').prop('checked', false);
-			});
-			//複寫Date->清除
-			$(document).off("click", "#modify_c_date_clearAll");
-			$(document).on("click", "#modify_c_date_clearAll", function (event) {
-				console.log("modify_c_date_clearAll");
-				$('#batchThv .entityVal').val('');
-				$('#batchThv .entityVal').prop('checked', false);
-				$('#batchTrhv .entityVal').val('');
-				$('#batchTrhv .entityVal').prop('checked', false);
-			});
-			
-			//複寫Detail
-			$(document).off("click", "#modify_c_detail_overwrite");
-			$(document).on("click", "#modify_c_detail_overwrite", function (event) {
-				console.log("modify_c_detail_overwrite");
-				$('#batchTdv .entityVal').each(function( index ) {
-					//過濾沒開啟的
-					var tigger = $('#modifyTdAll .modifyTdvM .'+$( this ).attr('title'));
-					if($(this).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
-						console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-						//過濾沒資料的
-						if( $( this ).val()!='' && $( this ).val()!=null){
-							tigger.val($( this ).val());
-						}
-						//checkbox?
-						if($(this).attr('type')=="checkbox" && $(this).prop('checked')){
-							tigger.prop('checked',true);							
-						}
+
+					cloneBhv.attr("id", "");
+					cloneBhv.removeClass("f_c_3");
+					//Step2-4.第一筆?
+					if (check1 && resultThead[k].m_show != 0) {
+						check1 = false;
+						cloneBht.addClass("f_c_1");
+						cloneBhv.addClass("f_c_1");
 					}
-				});
-			});
-			//複寫Detail->取代->
-			$(document).off("click", "#modify_c_detail_replace");
-			$(document).on("click", "#modify_c_detail_replace", function (event) {
-				console.log("modify_c_detail_replace"); 
-				$('#batchTdv .entityVal').each(function( index ) { 
-					console.log( index + ": "+$( this ).attr('title')+": " + $( this ).val() );
-					var tigger = $('#modifyTdAll .modifyTdvM .'+$( this ).attr('title'));
-					var batchVal = $( this ).val();
-					var replaceVal = $('#batchTrdv .'+$( this ).attr('title')).val();
-					//過濾沒開啟的
-					if($( this ).attr('disabled')!='disabled' && tigger.attr('disabled')!='disabled'){
-						//過濾沒資料的
-						if(replaceVal!="" && replaceVal !=null && batchVal!='' && batchVal!=null){
-							//關鍵字取代
-							tigger.each(function( indexCell ) {
-								$( this ).val($( this ).val().replaceAll(replaceVal,batchVal));								  
-							});
-						}
+					//Step2-5.如果隱藏
+					if (resultThead[k].m_show == 0) {
+						cloneBht.addClass('d-none');
+						cloneBhv.addClass('d-none');
 					}
+					//Step2-6.如果固定?
+					if (resultThead[k].m_fixed == 1) {
+						cloneBhv.find("checkbox").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBhv.find("select").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBhv.find("input").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBhv.find("textarea").addClass("m_fixed").attr("disabled", "disabled");
+					}
+					//Step2-7.如果必填? 
+					if (resultThead[k].m_must == 1) {
+						cloneBhv.find("select").attr('alt', 'must').attr('required', 'required');
+						cloneBhv.find("input").attr('alt', 'must').attr('required', 'required');
+						cloneBhv.find("textarea").attr('alt', 'must').attr('required', 'required');
+					}
+
+					//Step2-8.如果預設值?
+					if (resultThead[k].m_defval != "" && resultThead[k].m_defval != null) {
+						cloneBhv.find("select option[value=" + resultThead[k].m_defval + "]").attr('selected', 'selected');
+						cloneBhv.find("input").val(resultThead[k].m_defval);
+						cloneBhv.find("textarea").val(resultThead[k].m_defval);
+					}
+					//Step2-9.如果提示值?
+					cloneBhv.find("select").attr("placeholder", resultThead[k].m_placeholder);
+					cloneBhv.find("input").attr("placeholder", resultThead[k].m_placeholder);
+					cloneBhv.find("textarea").attr("placeholder", resultThead[k].m_placeholder);
+					//Step2-10.定義Class? 
+					cloneBhv.find("checkbox").addClass(resultThead[k].cellName).addClass('entityVal').attr("title", resultThead[k].cellName);
+					cloneBhv.find("select").addClass(resultThead[k].cellName).addClass('entityVal').attr("title", resultThead[k].cellName);
+					cloneBhv.find("input").addClass(resultThead[k].cellName).addClass('entityVal').attr("title", resultThead[k].cellName);
+					cloneBhv.find("textarea").addClass(resultThead[k].cellName).addClass('entityVal').attr("title", resultThead[k].cellName);
+					//Step2-11.定義Name? 
+					cloneBhv.find("checkbox").attr('name', resultThead[k].cellName);
+					cloneBhv.find("select").attr('name', resultThead[k].cellName);
+					cloneBhv.find("input").attr('name', resultThead[k].cellName);
+					cloneBhv.find("textarea").attr('name', resultThead[k].cellName);
+
+					cloneBhv.css('maxWidth', resultThead[k].width + "px");
+
+					//Step2-N.創建
+					cloneBht.appendTo($("#batchThn tr"));
+					cloneBhv.appendTo($("#batchThv tr"));
 				});
-				$('#batchTdv .entityVal').val('');
-				$('#batchTdv .entityVal').prop('checked', false);
-				$('#batchTrdv .entityVal').val('');
-				$('#batchTrdv .entityVal').prop('checked', false);
-			});
-			//複寫Detail->清除
-			$(document).off("click", "#modify_c_detail_clearAll");
-			$(document).on("click", "#modify_c_detail_clearAll", function (event) {
-				console.log("modify_c_detail_clearAll");
-				$('#batchTdv .entityVal').val('');
-				$('#batchTdv .entityVal').prop('checked', false);
-				$('#batchTrdv .entityVal').val('');
-				$('#batchTrdv .entityVal').prop('checked', false);
-			});
-			
-			//Execution
-			$(document).off("click", "#modify_c_save");
-			$(document).on("click", "#modify_c_save", function (event) {
-				console.log("modify_c_save");
-				//modify.methods.modifySend();
-				$( "#reallySend" ).trigger( "click" );
-			});
-			$(document).off("click", "#modify_c_cancelAll");
-			$(document).on("click", "#modify_c_cancelAll", function (event) {
-				console.log("modify_c_cancelAll");
+				//細節 
+				check1 = true;
+				if (JSON.stringify(resultDetailThead) == '{}') {
+					$('#modifyTdAll').addClass('d-none');
+					$('#modify_c_batch_revision_detail').addClass('d-none');
+					$('#cBatchDetail').addClass('d-none');
+				}
+
+				Object.keys(resultDetailThead).forEach(function (k) {//如果有翻譯
+					var cloneBdt = $("#modify_c_ex_tkey").clone();
+					cloneBdt.attr("id", "");
+					cloneBdt.removeClass("f_c_3");
+					//Step2-1.標題
+					cloneBdt.css('minWidth', resultDetailThead[k].width + "px");
+					//Step2-2.翻譯(Batch(H/B) Modify(H/B))
+					if (resultDetailThead[k].cellLanguage != '') {
+						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						cloneBdt.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
+					} else {
+						cloneBdt.text(resultDetailThead[k].cellName);
+					}
+					//Step2-3.欄位類型?
+					var cloneBdv = "";
+					switch (resultDetailThead[k].m_type) {
+						case "text":
+							cloneBdv = $("#modify_c_ex_it").clone();
+							break;
+						case "textarea":
+							cloneBdv = $("#modify_c_ex_tt").clone();
+							break;
+						case "number":
+							cloneBdv = $("#modify_c_ex_in").clone();
+							break;
+						case "datetime":
+							cloneBdv = $("#modify_c_ex_id").clone();
+							break;
+						case "time":
+							cloneBdv = $("#modify_c_ex_t").clone();
+							break;
+						case "checkbox":
+							cloneBdv = $("#modify_c_ex_icb").clone();
+							break;
+						case "password":
+							cloneBdv = $("#modify_c_ex_ic").clone();
+							break;
+						case "file":
+							cloneBdv = $("#modify_c_ex_ip").clone();
+							break;
+						case "select":
+							cloneBdv = $("#modify_c_ex_st").clone();
+							//比對是否有匹配選項
+							var arrSelect = JSON.parse(resultDetailThead[k].m_select);
+							//console.log(searchSet[t].select);
+							//選項
+							for (var s = 0; s < arrSelect.length; s++) {
+								var key = arrSelect[s].split("_")[0];
+								var val = arrSelect[s].split("_")[1];
+								selectEx = $('.modify_st_ex').clone();
+								selectEx.removeClass("modify_st_ex");
+								selectEx.removeAttr("selected");
+								selectEx.text(key);
+								selectEx.val(val);
+								selectEx.appendTo(cloneBdv.find('select'));
+							}
+							cloneBdv.find('.modify_st_ex').removeClass("modify_st_ex");
+							break;
+						default:
+							cloneBdv = $("#modify_c_ex_it").clone();
+							break;
+					}
+					cloneBdv.attr("id", "");
+					cloneBdv.removeClass("f_c_3");
+					//Step2-4.第一筆?
+					if (check1 && resultDetailThead[k].m_show != 0) {
+						check1 = false;
+						cloneBdt.addClass("f_c_1");
+						cloneBdv.addClass("f_c_1");
+					}
+					//Step2-5.如果隱藏
+					if (resultDetailThead[k].m_show == 0) {
+						cloneBdt.addClass('d-none');
+						cloneBdv.addClass('d-none');
+					}
+					//Step2-6.如果固定?
+					if (resultDetailThead[k].m_fixed == 1) {
+						cloneBdv.find("checkbox").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBdv.find("select").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBdv.find("input").addClass("m_fixed").attr("disabled", "disabled");
+						cloneBdv.find("textarea").addClass("m_fixed").attr("disabled", "disabled");
+					}
+					//Step2-7.如果必填? 
+					if (resultDetailThead[k].m_must == 1) {
+						//cloneBdv.find("checkbox").attr('alt','must').attr('required','required');
+						cloneBdv.find("select").attr('alt', 'must').attr('required', 'required');
+						cloneBdv.find("input").attr('alt', 'must').attr('required', 'required');
+						cloneBdv.find("textarea").attr('alt', 'must').attr('required', 'required');
+					}
+					//Step2-8.如果預設值?
+					if (resultDetailThead[k].m_defval != "" && resultDetailThead[k].m_defval != null) {
+						cloneBdv.find("select option[value=" + resultDetailThead[k].m_defval + "]").attr('selected', 'selected');
+						cloneBdv.find("select").val(resultDetailThead[k].m_defval);
+						cloneBdv.find("input").val(resultDetailThead[k].m_defval);
+						cloneBdv.find("textarea").val(resultDetailThead[k].m_defval);
+					}
+					//Step2-9.如果提示值?
+					cloneBdv.find("select").attr("placeholder", resultDetailThead[k].m_placeholder);
+					cloneBdv.find("input").attr("placeholder", resultDetailThead[k].m_placeholder);
+					cloneBdv.find("textarea").attr("placeholder", resultDetailThead[k].m_placeholder);
+					//Step2-10.定義Class?
+					cloneBdv.find("checkbox").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
+					cloneBdv.find("select").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
+					cloneBdv.find("input").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
+					cloneBdv.find("textarea").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
+					cloneBdv.css('maxWidth', resultDetailThead[k].width + "px");
+					//Step2-N.創建
+					cloneBdt.appendTo($("#batchTdn tr"));
+					cloneBdv.appendTo($("#batchTdv tr"));
+				});
+
+				//複寫-Replace Data/Detail
+				$('#batchThn tr').clone().appendTo("#batchTrhn");
+				$('#batchThv tr').clone().appendTo("#batchTrhv");
+				$('#batchTdn tr').clone().appendTo("#batchTrdn");
+				$('#batchTdv tr').clone().appendTo("#batchTrdv");
+
+				//修改-Modify list
+				$('#batchThn tr').clone().appendTo("#modifyThn");
+				$('#batchThv tr').clone().appendTo("#modifyThv");
+				$("#modifyThn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+				$("#modifyThv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+				$('#modify_c_ex_tp').clone().attr("id", "").prependTo("#modifyThn tr");
+				$('#modify_c_ex_tm').clone().attr("id", "").prependTo("#modifyThn tr");
+				$('#modify_c_ex_vp').clone().attr("id", "").prependTo("#modifyThv tr");
+				$('#modify_c_ex_vm').clone().attr("id", "").prependTo("#modifyThv tr");
+				$('#modifyThv tr').addClass('modifyThvEx');
+				$('#modifyThv tr checkbox').attr("disabled", "disabled");
+				$('#modifyThv tr input').attr("disabled", "disabled");
+				$('#modifyThv tr select').attr("disabled", "disabled");
+				$('#modifyThv tr textarea').attr("disabled", "disabled");
+
+				$('#batchTdn tr').clone().appendTo("#modifyTdn");
+				$('#batchTdv tr').clone().appendTo("#modifyTdv");
+				$("#modifyTdn .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+				$("#modifyTdv .f_c_1").removeClass("f_c_1").addClass("f_c_3");
+				$('#modify_c_ex_tp').clone().attr("id", "").prependTo("#modifyTdn tr");
+				$('#modify_c_ex_tm').clone().attr("id", "").prependTo("#modifyTdn tr");
+				$('#modify_c_ex_vp').clone().attr("id", "").prependTo("#modifyTdv tr");
+				$('#modify_c_ex_vm').clone().attr("id", "").prependTo("#modifyTdv tr");
+				$('#modifyTdv tr').addClass('modifyTdvEx');
+				$('#modifyTdv tr checkbox').attr("disabled", "disabled");
+				$('#modifyTdv tr input').attr("disabled", "disabled");
+				$('#modifyTdv tr select').attr("disabled", "disabled");
+				$('#modifyTdv tr textarea').attr("disabled", "disabled");
+				//時間格式
+				modify.methods.datetimepickerDate();
+				//==========================監聽==========================
+				//監聽-Modify list
+				//Data
+				$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
+				$(document).on("click", "#modifyThAll .modifyThvEx .bi-plus-square", function (event) {
+					console.log("modifyThAll bi-plus-square");
+					var modifyThvEx = $('.modifyThvEx').clone();
+					modifyThvEx.removeClass('modifyThvEx');
+					modifyThvEx.find(".bi-plus-square").addClass('d-none');
+					modifyThvEx.find(".bi-dash-square").removeClass('d-none');
+					modifyThvEx.addClass('modifyThvM');
+					//固定-鎖定?
+					modifyThvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
+					modifyThvEx.find("input").not('.m_fixed').removeAttr("disabled");
+					modifyThvEx.find("select").not('.m_fixed').removeAttr("disabled");
+					modifyThvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
+					//注入
+					modifyThvEx.appendTo("#modifyThv");
+					modify.methods.datetimepickerDate();
+
+				});
+				$(document).off("click", "#modifyThAll .modifyThvM .bi-dash-square");//--
+				$(document).on("click", "#modifyThAll .modifyThvM .bi-dash-square", function (event) {
+					console.log("modifyThAll bi-dash-square");
+					$(event.target.parentElement.parentElement.parentElement).remove();
+				});
+				$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
+				$(document).on("click", "#modifyThAll .modifyThvM .bi-stickies", function (event) {
+					console.log("modifyThAll bi-stickies");
+					var copyTarget = $(event.target.parentElement.parentElement.parentElement);
+					var copy = copyTarget.clone();
+					//Data : 將現有ID /GID 清除
+					var id = copy.find('.bi-stickies').attr('title').split("_")[0];
+					var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
+					if (id != "") {copy.find('.' + id).val("");}
+					if (gid != "") {copy.find('.' + gid).val("");}
+					//select : 如果有選單複製
+					var select = copyTarget.find("select");
+					select.each(function (index) {
+						console.log($(this).attr("title"));
+						copy.find('.' + $(this).attr("title")).val($(this).val());
+					})
+					copy.removeClass('modifyTdvEx');
+					copy.removeClass('modifyThvEx');
+					copy.find(".bi-plus-square").addClass('d-none');
+					copy.find(".bi-dash-square").removeClass('d-none');
+					copy.addClass('modifyThvM');
+					console.log();
+					copy.appendTo("#modifyThv");
+					modify.methods.datetimepickerDate();
+
+				});
+				//Detail
+				$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
+				$(document).on("click", "#modifyTdAll .modifyTdvEx .bi-plus-square", function (event) {
+					console.log("modifyTdAll bi-plus-square");
+					var modifyTdvEx = $('.modifyTdvEx').clone();
+					modifyTdvEx.removeClass('modifyTdvEx');
+					modifyTdvEx.find(".bi-plus-square").addClass('d-none');
+					modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
+					modifyTdvEx.addClass('modifyTdvM');
+					//固定-鎖定?
+					modifyTdvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
+					modifyTdvEx.find("input").not('.m_fixed').removeAttr("disabled");
+					modifyTdvEx.find("select").not('.m_fixed').removeAttr("disabled");
+					modifyTdvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
+					//注入
+					modifyTdvEx.appendTo("#modifyTdv");
+					modify.methods.datetimepickerDate();
+				});
+				$(document).off("click", "#modifyTdAll .modifyTdvM .bi-dash-square");//--
+				$(document).on("click", "#modifyTdAll .modifyTdvM .bi-dash-square", function (event) {
+					console.log("modifyTdAll bi-dash-square");
+					$(event.target.parentElement.parentElement.parentElement).remove();
+				});
+				$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
+				$(document).on("click", "#modifyTdAll .modifyTdvM .bi-stickies", function (event) {
+					console.log("modifyTdAll bi-stickies");
+					var copyTarget = $(event.target.parentElement.parentElement.parentElement);
+					var copy = copyTarget.clone();
+					//Detail : 將現有ID 
+					var id = copy.find('.bi-stickies').attr('title').split("_")[0];
+					var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
+					if (id != "") {copy.find('.' + id).val("");}
+					//select : 如果有選單複製
+					var select = copyTarget.find("select");
+					select.each(function (index) {
+						console.log($(this).attr("title"));
+						copy.find('.' + $(this).attr("title")).val($(this).val());
+					})
+					copy.removeClass('modifyTdvEx');
+					copy.find(".bi-plus-square").addClass('d-none');
+					copy.find(".bi-dash-square").removeClass('d-none');
+					copy.addClass('modifyTdvM');
+					copy.insertBefore(".gkey_" + copy.find('.' + gid).val());//添加在該群組範圍內
+					modify.methods.datetimepickerDate();
+				});
+
+				//複寫Date
+				$(document).off("click", "#modify_c_date_overwrite");
+				$(document).on("click", "#modify_c_date_overwrite", function (event) {
+					console.log("modify_c_date_overwrite");
+					$('#batchThv .entityVal').each(function (index) {
+						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
+						//過濾沒開啟的
+						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
+							console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
+							//過濾沒資料的
+							if ($(this).val() != '' && $(this).val() != null) {
+								tigger.val($(this).val());
+							}
+							//checkbox?
+							if ($(this).attr('type') == "checkbox" && $(this).prop('checked')) {
+								tigger.prop('checked', true);
+							}
+						}
+					});
+				});
+				//複寫Date->取代->
+				$(document).off("click", "#modify_c_date_replace");
+				$(document).on("click", "#modify_c_date_replace", function (event) {
+					console.log("modify_c_date_replace");
+					$('#batchThv .entityVal').each(function (index) {
+						console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
+						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
+						var batchVal = $(this).val();
+						var replaceVal = $('#batchTrhv .' + $(this).attr('title')).val();
+						//過濾沒開啟的 
+						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
+							//過濾沒資料的
+							if (replaceVal != "" && replaceVal != null) {
+								//關鍵字取代
+								tigger.each(function (indexCell) {
+									$(this).val($(this).val().replaceAll(replaceVal, batchVal));
+								});
+							}
+						}
+					});
+					$('#batchThv .entityVal').val('');
+					$('#batchThv .entityVal').prop('checked', false);
+					$('#batchTrhv .entityVal').val('');
+					$('#batchTrhv .entityVal').prop('checked', false);
+				});
+				//複寫Date->清除
+				$(document).off("click", "#modify_c_date_clearAll");
+				$(document).on("click", "#modify_c_date_clearAll", function (event) {
+					console.log("modify_c_date_clearAll");
+					$('#batchThv .entityVal').val('');
+					$('#batchThv .entityVal').prop('checked', false);
+					$('#batchTrhv .entityVal').val('');
+					$('#batchTrhv .entityVal').prop('checked', false);
+				});
+
+				//複寫Detail
+				$(document).off("click", "#modify_c_detail_overwrite");
+				$(document).on("click", "#modify_c_detail_overwrite", function (event) {
+					console.log("modify_c_detail_overwrite");
+					$('#batchTdv .entityVal').each(function (index) {
+						//過濾沒開啟的
+						var tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
+						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
+							console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
+							//過濾沒資料的
+							if ($(this).val() != '' && $(this).val() != null) {
+								tigger.val($(this).val());
+							}
+							//checkbox?
+							if ($(this).attr('type') == "checkbox" && $(this).prop('checked')) {
+								tigger.prop('checked', true);
+							}
+						}
+					});
+				});
+				//複寫Detail->取代->
+				$(document).off("click", "#modify_c_detail_replace");
+				$(document).on("click", "#modify_c_detail_replace", function (event) {
+					console.log("modify_c_detail_replace");
+					$('#batchTdv .entityVal').each(function (index) {
+						console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
+						var tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
+						var batchVal = $(this).val();
+						var replaceVal = $('#batchTrdv .' + $(this).attr('title')).val();
+						//過濾沒開啟的
+						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
+							//過濾沒資料的
+							if (replaceVal != "" && replaceVal != null && batchVal != '' && batchVal != null) {
+								//關鍵字取代
+								tigger.each(function (indexCell) {
+									$(this).val($(this).val().replaceAll(replaceVal, batchVal));
+								});
+							}
+						}
+					});
+					$('#batchTdv .entityVal').val('');
+					$('#batchTdv .entityVal').prop('checked', false);
+					$('#batchTrdv .entityVal').val('');
+					$('#batchTrdv .entityVal').prop('checked', false);
+				});
+				//複寫Detail->清除
+				$(document).off("click", "#modify_c_detail_clearAll");
+				$(document).on("click", "#modify_c_detail_clearAll", function (event) {
+					console.log("modify_c_detail_clearAll");
+					$('#batchTdv .entityVal').val('');
+					$('#batchTdv .entityVal').prop('checked', false);
+					$('#batchTrdv .entityVal').val('');
+					$('#batchTrdv .entityVal').prop('checked', false);
+				});
+
+				//Execution
+				$(document).off("click", "#modify_c_save");
+				$(document).on("click", "#modify_c_save", function (event) {
+					console.log("modify_c_save");
+					//modify.methods.modifySend();
+					$("#reallySend").trigger("click");
+				});
+				$(document).off("click", "#modify_c_cancelAll");
+				$(document).on("click", "#modify_c_cancelAll", function (event) {
+					console.log("modify_c_cancelAll");
+					$('.modifyThvM').remove();
+					$('.modifyTdvM').remove();
+					$('.nextOne').remove();
+					$('#modify_c_state').text("＞None＜");
+					$('#modify_c_state').attr('title', 'None_');
+				});
+				//清除預設
+				$("#modify_c_date_clearAll").trigger('click');
+				$("#modify_c_detail_clearAll").trigger('click');
+
+			},
+			//==========================處理資料==========================
+			modify(order, datas, dataDetails, entityDateTime) {
+				console.log("modify_Start:" + new Date());
+				var entityDateTime = modify.data.entityDateTime;
+				var ikey = modify.data.entityIKey;
+				var gkey = modify.data.entityGKey;
+				console.log("=====order:" + order + "=====");
+				console.log(datas);
+				console.log(dataDetails);
 				$('.modifyThvM').remove();
 				$('.modifyTdvM').remove();
 				$('.nextOne').remove();
-				$('#modify_c_state').text("＞None＜");
-				$('#modify_c_state').attr('title','None_');
-			});
-			//清除預設
-			$("#modify_c_date_clearAll").trigger('click');
-			$("#modify_c_detail_clearAll").trigger('click');
 
-		},
-		//==========================處理資料==========================
-		modify(order,datas,dataDetails,entityDateTime){
-			var entityDateTime = modify.data.entityDateTime;
-			var ikey = modify.data.entityIKey;
-			var gkey = modify.data.entityGKey;
-			console.log("=====order:"+order+"=====");
-			console.log(datas);
-			console.log(dataDetails);
-			$('.modifyThvM').remove();
-			$('.modifyTdvM').remove();
-			$('.nextOne').remove();
-			
-			$('#modify_title').trigger('click');
-			$('#modify_c_state').text("＞None＜");
-			$('#modify_c_state').attr('title','None_');
-			
-			switch(order){
-			case "saveAs":
-			case "modify":
-			case "invalid":
-			case "delete":
-				//一般
-				if(datas.length>0){
-					for(var d=0;d<datas.length;d++){
-						var modifyThvEx = $('.modifyThvEx').clone();
-						modifyThvEx.find('input').removeClass("d-none");
-						modifyThvEx.find('select').removeClass("d-none");
-						modifyThvEx.find('textarea').removeClass("d-none");
-						modifyThvEx.find('.bi-stickies').attr("title",ikey+"_"+gkey);
-						modifyThvEx.find(".bi-plus-square").addClass('d-none');
-						modifyThvEx.find(".bi-dash-square").removeClass('d-none');
-						//固定-鎖定?
-						modifyThvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
-						modifyThvEx.find("input").not('.m_fixed').removeAttr("disabled");
-						modifyThvEx.find("select").not('.m_fixed').removeAttr("disabled");
-						modifyThvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
-						//
-						modifyThvEx.removeClass('modifyThvEx');
-						modifyThvEx.addClass('modifyThvM');
-						var dataOne =  datas[d];
-						//每個欄位 >對應< 資料
-						Object.keys(dataOne).forEach(function(k){
-							//是否時間格式?
-							var value = dataOne[k];
-							if(entityDateTime.indexOf(k)>=0){
-								 var dF = new Date(dataOne[k]);
-								 value = dF.getFullYear()+"-";
-								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
-								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
-								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
-								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
-								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
+				$('#modify_title').trigger('click');
+				$('#modify_c_state').text("＞None＜");
+				$('#modify_c_state').attr('title', 'None_');
+
+				switch (order) {
+					case "saveAs":
+					case "modify":
+					case "invalid":
+					case "delete":
+						//一般
+						if (datas.length > 0) {
+							for (var d = 0; d < datas.length; d++) {
+								var modifyThvEx = $('.modifyThvEx').clone();
+								modifyThvEx.find('input').removeClass("d-none");
+								modifyThvEx.find('select').removeClass("d-none");
+								modifyThvEx.find('textarea').removeClass("d-none");
+								modifyThvEx.find('.bi-stickies').attr("title", ikey + "_" + gkey);
+								modifyThvEx.find(".bi-plus-square").addClass('d-none');
+								modifyThvEx.find(".bi-dash-square").removeClass('d-none');
+								//固定-鎖定?
+								modifyThvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
+								modifyThvEx.find("input").not('.m_fixed').removeAttr("disabled");
+								modifyThvEx.find("select").not('.m_fixed').removeAttr("disabled");
+								modifyThvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
+								//
+								modifyThvEx.removeClass('modifyThvEx');
+								modifyThvEx.addClass('modifyThvM');
+								var dataOne = datas[d];
+								//每個欄位 >對應< 資料
+								Object.keys(dataOne).forEach(function (k) {
+									//是否時間格式?
+									var value = dataOne[k];
+									if (entityDateTime.indexOf(k) >= 0) {
+										var dF = new Date(dataOne[k]);
+										value = dF.getFullYear() + "-";
+										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+										value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+										value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+									}
+									modifyThvEx.find("." + k).val(value);
+									//是否為	checkbox
+									//console.log(modifyThvEx.find("."+k).attr('type'));
+									if (modifyThvEx.find("." + k).attr('type') == "checkbox") {
+										if (value == true) {
+											modifyThvEx.find('.' + k).prop('checked', true);
+										} else {
+											modifyThvEx.find('.' + k).prop('checked', false);
+										}
+									}
+
+								});
+								modifyThvEx.appendTo("#modifyThv");
 							}
-							modifyThvEx.find("."+k).val(value);
-							//是否為	checkbox
-							//console.log(modifyThvEx.find("."+k).attr('type'));
-							if(modifyThvEx.find("."+k).attr('type')=="checkbox"){
-								if(value==true){
-									modifyThvEx.find('.'+k).prop('checked', true);									
-								}else{
-									modifyThvEx.find('.'+k).prop('checked', false);		
-								}
-							}
-							
-						});
-						modifyThvEx.appendTo("#modifyThv");						
-					}
-				}
-				//細節
-				if(dataDetails.length>0){
-					var newGkey=dataDetails[0][gkey];
-					var newIkey=dataDetails[0][ikey];
-					//分隔線
-					var nextOneTr = $("<tr><td></td></tr>");
-					nextOneTr.find("td").attr("colspan",(Object.keys(dataDetails[0]).length+2));
-					nextOneTr.addClass("nextOne");
-					var nextOne = $("#nextOne").clone().removeAttr("id").removeClass("d-none");
-					nextOne.appendTo(nextOneTr.find("td")); 
-					
-					for(var d=0;d<dataDetails.length;d++){
-						var modifyTdvEx = $('.modifyTdvEx').clone();
-						modifyTdvEx.find('input').removeClass("d-none");
-						modifyTdvEx.find('select').removeClass("d-none");
-						modifyTdvEx.find('textarea').removeClass("d-none");
-						modifyTdvEx.find('.bi-stickies').attr("title",ikey+"_"+gkey);
-						modifyTdvEx.find(".bi-plus-square").addClass('d-none');
-						modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
-						//固定-鎖定?
-						modifyTdvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
-						modifyTdvEx.find("input").not('.m_fixed').removeAttr("disabled");
-						modifyTdvEx.find("select").not('.m_fixed').removeAttr("disabled");
-						modifyTdvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
-						//
-						modifyTdvEx.removeClass('modifyTdvEx');
-						modifyTdvEx.addClass('modifyTdvM');
-						var dataDetailOne =  dataDetails[d];
-						//每個欄位 >對應< 資料
-						Object.keys(dataDetailOne).forEach(function(k){
-							//是否時間格式?
-							var value = dataDetailOne[k];
-							if(entityDateTime.indexOf(k)>=0){
-								 var dF = new Date(dataDetailOne[k]);
-								 value = dF.getFullYear()+"-";
-								 value += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
-								 value += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
-								 value += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
-								 value += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
-								 value += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
-							}
-							modifyTdvEx.find("."+k).val(value);
-							//是否為	checkbox
-							//console.log(modifyThvEx.find("."+k).attr('type'));
-							if(modifyTdvEx.find("."+k).attr('type')=="checkbox"){
-								if(value==true){
-									modifyTdvEx.find('.'+k).prop('checked', true);									
-								}else{
-									modifyTdvEx.find('.'+k).prop('checked', false);		
-								}
-							}
-						});
-						
-						//分隔資料線-中間
-						if(newGkey!=dataDetails[d][gkey] && gkey!=null &&gkey!=""){
-							newGkey = dataDetails[d][gkey];
-							nextOneTr.clone().addClass('gkey_'+dataDetails[d-1][gkey]).appendTo("#modifyTdv");
 						}
-						modifyTdvEx.appendTo("#modifyTdv");
-					}
-					//分隔資料線-最後
-					nextOneTr.clone().addClass('gkey_'+dataDetails[dataDetails.length-1][gkey]).appendTo("#modifyTdv");
+						//細節
+						if (dataDetails.length > 0) {
+							var newGkey = dataDetails[0][gkey];
+							var newIkey = dataDetails[0][ikey];
+							//分隔線
+							var nextOneTr = $("<tr><td></td></tr>");
+							nextOneTr.find("td").attr("colspan", (Object.keys(dataDetails[0]).length + 2));
+							nextOneTr.addClass("nextOne");
+							var nextOne = $("#nextOne").clone().removeAttr("id").removeClass("d-none");
+							nextOne.appendTo(nextOneTr.find("td"));
+
+							for (var d = 0; d < dataDetails.length; d++) {
+								var modifyTdvEx = $('.modifyTdvEx').clone();
+								modifyTdvEx.find('input').removeClass("d-none");
+								modifyTdvEx.find('select').removeClass("d-none");
+								modifyTdvEx.find('textarea').removeClass("d-none");
+								modifyTdvEx.find('.bi-stickies').attr("title", ikey + "_" + gkey);
+								modifyTdvEx.find(".bi-plus-square").addClass('d-none');
+								modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
+								//固定-鎖定?
+								modifyTdvEx.find("checkbox").not('.m_fixed').removeAttr("disabled");
+								modifyTdvEx.find("input").not('.m_fixed').removeAttr("disabled");
+								modifyTdvEx.find("select").not('.m_fixed').removeAttr("disabled");
+								modifyTdvEx.find("textarea").not('.m_fixed').removeAttr("disabled");
+								//
+								modifyTdvEx.removeClass('modifyTdvEx');
+								modifyTdvEx.addClass('modifyTdvM');
+								var dataDetailOne = dataDetails[d];
+								//每個欄位 >對應< 資料
+								Object.keys(dataDetailOne).forEach(function (k) {
+									//是否時間格式?
+									var value = dataDetailOne[k];
+									if (entityDateTime.indexOf(k) >= 0) {
+										var dF = new Date(dataDetailOne[k]);
+										value = dF.getFullYear() + "-";
+										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+										value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+										value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+									}
+									modifyTdvEx.find("." + k).val(value);
+									//是否為	checkbox
+									//console.log(modifyThvEx.find("."+k).attr('type'));
+									if (modifyTdvEx.find("." + k).attr('type') == "checkbox") {
+										if (value == true) {
+											modifyTdvEx.find('.' + k).prop('checked', true);
+										} else {
+											modifyTdvEx.find('.' + k).prop('checked', false);
+										}
+									}
+								});
+
+								//分隔資料線-中間
+								if (newGkey != dataDetails[d][gkey] && gkey != null && gkey != "") {
+									newGkey = dataDetails[d][gkey];
+									nextOneTr.clone().addClass('gkey_' + dataDetails[d - 1][gkey]).appendTo("#modifyTdv");
+								}
+								modifyTdvEx.appendTo("#modifyTdv");
+							}
+							//分隔資料線-最後
+							nextOneTr.clone().addClass('gkey_' + dataDetails[dataDetails.length - 1][gkey]).appendTo("#modifyTdv");
+						}
+						break;
 				}
-				break;
-			}
-			//區分
-			switch(order){
-			case "create":
-				$('#modify_c_state').text("＞Create＜");
-				$('#modify_c_state').attr('title','AC_POST');
-				break;
-			case "saveAs":
-				$('#modify_c_state').text("＞saveAs＜");
-				$('#modify_c_state').attr('title','AC_POST');
-				break;
-			case "modify":
-				$('#modify_c_state').text("＞Modify＜");
-				$('#modify_c_state').attr('title','AU_PUT');
-				break;
-			case "invalid":
-				$('#modify_c_state').text("＞Invalid＜");
-				$('.modifyThvM input').attr("disabled","disabled");
-				$('.modifyThvM select').attr("disabled","disabled");
-				$('.modifyThvM textarea').attr("disabled","disabled");
-				$('.modifyTdvM input').attr("disabled","disabled");
-				$('.modifyTdvM select').attr("disabled","disabled");
-				$('.modifyTdvM textarea').attr("disabled","disabled");
-				$('#modify_c_state').attr('title','AD_DELETE');
-				break;
-			case "delete":
-				$('#modify_c_state').text("＞Delete＜");
-				$('.modifyThvM input').attr("disabled","disabled");
-				$('.modifyThvM select').attr("disabled","disabled");
-				$('.modifyThvM textarea').attr("disabled","disabled");
-				$('.modifyTdvM input').attr("disabled","disabled");
-				$('.modifyTdvM select').attr("disabled","disabled");
-				$('.modifyTdvM textarea').attr("disabled","disabled");
-				$('#modify_c_state').attr('title','DD_DELETE');
-				break;
-			}
-			//時間格式
-			modify.methods.datetimepickerDate();
-			//視窗大小
-			main.methods.reWindowsSize();
-		},
-		//傳送檢查?
-		sendCheckSave(){
-			modify.methods.modifySend();
-		},
-		//傳送
-		modifySend(){
-			var entityFormatJson = {};
-			var entityJsons = [];//回傳一般資料
-			var entityDetailJsons= [];//回傳細節資料
-			var entityDateTime = modify.data.entityDateTime;
-			var data={};
-			var req_data={};
-			var searchPageSet={};
-			var action = $('#modify_c_state').attr('title').split("_")[0];
-			var type = $('#modify_c_state').attr('title').split("_")[1];
-			//無效
-			if(action=="None"){
+				//區分
+				switch (order) {
+					case "create":
+						$('#modify_c_state').text("＞Create＜");
+						$('#modify_c_state').attr('title', 'AC_POST');
+						break;
+					case "saveAs":
+						$('#modify_c_state').text("＞saveAs＜");
+						$('#modify_c_state').attr('title', 'AC_POST');
+						break;
+					case "modify":
+						$('#modify_c_state').text("＞Modify＜");
+						$('#modify_c_state').attr('title', 'AU_PUT');
+						break;
+					case "invalid":
+						$('#modify_c_state').text("＞Invalid＜");
+						$('.modifyThvM input').attr("disabled", "disabled");
+						$('.modifyThvM select').attr("disabled", "disabled");
+						$('.modifyThvM textarea').attr("disabled", "disabled");
+						$('.modifyTdvM input').attr("disabled", "disabled");
+						$('.modifyTdvM select').attr("disabled", "disabled");
+						$('.modifyTdvM textarea').attr("disabled", "disabled");
+						$('#modify_c_state').attr('title', 'AD_DELETE');
+						break;
+					case "delete":
+						$('#modify_c_state').text("＞Delete＜");
+						$('.modifyThvM input').attr("disabled", "disabled");
+						$('.modifyThvM select').attr("disabled", "disabled");
+						$('.modifyThvM textarea').attr("disabled", "disabled");
+						$('.modifyTdvM input').attr("disabled", "disabled");
+						$('.modifyTdvM select').attr("disabled", "disabled");
+						$('.modifyTdvM textarea').attr("disabled", "disabled");
+						$('#modify_c_state').attr('title', 'DD_DELETE');
+						break;
+				}
+				//時間格式
+				modify.methods.datetimepickerDate();
+				//視窗大小
+				main.methods.reWindowsSize();
+				console.log("modify_OK:" + new Date());
+			},
+			//傳送檢查?
+			sendCheckSave() {
+				modify.methods.modifySend();
+			},
+			//傳送
+			modifySend() {
+				console.log("modifySend:" + new Date());
+				var entityFormatJson = {};
+				var entityJsons = [];//回傳一般資料
+				var entityDetailJsons = [];//回傳細節資料
+				var entityDateTime = modify.data.entityDateTime;
+				var data = {};
+				var req_data = {};
+				var searchPageSet = {};
+				var action = $('#modify_c_state').attr('title').split("_")[0];
+				var type = $('#modify_c_state').attr('title').split("_")[1];
+				//無效
+				if (action == "None") {
+					return false;
+				}
+				//一般資料->每一筆資料
+				$('.modifyThvM').each(function (index) {
+					//每一格欄位
+					entityFormatJson = {};
+					$(this).find('.entityVal').each(function (index) {
+						var val = $(this).val();
+						//可能是時間格式
+						if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
+							val = new Date(val).getTime();
+						}
+						//="checkbox"?
+						if ($(this).attr("type") == 'checkbox') {
+							val = $(this).is(':checked');
+						}
+						entityFormatJson[$(this).attr("title")] = val;
+					});
+					entityJsons.push(entityFormatJson);
+
+				});
+				//細節資料->每一筆資料
+				$('.modifyTdvM').each(function (index) {
+					//每一格欄位
+					entityFormatJson = {};
+					$(this).find('.entityVal').each(function (index) {
+						var val = $(this).val();
+						//可能是時間格式
+						if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
+							val = new Date(val).getTime();
+						}
+						//="checkbox"?
+						if ($(this).attr("type") == 'checkbox') {
+							val = $(this).is(':checked');
+						}
+						entityFormatJson[$(this).attr("title")] = val;
+					});
+					entityDetailJsons.push(entityFormatJson);
+				});
+
+				data['entityJson'] = JSON.stringify(entityJsons);
+				data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
+				data['callBackFunction'] = "modify";
+				console.log(entityJsons);
+				console.log(entityDetailJsons);
+
+				//包裝
+				req_data['data'] = data;
+				req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil." + action;//AC/AD....
+				req_data['type'] = type;//POST/PUT/DELETE...
+				main.methods.ajaxSend(req_data, true);
 				return false;
-			}
-			//一般資料->每一筆資料
-			$('.modifyThvM').each(function(index){ 
-				//每一格欄位
-				entityFormatJson = {};
-				$(this).find('.entityVal').each(function(index){ 
-					var val = $(this).val();
-					//可能是時間格式
-					if(entityDateTime.indexOf($(this).attr("title"))>=0){
-						val = new Date(val).getTime();	
-					}
-					//="checkbox"?
-					if($(this).attr("type")=='checkbox'){
-						val =$(this).is(':checked');
-					}
-				 	entityFormatJson[$(this).attr("title")] = val;
+			},
+			//修改後查詢
+			modifyReturn() {
+				console.log("modifyReturn:" + new Date());
+				$("#modify_c_cancelAll").trigger('click');
+				$("#search_title").trigger('click');
+				$("#btn_send").trigger('click');
+			},
+			datetimepickerDate() {
+				//日期時間格式
+				$('.datetimepicker').remove();
+				$('#modify_c tbody .datetimepicker_date').datetimepicker({
+					format: 'yyyy-mm-dd hh:ii:00',
+					pickerPosition: 'bottom-right',
+					//minView:1,
+					// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
+					minuteStep: 30,
+					autoclose: true,
+					endDate: '+1d',
+					datesDisabled: '+1d',
+					todayBtn: true,
+					bootcssVer: 5,
+					//......可以同上項目代碼自定義設置
 				});
-				entityJsons.push(entityFormatJson);
-			 
-			});
-			//細節資料->每一筆資料
-			$('.modifyTdvM').each(function(index){ 
-				//每一格欄位
-				entityFormatJson = {};
-				$(this).find('.entityVal').each(function(index){ 
-					var val = $(this).val();
-					//可能是時間格式
-					if(entityDateTime.indexOf($(this).attr("title"))>=0){
-						val = new Date(val).getTime();	
-					}
-					//="checkbox"?
-					if($(this).attr("type")=='checkbox'){
-						val =$(this).is(':checked');
-					}
-					entityFormatJson[$(this).attr("title")] = val;
+				//時間格式
+				$('#modify_c tbody .datetimepicker_time').datetimepicker({
+					format: 'hh:ii',
+					startView: 1,
+					minuteStep: 30,
+					pickDate: false,
+					autoclose: true,
+					timeFormat: 'hh:mm',
 				});
-				entityDetailJsons.push(entityFormatJson);
-			});
-			
-			data['entityJson'] = JSON.stringify(entityJsons);
-			data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
-			data['callBackFunction'] = "modify";
-			console.log(entityJsons);
-			console.log(entityDetailJsons);
-			
-			//包裝
-			req_data['data'] = data;
-			req_data['url'] = $('#nav_functional_unit').attr('title')+".basil."+action;//AC/AD....
-			req_data['type'] = type;//POST/PUT/DELETE...
-			main.methods.ajaxSend(req_data,true);
-			return false;
+			},
+			destroy() {
+				//銷毀
+				console.log("modify.html(destroy)");
+				$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
+				$(document).off("click", "#modifyThAll .modifyThvM .bi-dash-square");//--
+				$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
+				$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
+				$(document).off("click", "#modifyTdAll .modifyTdvM .bi-dash-square");//--
+				$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
+				$(document).off("click", "#modify_c_date_overwrite");
+				$(document).off("click", "#modify_c_date_replace");
+				$(document).off("click", "#modify_c_date_clearAll");
+				$(document).off("click", "#modify_c_detail_overwrite");
+				$(document).off("click", "#modify_c_detail_replace");
+				$(document).off("click", "#modify_c_detail_clearAll");
+				$(document).off("click", "#modify_c_save");
+				$(document).off("click", "#modify_c_cancelAll");
+			},
 		},
-		//修改後查詢
-		modifyReturn(){
-			console.log("modifyReturn");
-			$("#modify_c_cancelAll").trigger('click');
-			$("#search_title").trigger('click');
-			$("#btn_send").trigger('click');
-		},
-		datetimepickerDate(){
-			//日期時間格式
-			$('#modify_c .datetimepicker_date').datetimepicker({
-				format: 'yyyy-mm-dd hh:ii:00',
-				pickerPosition: 'bottom-right',
-				//minView:1,
-				// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
-				minuteStep: 30,
-				autoclose: true,
-				endDate: '+1d',
-				datesDisabled: '+1d',
-				todayBtn: true,
-				bootcssVer:5,
-				//......可以同上項目代碼自定義設置
-			});
-			//時間格式
-            $('#modify_c .datetimepicker_time').datetimepicker({
-                format: 'hh:ii',
-                startView: 1,
-                minuteStep: 30,
-                pickDate: false,
-                autoclose: true,
-                timeFormat: 'hh:mm',
-            });
-		},
-		destroy() {
-			//銷毀
-			console.log("modify.html(destroy)");
-			$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
-			$(document).off("click", "#modifyThAll .modifyThvM .bi-dash-square");//--
-			$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
-			$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
-			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-dash-square");//--
-			$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
-			$(document).off("click", "#modify_c_date_overwrite");
-			$(document).off("click", "#modify_c_date_replace");
-			$(document).off("click", "#modify_c_date_clearAll");
-			$(document).off("click", "#modify_c_detail_overwrite");
-			$(document).off("click", "#modify_c_detail_replace");
-			$(document).off("click", "#modify_c_detail_clearAll");
-			$(document).off("click", "#modify_c_save");
-			$(document).off("click", "#modify_c_cancelAll");
-		},
-	},	
-};
+	};
 </script>

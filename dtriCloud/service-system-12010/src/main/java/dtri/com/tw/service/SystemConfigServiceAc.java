@@ -301,7 +301,7 @@ public class SystemConfigServiceAc {
 			for (SystemConfig entityDetail : entityDetails) {
 				// 檢查-名稱重複(有數量 && 不同資料有重疊)
 				ArrayList<SystemConfig> configs = configDao.findAllByConfigCheck(entityDetail.getScname(), entityDetail.getScgname(), false);
-				if (configs.size() > 0 && configs.get(0).getScid() != entityDetail.getScid()) {
+				if (configs.size() > 0 && !configs.get(0).getScid().equals(entityDetail.getScid())) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityDetail.getScname() });
 				}
 			}
