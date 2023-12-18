@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +21,8 @@ import org.springframework.stereotype.Component;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.bean.FtpUtilBean;
-import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
-import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
-import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.SystemConfig;
-import dtri.com.tw.pgsql.entity.WarehouseArea;
 
 /***
  * https://polinwei.com/spring-boot-scheduling-tasks/ 排程 cron:
@@ -49,10 +44,7 @@ public class ScheduledTasksService {
 	private SystemConfigDao sysDao;
 	@Value("${catalina.home}")
 	private String apache_path;
-	@Autowired
-	private WarehouseAreaDao areaDao;
-	@Autowired
-	private BasicIncomingListDao incomingListDao;
+
 
 	@Autowired
 	ERPSynchronizeService synchronizeService;
@@ -105,13 +97,14 @@ public class ScheduledTasksService {
 				synchronizeService.initERPSynchronizeService();//
 				// 單據
 				// ============ A111 費用領料單 / A112 費用退料單 / A119 料號調整單 / A121 倉庫調撥單 ============
-				//synchronizeService.erpSynchronizeInvta();
+				// synchronizeService.erpSynchronizeInvta();
 				// ============ A131 庫存借出單 / A141 庫存借入單 ============
 				// synchronizeService.erpSynchronizeInvtg();
 				// ============ 借出歸還A151 / 借入歸還單A161 ============
 				// synchronizeService.erpSynchronizeInvth();
 
-				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 / A571
+				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 /
+				// A571
 				synchronizeService.erpSynchronizeMocte();
 				// ============A581 生產入庫單 ============
 				// synchronizeService.erpSynchronizeMoctf();
@@ -120,7 +113,7 @@ public class ScheduledTasksService {
 				// ============ 組合單 / A421 ============
 				// synchronizeService.erpSynchronizeBomtd();
 				// ============ OK 拆解單 / A431 ============
-				//synchronizeService.erpSynchronizeBomtf();
+				// synchronizeService.erpSynchronizeBomtf();
 				// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
 				// synchronizeService.erpSynchronizePurth();
 

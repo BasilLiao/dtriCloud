@@ -885,10 +885,13 @@ public class WarehouseActionServiceAc {
 					entityHistories.add(history);
 				}
 			}
-			// =======================資料儲存=======================
 
 		});
+		// =======================資料儲存=======================
+		shippingListDao.saveAll(shippingLists);
+		incomingListDao.saveAll(incomingLists);
 		historyDao.saveAll(entityHistories);
+
 		return packageBean;
 	}
 

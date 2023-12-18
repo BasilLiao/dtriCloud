@@ -825,7 +825,7 @@
 					if ($("#search_dcr_open .valTbodyTrD").length > 0) {
 						other.data.btn_send_auto = setTimeout(function () {
 							other.methods.searchDetailSend();
-						}, 5000);
+						}, 8000);
 					} else {
 						if ($("#btn_send_auto").prop("checked")) {
 							other.data.btn_send_auto = setTimeout(function () {
@@ -1397,7 +1397,7 @@
 				clearTimeout(other.data.btn_send_auto);
 				other.data.btn_send_auto = setTimeout(function () {
 					other.methods.searchDetailSend();
-				}, 5000);
+				}, 8000);
 			},
 			//==========================初始化==========================
 			destroy() {
