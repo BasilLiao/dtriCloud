@@ -1017,9 +1017,9 @@ public class ERPSynchronizeService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-			if (key.indexOf("A121-231113022-0001") >= 0) {
-				System.out.println(key);
-			}
+//			if (key.indexOf("A121-231113022-0001") >= 0) {
+//				System.out.println(key);
+//			}
 			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -1453,9 +1453,9 @@ public class ERPSynchronizeService {
 		// Step4-2. [物料位置] 全新資料?
 		erpItemMaps.forEach((key, v) -> {
 			// 測試用
-			if (key.equals("A0002_81-105-361134")) {
-				System.out.println(key);
-			}
+//			if (key.equals("A0002_81-105-361134")) {
+//				System.out.println(key);
+//			}
 			if (v.isNewone()) {
 				// 可能重複?
 				if (areaSameMap.containsKey(v.getMc002() + "_" + v.getMb001())) {

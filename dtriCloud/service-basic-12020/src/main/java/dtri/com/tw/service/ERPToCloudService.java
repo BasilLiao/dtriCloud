@@ -98,7 +98,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[" + m.getTh011_th012_th013() + bilfromcommand + "]");// 單據來源 [_採購單]
 		o.setBiltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTh009() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTh009() + "_" + m.getTh009() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTh009() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTh009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -170,7 +170,7 @@ public class ERPToCloudService {
 		o.setBiltocommand("[_]");
 
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTb009() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTb009() + "_" + m.getTb009() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTb009() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -237,7 +237,7 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[" + m.getTa001_ta002() + "*" + m.getTa006() + "*" + m.getTa015() + "]");// 製令單
 		o.setBsltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTb009() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTb009() + "_" + m.getTb009() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTb009() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -302,7 +302,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[" + m.getTg014_tg015() + bilfromcommand + "]");// 單據來源 [_製令單]
 		o.setBiltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTg010() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTg010() + "_" + m.getTg010() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTg010() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg010() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -369,7 +369,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[" + m.getTi013_ti014() + bilfromcommand + "]");// 單據來源 [_製令單]
 		o.setBiltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTi009() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTi009() + "_" + m.getTi009() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTi009() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTi009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -430,7 +430,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");// 單據對象 [_]
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTg008() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTg008() + "_" + m.getTg008() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTg008() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -491,7 +491,7 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[_]");//
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTg007() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTg007() + "_" + m.getTg007() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTg007() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTg007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -555,7 +555,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[" + m.getTi014_ti015_ti016() + bilfromcommand + "]");// 單據來源 [_借出單]
 		o.setBiltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTi008() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTi008() + "_" + m.getTi008() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTi008() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTi008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -618,7 +618,7 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[" + m.getTi014_ti015_ti016() + bilfromcommand + "]");// 單據來源 [_借入單]
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTi007() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTi007() + "_" + m.getTi007() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTi007() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTi007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -679,8 +679,8 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTb013() + "_unfound_FF-FF-FF-FF";
-		//String bilfromwho = m.getTb012() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTb013() + "_" + m.getTb013() + "_FF-FF-FF-FF";
+		// String bilfromwho = m.getTb012() + "_unfound_FF-FF-FF-FF";
 		String wAsKey = m.getTb013() + "_" + m.getMb001();
 		// 測試用
 //		if (m.getTb001_tb002_tb003().equals("A119-231130001-0002")) {
@@ -749,8 +749,8 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[_]");// 單據來源 [_]
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTb012() + "_unfound_FF-FF-FF-FF";
-		//String biltowho = m.getTb013() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTb012() + "_" + m.getTb012() + "_FF-FF-FF-FF";
+		// String biltowho = m.getTb013() + "_unfound_FF-FF-FF-FF";
 		String wAsKey = m.getTb013() + "_" + m.getMb001();
 //		if (wAs.containsKey(wAsKey)) {
 //			biltowho = m.getTb013() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -815,7 +815,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");// 單據對象 [_]
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTd010() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTd010() + "_" + m.getTd010() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTd010() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTd010() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -876,7 +876,7 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[_]");//
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTe007() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTe007() + "_" + m.getTe007() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTe007() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTe007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -937,7 +937,7 @@ public class ERPToCloudService {
 		o.setBilfromcommand("[_]");// 單據來源 [_]
 		o.setBiltocommand("[_]");// 單據對象 [_]
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String biltowho = m.getTg007() + "_unfound_FF-FF-FF-FF";
+		String biltowho = m.getTg007() + "_" + m.getTg007() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTg007() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
@@ -998,7 +998,7 @@ public class ERPToCloudService {
 		o.setBslfromcommand("[_]");//
 		o.setBsltocommand("[_]");//
 		// 而外匹配 [倉別代號+倉別名稱+位置]
-		String bilfromwho = m.getTf008() + "_unfound_FF-FF-FF-FF";
+		String bilfromwho = m.getTf008() + "_" + m.getTf008() + "_FF-FF-FF-FF";
 		String wAsKey = m.getTf008() + "_" + m.getMb001();
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTf008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();

@@ -60,7 +60,7 @@ public class ScheduledTasksService {
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Async
 	@Scheduled(fixedDelay = 180000)
-	public synchronized void fixDelay_ERPSynchronizeService() {
+	public synchronized void fixDelay_ERPSynchronizeAutoService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
 		if (fixDelay_ERPSynchronizeServiceRun) {
@@ -83,6 +83,46 @@ public class ScheduledTasksService {
 
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.warn("===>>> [System or User]" + eStktToSg(e));
+				fixDelay_ERPSynchronizeServiceRun = true;
+			}
+			fixDelay_ERPSynchronizeServiceRun = true;
+		}
+	}
+
+	// 手動比對單據
+	@Async
+	public synchronized void fixDelay_ERPSynchronizeService() {
+		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
+		// ============ 物料+儲位同步 ============
+		if (fixDelay_ERPSynchronizeServiceRun) {
+			fixDelay_ERPSynchronizeServiceRun = false;
+			try {
+				// 事先準備匹配
+				synchronizeService.initERPSynchronizeService();//
+				// 單據
+				// ============ A111 費用領料單 / A112 費用退料單 / A119 料號調整單 / A121 倉庫調撥單 ============
+				//synchronizeService.erpSynchronizeInvta();
+				// ============ A131 庫存借出單 / A141 庫存借入單 ============
+				// synchronizeService.erpSynchronizeInvtg();
+				// ============ 借出歸還A151 / 借入歸還單A161 ============
+				// synchronizeService.erpSynchronizeInvth();
+
+				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 / A571
+				synchronizeService.erpSynchronizeMocte();
+				// ============A581 生產入庫單 ============
+				// synchronizeService.erpSynchronizeMoctf();
+				// ============ A591 委外進貨單 ============
+				// synchronizeService.erpSynchronizeMocth();
+				// ============ 組合單 / A421 ============
+				// synchronizeService.erpSynchronizeBomtd();
+				// ============ OK 拆解單 / A431 ============
+				//synchronizeService.erpSynchronizeBomtf();
+				// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
+				// synchronizeService.erpSynchronizePurth();
 
 			} catch (Exception e) {
 				e.printStackTrace();

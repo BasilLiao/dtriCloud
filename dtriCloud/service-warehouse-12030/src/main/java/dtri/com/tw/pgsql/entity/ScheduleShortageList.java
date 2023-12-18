@@ -33,6 +33,10 @@ import jakarta.persistence.Table;
  *      sslpngqty = 0;已領用量<br>
  *      sslpnlqty = 0;缺少數量<br>
  *      sslfuser = "";領料員<br>
+ *      sslerpcuser = 建單人<br>
+ *      sslfromcommand = 單據來源<br>
+ *      syshnote : = 單據備註<br>
+
  * 
  */
 
@@ -62,6 +66,10 @@ public class ScheduleShortageList {
 		sslpngqty = 0;
 		sslpnlqty = 0;
 		sslfuser = "";
+		//
+		sslerpcuser = "";
+		sslfromcommand = "";
+		syshnote = "";
 	}
 
 	// 共用型
@@ -86,6 +94,8 @@ public class ScheduleShortageList {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
+	private String syshnote;
 
 	// 倉儲區域負責人-清單
 	@Id
@@ -107,6 +117,11 @@ public class ScheduleShortageList {
 	private Integer sslpnlqty;
 	@Column(name = "ssl_f_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sslfuser;
+
+	@Column(name = "ssl_erp_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sslerpcuser;
+	@Column(name = "ssl_from_command", nullable = false, columnDefinition = "varchar(250) default ''")
+	private String sslfromcommand;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -250,6 +265,30 @@ public class ScheduleShortageList {
 
 	public void setSslfuser(String sslfuser) {
 		this.sslfuser = sslfuser;
+	}
+
+	public String getSyshnote() {
+		return syshnote;
+	}
+
+	public void setSyshnote(String syshnote) {
+		this.syshnote = syshnote;
+	}
+
+	public String getSslerpcuser() {
+		return sslerpcuser;
+	}
+
+	public void setSslerpcuser(String sslerpcuser) {
+		this.sslerpcuser = sslerpcuser;
+	}
+
+	public String getSslfromcommand() {
+		return sslfromcommand;
+	}
+
+	public void setSslfromcommand(String sslfromcommand) {
+		this.sslfromcommand = sslfromcommand;
 	}
 
 }

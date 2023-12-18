@@ -35,10 +35,11 @@ import jakarta.persistence.Table;
  *      bsl_sn : 單號<br>
  *      bsl_type : 單據類型 (製令單/內製令....等等)<br>
  *      bsl_checkin : 核單 / 核項目 0=未核單 1=已核單<br>
- *      bsl_c_user: 核准人<br>
- *      bsl_f_user: 完成人<br>
- *      bsl_s_user: 最後-同步人<br>
- *      bsl_m_user:分配負責人<br>
+ *      bsl_c_user : 核准人<br>
+ *      bsl_f_user : 完成人<br>
+ *      bsl_s_user : 最後-同步人<br>
+ *      bsl_m_user : 分配負責人<br>
+ *      bsl_sm_user : 產線-檢查人<br>
  *      
  *      bsl_p_already: 使否已打印<br>
  *      bsl_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
@@ -111,6 +112,7 @@ public class BasicShippingList {
 		this.bslpalready = 0;
 		this.checkrm = true;
 		this.bslerpcuser = "";
+		this.setBslsmuser("");
 	}
 
 	// 共用型
@@ -165,6 +167,8 @@ public class BasicShippingList {
 	private String bslsuser;
 	@Column(name = "bsl_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
 	private String bslmuser;
+	@Column(name = "bsl_sm_user", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bslsmuser;
 
 	@Column(name = "bsl_p_already", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpalready;
@@ -581,6 +585,14 @@ public class BasicShippingList {
 
 	public void setBslpnerpqty(Integer bslpnerpqty) {
 		this.bslpnerpqty = bslpnerpqty;
+	}
+
+	public String getBslsmuser() {
+		return bslsmuser;
+	}
+
+	public void setBslsmuser(String bslsmuser) {
+		this.bslsmuser = bslsmuser;
 	}
 
 }

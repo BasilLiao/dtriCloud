@@ -938,6 +938,9 @@ public class WarehouseActionServiceAc {
 					shortageList.setSslpnqty(z.getBslpnqty());
 					shortageList.setSslpnlqty(z.getBslpnqty() - z.getBslpngqty());
 					shortageList.setSysnote(z.getSysnote());
+					shortageList.setSyshnote(z.getSyshnote());// 單據備註
+					shortageList.setSslfromcommand(z.getBslfromcommand());// 指令來源
+					shortageList.setSslerpcuser(z.getBslerpcuser());// 開單人
 					shortageLists.add(shortageList);
 				});
 			});
