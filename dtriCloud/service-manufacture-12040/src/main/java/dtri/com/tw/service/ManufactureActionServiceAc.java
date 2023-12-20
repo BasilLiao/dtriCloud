@@ -200,13 +200,13 @@ public class ManufactureActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAction", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureAction", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
 			ArrayList<SystemLanguageCell> languagesDetail = languageDao
-					.findAllByLanguageCellSame("WarehouseActionDetail", null, 2);
+					.findAllByLanguageCellSame("ManufactureActionDetail", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});

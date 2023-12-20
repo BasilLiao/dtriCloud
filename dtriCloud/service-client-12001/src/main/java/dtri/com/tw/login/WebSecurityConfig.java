@@ -62,7 +62,7 @@ public class WebSecurityConfig {
 	private static final String warehouse_act = "/ajax/warehouse_action.basil";
 	private static final String warehouse_syn = "/ajax/warehouse_synchronize.basil";
 	// 製造
-
+	private static final String manufacture_act = "/ajax/manufacture_action.basil";
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 
@@ -244,6 +244,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, warehouse_kee + ".DD").hasAuthority(actionRole(warehouse_kee, "DD"))// (標記移除)
 
 				// 生管功能
+				// ----請求-schedule_shortage_list-(訪問) ----
 				.requestMatchers(HttpMethod.POST, schedule_sho).hasAuthority(actionRole(schedule_sho, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, schedule_sho + ".AR").hasAuthority(actionRole(schedule_sho, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.POST, schedule_sho + ".ARR").hasAuthority(actionRole(schedule_sho, "AR"))// (報告查詢)
@@ -251,8 +252,17 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_sho + ".AU").hasAuthority(actionRole(schedule_sho, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".AD").hasAuthority(actionRole(schedule_sho, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".DD").hasAuthority(actionRole(schedule_sho, "DD"))// (標記移除)
+
+				// -客製化
+				// ----請求-manufacture_action-(訪問) ----
+				.requestMatchers(HttpMethod.POST, manufacture_act).hasAuthority(actionRole(manufacture_act, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, manufacture_act + ".AR").hasAuthority(actionRole(manufacture_act, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.PUT, manufacture_act + ".S1").hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
+
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();
+		
+		
 
 		// 登入機制
 		http.formLogin()

@@ -895,6 +895,7 @@ public class ERPSynchronizeService {
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
 			} else if (m.getTb001_tb002_tb003().indexOf("A112") >= 0) {
 				m.setTk000("入料類");
+				m.setTb013(m.getTb012());
 				erpInMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 0);
 			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {
