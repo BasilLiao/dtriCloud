@@ -391,17 +391,17 @@ public class WarehouseAssignmentServiceAc {
 			resultDetailTJsons = packageService.resultSet(fieldDetails, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wasfromcommand", "Ex:指示來源?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
 			JsonArray selectArrStat = new JsonArray();
 			selectArrStat.add("未核准_false");
 			selectArrStat.add("已核准_true");
 			searchJsons = packageService.searchSet(searchJsons, selectArrStat, "wascuser", "Ex:核准?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "wasfromcommand", "Ex:指示來源?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectArr = new JsonArray();
 			selectArr.add("領料類_領料類");

@@ -49,7 +49,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "WHERE "//
 			+ "	INVTB.TB001 is not null"//
 			+ "	AND INVTB.TB007 != 0 "//數量大於0
-			+ "	AND (INVTB.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "// 今天
+			+ "	AND (INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "// 今天
 			+ "	OR INVTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ "ORDER BY"//
 			+ "	(INVTB.TB001+'-'+TRIM(INVTB.TB002)+'-'+INVTB.TB003)  ASC"// --單號+序號

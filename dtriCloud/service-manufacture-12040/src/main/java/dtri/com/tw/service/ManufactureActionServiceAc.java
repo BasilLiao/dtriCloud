@@ -23,12 +23,14 @@ import com.google.gson.JsonObject;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.dao.WarehouseHistoryDao;
 import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.ManufactureAction;
 import dtri.com.tw.pgsql.entity.ManufactureActionDetail;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
+import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -54,6 +56,9 @@ public class ManufactureActionServiceAc {
 
 	@Autowired
 	private WarehouseTypeFilterDao filterDao;
+
+	@Autowired
+	private WarehouseHistoryDao historyDao;
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
@@ -99,8 +104,8 @@ public class ManufactureActionServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
 
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null,
-					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByManufactureSearchAction(null, null,
+					null, null, shPageable);
 
 			// 領料
 			shippingLists.forEach(sh -> {
@@ -115,7 +120,7 @@ public class ManufactureActionServiceAc {
 				e.setMasclasssn(headerKey);// 單據+單據號
 				e.setMasnb(sh.getBslnb());// 序號
 				e.setMastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-				e.setMassmuser(sh.getBslmuser());// : 可分配-負責人<br>
+				e.setMassmuser(sh.getBslsmuser());// : 產線配料人
 				e.setMasfuser(sh.getBslfuser());// 完成人
 				e.setMaspnumber(sh.getBslpnumber());// : 物料號<br>
 				e.setMaspname(sh.getBslpname());// : 品名<br>
@@ -161,7 +166,7 @@ public class ManufactureActionServiceAc {
 						eh.setMasclasssn(headerKey);// 單據+單據號
 						eh.setMasnb(sh.getBslnb());// 序號
 						eh.setMastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-						eh.setMasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+						eh.setMasmuser(sh.getBslsmuser());// : 產線配料人<br>
 						eh.setMasfuser(sh.getBslfuser());// 完成人
 						eh.setMaspnumber(sh.getBslpnumber());// : 物料號<br>
 						eh.setMaspname(sh.getBslpname());// : 品名<br>
@@ -200,7 +205,8 @@ public class ManufactureActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureAction", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureAction", null,
+					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -236,9 +242,9 @@ public class ManufactureActionServiceAc {
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectArr = new JsonArray();
-			selectArr.add("領料類_領料類");
-			selectArr.add("入料類_入料類");
-			searchJsons = packageService.searchSet(searchJsons, selectArr, "mastype", "Ex:單據類型?", true, //
+			selectArr.add("已點料_已點料");
+			selectArr.add("未點料_未點料");
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "mastype", "Ex:已點料狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -252,27 +258,20 @@ public class ManufactureActionServiceAc {
 					ManufactureAction.class);
 			String masclass = null;
 			String massn = null;
-			String mastype = searchData.getMastype();
+			String massmuser = searchData.getMastype();
+			// 單據查詢
 			if (searchData.getMasclasssn() != null && searchData.getMasclasssn().split("-").length == 2) {
 				masclass = searchData.getMasclasssn().split("-")[0];
 				massn = searchData.getMasclasssn().split("-")[1];
 			} else {
 				masclass = searchData.getMasclasssn();
 			}
+			//
 			ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
+			shippingLists = shippingListDao.findAllByManufactureSearchAction(masclass, massn, null, massmuser,
+					shPageable);
 
-			if (mastype != null && mastype.equals("領料類")) {
-				shippingLists = shippingListDao.findAllBySearchAction(masclass, massn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
-						shPageable);
-			} else {
-
-				shippingLists = shippingListDao.findAllBySearchAction(masclass, massn, null,
-						packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "",
-						shPageable);
-			}
 			// Step4-2.資料區分(一般/細節)
-
 			// 領料
 			shippingLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
@@ -286,7 +285,7 @@ public class ManufactureActionServiceAc {
 				e.setMasclasssn(headerKey);// 單據+單據號
 				e.setMasnb(sh.getBslnb());// 序號
 				e.setMastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-				e.setMassmuser(sh.getBslmuser());// : 可分配-負責人<br>
+				e.setMassmuser(sh.getBslsmuser());// : 產線配料人<br>
 				e.setMasfuser(sh.getBslfuser());// 完成人
 				e.setMaspnumber(sh.getBslpnumber());// : 物料號<br>
 				e.setMaspname(sh.getBslpname());// : 品名<br>
@@ -326,7 +325,7 @@ public class ManufactureActionServiceAc {
 						eh.setMasclasssn(headerKey);// 單據+單據號
 						eh.setMasnb(sh.getBslnb());// 序號
 						eh.setMastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-						eh.setMasmuser(sh.getBslmuser());// : 可分配-負責人<br>
+						eh.setMasmuser(sh.getBslsmuser());// : 產線配料人<br>
 						eh.setMasfuser(sh.getBslfuser());// 完成人
 						eh.setMaspnumber(sh.getBslpnumber());// : 物料號<br>
 						eh.setMaspname(sh.getBslpname());// : 品名<br>
@@ -423,9 +422,8 @@ public class ManufactureActionServiceAc {
 					String masclass = r.split("-")[0];
 					String massn = r.split("-")[1];
 
-					ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(masclass, massn,
-							null, packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(),
-							null, shPageable);
+					ArrayList<BasicShippingList> shippingLists = shippingListDao
+							.findAllByManufactureDetailSearchAction(masclass, massn, null, shPageable);
 					// Step4-2.資料區分(一般/細節)
 
 					// 領料
@@ -441,7 +439,7 @@ public class ManufactureActionServiceAc {
 						e.setMasclasssn(headerKey);// 單據+單據號
 						e.setMasnb(sh.getBslnb());// 序號
 						e.setMastype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-						e.setMassmuser(sh.getBslmuser());// : 可分配-負責人<br>
+						e.setMassmuser(sh.getBslsmuser());// : 產線配料人<br>
 						e.setMasfuser(sh.getBslfuser());// 完成人
 						e.setMaspnumber(sh.getBslpnumber());// : 物料號<br>
 						e.setMaspname(sh.getBslpname());// : 品名<br>
@@ -503,6 +501,7 @@ public class ManufactureActionServiceAc {
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<ManufactureActionDetail> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseHistory> entityHistories = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
@@ -526,7 +525,6 @@ public class ManufactureActionServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { entityData.getMasaliaswmpnb() + "-配對不上" });
 				}
-
 			}
 
 			// Step2.資料檢查(PASS)
@@ -547,13 +545,27 @@ public class ManufactureActionServiceAc {
 					BasicShippingList shippingList = arrayList.get(0);
 					// 單據更新
 					shippingList.setBslsmuser(x.getMassmuser());
-					shippingList.setSysmuser(x.getMasfuser());
+					shippingList.setSysmuser(x.getMassmuser());
 					shippingList.setSysmdate(new Date());
-
+					shippingLists.add(shippingList);
+					// 紀錄更新
+					WarehouseHistory history = new WarehouseHistory();
+					history.setWhtype("領料(製造點料)");
+					history.setWhwmslocation(shippingList.getBslfromwho());
+					history.setWhcontent(x.getMasfromcommand() + " " + // 製令單
+							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + // 領料單
+							shippingList.getBslnb() + "*" + shippingList.getBslpnqty());
+					history.setWhwmpnb(shippingList.getBslpnumber());
+					history.setWhfuser(shippingList.getBslfuser());
+					history.setWheqty(x.getMaserptqty());
+					history.setWhcqty(x.getMastqty());
+					history.setWhcheckin(shippingList.getBslcheckin() == 0 ? "未核單" : "已核單");
+					entityHistories.add(history);
 				}
 			}
 		});
 		// =======================資料儲存=======================
+		historyDao.saveAll(entityHistories);
 		shippingListDao.saveAll(shippingLists);
 
 		return packageBean;

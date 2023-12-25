@@ -53,7 +53,7 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 			+ " WHERE"//
 			+ "	BOMTE.TE001 is not null"//
 			+ "	AND BOMTE.TE008 > 0"//
-			+ "	AND (BOMTE.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
+			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR BOMTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " ORDER BY "//
 			+ "	(BOMTE.TE001+'-'+TRIM(BOMTE.TE002)+'-'+BOMTE.TE003)  ASC"// --單號+序號

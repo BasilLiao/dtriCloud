@@ -211,10 +211,10 @@
 								<select id="command_sel" class="lh-1 p-1 m-0 border border-primary rounded"
 									style="width: 100%; height: 100%">
 									<option value="Normal">Normal(正常)</option>
-									<option value="Abnormal_in">Abnormal(進貨料短少)</option>
+									<!--<option value="Abnormal_in">Abnormal(進貨料短少)</option>
 									<option value="Abnormal_out">Abnormal(庫存量不足)</option>
 									<option value="Abnormal_split">Abnormal(數量切割)</option>
-									<option value="Sub-storage">Sub-storage(次儲位)</option>
+									<option value="Sub-storage">Sub-storage(次儲位)</option>-->
 								</select>
 							</div>
 							<div class="col-4 p-1" id="command_send">
@@ -237,11 +237,11 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0" style="min-height: 56px;">
-							<button id="btn_printerForm" type="button"
+							<!--<button id="btn_printerForm" type="button"
 								class=" lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Printer<br>form()
 								</b>
-							</button>
+							</button>-->
 							<button id="btn_confirm" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Confrm<br>(S1)
@@ -744,7 +744,6 @@
 						sortEntity = main.methods.orderedSort(sortEntity);
 						var d = 0;
 						for (var k in sortEntity) {
-							
 							d += 1;
 							//=======格式=======
 							var exTbodyTr = $('.exDetailTbodyTr').clone();
@@ -774,15 +773,20 @@
 								if (s == "masfromwho" && entity['mastype'] == "領料類") {
 									exTbodyTr.find('.' + s).addClass("bg-show");
 								}
-								if (s == "maspnqty" || s == "maspnumber" || s == "masclasssn") {
+								if (s == "maspnumber" || s == "masclasssn") {
 									exTbodyTr.find('.' + s).addClass("bg-show");
 								}
-								if (s == "maspngqty" || s == "masfuser") {
+								if (s == "massmuser") {
 									exTbodyTr.find('.' + s).addClass("bg-warning");
 								}
 								if (s == "sysnote" && entity[s] != "") {
 									exTbodyTr.find('.' + s).addClass("bg-show-note");
 								}
+								//數量不匹配
+								if (s == "maspngqty" && entity["maspnqty"] != entity["maspngqty"]) {
+									exTbodyTr.find('.' + s).addClass("bg-danger");
+								}
+
 								//是否時間格式?
 								if (entityDateTime.indexOf(s) >= 0) {
 									var dF = new Date(entity[s]);
@@ -826,7 +830,7 @@
 						} else {
 							clearTimeout(other.data.btn_send_auto);
 						}
-					} 
+					}
 					//Step4.觸發?
 					$("#command_send input").focus();
 					$('#search_dcr i').trigger('click');
@@ -918,15 +922,15 @@
 									!$(this).find("input").prop("checked")) {
 									console.log(mastowho);
 									if (command_sel == "Normal") {
-										$(this).find(".maspngqty").text($(this).find(".maspnqty").text());
-										$(this).find(".masfuser").text(accUser);
+										//$(this).find(".maspngqty").text($(this).find(".maspnqty").text());
+										$(this).find(".massmuser").text(accUser);
 
 										sendData.push(this);
 										//other.methods.confirmSend(this);
 									} else if (command_sel.indexOf("Abnormal") >= 0) {
 										if ($("#command_qty input").val() != "") {
-											$(this).find(".maspngqty").text($("#command_qty input").val());
-											$(this).find(".masfuser").text(accUser);
+											//$(this).find(".maspngqty").text($("#command_qty input").val());
+											$(this).find(".massmuser").text(accUser);
 											//Note
 											var sysnote = "";
 											if (command_sel == "Abnormal_in") {
@@ -936,7 +940,7 @@
 											} else if (command_sel == "Abnormal_split") {
 												sysnote = "異常:數量切割";
 											}
-											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]","") + "[" + sysnote + "]");
+											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]", "") + "[" + sysnote + "]");
 
 											sendData.push(this);
 											//other.methods.confirmSend(this);
@@ -966,14 +970,14 @@
 									!$(this).find("input").prop("checked")) {
 									console.log(masfromwho);
 									if (command_sel == "Normal") {
-										$(this).find(".maspngqty").text($(this).find(".maspnqty").text());
-										$(this).find(".masfuser").text(accUser);
+										//$(this).find(".maspngqty").text($(this).find(".maspnqty").text());
+										$(this).find(".massmuser").text(accUser);
 										sendData.push(this);
 										//other.methods.confirmSend(this);
 									} else if (command_sel.indexOf("Abnormal") >= 0) {
 										if ($("#command_qty input").val() != "") {
-											$(this).find(".maspngqty").text($("#command_qty input").val());
-											$(this).find(".masfuser").text(accUser);
+											//$(this).find(".maspngqty").text($("#command_qty input").val());
+											$(this).find(".massmuser").text(accUser);
 											//Note
 											var sysnote = "";
 											if (command_sel == "Abnormal_in") {
@@ -983,7 +987,7 @@
 											} else if (command_sel == "Abnormal_split") {
 												sysnote = "異常:數量切割";
 											}
-											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]","") + "[" + sysnote + "]");
+											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]", "") + "[" + sysnote + "]");
 
 											sendData.push(this);
 											//other.methods.confirmSend(this);
@@ -1147,7 +1151,7 @@
 					//多筆資料-確認選取
 					$('#search_dcr_open tbody tr').each(function () {
 						//同意:最後完成人
-						if ($(this).find('.masfuser').hasClass('bg-success')) {
+						if ($(this).find('.massmuser').hasClass('bg-success')) {
 							var entityJosn = {};
 							$(this).find('.valTbodytd div').each(function (index) {
 								var val = $(this).text() == "[N/A]" ? "" : $(this).text();
@@ -1361,13 +1365,11 @@
 						Object.keys(entityDetailJsons).forEach(function (k) {
 							var d = entityDetailJsons[k];
 							var target = $('#search_dcr_open .' + d['id']);
-							if (target != null && d['masfuser'] != "" && d['maspngqty'] >= 0) {
-								target.find('.masfuser').text(d['masfuser']);
-								target.find('.maspngqty').text(d['maspngqty']);
-								target.find('.mastqty').text(d['mastqty']);
+							if (target != null && d['massmuser'] != "" && d['maspngqty'] >= 0) {
+								target.find('.massmuser').text(d['massmuser']);
 
-								target.find(".masfuser").removeClass("bg-warning");
-								target.find(".masfuser").addClass("bg-success");
+								target.find(".massmuser").removeClass("bg-warning");
+								target.find(".massmuser").addClass("bg-success");
 								target.find(".maspngqty").removeClass("bg-warning");
 								target.find(".maspngqty").addClass("bg-success");
 								target.find("input").prop("checked", true);

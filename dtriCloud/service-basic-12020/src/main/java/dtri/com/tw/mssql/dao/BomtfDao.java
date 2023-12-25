@@ -52,7 +52,7 @@ public interface BomtfDao extends JpaRepository<Bomtf, Long> {
 			+ " WHERE"//
 			+ "	BOMTG.TG001 is not null"//
 			+ "	AND BOMTG.TG008 > 0"//
-			+ "	AND (BOMTG.CREATE_DATE = CONVERT(VARCHAR(8), GETDATE(), 112) "//
+			+ "	AND (BOMTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR BOMTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " ORDER BY"//
 			+ "	(BOMTG.TG001+'-'+TRIM(BOMTG.TG002)+'-'+BOMTG.TG003)  ASC"// --單號+序號

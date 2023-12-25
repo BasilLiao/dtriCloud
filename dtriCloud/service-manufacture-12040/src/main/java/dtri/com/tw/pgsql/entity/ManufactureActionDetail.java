@@ -29,6 +29,7 @@ import jakarta.persistence.Transient;
  *      mas_type : 單據類型(領料類/入料類)<br>
  *      mas_m_user : 分配-負責人<br>
  *      mas_f_user : 完成人<br>
+ *      mas_sm_user : 產線-點料人<br>
  *      mas_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      mas_p_number : 物料號<br>
  *      mas_p_name : 品名<br>
