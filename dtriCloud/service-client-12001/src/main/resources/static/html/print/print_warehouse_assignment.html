@@ -107,6 +107,14 @@
 							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<table style="border:1px solid rgb(0, 0, 0);width: 100%; font-size: 50px;">
 								<tbody>
+									<tr style="height: 100px;">
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
+											發料時間:</td>
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
+											優先順序:</td>
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
+											出貨時間:</td>
+									</tr>
 									<tr style="border:1px solid rgb(0, 0, 0);">
 										<td>製令單:</td>
 										<td class="pr_bslfromcommand">A577-123456789</td>
@@ -226,7 +234,7 @@
 					sortJson = main.methods.orderedSort(sortJson);
 
 					//一般
-					var pr_bslclass_bslsn = "";
+					var pr_bslclass_bslsn = {};
 					Object.keys(sortJson).forEach(function (k) {
 						console.log(sortJson[k]);
 						var h = sortJson[k];
@@ -266,26 +274,30 @@
 						$('#print_l #print_start').after(print_ex);
 
 						//配給A4
-						if (pr_bslclass_bslsn != print_ex.find(".pr_bslclass_bslsn").text() && h.wastype != "入料類") {
-							pr_bslclass_bslsn = print_ex.find(".pr_bslclass_bslsn").text();
+						if (pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] == null && h.wastype != "入料類") {
+							pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] = true;
 							var print_m_ex = $('#print_m_ex').clone();
 							var pr_bslfromcommand = print_ex.find(".pr_bslfromcommand").text().split("＊");
-							print_m_ex.attr("id", pr_bslclass_bslsn);
+							print_m_ex.attr("id", print_ex.find(".pr_bslclass_bslsn").text() + "_1");
 							print_m_ex.removeClass("noprint");
 							print_m_ex.addClass("printList");
-							print_m_ex.find(".pr_bslclass_bslsn").text(pr_bslclass_bslsn);//領料單
+							print_m_ex.find(".pr_bslclass_bslsn").text(print_ex.find(".pr_bslclass_bslsn").text());//領料單
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0]);//製令單
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量
 							print_m_ex.find(".pr_bslfromcommand_qrcode").text("");//
 							print_m_ex.find(".pr_bslclass_bslsn_qrcode").text("");//
+							print_m_ex.css("paddingTop", "25px");
+
 
 							$('#print_m #print_m_start').after(print_m_ex);
+							//每張A4 列印兩筆
+							var print_m_ex2 = print_m_ex.clone();
+							print_m_ex2.attr("id", print_ex.find(".pr_bslclass_bslsn").text() + "_2");
+							print_m_ex2.removeClass("noprint");
+							print_m_ex2.css("pageBreakAfter", "");
+							$('#print_m #print_m_start').after(print_m_ex2);
 						}
-
-
-
-
 					});
 					//細節
 				},

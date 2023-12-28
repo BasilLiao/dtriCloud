@@ -155,7 +155,7 @@ public class ManufactureActionServiceAc {
 //				}
 
 				// header
-				if (entityChecks.size() < 50) {
+				if (entityChecks.size() < 100) {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
@@ -313,7 +313,7 @@ public class ManufactureActionServiceAc {
 				e.setSysmdate(sh.getSysmdate());
 				e.setSysmuser(sh.getSysmuser());
 				e.setSysnote(sh.getSysnote());
-				if (entityChecks.size() < 50) {
+				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
