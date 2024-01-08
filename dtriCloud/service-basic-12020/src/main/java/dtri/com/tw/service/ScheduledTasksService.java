@@ -45,7 +45,6 @@ public class ScheduledTasksService {
 	@Value("${catalina.home}")
 	private String apache_path;
 
-
 	@Autowired
 	ERPSynchronizeService synchronizeService;
 
@@ -75,6 +74,7 @@ public class ScheduledTasksService {
 
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
+				synchronizeService.remove180DayData();
 
 			} catch (Exception e) {
 				e.printStackTrace();

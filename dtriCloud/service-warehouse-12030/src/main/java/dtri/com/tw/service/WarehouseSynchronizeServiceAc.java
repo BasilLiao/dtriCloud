@@ -524,8 +524,6 @@ public class WarehouseSynchronizeServiceAc {
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean, String action) throws Exception {
 		// =======================資料準備 =======================
-		//ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllByStatus(0);
-		//ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByStatus(0);
 		List<WarehouseArea> areas = areaDao.findAll();
 
 		// =======================資料檢查=======================

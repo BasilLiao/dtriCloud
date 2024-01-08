@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 客戶端入口服務
- * 
+ *  
  */
 @SpringBootApplication
 @EnableDiscoveryClient

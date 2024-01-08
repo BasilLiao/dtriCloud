@@ -29,7 +29,7 @@ public class CloudExceptionService extends Exception {
 	private String errorCodeMessage;
 
 	// 錯誤訊息-比對不到錯誤
-	public final static String W0000_en_US = "[E1000] System exception error!!";
+	public final static String W0000_en_US = "[W0000] System exception error!!";
 	// 錯誤訊息-查無資料
 	public final static String W1000_zh_TW = "[W1000] 查無資料!!";
 	public final static String W1000_en_US = "[W1000] No data found!!";

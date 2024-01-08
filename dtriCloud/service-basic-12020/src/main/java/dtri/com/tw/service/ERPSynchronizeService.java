@@ -165,6 +165,8 @@ public class ERPSynchronizeService {
 		logger.info("=== erpSynchronizeMocta: 時間:{}", dateFormat.format(new Date()));
 		ArrayList<Mocta> moctas = moctaDao.findAllByMocta();
 		Map<String, Mocta> erpMaps = new HashMap<>();
+		ArrayList<BasicCommandList> commandLists = new ArrayList<BasicCommandList>();
+		ArrayList<BasicCommandList> removeCommandLists = new ArrayList<BasicCommandList>();// [Cloud]儲存(移除)
 		int bslnb = 1;
 		String Ta001_ta002 = "";
 		for (Mocta m : moctas) {
@@ -186,7 +188,6 @@ public class ERPSynchronizeService {
 		// Step2. 取得[Cloud] 有效製令單 資料
 		ArrayList<BasicCommandList> entityOlds = commandListDao.findAllByStatus(0);
 		// 存入資料物件
-		ArrayList<BasicCommandList> commandLists = new ArrayList<BasicCommandList>();
 		// Step3. 資料整理轉換
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號+物料號)
@@ -207,10 +208,8 @@ public class ERPSynchronizeService {
 					commandLists.add(o);
 				}
 			} else {
-				// 匹配不到->已結案
-				o.setSysstatus(1);
-				o.setSysmdate(new Date());
-				commandLists.add(o);
+				// 匹配不到->已結案/移除項目->移除
+				removeCommandLists.add(o);// 移除資料;
 			}
 		});
 		// 全新資料?
@@ -224,6 +223,8 @@ public class ERPSynchronizeService {
 		});
 		// Step4. 存入資料
 		commandListDao.saveAll(commandLists);//
+		commandListDao.deleteAll(removeCommandLists);
+
 	}
 
 	// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
@@ -271,10 +272,10 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("")&& //
 					(o.getBilclass().equals("A341") || o.getBilclass().equals("A342") || o.getBilclass().equals("A343")
 							|| o.getBilclass().equals("A345"))) {
-				// 同一天 /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
+				// 距今日(30天內) /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
 				o = autoRemoveService.incomingAuto(o);
 				removeInLists.add(o);// 標記:無此資料
 			}
@@ -370,7 +371,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A561") || o.getBilclass().equals("A571"))) {
 				// 同一天 /A561 廠內退料單/ A571 委外退料單
 				o = autoRemoveService.incomingAuto(o);
@@ -402,10 +403,10 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A541") || o.getBslclass().equals("A542") || //
 							o.getBslclass().equals("A543") || o.getBslclass().equals("A551"))) {
-				// 同一天 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
+				// 30天/尚未領料 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
 				o = autoRemoveService.shippingAuto(o);
 				removeShLists.add(o);// 標記:無此資料
 			}
@@ -496,7 +497,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A581"))) {
 				// A581 生產入庫單
 				o = autoRemoveService.incomingAuto(o);
@@ -570,7 +571,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A591"))) {
 				// A591 委外進貨單
 				o = autoRemoveService.incomingAuto(o);
@@ -658,7 +659,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A141"))) {
 				// A141 庫存借入單
 				o = autoRemoveService.incomingAuto(o);
@@ -690,7 +691,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A131"))) {
 				// A131 庫存借出單
 				o = autoRemoveService.shippingAuto(o);
@@ -790,7 +791,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A151"))) {
 				// 借出歸還A151
 				o = autoRemoveService.incomingAuto(o);
@@ -822,7 +823,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A161"))) {
 				// A161 庫存借出單
 				o = autoRemoveService.shippingAuto(o);
@@ -954,7 +955,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A112") || o.getBilclass().equals("A119")
 							|| o.getBilclass().equals("A121"))) {
 				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
@@ -989,7 +990,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A111") || o.getBslclass().equals("A119")
 							|| o.getBslclass().equals("A121"))) {
 				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
@@ -1108,7 +1109,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A421"))) {
 				// A141 庫存借入單
 				o = autoRemoveService.incomingAuto(o);
@@ -1140,7 +1141,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A421"))) {
 				// A131 庫存借出單
 				o = autoRemoveService.shippingAuto(o);
@@ -1248,7 +1249,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A431"))) {
 				// A431 拆解
 				o = autoRemoveService.incomingAuto(o);
@@ -1280,7 +1281,7 @@ public class ERPSynchronizeService {
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
 					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_y_M_d(o.getSyscdate()).equals(Fm_T.to_y_M_d(new Date())) && //
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A421"))) {
 				// A131 庫存借出單
 				o = autoRemoveService.shippingAuto(o);
@@ -1529,5 +1530,14 @@ public class ERPSynchronizeService {
 			}
 		});
 		filterDao.saveAll(saveFilters);
+	}
+
+	// ============ 單據移除(180天以前資料) ============
+	public void remove180DayData() throws Exception {
+		Date countD = Fm_T.to_count(-180, new Date());
+
+		incomingListDao.findAllBySyscdateRemove(countD);
+		shippingListDao.findAllBySyscdateRemove(countD);
+		commandListDao.findAllBySyscdateRemove(countD);
 	}
 }

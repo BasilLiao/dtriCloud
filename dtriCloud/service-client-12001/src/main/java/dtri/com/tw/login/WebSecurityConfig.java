@@ -65,6 +65,9 @@ public class WebSecurityConfig {
 	private static final String manufacture_act = "/ajax/manufacture_action.basil";
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
+	// BIOS
+	private static final String bios_pri = "/ajax/bios_principal.basil";
+	private static final String bios_ver = "/ajax/bios_version.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -256,13 +259,33 @@ public class WebSecurityConfig {
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----
 				.requestMatchers(HttpMethod.POST, manufacture_act).hasAuthority(actionRole(manufacture_act, ""))// (轉跳)
-				.requestMatchers(HttpMethod.POST, manufacture_act + ".AR").hasAuthority(actionRole(manufacture_act, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.PUT, manufacture_act + ".S1").hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.POST, manufacture_act + ".AR")
+				.hasAuthority(actionRole(manufacture_act, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.PUT, manufacture_act + ".S1")
+				.hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
+				
+				// BIOS版本控管
+				// ----請求-bios_principal-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bios_pri).hasAuthority(actionRole(bios_pri, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bios_pri + ".AR").hasAuthority(actionRole(bios_pri, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bios_pri + ".ARR").hasAuthority(actionRole(bios_pri, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bios_pri + ".AC").hasAuthority(actionRole(bios_pri, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bios_pri + ".AU").hasAuthority(actionRole(bios_pri, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bios_pri + ".AD").hasAuthority(actionRole(bios_pri, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bios_pri + ".DD").hasAuthority(actionRole(bios_pri, "DD"))// (標記移除)
+
+				// ----請求-bios_version-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bios_ver).hasAuthority(actionRole(bios_ver, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bios_ver + ".AR").hasAuthority(actionRole(bios_ver, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bios_ver + ".ARR").hasAuthority(actionRole(bios_ver, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bios_ver + ".AC").hasAuthority(actionRole(bios_ver, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bios_ver + ".AU").hasAuthority(actionRole(bios_ver, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bios_ver + ".AD").hasAuthority(actionRole(bios_ver, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bios_ver + ".DD").hasAuthority(actionRole(bios_ver, "DD"))// (標記移除)
+
 
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();
-		
-		
 
 		// 登入機制
 		http.formLogin()

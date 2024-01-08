@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,6 +36,10 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(c.bilcuser !='') and " // 核准人
 			+ "(c.bilcheckin =1) and " // 已核單
 			+ "(:bilfuser is null or c.bilfuser =:bilfuser) ") // 已完成-負責人
-	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser, String bilfuser,
-			Pageable pageable);
+	ArrayList<BasicIncomingList> findAllBySearchAction(String bilclass, String bilsn, String biltype, String bilmuser,
+			String bilfuser, Pageable pageable);
+
+	@Query("SELECT c FROM BasicIncomingList c WHERE "//
+			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate)") //
+	ArrayList<BasicIncomingList> findAllBySyscdateRemove(Date syscdate);
 }

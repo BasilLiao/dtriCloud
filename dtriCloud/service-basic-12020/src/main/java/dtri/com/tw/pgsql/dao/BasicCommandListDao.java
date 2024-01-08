@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +36,8 @@ public interface BasicCommandListDao extends JpaRepository<BasicCommandList, Lon
 			+ "(:bclpnumber is null or c.bclpnumber=:bclpnumber) ")
 	ArrayList<BasicCommandList> findAllByCheck(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
 
+	
+	@Query("SELECT c FROM BasicCommandList c WHERE "//
+			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate)") //
+	ArrayList<BasicCommandList> findAllBySyscdateRemove(Date syscdate);
 }

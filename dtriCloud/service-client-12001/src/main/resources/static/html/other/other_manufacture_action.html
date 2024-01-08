@@ -728,16 +728,13 @@
 							//所有的細節資料
 							for (var d = 0; d < entityDetailJsons.length; d++) {
 								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
-									var maspnumber = entityDetailJsons[d].maspnumber;
-									var mas_tofrom_who = "";
+
 									var masclasssn = entityDetailJsons[d].masclasssn;
 									var masnb = entityDetailJsons[d].masnb;
-									if (entityDetailJsons[d].mastype == "入料類") {
-										mas_tofrom_who = entityDetailJsons[d].mastowho;
-									} else {
-										mas_tofrom_who = entityDetailJsons[d].masfromwho;
-									}
-									sortEntity[mas_tofrom_who + "_" + maspnumber + "_" + masclasssn + "_" + masnb] = entityDetailJsons[d];
+									var sysnote = "1";
+									if (entityDetailJsons[d].sysnote != "") {sysnote = "0"}
+
+									sortEntity[sysnote + "_" + masclasssn + "_" + masnb] = entityDetailJsons[d];
 								}
 							}
 						}

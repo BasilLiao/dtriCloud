@@ -33,6 +33,8 @@ public class Mocte {
 	private String ta006;// 成品品號
 	@Column(name = "TA009")
 	private String ta009;// 預計開工日
+	@Column(name = "TA011")
+	private String ta011;// 確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
 	@Column(name = "TA015")
 	private Integer ta015;// 產品套數
 	@Column(name = "TA021")
@@ -363,11 +365,13 @@ public class Mocte {
 
 	@Override
 	public String toString() {
-		return "Mocte [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006 + ", ta009=" + ta009 + ", ta015="
-				+ ta015 + ", ta021=" + ta021 + ", ta034=" + ta034 + ", ta035=" + ta035 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", tb009=" + tb009
-				+ ", tc008=" + tc008 + ", tc016=" + tc016 + ", te013=" + te013 + ", te014=" + te014 + ", te019=" + te019 + ", mb001=" + mb001
-				+ ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039
-				+ ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+		return "Mocte [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006
+				+ ", ta009=" + ta009 + ", ta011=" + ta011 + ", ta015=" + ta015 + ", ta021=" + ta021 + ", ta034=" + ta034
+				+ ", ta035=" + ta035 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", tb009=" + tb009 + ", tc008=" + tc008
+				+ ", tc016=" + tc016 + ", te013=" + te013 + ", te014=" + te014 + ", te019=" + te019 + ", mb001=" + mb001
+				+ ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036
+				+ ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000
+				+ "]";
 	}
 
 	public Integer getTe005() {
@@ -376,6 +380,14 @@ public class Mocte {
 
 	public void setTe005(Integer te005) {
 		this.te005 = te005;
+	}
+
+	public String getTa011() {
+		return ta011;
+	}
+
+	public void setTa011(String ta011) {
+		this.ta011 = ta011;
 	}
 
 }

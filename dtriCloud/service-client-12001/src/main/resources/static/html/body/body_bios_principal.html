@@ -1,0 +1,130 @@
+<style>
+
+/*依照螢幕設置高度*/
+.tab-pane {
+	min-height: calc(100vh - 125px);
+}
+/*顯示_每個title_上陰影*/
+.nav-item .active {
+	box-shadow: 0 -.125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+</style>
+
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_bios_principal">
+	<div class="p-1">
+		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button id="home_title" class="nav-link p-1" data-bs-toggle="tab" data-bs-target="#home_tab" type="button" role="tab" aria-controls="home_tab" aria-selected="true">
+					<i class="bi bi-question-octagon"></i> Home
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="search_title" class="nav-link p-1" id="profile-tab" data-bs-toggle="tab" data-bs-target="#search_tab" type="button" role="tab" aria-controls="search_tab" aria-selected="false">
+					<i class="bi bi-search-heart"></i> Search
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="modify_title" class="nav-link p-1" id="contact-tab" data-bs-toggle="tab" data-bs-target="#modify_tab" type="button" role="tab" aria-controls="modify_tab" aria-selected="false">
+					<i class="bi bi-pen"></i> Execution
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="print_title" class="nav-link p-1" id="contact-tab" data-bs-toggle="tab" data-bs-target="#print_tab" type="button" role="tab" aria-controls="print_tab" aria-selected="false">
+					<i class="bi bi-printer"></i> Print
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="report_title" class="nav-link p-1" id="contact-tab" data-bs-toggle="tab" data-bs-target="#report_tab" type="button" role="tab" aria-controls="report_tab" aria-selected="false">
+					<i class="bi bi-graph-up"></i> Report
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="compare_title" class="nav-link p-1" id="contact-tab" data-bs-toggle="tab" data-bs-target="#compare_tab" type="button" role="tab" aria-controls="compare_tab" aria-selected="false">
+					<i class="bi bi-files"></i> Compare
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button id="other_title" class="nav-link p-1" id="contact-tab" data-bs-toggle="tab" data-bs-target="#other_tab" type="button" role="tab" aria-controls="other_tab" aria-selected="false">
+					<i class="bi bi-postcard-heart"></i> Other
+				</button>
+			</li>
+		</ul>
+		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
+						<!-- tab-home -->
+			<div class="tab-pane fade" id="home_tab" role="tabpanel" aria-labelledby="tab-home">home_tab Loading...!!</div>
+			<!-- tab-search -->
+			<div class="tab-pane fade" id="search_tab" role="tabpanel" aria-labelledby="tab-search">search_tab Loading...!!</div>
+			<!-- tab-modify -->
+			<div class="tab-pane fade" id="modify_tab" role="tabpanel" aria-labelledby="tab-modify">modify_tab Loading...!!</div>
+			<!-- tab-print -->
+			<div class="tab-pane fade" id="print_tab" role="tabpanel" aria-labelledby="tab-print">print_tab Loading...!!</div>
+			<!-- tab-report -->
+			<div class="tab-pane fade" id="report_tab" role="tabpanel" aria-labelledby="tab-report">report_tab Loading...!!</div>
+			<!-- tab-tab-compare -->
+			<div class="tab-pane fade" id="compare_tab" role="tabpanel" aria-labelledby="tab-compare">compare_tab Loading...!!</div>
+			<!-- tab-tab-compare -->
+			<div class="tab-pane fade" id="other_tab" role="tabpanel" aria-labelledby="tab-other">other_tab Loading...!!</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+//宣告
+body_index={
+	//資料
+	date:{
+		
+	},	
+	//方法
+	methods:{
+		create(){
+			//Step1.初始化
+			console.log("body_bios_principal.html(created)");
+			//模板-鎖定-不需要的分頁 disabled 
+			//$("#body_bios_principal #home_title").addClass("disabled");
+			//$("#body_bios_principal #search_title").addClass("disabled");
+			//$("#body_bios_principal #modify_title").addClass("disabled");
+			//$("#body_bios_principal #report_title").addClass("disabled");
+			$("#body_bios_principal #print_title").addClass("disabled");
+			//$("#body_bios_principal #compare_title").addClass("disabled");
+			$("#body_bios_principal #other_title").addClass("disabled");
+            //模板-預設分頁 active
+            $("#body_bios_principal #search_title").addClass("active");
+            $("#body_bios_principal #search_tab").addClass("show");
+            $("#body_bios_principal #search_tab").addClass("active");
+            
+          	//Step2.模板
+            $("#body_bios_principal #home_tab").load("./html/model/home.html", function(){});
+            //查詢-模板
+            $("#body_bios_principal #search_tab").load("./html/model/search.html", function(){
+            	search.methods.create();
+            	main.methods.reWindowsSize();
+            });
+            //編輯-模板
+            $("#body_bios_principal #modify_tab").load("./html/model/modify.html", function(){
+            	modify.methods.create();
+            });
+            //列印-模板
+            //$("#body_bios_principal #print_tab").load("./html/model/print.html", function(){
+            //	print.methods.create();
+            //});
+            //報告-模板
+            $("#body_bios_principal #report_tab").load("./html/model/report.html", function(){
+            	report.methods.create();
+            });
+            //比對-模板
+            $("#body_bios_principal #compare_tab").load("./html/model/compare.html", function(){
+            	compare.methods.create();
+            });
+            //其他-模板
+            //$("#body_bios_principal #other_tab").load("./html/other/other.html", function(){
+            //	
+            //});
+		},
+		
+		destroy() {
+			//銷毀
+			 console.log("body_bios_principal.html(destroy)");
+		},
+	},	
+};
+</script>

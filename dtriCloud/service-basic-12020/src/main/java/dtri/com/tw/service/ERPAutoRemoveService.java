@@ -34,5 +34,17 @@ public class ERPAutoRemoveService {
 		o.setSysmdate(new Date());
 		return o;
 	}
+	// 指另類-移除
+	public BasicIncomingList commandAuto(BasicIncomingList o) {
+		if (o.getBilfuser().equals("")) {
+			o.setBilfuser("ERP_Remove(Auto)");
+			o.setBilfdate(new Date());
+		}
+		o.setCheckrm(false);
+		o.setSysmuser("ERP_Remove(Auto)");
+		o.setSysmdate(new Date());
+
+		return o;
+	}
 
 }

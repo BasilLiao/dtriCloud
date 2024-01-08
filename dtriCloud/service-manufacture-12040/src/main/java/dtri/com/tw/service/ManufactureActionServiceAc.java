@@ -77,6 +77,7 @@ public class ManufactureActionServiceAc {
 		shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
 		shOrders.add(new Order(Direction.ASC, "bslsn"));// 單號
 		shOrders.add(new Order(Direction.ASC, "bslfromwho"));// 供應來源
+		shOrders.add(new Order(Direction.ASC, "sysnote"));// 備註
 		shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
 
 		// 一般模式

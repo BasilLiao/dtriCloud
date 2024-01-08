@@ -16,6 +16,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002, "// --製令單
 			+ "	MOCTA.TA006, "// --產品品號
 			+ "	MOCTA.TA009, "// --預計開工
+			+ "	MOCTA.TA011, "// --確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
 			+ "	MOCTA.TA015, "// --產品套數
 			+ "	MOCTA.TA021, "// --生產產線別
 			+ "	MOCTA.TA034, "// --產品品名

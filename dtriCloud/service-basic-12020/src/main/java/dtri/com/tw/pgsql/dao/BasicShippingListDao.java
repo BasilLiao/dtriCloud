@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,8 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslpnumber is null or c.bslpnumber LIKE %:bslpnumber%) ")
 	ArrayList<BasicShippingList> findAllBySearch(String bslclass, String bslsn, String bslpnumber, Pageable pageable);
 
+	
+	@Query("SELECT c FROM BasicShippingList c WHERE "//
+			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate)") //
+	ArrayList<BasicShippingList> findAllBySyscdateRemove(Date syscdate);
 }
