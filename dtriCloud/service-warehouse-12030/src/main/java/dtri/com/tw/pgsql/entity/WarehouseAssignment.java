@@ -60,6 +60,7 @@ public class WarehouseAssignment {
 		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
 		this.wasschedule = "0/0";
 		this.waserpcuser = "";
+		this.wassmuser = "";
 	}
 
 	// 共用型
@@ -105,6 +106,8 @@ public class WarehouseAssignment {
 	private String wastype;// : 單據類型(領料類/入料類)<br>
 	@Transient
 	private String wascuser;// 核准人
+	@Transient
+	private String wassmuser;// 產線配料清點人
 	@Transient
 	private String wasmuser;// : 可分配-負責人<br>
 	@Transient
@@ -407,6 +410,14 @@ public class WarehouseAssignment {
 
 	public void setSyshnote(String syshnote) {
 		this.syshnote = syshnote;
+	}
+
+	public String getWassmuser() {
+		return wassmuser;
+	}
+
+	public void setWassmuser(String wassmuser) {
+		this.wassmuser = wassmuser;
 	}
 
 }

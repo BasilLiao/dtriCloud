@@ -60,7 +60,7 @@ public class CutomerUserDetailsService implements UserDetailsService {
 				if (ch[i] == '1') {
 					int move_p = 11 - i;
 					double now_p = Math.pow(10, move_p);
-					String now_s = String.format("%012d", (int) now_p);
+					String now_s = String.format("%012d", (long) now_p);
 					String role = systemGroup.getSystemPermission().getSpcontrol().replaceAll("\\.", "_") //
 							+ "_"//
 							+ now_s;

@@ -113,8 +113,10 @@ public class WarehouseAssignmentServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null, "false", 0, inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null, "false", 0, shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null,
+					"false", 0, inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null,
+					"false", 0, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
@@ -310,6 +312,7 @@ public class WarehouseAssignmentServiceAc {
 					e.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
 					e.setWasfuser(sh.getBslfuser());// 完成人
 					e.setWascuser(sh.getBslcuser());// 核准人
+					e.setWassmuser(sh.getBslsmuser());// 產線配置清點人員
 					e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 					e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 					e.setWaspname(sh.getBslpname());// : 品名<br>
@@ -345,7 +348,8 @@ public class WarehouseAssignmentServiceAc {
 			// 進度添加
 			entitys.forEach(h -> {
 				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
-					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / " + entitySchedulTotail.get(h.getWasclasssn()));
+					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / "
+							+ entitySchedulTotail.get(h.getWasclasssn()));
 				}
 			});
 
@@ -361,12 +365,14 @@ public class WarehouseAssignmentServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignment", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignment", null,
+					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseAssignmentDetail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao
+					.findAllByLanguageCellSame("WarehouseAssignmentDetail", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -422,7 +428,8 @@ public class WarehouseAssignmentServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseAssignment searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseAssignment.class);
+			WarehouseAssignment searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					WarehouseAssignment.class);
 			String wasclass = null;
 			String wassn = null;
 			if (searchData.getWasclasssn() != null && searchData.getWasclasssn().split("-").length == 2) {
@@ -434,10 +441,12 @@ public class WarehouseAssignmentServiceAc {
 			if (searchData.getWascuser() == null) {
 				searchData.setWascuser("false");
 			}
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn, searchData.getWasfromcommand(),
-					searchData.getWastype(), searchData.getWascuser(), searchData.getSysstatus(), inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn, searchData.getWasfromcommand(),
-					searchData.getWastype(), searchData.getWascuser(), searchData.getSysstatus(), shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
+					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
+					searchData.getSysstatus(), inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn,
+					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
+					searchData.getSysstatus(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
@@ -569,6 +578,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
 				ed.setWasfuser(sh.getBslfuser());// 完成人
 				ed.setWascuser(sh.getBslcuser());// 核准人
+
 				ed.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 				ed.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 				ed.setWaspname(sh.getBslpname());// : 品名<br>
@@ -634,6 +644,7 @@ public class WarehouseAssignmentServiceAc {
 					e.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
 					e.setWasfuser(sh.getBslfuser());// 完成人
 					e.setWascuser(sh.getBslcuser());// 核准人
+					e.setWassmuser(sh.getBslsmuser());// 產線配置清點人員
 					e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 					e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 					e.setWaspname(sh.getBslpname());// : 品名<br>
@@ -668,7 +679,8 @@ public class WarehouseAssignmentServiceAc {
 			// 進度添加
 			entitys.forEach(h -> {
 				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
-					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / " + entitySchedulTotail.get(h.getWasclasssn()));
+					h.setWasschedule(entitySchedulFinish.get(h.getWasclasssn()) + " / "
+							+ entitySchedulTotail.get(h.getWasclasssn()));
 				}
 			});
 
@@ -706,11 +718,13 @@ public class WarehouseAssignmentServiceAc {
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			if (action.equals("ReturnSelect")) {
-				entityDetailDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseAssignmentDetail>>() {
-				});
+				entityDetailDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+						new TypeReference<ArrayList<WarehouseAssignmentDetail>>() {
+						});
 			} else {
-				entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseAssignment>>() {
-				});
+				entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+						new TypeReference<ArrayList<WarehouseAssignment>>() {
+						});
 			}
 
 			// Step2.資料檢查(PASS)
@@ -721,7 +735,7 @@ public class WarehouseAssignmentServiceAc {
 		entityDatas.forEach(x -> {
 			String wasClass = x.getWasclasssn().split("-")[0];
 			String wasSn = x.getWasclasssn().split("-")[1];
-			//String wasNb = x.getWasnb();
+			// String wasNb = x.getWasnb();
 			String wasType = x.getWastype();
 			if (wasType.equals("入料類")) {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, null);
@@ -748,7 +762,8 @@ public class WarehouseAssignmentServiceAc {
 							}
 							t.setBilpngqty(t.getBilpnqty());
 							if (t.getBiltowho().split("_").length > 1) {
-								String areaKey = t.getBiltowho().split("_")[0].replace("[", "") + "_" + t.getBilpnumber();
+								String areaKey = t.getBiltowho().split("_")[0].replace("[", "") + "_"
+										+ t.getBilpnumber();
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
@@ -793,7 +808,9 @@ public class WarehouseAssignmentServiceAc {
 						t.setSysmuser(packageBean.getUserAccount());
 						switch (action) {
 						case "Agree":
-							t.setBslcuser(x.getWascuser());
+							if (t.getBslcuser().equals("")) {
+								t.setBslcuser(x.getWascuser());
+							}
 							break;
 						case "Print":
 							t.setBslpalready(1);
@@ -807,7 +824,8 @@ public class WarehouseAssignmentServiceAc {
 							}
 							t.setBslpngqty(t.getBslpnqty());
 							if (t.getBslfromwho().split("_").length > 1) {
-								String areaKey = t.getBslfromwho().split("_")[0].replace("[", "") + "_" + t.getBslpnumber();
+								String areaKey = t.getBslfromwho().split("_")[0].replace("[", "") + "_"
+										+ t.getBslpnumber();
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
@@ -820,6 +838,11 @@ public class WarehouseAssignmentServiceAc {
 							break;
 						case "Urgency":
 							t.setBslstatus(x.getWasstatus());
+							break;
+						case "ManufacturePass":
+							if (t.getBslsmuser().equals("")) {
+								t.setBslsmuser(x.getWassmuser());
+							}
 							break;
 						default:
 							break;
@@ -887,7 +910,8 @@ public class WarehouseAssignmentServiceAc {
 								o.setSysstatus(0);// 未完成
 								o.setSysmdate(new Date());
 								// 而外匹配 [單別]
-								o.setBslfromcommand("[" + t.getBilclass() + "-" + t.getBilsn() + "-" + t.getBilnb() + "]");// 製令單
+								o.setBslfromcommand(
+										"[" + t.getBilclass() + "-" + t.getBilsn() + "-" + t.getBilnb() + "]");// 製令單
 								o.setBsltocommand("[_]");
 								// 而外匹配 [倉別代號+倉別名稱+位置]
 								o.setBsltowho(t.getBilfromwho());// 目的[_生產線]
@@ -954,7 +978,8 @@ public class WarehouseAssignmentServiceAc {
 								o.setSysstatus(0);// 未完成
 								o.setSysmdate(new Date());
 								// 而外匹配 [單別]
-								o.setBilfromcommand("[" + t.getBslclass() + "-" + t.getBslsn() + "-" + t.getBslnb() + "]");// 製令單
+								o.setBilfromcommand(
+										"[" + t.getBslclass() + "-" + t.getBslsn() + "-" + t.getBslnb() + "]");// 製令單
 								o.setBiltocommand("[_]");
 								// 而外匹配 [倉別代號+倉別名稱+位置]
 								o.setBiltowho(t.getBslfromwho());// 目的[_生產線]

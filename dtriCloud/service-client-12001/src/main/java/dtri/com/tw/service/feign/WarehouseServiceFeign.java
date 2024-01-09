@@ -29,7 +29,7 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseAssignment/setModifyAgree" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyAgree(@RequestBody String jsonPackageBean);
-	
+
 	@RequestMapping(value = { "/warehouseAssignment/setModifyPrint" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyPrint(@RequestBody String jsonPackageBean);
 
@@ -41,6 +41,9 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyUrgency(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseAssignment/setModifyManufacturePass" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyManufacturePass(@RequestBody String jsonPackageBean);
 
 //	@RequestMapping(value = { "/warehouseAssignment/setAdd" }, method = RequestMethod.POST)
 //	PackageBean setAssignmentAdd(@RequestBody String jsonPackageBean);
@@ -94,7 +97,7 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeRemove" }, method = RequestMethod.POST)
 	PackageBean setModifySynchronizeRemove(@RequestBody String jsonPackageBean);
-	
+
 	@RequestMapping(value = { "/warehouseSynchronize/setModifySynchronizeFinish" }, method = RequestMethod.POST)
 	PackageBean setModifySynchronizeFinish(@RequestBody String jsonPackageBean);
 
@@ -201,7 +204,6 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseArea/setDetele" }, method = RequestMethod.POST)
 	PackageBean setAreaDetele(@RequestBody String jsonPackageBean);
-
 
 	// ================================通用-物料清單================================
 	@RequestMapping(value = { "/warehouseMaterial/getSearch" }, method = RequestMethod.POST)

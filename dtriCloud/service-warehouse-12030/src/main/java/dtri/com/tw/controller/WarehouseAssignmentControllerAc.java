@@ -22,7 +22,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 	@Autowired
 	private WarehouseAssignmentServiceAc serviceAc;
 
-	@RequestMapping(value = { "/warehouseAssignment/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/getSearch" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -57,7 +58,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/getReport" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -68,7 +70,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModify" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -79,7 +82,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModifyAgree" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModifyAgree" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyAgree(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -114,7 +118,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModifyPrint" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModifyPrint" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyPrint(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -149,7 +154,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModifyPassAll" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModifyPassAll" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyPassAll(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -220,7 +226,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModifyUrgency(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -255,7 +262,44 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setModifyManufacturePass" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	PackageBean setModifyManufacturePass(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+		// Step0.資料準備
+		PackageBean packageBean = new PackageBean();
+
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
+			packageBean = serviceAc.setModify(packageBean, "ManufacturePass");
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
+		} catch (JsonProcessingException e) {
+			// StepX-1. 已知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+		} catch (CloudExceptionService e) {
+			// StepX-2. 已知-故障回報
+			e.printStackTrace();
+			loggerInf(e.toString(), packageBean.getUserAccount());
+		} catch (Exception e) {
+			// StepX-3. 未知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+		return packageBean;
+	}
+
+	@RequestMapping(value = { "/warehouseAssignment/setAdd" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -266,7 +310,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setInvalid" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		sysFunction(new Object() {
@@ -276,7 +321,8 @@ public class WarehouseAssignmentControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseAssignment/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/warehouseAssignment/setDetele" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
