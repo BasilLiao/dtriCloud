@@ -116,7 +116,7 @@ public class WarehouseAssignmentServiceAc {
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null,
 					"false", 0, inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null,
-					"false", 0, shPageable);
+					null, "false", 0, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
@@ -403,6 +403,12 @@ public class WarehouseAssignmentServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectArrStat, "wascuser", "Ex:核准?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
+			JsonArray selectWasfuserArr = new JsonArray();
+			selectWasfuserArr.add("未完成_false");
+			selectWasfuserArr.add("已完成_true");
+			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "wasfuser", "Ex:完成人?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
@@ -421,6 +427,7 @@ public class WarehouseAssignmentServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
+
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
@@ -430,6 +437,7 @@ public class WarehouseAssignmentServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseAssignment searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					WarehouseAssignment.class);
+			// 單別_單號
 			String wasclass = null;
 			String wassn = null;
 			if (searchData.getWasclasssn() != null && searchData.getWasclasssn().split("-").length == 2) {
@@ -438,15 +446,18 @@ public class WarehouseAssignmentServiceAc {
 			} else {
 				wasclass = searchData.getWasclasssn();
 			}
+			// 核准人?
 			if (searchData.getWascuser() == null) {
 				searchData.setWascuser("false");
 			}
+			
+
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
 					searchData.getSysstatus(), inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
-					searchData.getSysstatus(), shPageable);
+					searchData.getWasfuser(), searchData.getSysstatus(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
@@ -578,6 +589,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWasmuser(sh.getBslmuser());// : 可分配-負責人<br>
 				ed.setWasfuser(sh.getBslfuser());// 完成人
 				ed.setWascuser(sh.getBslcuser());// 核准人
+				ed.setWassmuser(sh.getBslsmuser());// 產線人
 
 				ed.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 				ed.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
@@ -907,6 +919,9 @@ public class WarehouseAssignmentServiceAc {
 								o.setBslpspecification(t.getBilpspecification());// 規格
 								o.setBslpnqty(t.getBilpngqty());// 需入庫量
 								o.setBsledate(new Date());// 預計入料日(今天)
+								o.setBslsuser(packageBean.getUserAccount());
+								o.setBslmuser(packageBean.getUserAccount());
+								o.setBslsmuser(packageBean.getUserAccount());
 								o.setSysstatus(0);// 未完成
 								o.setSysmdate(new Date());
 								// 而外匹配 [單別]
@@ -975,6 +990,9 @@ public class WarehouseAssignmentServiceAc {
 								o.setBilpspecification(t.getBslpspecification());// 規格
 								o.setBilpnqty(t.getBslpngqty());// 需入庫量
 								o.setBiledate(new Date());// 預計入料日(今天)
+								o.setBilsuser(packageBean.getUserAccount());
+								o.setBilmuser(packageBean.getUserAccount());
+
 								o.setSysstatus(0);// 未完成
 								o.setSysmdate(new Date());
 								// 而外匹配 [單別]

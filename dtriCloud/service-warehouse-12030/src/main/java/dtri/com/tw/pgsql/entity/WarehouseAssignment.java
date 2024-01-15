@@ -31,6 +31,7 @@ import jakarta.persistence.Transient;
  *      was_c_user : 核准人<br>
  *      was_m_user : 可分配-負責人<br>
  *      was_f_user : 完成人<br>
+ *      was_sm_user : 產線配料人<br>
  *      was_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      was_p_number : 物料號<br>
  *      was_p_name : 品名<br>

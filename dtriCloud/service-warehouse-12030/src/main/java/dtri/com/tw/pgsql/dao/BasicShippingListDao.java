@@ -22,10 +22,13 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
 			+ "(c.bslfuser != 'ERP_Remove(Auto)') and "//
-			+ "(:bslcuser is null or (:bslcuser ='true' and  c.bslcuser != '') or (:bslcuser ='false' and  c.bslcuser = '')) and "// 已核准人// 未核准人
+			+ "(:bslcuser is null or (:bslcuser ='true' and  c.bslcuser != '') "
+			+ "or (:bslcuser ='false' and  c.bslcuser = '')) and "// 已核准人_ 未核准人
+			+ "(:bslfuser is null or (:bslfuser ='true' and  c.bslfuser != '') "
+			+ "or (:bslfuser ='false' and  c.bslfuser = '')) and "// 已領料_ 未領料
 			+ "(:bslfromcommand is null or c.bslfromcommand LIKE %:bslfromcommand%) ")
-	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand, String bsltype, String bslcuser,
-			Integer sysstatus, Pageable pageable);
+	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand,
+			String bsltype, String bslcuser, String bslfuser, Integer sysstatus, Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//
@@ -34,8 +37,8 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslmuser is null or (c.bslmuser LIKE %:bslmuser% or c.bslmuser='')) and "// 負責人
 			+ "(c.bslcuser !='') and " // 核准人
 			+ "(:bslfuser is null or c.bslfuser =:bslfuser) ") // 已完成-負責人
-	ArrayList<BasicShippingList> findAllBySearchAction(String bslclass, String bslsn, String bsltype, String bslmuser, String bslfuser,
-			Pageable pageable);
+	ArrayList<BasicShippingList> findAllBySearchAction(String bslclass, String bslsn, String bsltype, String bslmuser,
+			String bslfuser, Pageable pageable);
 
 	// 同步查詢用
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
@@ -45,7 +48,8 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "((c.bslpnqty !=c.bslpngqty or c.bslpnoqty !=0) or "// 領的數量不同於需求量
 			+ " (c.bslclass='A541' and c.bslpngqty != c.bslpnerpqty)) and "// ERP(領退數量(帳務)="A541" && 已領用量 !=領退數量(帳務) )
 			+ "(c.bslfuser != 'ERP_Remove(Auto)') and (c.bslfuser != '') and (c.bslsuser = '') and (c.bslsuser = '') ") // 已完成+最後-同步人
-	ArrayList<BasicShippingList> findAllBySearchSynchronize(String bslclass, String bslsn, String bsltype, Pageable pageable);
+	ArrayList<BasicShippingList> findAllBySearchSynchronize(String bslclass, String bslsn, String bsltype,
+			Pageable pageable);
 
 	// 同步查詢用(單據完成率)
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
@@ -53,7 +57,8 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or c.bsltype LIKE %:bsltype%) and "//
 			+ "(c.bslcuser != '') and (c.bslsuser = '')") // 已核准人+最後-同步人
-	ArrayList<BasicShippingList> findAllBySearchDetailSynchronize(String bslclass, String bslsn, String bsltype, Pageable pageable);
+	ArrayList<BasicShippingList> findAllBySearchDetailSynchronize(String bslclass, String bslsn, String bsltype,
+			Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass=:bslclass) and "//
@@ -81,6 +86,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslnb is null or c.bslnb=:bslnb) and "//
 			+ "(c.bslfuser!='') and "//
 			+ "(c.bslpngqty < c.bslpnqty)") //
-	ArrayList<BasicShippingList> findAllByCheckShortageList(String bslclass, String bslsn, String bslnb, Pageable pageable);
+	ArrayList<BasicShippingList> findAllByCheckShortageList(String bslclass, String bslsn, String bslnb,
+			Pageable pageable);
 
 }

@@ -74,7 +74,7 @@ public class BiosVersion {
 		this.bvcname = "";
 		this.bvcnation = "";
 		this.bvecversion = "";
-		this.bverpcuser = "";
+		this.bvecnnb = "";
 		//
 		this.bvupnote = "";
 		this.bvnosupnote = "";
@@ -112,8 +112,6 @@ public class BiosVersion {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
-	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
-	private String syshnote;
 
 	// 版本管理-清單
 	@Id
@@ -137,7 +135,7 @@ public class BiosVersion {
 	@Column(name = "bv_ec_version", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bvecversion;
 	@Column(name = "bv_ecn_nb", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bverpcuser;
+	private String bvecnnb;
 
 	@Column(name = "bv_up_note", nullable = false, columnDefinition = "text default ''")
 	private String bvupnote;
@@ -240,14 +238,6 @@ public class BiosVersion {
 		this.sysnote = sysnote;
 	}
 
-	public String getSyshnote() {
-		return syshnote;
-	}
-
-	public void setSyshnote(String syshnote) {
-		this.syshnote = syshnote;
-	}
-
 	public Long getBvid() {
 		return bvid;
 	}
@@ -310,14 +300,6 @@ public class BiosVersion {
 
 	public void setBvecversion(String bvecversion) {
 		this.bvecversion = bvecversion;
-	}
-
-	public String getBverpcuser() {
-		return bverpcuser;
-	}
-
-	public void setBverpcuser(String bverpcuser) {
-		this.bverpcuser = bverpcuser;
 	}
 
 	public String getBvupnote() {
@@ -390,6 +372,14 @@ public class BiosVersion {
 
 	public void setBvmnb(String bvmnb) {
 		this.bvmnb = bvmnb;
+	}
+
+	public String getBvecnnb() {
+		return bvecnnb;
+	}
+
+	public void setBvecnnb(String bvecnnb) {
+		this.bvecnnb = bvecnnb;
 	}
 
 }

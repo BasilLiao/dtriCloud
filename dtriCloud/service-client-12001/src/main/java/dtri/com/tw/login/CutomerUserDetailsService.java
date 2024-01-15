@@ -36,7 +36,7 @@ public class CutomerUserDetailsService implements UserDetailsService {
 		SystemUser user = new SystemUser();
 
 		// Step1.是否有-使用者
-		users = userDao.findAllBySystemUser(null, userAccount, null, 4, null);
+		users = userDao.checkAllBySystemUser(userAccount, 4, null);
 		if (users == null || users.size() != 1) {
 			throw new UsernameNotFoundException("Can't get all user!!");
 		}

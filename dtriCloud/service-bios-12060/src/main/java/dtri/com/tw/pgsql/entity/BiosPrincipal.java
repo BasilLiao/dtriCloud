@@ -80,8 +80,6 @@ public class BiosPrincipal {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
-	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
-	private String syshnote;
 
 	// 負責人通知-清單
 	@Id
@@ -174,14 +172,6 @@ public class BiosPrincipal {
 
 	public void setSysnote(String sysnote) {
 		this.sysnote = sysnote;
-	}
-
-	public String getSyshnote() {
-		return syshnote;
-	}
-
-	public void setSyshnote(String syshnote) {
-		this.syshnote = syshnote;
 	}
 
 	public Long getBpid() {

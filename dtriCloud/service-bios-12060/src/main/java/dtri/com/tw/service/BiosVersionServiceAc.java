@@ -64,7 +64,7 @@ public class BiosVersionServiceAc {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "bvmodel"));// 機種別
 		orders.add(new Order(Direction.ASC, "bvversion"));// BIOS版本
-		
+
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -208,7 +208,7 @@ public class BiosVersionServiceAc {
 				//
 				entityDataOld.setBvcnation(x.getBvcnation());
 				entityDataOld.setBvecversion(x.getBvecversion());
-				entityDataOld.setBverpcuser(x.getBverpcuser());
+				entityDataOld.setBvecnnb(x.getBvecnnb());
 				entityDataOld.setBvupnote(x.getBvupnote());
 				entityDataOld.setBvnosupnote(x.getBvnosupnote());
 				entityDataOld.setBvbugnote(x.getBvbugnote());

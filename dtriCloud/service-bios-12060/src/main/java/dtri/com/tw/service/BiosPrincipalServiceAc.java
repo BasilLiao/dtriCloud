@@ -96,6 +96,15 @@ public class BiosPrincipalServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 動態->覆蓋寫入->修改UI選項
+			SystemLanguageCell bpsuid = mapLanguages.get("bpsuid");
+			JsonArray bpListArr = new JsonArray();
+			ArrayList<SystemUser> users = userDao.findAll();
+			users.forEach(u -> {
+				bpListArr.add(u.getSuname() + "_" + u.getSuid());
+			});
+			bpsuid.setSlcmtype("select");
+			bpsuid.setSlcmselect(bpListArr.toString());
+			mapLanguages.put("bpsuid", bpsuid);
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
@@ -111,10 +120,10 @@ public class BiosPrincipalServiceAc {
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
-			searchJsons = packageService.searchSet(searchJsons, null, "bpmodel", "Ex:產品機種?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bpbvmodel", "Ex:產品機種?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bpcname", "Ex:對應客戶?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bpsuname", "Ex:負責人?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
@@ -249,7 +258,6 @@ public class BiosPrincipalServiceAc {
 
 			SystemUser user = userDao.findById(x.getBpsuid()).get();
 			x.setBpsuname(user.getSuename());
-			x.setBpsuname(null);
 
 			saveDatas.add(x);
 		});

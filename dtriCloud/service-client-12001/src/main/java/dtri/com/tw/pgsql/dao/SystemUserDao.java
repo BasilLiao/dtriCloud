@@ -26,7 +26,14 @@ public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
 			+ "(:suaccount is null or c.suaccount LIKE %:suaccount% ) and "//
 			+ "(:suposition is null or c.suposition LIKE %:suposition% ) and "//
 			+ "(:sysstatus=4 or c.sysstatus = :sysstatus )  ") // (4)不過濾
-	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, Integer sysstatus, Pageable pageable);
+	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, Integer sysstatus,
+			Pageable pageable);
+
+	// 檢查-查詢全部含-頁數
+	@Query("SELECT c FROM SystemUser c "//
+			+ "WHERE (:suaccount is null or c.suaccount =:suaccount ) and "//
+			+ "(:sysstatus=4 or c.sysstatus = :sysstatus )  ") // (4)不過濾
+	ArrayList<SystemUser> checkAllBySystemUser(String suaccount, Integer sysstatus, Pageable pageable);
 
 	// 查詢全部含-頁數 不含ADMIN
 	@Query("SELECT c FROM SystemUser c "//
@@ -34,7 +41,8 @@ public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
 			+ "(:suaccount is null or c.suaccount LIKE %:suaccount% ) and "//
 			+ "(:suposition is null or c.suposition LIKE %:suposition% ) and "//
 			+ "(:sysstatus=4 or c.sysstatus = :sysstatus ) and (c.sysstatus != 3) ") // (4)不過濾
-	ArrayList<SystemUser> findAllBySystemUserNotAdmin(String suname, String suaccount, String suposition, Integer sysstatus, Pageable pageable);
+	ArrayList<SystemUser> findAllBySystemUserNotAdmin(String suname, String suaccount, String suposition,
+			Integer sysstatus, Pageable pageable);
 
 	// 多筆查詢範例
 	@Query(" SELECT i.suname FROM SystemUser i WHERE "//

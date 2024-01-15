@@ -31,6 +31,7 @@ import jakarta.persistence.Transient;
  *      was_c_user : 核准人<br>
  *      was_m_user : 可分配-負責人<br>
  *      was_f_user : 完成人<br>
+ *      was_sm_user : 產線配料人<br>
  *      was_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      was_p_number : 物料號<br>
  *      was_p_name : 品名<br>
@@ -63,6 +64,7 @@ public class WarehouseAssignmentDetail {
 		this.wasschedule = "0/0";
 		this.waspnqty = 0;
 		this.waspngqty = 0;
+		this.wassmuser = "";
 	}
 
 	// 共用型
@@ -118,6 +120,8 @@ public class WarehouseAssignmentDetail {
 	@Transient
 	private String wasfuser;// : 完成人<br>
 	@Transient
+	private String wassmuser;// : 產線完成人<br>
+	@Transient
 	private String wasacceptance;// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 	@Transient
 	private String waspnumber;// : 物料號<br>
@@ -145,6 +149,14 @@ public class WarehouseAssignmentDetail {
 	private String wasfromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
 	@Transient
 	private String wastowho;// 物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
+
+	public String getWassmuser() {
+		return wassmuser;
+	}
+
+	public void setWassmuser(String wassmuser) {
+		this.wassmuser = wassmuser;
+	}
 
 	public Date getSyscdate() {
 		return syscdate;
