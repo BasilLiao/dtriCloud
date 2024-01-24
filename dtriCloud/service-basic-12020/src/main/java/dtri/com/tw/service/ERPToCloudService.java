@@ -33,13 +33,17 @@ public class ERPToCloudService {
 		// 資料匹配
 		o.setChecksum(checkSum);
 		o.setBclfuser("");
-		o.setBclproduct(m.getTa006());
+		o.setBclproduct(m.getTa006());// 成品號
+		// 單頭
 		o.setBclclass(m.getTa001_ta002().split("-")[0]);// 製令單[別]
 		o.setBclsn(m.getTa001_ta002().split("-")[1]);// 製令單[號]
 		o.setBcltype(m.getTk000());// 製令單
 		o.setBclnb(m.getBslnb());// 序列號
 		o.setBclcheckin(1);// 0=未核單 1=已核單
 		o.setBclacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBclmodel(m.getMa003());// 機型
+		o.setBclcustomer(m.getTa050());// --訂單生產加工包裝資訊(客戶資訊)
+		// 單身
 		o.setBclpnumber(m.getMb001());// 物料號品號
 		o.setBclpname(m.getMb002());// 品名
 		o.setBclpspecification(m.getMb003());// 規格

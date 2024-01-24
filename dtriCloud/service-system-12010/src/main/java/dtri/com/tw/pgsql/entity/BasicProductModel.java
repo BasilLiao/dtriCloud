@@ -24,22 +24,17 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---bios版本管理---<br>
- *      this.bnid = 0L;ID<br>
- *      this.bnmkind = "";<br>
- *      this.bnmmail = "";信件對象Mail<br>
- *      this.bnmmailcc = "";信件次要對象Mail<br>
- *      this.bnmcontent = "";信件內容<br>
- *      this.bnmsend = "";發信?狀態<br>
- * 
- * 
+ *      ---產品機種管理---<br>
+ *      this.bpmid = 0L;ID<br>
+ *      this.bpmname = "產品機型";<br>
+ *      this.bpmfeatures = "";產品機型特徵敘述<br>
  */
 
 @Entity
-@Table(name = "basic_notification_mail")
+@Table(name = "basic_product_model")
 @EntityListeners(AuditingEntityListener.class)
-public class BasicNotificationMail {
-	public BasicNotificationMail() {
+public class BasicProductModel {
+	public BasicProductModel() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -53,22 +48,10 @@ public class BasicNotificationMail {
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
 		// 待寄信件清單
-		this.bnmid = 0L;
-		this.bnmkind = "";
-		this.bnmmail = "";
-		this.setBnmtitle("");
-		this.bnmcontent = "";
-		this.bnmsend = false;
-		this.bnmurl = "";
-		this.setBnmreaded(false);
-	}
+		this.bpmid = 0L;// ID
+		this.bpmname = "";
+		this.bpmfeatures = "";
 
-	public String getBnmmailcc() {
-		return bnmmailcc;
-	}
-
-	public void setBnmmailcc(String bnmmailcc) {
-		this.bnmmailcc = bnmmailcc;
 	}
 
 	// 共用型
@@ -94,31 +77,16 @@ public class BasicNotificationMail {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// mail-清單
+	// 產品機種別-清單
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "basic_notification_mail_seq")
-	@SequenceGenerator(name = "basic_notification_mail_seq", sequenceName = "basic_notification_mail_seq", allocationSize = 1)
-	@Column(name = "bnm_id")
-	private Long bnmid;
-	@Column(name = "bnm_kind", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bnmkind;
-	@Column(name = "bnm_mail", nullable = false, columnDefinition = "varchar(450) default ''")
-	private String bnmmail;
-	@Column(name = "bnm_mail_cc", nullable = false, columnDefinition = "varchar(450) default ''")
-	private String bnmmailcc;
-
-	@Column(name = "bnm_title", nullable = false, columnDefinition = "varchar(150) default ''")
-	private String bnmtitle;
-	@Column(name = "bnm_content", nullable = false, columnDefinition = "text default ''")
-	private String bnmcontent;
-	@Column(name = "bnm_send", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bnmsend;
-	@Column(name = "bnm_url", nullable = false, columnDefinition = "varchar(150) default ''")
-	private String bnmurl;
-	@Column(name = "bnm_readed", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bnmreaded;
-	
-	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "basic_product_model_seq")
+	@SequenceGenerator(name = "basic_product_model_seq", sequenceName = "basic_product_model_seq", allocationSize = 1)
+	@Column(name = "bpm_id")
+	private Long bpmid;
+	@Column(name = "bpm_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String bpmname;
+	@Column(name = "bpm_features", nullable = false, columnDefinition = "text default ''")
+	private String bpmfeatures;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -200,75 +168,28 @@ public class BasicNotificationMail {
 		this.sysnote = sysnote;
 	}
 
-	public Long getBnmid() {
-		return bnmid;
+	public Long getBpmid() {
+		return bpmid;
 	}
 
-	public void setBnmid(Long bnmid) {
-		this.bnmid = bnmid;
+	public void setBpmid(Long bpmid) {
+		this.bpmid = bpmid;
 	}
 
-	public String getBnmkind() {
-		return bnmkind;
+	public String getBpmname() {
+		return bpmname;
 	}
 
-	public void setBnmkind(String bnmkind) {
-		this.bnmkind = bnmkind;
+	public void setBpmname(String bpmname) {
+		this.bpmname = bpmname;
 	}
 
-	public String getBnmmail() {
-		return bnmmail;
+	public String getBpmfeatures() {
+		return bpmfeatures;
 	}
 
-	public void setBnmmail(String bnmmail) {
-		this.bnmmail = bnmmail;
+	public void setBpmfeatures(String bpmfeatures) {
+		this.bpmfeatures = bpmfeatures;
 	}
-
-	public String getBnmcontent() {
-		return bnmcontent;
-	}
-
-	public void setBnmcontent(String bnmcontent) {
-		this.bnmcontent = bnmcontent;
-	}
-
-	public Boolean getBnmsend() {
-		return bnmsend;
-	}
-
-	public void setBnmsend(Boolean bnmsend) {
-		this.bnmsend = bnmsend;
-	}
-
-	public String getBnmurl() {
-		return bnmurl;
-	}
-
-	public void setBnmurl(String bnmurl) {
-		this.bnmurl = bnmurl;
-	}
-
-	public String getBnmtitle() {
-		return bnmtitle;
-	}
-
-	public void setBnmtitle(String bnmtitle) {
-		this.bnmtitle = bnmtitle;
-	}
-
-	public Boolean getBnmreaded() {
-		return bnmreaded;
-	}
-
-	public void setBnmreaded(Boolean bnmreaded) {
-		this.bnmreaded = bnmreaded;
-	}
-
-	@Override
-	public String toString() {
-		return "BasicNotificationMail [bnmkind=" + bnmkind + ", bnmmail=" + bnmmail + ", bnmmailcc=" + bnmmailcc
-				+ ", bnmtitle=" + bnmtitle + ", bnmcontent=" + bnmcontent + "]";
-	}
-	
 
 }

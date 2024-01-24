@@ -17,6 +17,11 @@ public interface BiosPrincipalDao extends JpaRepository<BiosPrincipal, Long> {
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<BiosPrincipal> findAllBySearch(String bpsuname, String bpbvmodel, Integer sysstatus, Pageable pageable);
 
+	// 查詢用(Model 反向比對)
+	@Query("SELECT c FROM BiosPrincipal c WHERE "// 僅機種別 串聯%%
+			+ "(:bpbvmodel is null or :bpbvmodel LIKE  CONCAT('%',c.bpbvmodel, '%' )) ") //
+	ArrayList<BiosPrincipal> findAllBySearch(String bpbvmodel);
+
 	// 檢查用
 	@Query("SELECT c FROM BiosPrincipal c WHERE "//
 			+ "(:bpsuid is null or c.bpsuid=:bpsuid) and "//

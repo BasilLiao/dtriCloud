@@ -52,17 +52,21 @@ public class BasicNotificationMail {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		// Bios版本管理
+		// 待寄信件清單
 		this.bnmid = 0L;
 		this.bnmkind = "";
 		this.bnmmail = "";
+		this.setBnmtitle("");
 		this.bnmcontent = "";
 		this.bnmsend = false;
+		this.bnmurl = "";
+		this.setBnmreaded(false);
 	}
 
 	public String getBnmmailcc() {
 		return bnmmailcc;
 	}
+
 	public void setBnmmailcc(String bnmmailcc) {
 		this.bnmmailcc = bnmmailcc;
 	}
@@ -89,8 +93,6 @@ public class BasicNotificationMail {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
-	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
-	private String syshnote;
 
 	// mail-清單
 	@Id
@@ -100,14 +102,24 @@ public class BasicNotificationMail {
 	private Long bnmid;
 	@Column(name = "bnm_kind", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bnmkind;
-	@Column(name = "bnm_mail", nullable = false, columnDefinition = "varchar(250) default ''")
+	@Column(name = "bnm_mail", nullable = false, columnDefinition = "varchar(450) default ''")
 	private String bnmmail;
-	@Column(name = "bnm_mail_cc", nullable = false, columnDefinition = "varchar(250) default ''")
+	@Column(name = "bnm_mail_cc", nullable = false, columnDefinition = "varchar(450) default ''")
 	private String bnmmailcc;
+
+	@Column(name = "bnm_title", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bnmtitle;
 	@Column(name = "bnm_content", nullable = false, columnDefinition = "text default ''")
 	private String bnmcontent;
 	@Column(name = "bnm_send", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bnmsend;
+	@Column(name = "bnm_url", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bnmurl;
+	@Column(name = "bnm_readed", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnmreaded;
+	
+	
+
 	public Date getSyscdate() {
 		return syscdate;
 	}
@@ -188,14 +200,6 @@ public class BasicNotificationMail {
 		this.sysnote = sysnote;
 	}
 
-	public String getSyshnote() {
-		return syshnote;
-	}
-
-	public void setSyshnote(String syshnote) {
-		this.syshnote = syshnote;
-	}
-
 	public Long getBnmid() {
 		return bnmid;
 	}
@@ -234,6 +238,36 @@ public class BasicNotificationMail {
 
 	public void setBnmsend(Boolean bnmsend) {
 		this.bnmsend = bnmsend;
+	}
+
+	public String getBnmurl() {
+		return bnmurl;
+	}
+
+	public void setBnmurl(String bnmurl) {
+		this.bnmurl = bnmurl;
+	}
+
+	public String getBnmtitle() {
+		return bnmtitle;
+	}
+
+	public void setBnmtitle(String bnmtitle) {
+		this.bnmtitle = bnmtitle;
+	}
+
+	public Boolean getBnmreaded() {
+		return bnmreaded;
+	}
+
+	public void setBnmreaded(Boolean bnmreaded) {
+		this.bnmreaded = bnmreaded;
+	}
+
+	@Override
+	public String toString() {
+		return "BasicNotificationMail [bnmkind=" + bnmkind + ", bnmmail=" + bnmmail + ", bnmmailcc=" + bnmmailcc
+				+ ", bnmtitle=" + bnmtitle + ", bnmcontent=" + bnmcontent + "]";
 	}
 	
 

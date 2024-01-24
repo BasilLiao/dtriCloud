@@ -98,6 +98,9 @@ public class BasicCommandList {
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.checkrm = true;
+		//
+		this.bclcustomer = "";
+		this.bclmodel = "";
 	}
 
 	// 共用型
@@ -141,6 +144,10 @@ public class BasicCommandList {
 	private String bcltype;
 	@Column(name = "bcl_product", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclproduct;
+	@Column(name = "bcl_model", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bclmodel;
+	@Column(name = "bcl_customer", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bclcustomer;
 
 	@Column(name = "bcl_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bclcheckin;
@@ -152,7 +159,7 @@ public class BasicCommandList {
 	private String bclfuser;
 	@Column(name = "bcl_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
 	private String bclmuser;
-	
+
 	@Column(name = "bcl_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bclacceptance;
 
@@ -439,13 +446,16 @@ public class BasicCommandList {
 
 	@Override
 	public String toString() {
-		return "BasicCommandList [syscdate=" + syscdate + ", syscuser=" + syscuser + ", sysmdate=" + sysmdate + ", sysmuser=" + sysmuser
-				+ ", sysodate=" + sysodate + ", sysouser=" + sysouser + ", sysheader=" + sysheader + ", sysstatus=" + sysstatus + ", syssort="
-				+ syssort + ", sysnote=" + sysnote + ", bclid=" + bclid + ", bclnb=" + bclnb + ", bclclass=" + bclclass + ", bclsn=" + bclsn
-				+ ", bcltype=" + bcltype + ", bclcheckin=" + bclcheckin + ", bclcuser=" + bclcuser + ", bclfuser=" + bclfuser + ", bclacceptance="
-				+ bclacceptance + ", bclpnumber=" + bclpnumber + ", bclpname=" + bclpname + ", bclpspecification=" + bclpspecification + ", bclpnqty="
-				+ bclpnqty + ", bcltocommand=" + bcltocommand + ", bclfromcommand=" + bclfromcommand + ", bcltowho=" + bcltowho + ", bclfromwho="
-				+ bclfromwho + ", bclstatus=" + bclstatus + ", bcledate=" + bcledate + ", bclfdate=" + bclfdate + ", checksum=" + checksum + "]";
+		return "BasicCommandList [syscdate=" + syscdate + ", syscuser=" + syscuser + ", sysmdate=" + sysmdate
+				+ ", sysmuser=" + sysmuser + ", sysodate=" + sysodate + ", sysouser=" + sysouser + ", sysheader="
+				+ sysheader + ", sysstatus=" + sysstatus + ", syssort=" + syssort + ", sysnote=" + sysnote + ", bclid="
+				+ bclid + ", bclnb=" + bclnb + ", bclclass=" + bclclass + ", bclsn=" + bclsn + ", bcltype=" + bcltype
+				+ ", bclcheckin=" + bclcheckin + ", bclcuser=" + bclcuser + ", bclfuser=" + bclfuser
+				+ ", bclacceptance=" + bclacceptance + ", bclpnumber=" + bclpnumber + ", bclpname=" + bclpname
+				+ ", bclpspecification=" + bclpspecification + ", bclpnqty=" + bclpnqty + ", bcltocommand="
+				+ bcltocommand + ", bclfromcommand=" + bclfromcommand + ", bcltowho=" + bcltowho + ", bclfromwho="
+				+ bclfromwho + ", bclstatus=" + bclstatus + ", bcledate=" + bcledate + ", bclfdate=" + bclfdate
+				+ ", checksum=" + checksum + "]";
 	}
 
 	public String getBclproduct() {
@@ -494,6 +504,22 @@ public class BasicCommandList {
 
 	public void setBclmuser(String bclmuser) {
 		this.bclmuser = bclmuser;
+	}
+
+	public String getBclmodel() {
+		return bclmodel;
+	}
+
+	public void setBclmodel(String bclmodel) {
+		this.bclmodel = bclmodel;
+	}
+
+	public String getBclcustomer() {
+		return bclcustomer;
+	}
+
+	public void setBclcustomer(String bclcustomer) {
+		this.bclcustomer = bclcustomer;
 	}
 
 }

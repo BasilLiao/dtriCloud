@@ -50,6 +50,9 @@ public class WebSecurityConfig {
 	private static final String basic_com = "/ajax/basic_command_list.basil";
 	private static final String basic_shi = "/ajax/basic_shipping_list.basil";
 	private static final String basic_inc = "/ajax/basic_incoming_list.basil";
+	private static final String basic_pdm = "/ajax/basic_product_model.basil";
+	// 信件
+	private static final String basic_not = "/ajax/basic_notification_mail.basil";
 	// 倉儲
 	private static final String warehouse_his = "/ajax/warehouse_history.basil";
 	private static final String warehouse_con = "/ajax/warehouse_config.basil";
@@ -68,6 +71,7 @@ public class WebSecurityConfig {
 	// BIOS
 	private static final String bios_pri = "/ajax/bios_principal.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
+	private static final String bios_lif = "/ajax/bios_life_cycle.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -138,6 +142,16 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, own_use + ".AU").hasAuthority(actionRole(own_use, "AU"))// (修改)
 
 				// 基本單據功能
+
+				// ----請求-basic_notification_mail-(訪問) ----
+				.requestMatchers(HttpMethod.POST, basic_not).hasAuthority(actionRole(basic_not, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, basic_not + ".AR").hasAuthority(actionRole(basic_not, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, basic_not + ".ARR").hasAuthority(actionRole(basic_not, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, basic_not + ".AC").hasAuthority(actionRole(basic_not, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, basic_not + ".AU").hasAuthority(actionRole(basic_not, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, basic_not + ".AD").hasAuthority(actionRole(basic_not, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_not + ".DD").hasAuthority(actionRole(basic_not, "DD"))// (標記移除)
+
 				// ----請求-basic_command_list-(訪問) ----
 				.requestMatchers(HttpMethod.POST, basic_com).hasAuthority(actionRole(basic_com, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, basic_com + ".AR").hasAuthority(actionRole(basic_com, "AR"))// (查詢)
@@ -164,6 +178,15 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, basic_inc + ".AU").hasAuthority(actionRole(basic_inc, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, basic_inc + ".AD").hasAuthority(actionRole(basic_inc, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, basic_inc + ".DD").hasAuthority(actionRole(basic_inc, "DD"))// (標記移除)
+
+				// ----請求-basic_product_model-(訪問) ----
+				.requestMatchers(HttpMethod.POST, basic_pdm).hasAuthority(actionRole(basic_pdm, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, basic_pdm + ".AR").hasAuthority(actionRole(basic_pdm, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, basic_pdm + ".ARR").hasAuthority(actionRole(basic_pdm, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, basic_pdm + ".AC").hasAuthority(actionRole(basic_pdm, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, basic_pdm + ".AU").hasAuthority(actionRole(basic_pdm, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, basic_pdm + ".AD").hasAuthority(actionRole(basic_pdm, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_pdm + ".DD").hasAuthority(actionRole(basic_pdm, "DD"))// (標記移除)
 
 				// 倉庫功能-客製化
 				// ----請求-warehouse_assignment-(訪問) ----
@@ -264,7 +287,7 @@ public class WebSecurityConfig {
 				.hasAuthority(actionRole(manufacture_act, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, manufacture_act + ".S1")
 				.hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
-				
+
 				// BIOS版本控管
 				// ----請求-bios_principal-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bios_pri).hasAuthority(actionRole(bios_pri, ""))// (轉跳)
@@ -283,8 +306,11 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, bios_ver + ".AU").hasAuthority(actionRole(bios_ver, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bios_ver + ".AD").hasAuthority(actionRole(bios_ver, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bios_ver + ".DD").hasAuthority(actionRole(bios_ver, "DD"))// (標記移除)
-
-
+				// ----請求-bios_version-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bios_lif).hasAuthority(actionRole(bios_lif, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bios_lif + ".AR").hasAuthority(actionRole(bios_lif, "AR"))// (查詢)
+				
+				
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();
 

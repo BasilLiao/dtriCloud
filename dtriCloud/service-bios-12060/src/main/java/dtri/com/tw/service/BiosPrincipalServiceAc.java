@@ -209,7 +209,10 @@ public class BiosPrincipalServiceAc {
 				entityDataOld.setBpbvmodel(x.getBpbvmodel());
 				entityDataOld.setBpsuid(x.getBpsuid());
 				SystemUser user = userDao.findById(x.getBpsuid()).get();
-				entityDataOld.setBpsuname(user.getSuename());
+				entityDataOld.setBpsuname(user.getSuname());
+				entityDataOld.setBpsumail(user.getSuemail());
+				entityDataOld.setBponotice(x.getBponotice());// 製令建立自動通知
+				entityDataOld.setBpmnotice(x.getBpmnotice());// 維護客製自動通知
 
 				saveDatas.add(entityDataOld);
 			}
@@ -257,7 +260,8 @@ public class BiosPrincipalServiceAc {
 			x.setBpid(null);
 
 			SystemUser user = userDao.findById(x.getBpsuid()).get();
-			x.setBpsuname(user.getSuename());
+			x.setBpsuname(user.getSuname());
+			x.setBpsumail(user.getSuemail());
 
 			saveDatas.add(x);
 		});

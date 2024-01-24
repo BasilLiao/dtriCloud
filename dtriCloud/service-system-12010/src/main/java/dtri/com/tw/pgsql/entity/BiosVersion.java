@@ -30,6 +30,7 @@ import jakarta.persistence.Table;
  *      this.bvcpugenerations = "";CPU世代<br>
  *      this.bvversion = "";BIOS 基本輸入輸出系統 版本<br>
  *      this.bvoversion = "";BIOS 基本輸入輸出系統 (根源)<br>
+ *      this.bvaversion = "";BIOS 基本輸入輸出系統 (自動版本)<br>
  *      this.bvcname = "";客戶名稱 EX:BSC<br>
  *      this.bvcnation = "";客戶國家<br>
  *      this.bvecversion = "";BIOS 嵌入式控制器 版本<br>
@@ -39,8 +40,7 @@ import jakarta.persistence.Table;
  *      this.bvbugnote = "";BIOS 已知問題<br>
  *      this.bvclock = false;客戶鎖定<br>
  *      this.bvcagree = false;客戶同意<br>
- *      this.bvmnotice = false;維護客製自動通知<br>
- *      this.bvonotice = false;製令建立自動通知<br>
+
  *      this.bvpnb = "";跟產品相關系 90階 料號<br>
  *      this.bvmnb = "";跟板階相關系 81階 料號<br>
  * 
@@ -70,6 +70,7 @@ public class BiosVersion {
 		this.bvcpugenerations = "";
 		this.bvversion = "";
 		this.bvoversion = "";
+		this.bvaversion = 1;
 		//
 		this.bvcname = "";
 		this.bvcnation = "";
@@ -82,11 +83,10 @@ public class BiosVersion {
 		//
 		this.bvclock = false;
 		this.bvcagree = false;
-		this.bvmnotice = false;
-		this.bvonotice = false;
 		//
 		this.bvpnb = "";
 		this.bvmnb = "";
+		this.bvlcheck = "";
 
 	}
 
@@ -123,10 +123,12 @@ public class BiosVersion {
 	private String bvmodel;
 	@Column(name = "bv_cpu_generations", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bvcpugenerations;
-	@Column(name = "bv_version", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	@Column(name = "bv_version", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bvversion;
 	@Column(name = "bv_o_version", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bvoversion;
+	@Column(name = "bv_a_version", nullable = false, columnDefinition = "int default 0")
+	private Integer bvaversion;
 
 	@Column(name = "bv_c_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bvcname;
@@ -148,15 +150,13 @@ public class BiosVersion {
 	private Boolean bvclock;
 	@Column(name = "bv_c_agree", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bvcagree;
-	@Column(name = "bv_m_notice", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bvmnotice;
-	@Column(name = "bv_o_notice", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bvonotice;
 
 	@Column(name = "bv_p_nb", nullable = false, columnDefinition = "text default ''")
 	private String bvpnb;
 	@Column(name = "bv_m_nb", nullable = false, columnDefinition = "text default ''")
 	private String bvmnb;
+	@Column(name = "bv_l_check", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bvlcheck;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -342,22 +342,6 @@ public class BiosVersion {
 		this.bvcagree = bvcagree;
 	}
 
-	public Boolean getBvmnotice() {
-		return bvmnotice;
-	}
-
-	public void setBvmnotice(Boolean bvmnotice) {
-		this.bvmnotice = bvmnotice;
-	}
-
-	public Boolean getBvonotice() {
-		return bvonotice;
-	}
-
-	public void setBvonotice(Boolean bvonotice) {
-		this.bvonotice = bvonotice;
-	}
-
 	public String getBvpnb() {
 		return bvpnb;
 	}
@@ -380,6 +364,22 @@ public class BiosVersion {
 
 	public void setBvecnnb(String bvecnnb) {
 		this.bvecnnb = bvecnnb;
+	}
+
+	public String getBvlcheck() {
+		return bvlcheck;
+	}
+
+	public void setBvlcheck(String bvlcheck) {
+		this.bvlcheck = bvlcheck;
+	}
+
+	public Integer getBvaversion() {
+		return bvaversion;
+	}
+
+	public void setBvaversion(Integer bvaversion) {
+		this.bvaversion = bvaversion;
 	}
 
 }

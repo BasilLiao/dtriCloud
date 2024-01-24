@@ -31,6 +31,12 @@ public class Mocta {
 	private String ta001_ta002;// 製令單
 	@Column(name = "TA006")
 	private String ta006;// 成品品號
+
+	@Column(name = "TA050")
+	private String ta050;// ,--訂單生產加工包裝資訊(客戶資訊)
+	@Column(name = "MA003")
+	private String ma003;// --產品機型
+
 	@Column(name = "TA009")
 	private String ta009;// 預計開工日
 	@Column(name = "TA010")
@@ -240,9 +246,10 @@ public class Mocta {
 
 	@Override
 	public String toString() {
-		return "Mocta [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006 + ", ta009=" + ta009 + ", ta010="
-				+ ta010 + ", tb015=" + tb015 + ", tb004=" + tb004 + ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003
-				+ ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
+		return "Mocta [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006
+				+ ", ta050=" + ta050 + ", ta009=" + ta009 + ", ta010=" + ta010 + ", tb015=" + tb015 + ", tb004=" + tb004
+				+ ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017
+				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
 				+ ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
 
@@ -284,6 +291,22 @@ public class Mocta {
 
 	public void setCreator(String creator) {
 		this.creator = creator;
+	}
+
+	public String getTa050() {
+		return ta050;
+	}
+
+	public void setTa050(String ta050) {
+		this.ta050 = ta050;
+	}
+
+	public String getMa003() {
+		return ma003;
+	}
+
+	public void setMa003(String ma003) {
+		this.ma003 = ma003;
 	}
 
 }

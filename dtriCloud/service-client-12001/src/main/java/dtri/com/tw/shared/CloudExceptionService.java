@@ -1,5 +1,7 @@
 package dtri.com.tw.shared;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 
 public class CloudExceptionService extends Exception {
@@ -16,7 +18,7 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002, W1003, W1004
+		E1000, W1000, W1001, W1002, W1003, W1004, W1005
 	};
 
 	// 故障語言
@@ -50,6 +52,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1004_zh_TW = "[W1004] 指令語法錯誤 請檢查 屬性/條件 內容 !!";
 	public final static String W1004_en_US = "[W1004] Instruction syntax error Please check attribute/condition content !!";
 	public final static String W1004_vi_VN = "[W1004] Lỗi cú pháp lệnh Vui lòng kiểm tra nội dung thuộc tính/điều kiện !!";
+	// 錯誤訊息-服務器尚未開啟
+	public final static String W1005_zh_TW = "[W1005] 服務器尚未開啟!!";
+	public final static String W1005_en_US = "[W1005] The server is not started yet!!";
+	public final static String W1005_vi_VN = "[W1005] Máy chủ chưa được khởi động!!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {
@@ -122,6 +128,15 @@ public class CloudExceptionService extends Exception {
 
 	public void setErrorColor(String errorColor) {
 		this.errorColor = errorColor;
+	}
+	
+	/** 轉換文字 **/
+	public static String eStktToSg(Exception e) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		e.printStackTrace(ps);
+		ps.close();
+		return baos.toString();
 	}
 
 }

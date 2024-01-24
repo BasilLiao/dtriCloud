@@ -71,7 +71,6 @@
 		<module>service-basic-12020</module>
 		<module>service-warehouse-12030</module>
 		<module>service-manufacture-12040</module>
-		<module>service-management-12050</module>
 		<module>service-schedule-12050</module>
 		<module>service-bios-12060</module>
 	</modules>

@@ -1,11 +1,9 @@
 package dtri.com.tw.service;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +21,7 @@ import com.google.gson.JsonObject;
 import dtri.com.tw.bean.FtpUtilBean;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
 import dtri.com.tw.pgsql.entity.SystemConfig;
+import dtri.com.tw.shared.CloudExceptionService;
 
 /***
  * https://polinwei.com/spring-boot-scheduling-tasks/ 排程 cron:
@@ -47,6 +46,9 @@ public class ScheduledTasksService {
 
 	@Autowired
 	ERPSynchronizeService synchronizeService;
+
+	@Autowired
+	BasicNotificationMailService mailService;
 
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Async
@@ -74,11 +76,18 @@ public class ScheduledTasksService {
 
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
-				synchronizeService.remove180DayData();
+				// 移除多於資料
+				synchronizeService.remove150DayData();
+				// 機種別
+				synchronizeService.erpSynchronizeProductModel();
+				// 檢查版本
+				synchronizeService.biosVersionCheck();
+				// 檢查信件 寄信
+				mailService.readySendCheckEmail();
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.warn("===>>> [System or User]" + eStktToSg(e));
+				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 				fixDelay_ERPSynchronizeServiceRun = true;
 			}
 			fixDelay_ERPSynchronizeServiceRun = true;
@@ -119,7 +128,7 @@ public class ScheduledTasksService {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.warn("===>>> [System or User]" + eStktToSg(e));
+				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 				fixDelay_ERPSynchronizeServiceRun = true;
 			}
 			fixDelay_ERPSynchronizeServiceRun = true;
@@ -218,34 +227,22 @@ public class ScheduledTasksService {
 		}
 	}
 
-	// 每日(30)06:00分執行一次
+	// 每日(30)07:00分執行一次
 	// 自動同步
-//	@Async
-//	@Scheduled(cron = "0 30 06 * * ? ")
-//	public void updateAreasAndIncoming() {
-//		List<WarehouseArea> areas = areaDao.findAll();
-//		areas.forEach(x -> {
-//			x.setWatqty(x.getWaerptqty());
-//			x.setSysmuser("system");
-//			x.setSysmdate(new Date());
-//		});
-//		areaDao.saveAll(areas);
-//		// 入料單-進行(匹配)->將數量修正 寫入
-//		ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
-//		reAll.forEach(bil -> {
-//			bil.setBilpngqty(bil.getBilpnqty());
-//		});
-//		incomingListDao.saveAll(reAll);
-//
-//	}
-
-	/** 轉換文字 **/
-	public static String eStktToSg(Exception e) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos);
-		e.printStackTrace(ps);
-		ps.close();
-		return baos.toString();
+	@Async
+	@Scheduled(cron = "0 30 07 * * ? ")
+	public void updateEveryday() {
+		try {
+			// 移除多於資料()
+			synchronizeService.remove150DayData();
+			// 機種別
+			synchronizeService.erpSynchronizeProductModel();
+			// 檢查版本
+			synchronizeService.biosVersionCheck();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+		}
 	}
 
 	/** 同步中? **/

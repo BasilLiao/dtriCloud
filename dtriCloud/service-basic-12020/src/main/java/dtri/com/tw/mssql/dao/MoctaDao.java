@@ -15,6 +15,8 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
+			+ "	MOCTA.TA050, "// --訂單生產加工包裝資訊(客戶資訊)
+			+ " INVMAB.MA003,"// --產品機型
 			+ " MOCTA.TA009, "// --預計開工日
 			+ "	MOCTA.TA010, "// --預計完工日
 			+ "	MOCTB.TB015, "// --預計領料日
@@ -40,6 +42,17 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身
 			+ "	ON (MOCTA.TA001 + MOCTA.TA002) = (MOCTB.TB001 + MOCTB.TB002) "//
+			+ "LEFT JOIN "//
+			+ "	(SELECT  *"//
+			+ "		FROM (SELECT "//
+			+ "		  MA.MA003,"//
+			+ "		  MB.MB008,"//
+			+ "		  MB.MB001"//
+			+ "		FROM INVMB AS MB "//
+			+ "		LEFT JOIN INVMA AS MA "//
+			+ "		  ON MB.MB008 = MA.MA002 "//
+			+ "		WHERE MA.MA003 IS NOT NULL) AS INVMAB)AS INVMAB " //--成品皆關聯(品號基本資料檔)\n
+			+ "	ON INVMAB.MB001= MOCTA.TA006 "//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].INVMB AS INVMB "// --倉庫別
 			+ "	ON MOCTB.TB003 = INVMB.MB001 "//

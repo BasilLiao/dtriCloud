@@ -722,8 +722,8 @@
 					//Data : 將現有ID /GID 清除
 					var id = copy.find('.bi-stickies').attr('title').split("_")[0];
 					var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
-					if (id != "") {copy.find('.' + id).val("");}
-					if (gid != "") {copy.find('.' + gid).val("");}
+					//if (id != "") {copy.find('.' + id).val("");}
+					//if (gid != "") {copy.find('.' + gid).val("");}
 					//select : 如果有選單複製
 					var select = copyTarget.find("select");
 					select.each(function (index) {

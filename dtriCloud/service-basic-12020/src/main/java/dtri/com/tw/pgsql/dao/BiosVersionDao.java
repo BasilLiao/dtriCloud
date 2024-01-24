@@ -20,12 +20,6 @@ public interface BiosVersionDao extends JpaRepository<BiosVersion, Long> {
 	ArrayList<BiosVersion> findAllBySearch(String bvcpugenerations, String bvmodel, String bvcname, String bvversion,
 			Integer sysstatus, Pageable pageable);
 
-	// 查詢用
-	@Query("SELECT c FROM BiosVersion c WHERE "//
-			+ "(:bvoversion is null or c.bvoversion LIKE %:bvoversion%) and "//
-			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
-	ArrayList<BiosVersion> findAllByCheckOld(String bvoversion, Integer sysstatus, Pageable pageable);
-
 	// 檢查用
 	@Query("SELECT c FROM BiosVersion c WHERE "//
 			+ "(:bvversion is null or c.bvversion=:bvversion) and "//

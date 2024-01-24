@@ -29,8 +29,8 @@ import jakarta.persistence.Table;
  *      this.bvmodel = "";機種別<br>
  *      this.bpsuid = 0L;使用者ID<br>
  *      this.bpsuname = "";使用者名稱<br>
- * 
- * 
+ * 		this.bpmnotice = false; 維護客製自動通知<br>
+ * 		this.bponotice = false; 製令建立自動通知<br>
  */
 
 @Entity
@@ -55,6 +55,10 @@ public class BiosPrincipal {
 		this.bpbvmodel = "";
 		this.bpsuid = 0L;
 		this.bpsuname = "";
+		this.bpsumail = "";
+		this.bpprimary = 0;
+		this.bpmnotice = false;
+		this.bponotice = false;
 
 	}
 
@@ -93,6 +97,15 @@ public class BiosPrincipal {
 	private Long bpsuid;
 	@Column(name = "bp_su_name", nullable = false, columnDefinition = "varchar(100) default ''")
 	private String bpsuname;
+	@Column(name = "bp_su_mail", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bpsumail;
+	@Column(name = "bp_primary", nullable = false, columnDefinition = "int default 0")
+	private Integer bpprimary;
+
+	@Column(name = "bp_m_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bpmnotice;
+	@Column(name = "bp_o_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bponotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -204,6 +217,38 @@ public class BiosPrincipal {
 
 	public void setBpsuname(String bpsuname) {
 		this.bpsuname = bpsuname;
+	}
+
+	public Integer getBpprimary() {
+		return bpprimary;
+	}
+
+	public void setBpprimary(Integer bpprimary) {
+		this.bpprimary = bpprimary;
+	}
+
+	public String getBpsumail() {
+		return bpsumail;
+	}
+
+	public void setBpsumail(String bpsumail) {
+		this.bpsumail = bpsumail;
+	}
+
+	public Boolean getBpmnotice() {
+		return bpmnotice;
+	}
+
+	public void setBpmnotice(Boolean bpmnotice) {
+		this.bpmnotice = bpmnotice;
+	}
+
+	public Boolean getBponotice() {
+		return bponotice;
+	}
+
+	public void setBponotice(Boolean bponotice) {
+		this.bponotice = bponotice;
 	}
 
 }

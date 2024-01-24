@@ -21,6 +21,44 @@ public interface BasicServiceFeign {
 	@RequestMapping(value = { "/basicSynchronize/getReSynchronize" }, method = RequestMethod.POST)
 	PackageBean getReSynchronizeDocument(@RequestBody String jsonPackageBean);
 
+	// ================================同步:產品機型================================
+	@RequestMapping(value = { "/basicProductModel/getSearch" }, method = RequestMethod.POST)
+	PackageBean getProductModelSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicProductModel/getReport" }, method = RequestMethod.POST)
+	PackageBean getProductModelReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicProductModel/setModify" }, method = RequestMethod.POST)
+	PackageBean setProductModelModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicProductModel/setAdd" }, method = RequestMethod.POST)
+	PackageBean setProductModelAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicProductModel/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setProductModelInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicProductModel/setDetele" }, method = RequestMethod.POST)
+	PackageBean setProductModelDetele(@RequestBody String jsonPackageBean);
+
+	// ================================一般:寄信件清單================================
+	@RequestMapping(value = { "/basicNotificationMail/getSearch" }, method = RequestMethod.POST)
+	PackageBean getNotificationMailSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicNotificationMail/getReport" }, method = RequestMethod.POST)
+	PackageBean getNotificationMailReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicNotificationMail/setModify" }, method = RequestMethod.POST)
+	PackageBean setNotificationMailModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicNotificationMail/setAdd" }, method = RequestMethod.POST)
+	PackageBean setNotificationMailAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicNotificationMail/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setNotificationMailInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicNotificationMail/setDetele" }, method = RequestMethod.POST)
+	PackageBean setNotificationMailDetele(@RequestBody String jsonPackageBean);
+
 	// ================================同步:入料單據================================
 	@RequestMapping(value = { "/basicIncomingList/getSearch" }, method = RequestMethod.POST)
 	PackageBean getIncomingListSearch(@RequestBody String jsonPackageBean);

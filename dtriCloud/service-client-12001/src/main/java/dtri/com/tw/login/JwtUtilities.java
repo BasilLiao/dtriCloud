@@ -1,23 +1,5 @@
 package dtri.com.tw.login;
 
-import io.jsonwebtoken.*;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Function;
-
 //@Slf4j
 //@Component
 //public class JwtUtilities {

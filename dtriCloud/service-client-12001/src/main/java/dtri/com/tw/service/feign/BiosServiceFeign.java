@@ -18,6 +18,10 @@ import dtri.com.tw.shared.PackageBean;
 @FeignClient(value = "SERVICE-BIOS", path = "service-bios")
 public interface BiosServiceFeign {
 
+	// ================================BIOS:版本生命樹================================
+	@RequestMapping(value = { "/biosLifeCycle/getSearch" }, method = RequestMethod.POST)
+	PackageBean getBiosLifeCycleSearch(@RequestBody String jsonPackageBean);
+
 	// ================================BIOS:版本管理================================
 	@RequestMapping(value = { "/biosVersion/getSearch" }, method = RequestMethod.POST)
 	PackageBean getBiosVersionSearch(@RequestBody String jsonPackageBean);
@@ -55,6 +59,5 @@ public interface BiosServiceFeign {
 
 	@RequestMapping(value = { "/biosPrincipal/setDetele" }, method = RequestMethod.POST)
 	PackageBean setBiosPrincipalDetele(@RequestBody String jsonPackageBean);
-
 
 }

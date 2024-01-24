@@ -1,6 +1,7 @@
 package dtri.com.tw.bean;
 
 import java.io.InputStream;
+
 import org.apache.commons.net.ftp.FTPClient;
 
 
