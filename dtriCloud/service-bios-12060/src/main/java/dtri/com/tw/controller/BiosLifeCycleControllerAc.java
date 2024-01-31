@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.BiosVersionServiceAc;
+import dtri.com.tw.service.BiosLifeCycleServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
@@ -20,7 +20,7 @@ public class BiosLifeCycleControllerAc extends AbstractControllerAc {
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private BiosVersionServiceAc serviceAc;
+	private BiosLifeCycleServiceAc serviceAc;
 
 	@RequestMapping(value = { "/biosLifeCycle/getSearch" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")

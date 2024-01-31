@@ -158,7 +158,7 @@
 		</div>
 	</div>
 	<!-- model 清單 -->
-	<div id="search_p_model" class="col-12 col-lg-3 p-1 ">
+	<div id="search_p_model" class="col-12 col-lg-2 p-1 ">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
@@ -177,7 +177,7 @@
 		</div>
 	</div>
 	<!-- 查詢結果 -->
-	<div id="search_cr" class="col-12 col-lg-6 p-1">
+	<div id="search_cr" class="col-12 col-lg-8 p-1">
 		<div class="col-12 p-0 m-0  lh-1 text-start rounded-top bg-info text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
@@ -210,15 +210,16 @@
 		</div>
 	</div>
 	<!-- 控制面板 -->
-	<div id="search_c_controller" class="col-12 col-lg-3 p-1">
+	<div id="search_c_controller" class="col-12 col-lg-2 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-12 col-lg-12 p-1">
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
+				style="height: 60vh;overflow-x: auto;">
+				<div class="col-12 col-lg-12 p-1 fixedC1 bg-white" style="top: 0px;">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
@@ -237,7 +238,7 @@
 				<div class="col-12 col-lg-12 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Detail</div>
-						<div class="m-0 modelAllContent" style="height: 40vh;overflow-x: auto;">
+						<div class="m-0 modelAllContent">
 							<div class="modelAllEx" style="text-align: left;">
 								<div class="title h5 mb-0">title</div>
 								<textarea class="val text-primary" disabled="disabled" rows="2"
@@ -246,7 +247,6 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -648,7 +648,7 @@
 							var bvcname = jsonCheckCustomer[k].bvcname;//客戶名稱
 							var bvaversion = jsonCheckCustomer[k].bvaversion;//自動版本
 
-							if (!$(".modelTbodyTr").hasClass("modelTbodyTr_" + bvcname)) {
+							if (!$(".modelTbodyTr").hasClass("modelTbodyTr_" + bvcname.replaceAll(" ", ""))) {
 								var exTbodyTr = $("#search_cr .exTbodyTr").clone();
 								exTbodyTr.removeClass("exTbodyTr");
 								exTbodyTr.removeClass("d-none");

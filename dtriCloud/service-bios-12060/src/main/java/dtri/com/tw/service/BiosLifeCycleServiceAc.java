@@ -47,7 +47,8 @@ public class BiosLifeCycleServiceAc {
 		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
 		int total = pageSetJson.get("total").getAsInt();
 		int batch = pageSetJson.get("batch").getAsInt();
-
+		total = 9999;
+		batch = 0;
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "bvmodel"));// 機種別
@@ -105,9 +106,7 @@ public class BiosLifeCycleServiceAc {
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "bvcname", "Ex:對應客戶?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bvversion", "Ex:BIOS version?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
 			selectStatusArr.add("正常_0");
@@ -127,6 +126,14 @@ public class BiosLifeCycleServiceAc {
 			ArrayList<BiosVersion> entitys = biosVersionDao.findAllBySearch(searchData.getBvcpugenerations(),
 					searchData.getBvmodel(), searchData.getBvcname(), searchData.getBvversion(),
 					searchData.getSysstatus(), pageable);
+			// 如果有選特定客戶?->抓取預設->放入資料
+			if (searchData.getBvcname() != null && entitys.size() > 0) {
+				ArrayList<BiosVersion> entitysDef = biosVersionDao.findAllByOnlyDefSearch(null,
+						entitys.get(0).getBvmodel(),pageable);
+				entitysDef.forEach(def -> {
+					entitys.add(def);
+				});
+			}
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

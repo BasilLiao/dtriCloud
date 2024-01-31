@@ -1,65 +1,77 @@
 <style>
-/*Table 寬度滾動*/
-#report_c .table-responsive {
-	display: block;
-	width: 100%;
-	overflow-x: auto;
-	min-height: 400px;
-}
-/*Table 自動隱藏*/
-#report_c .table-responsive th, #report_c .table-responsive td {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
-/*Table 表格固定*/
-#report_c .fixedC1 {
-	left: 0px;
-	position: sticky;
-}
-/*Table 每隔表格內_框線*/
-#report_c .table-bordered td, #report_c .table-bordered th {
-	border: 1px solid #1b76fd;
-	padding: 2px;
-}
-/*Table 表格外框線*/
-#report_c #rcReport table {
-	min-height: 210px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
+	/*Table 寬度滾動*/
+	#report_c .table-responsive {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+		min-height: 400px;
+	}
 
-/*Table 表格內 背景色*/
-#report_c .table-white {
-	--bs-table-bg: #fff;
-}
-/*標題色彩*/
-#report_c .titleColor {
-	background-color: #cfe2ff;
-}
-/*直立式呈現邊字*/
-#report_c .wlr {
-	writing-mode: vertical-lr;
-	width: 20px;
-}
+	/*Table 自動隱藏*/
+	#report_c .table-responsive th,
+	#report_c .table-responsive td {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
 
-/*checkbox_24*/
-#report_c .checkbox_24 {
-	width: 24px;
-	height: 24px;
-}
+	/*Table 表格固定*/
+	#report_c .fixedC1 {
+		left: 0px;
+		position: sticky;
+	}
+
+	/*Table 每隔表格內_框線*/
+	#report_c .table-bordered td,
+	#report_c .table-bordered th {
+		border: 1px solid #1b76fd;
+		padding: 2px;
+	}
+
+	/*Table 表格外框線*/
+	#report_c #rcReport table {
+		min-height: 210px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
+
+	/*Table 表格內 背景色*/
+	#report_c .table-white {
+		--bs-table-bg: #fff;
+	}
+
+	/*標題色彩*/
+	#report_c .titleColor {
+		background-color: #cfe2ff;
+	}
+
+	/*直立式呈現邊字*/
+	#report_c .wlr {
+		writing-mode: vertical-lr;
+		width: 20px;
+	}
+
+	/*checkbox_24*/
+	#report_c .checkbox_24 {
+		width: 24px;
+		height: 24px;
+	}
 </style>
 <div id="report_c" class="row m-0 p-0">
 	<div class="col-lg-3 p-0">
 		<!-- 控制面板 -->
 		<div id="rcCell" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcCellOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcCellOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcCellOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Choose table cell </b>
-				<div id="exReportItemList" class="col border border-primary justify-content-around row m-0 p-1 overflow-auto" style="max-height: 60vh;">
-					<button type="button" class="exItemBtn lh-1 col-3 col-lg-5 p-2 m-1 btn btn-sm btn-outline-primary d-none">
+				<div id="exReportItemList"
+					class="col border border-primary justify-content-around row m-0 p-1 overflow-auto"
+					style="max-height: 60vh;">
+					<button type="button"
+						class="exItemBtn lh-1 col-3 col-lg-5 p-2 m-1 btn btn-sm btn-outline-primary d-none">
 						<b class="itemBtnShow">Table cell1</b><br>
 						<div class="itemBtnCell">()</div>
 					</button>
@@ -71,7 +83,8 @@
 		<!-- 條件面板 -->
 		<div id="rcItem" class="col-lg-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcItemOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcItemOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse show" id="rcItemOpen">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> where? </b>
@@ -80,7 +93,9 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Cell name</div>
 							<div class="p-1">
-								<input id="rcCellName" disabled="disabled" class="col-12 m-0 p-1 border border-dark form-control" type="text" name="ex_name" placeholder="Ex:choose table cell" autofocus>
+								<input id="rcCellName" disabled="disabled"
+									class="col-12 m-0 p-1 border border-dark form-control" type="text" name="ex_name"
+									placeholder="Ex:choose table cell" autofocus>
 							</div>
 						</div>
 					</div>
@@ -116,13 +131,19 @@
 							<div class="titleColor fw-bolder rounded-top">Value?</div>
 							<div class="p-1">
 								<div>
-									<input id="rcValueText" class="rcValues col-12 m-0 p-1 border border-dark form-control" type="text" id="" name="ex_name2" placeholder="Ex:Search something">
+									<input id="rcValueText"
+										class="rcValues col-12 m-0 p-1 border border-dark form-control" type="text"
+										id="" name="ex_name2" placeholder="Ex:Search something">
 								</div>
 								<div>
-									<input id="rcValueNumber" class="rcValues col-12 m-0 p-1 border border-dark form-control d-none" type="number" id="" name="ex_name3" placeholder="Ex:123">
+									<input id="rcValueNumber"
+										class="rcValues col-12 m-0 p-1 border border-dark form-control d-none"
+										type="number" id="" name="ex_name3" placeholder="Ex:123">
 								</div>
 								<div>
-									<input id="rcValueDateTime" class="rcValues col-12 m-0 p-1 border border-dark form-control datetimepicker_date d-none" type="text" id="" name="ex_name4" placeholder="Ex:1990-01-01 23:30:30">
+									<input id="rcValueDateTime"
+										class="rcValues col-12 m-0 p-1 border border-dark form-control datetimepicker_date d-none"
+										type="text" id="" name="ex_name4" placeholder="Ex:1990-01-01 23:30:30">
 								</div>
 							</div>
 						</div>
@@ -133,7 +154,8 @@
 		<!-- 控制面板 -->
 		<div id="rcController" class="col-lg-12 p-1 ">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcControllerOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcControllerOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcControllerOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
@@ -142,11 +164,13 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Conditions</div>
 							<div class="row m-0">
-								<button id="rcAddQuery" type="button" disabled="disabled" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+								<button id="rcAddQuery" type="button" disabled="disabled"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
 									<b>Add<br>query()
 									</b>
 								</button>
-								<button id="rcClearQuery" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<button id="rcClearQuery" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 									<b>Clear<br>query()
 									</b>
 								</button>
@@ -157,11 +181,13 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Search</div>
 							<div class="row m-0">
-								<button id="rcSend" type="button" disabled="disabled" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+								<button id="rcSend" type="button" disabled="disabled"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
 									<b>Send<br>(AR)
 									</b>
 								</button>
-								<button id="rcClearAll" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<button id="rcClearAll" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
 									<b>Clear<br>all()
 									</b>
 								</button>
@@ -172,7 +198,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Report</div>
 							<div class="row m-0">
-								<button id="rcExport" type="button" class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
+								<button id="rcExport" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
 									<b>Export<br>excel()
 									</b>
 								</button>
@@ -187,7 +214,8 @@
 		<!-- 條件清單面板 -->
 		<div id="rcQueryList" class="col-12 p-1 ">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcQueryListOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcQueryListOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcQueryListOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Query list </b>
@@ -202,11 +230,13 @@
 		<!-- 紀錄面板 -->
 		<div id="rcHistory" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcHistoryOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcHistoryOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcHistoryOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> History </b>
-				<div class="col border border-primary justify-content-around row m-0 p-1 overflow-auto" style="max-height: 80vh;">
+				<div class="col border border-primary justify-content-around row m-0 p-1 overflow-auto"
+					style="max-height: 80vh;">
 					<button type="button" class="lh-1 col-11 p-1 m-1 btn btn-sm btn-outline-primary">
 						<b>XXXX 條件 XXXX<br>(時間)
 						</b>
@@ -219,7 +249,8 @@
 		<!-- 報告面板 -->
 		<div id="rcReport" class="col-12 p-1">
 			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse" data-bs-target="#rcReportOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#rcReportOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcReportOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Report </b>
@@ -241,206 +272,206 @@
 	</div>
 </div>
 <script type="text/javascript">
-//宣告
-//console.log("report.html(init)");
-report={
-	//資料
-	data:{
-		searchSet:{},
-		rcQueryNumber:1,
-		entityJsons:[],
-		entityDateTime:"",
-	},	
-	//方法
-	methods:{
-		create(){
-			//Step1.初始化
-			console.log("report.html(created)");
-			var searchSetJson = JSON.parse(main.resq_data['searchSet']);
-			report.data.searchSet = searchSetJson['searchSet'];
-			report.data.entityDateTime = main.resq_data['entityDateTime'];
-			//console.log(searchSetJson);
-			//Step1.查詢按鍵-排序
-			var resultThead = searchSetJson['resultThead'];
-			resultThead = main.methods.orderedSort(resultThead);
-			//choose table cell && 
-			var check1=true;
-			Object.keys(resultThead).forEach(function(k){
-				//如果隱藏
-				if(!resultThead[k].show==0){
-					//exReportTitle.addClass('d-none');
-					//exReportVal.addClass('d-none');
-					//複製格式
-					var itemBtn = $('#exReportItemList .exItemBtn').clone();
-					var exReportTitle =  $('#reportTitleList .exReportTitle').clone();
-					var exReportVal =  $('#reportValueList .exReportVal').clone();
-					//條件按鈕
-					itemBtn.addClass("itemBtn");
-					itemBtn.removeClass("exItemBtn");
-					itemBtn.removeClass("d-none");
-					itemBtn.find(".itemBtnCell").text("("+resultThead[k].cellName+")");
-					itemBtn.attr('title',resultThead[k].cellName);
-					//報表欄位
-					exReportTitle.removeClass("exReportTitle");
-					exReportTitle.removeClass("d-none");
-					exReportVal.removeClass("exReportVal");
-					exReportVal.removeClass("d-none");
-					
-					//固定第一格式
-					if(check1 && resultThead[k].show==1){
-						check1=false;
-						exReportTitle.addClass('fixedC1');
-						exReportVal.addClass('fixedC1');
+	//宣告
+	//console.log("report.html(init)");
+	report = {
+		//資料
+		data: {
+			searchSet: {},
+			rcQueryNumber: 1,
+			entityJsons: [],
+			entityDateTime: "",
+		},
+		//方法
+		methods: {
+			create() {
+				//Step1.初始化
+				console.log("report.html(created)");
+				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				report.data.searchSet = searchSetJson['searchSet'];
+				report.data.entityDateTime = main.resq_data['entityDateTime'];
+				//console.log(searchSetJson);
+				//Step1.查詢按鍵-排序
+				var resultThead = searchSetJson['resultThead'];
+				resultThead = main.methods.orderedSort(resultThead);
+				//choose table cell && 
+				var check1 = true;
+				Object.keys(resultThead).forEach(function (k) {
+					//如果隱藏
+					if (!resultThead[k].show == 0) {
+						//exReportTitle.addClass('d-none');
+						//exReportVal.addClass('d-none');
+						//複製格式
+						var itemBtn = $('#exReportItemList .exItemBtn').clone();
+						var exReportTitle = $('#reportTitleList .exReportTitle').clone();
+						var exReportVal = $('#reportValueList .exReportVal').clone();
+						//條件按鈕
+						itemBtn.addClass("itemBtn");
+						itemBtn.removeClass("exItemBtn");
+						itemBtn.removeClass("d-none");
+						itemBtn.find(".itemBtnCell").text("(" + resultThead[k].cellName + ")");
+						itemBtn.attr('title', resultThead[k].cellName);
+						//報表欄位
+						exReportTitle.removeClass("exReportTitle");
+						exReportTitle.removeClass("d-none");
+						exReportVal.removeClass("exReportVal");
+						exReportVal.removeClass("d-none");
+
+						//固定第一格式
+						if (check1 && resultThead[k].show == 1) {
+							check1 = false;
+							exReportTitle.addClass('fixedC1');
+							exReportVal.addClass('fixedC1');
+						}
+
+						//如果有翻譯
+						if (resultThead[k].cellLanguage != '') {
+							var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+							itemBtn.find(".itemBtnShow").text(cellName == "" ? resultThead[k].cellName : cellName);
+							//欄位
+							exReportTitle.text(cellName == "" ? resultThead[k].cellName : cellName);
+							exReportTitle.css('minWidth', resultThead[k].width + "px");
+							exReportVal.text("");
+							exReportVal.css('maxWidth', resultThead[k].width + "px");
+						} else {
+							itemBtn.find(".itemBtnShow").text(resultThead[k].cellName);
+							exReportTitle.find(".itemBtnShow").text(resultThead[k].cellName);
+							//藍位
+							exReportTitle.text(resultThead[k].cellName);
+							exReportTitle.css('minWidth', resultThead[k].width + "px");
+							exReportVal.text("");
+							exReportVal.css('maxWidth', resultThead[k].width + "px");
+						}
+						//串接添加
+						itemBtn.appendTo('#exReportItemList');
+						exReportVal.addClass(resultThead[k].cellName);
+						exReportVal.appendTo('#reportValueList');
+						exReportTitle.addClass(resultThead[k].cellName);
+						exReportTitle.appendTo('#reportTitleList');
 					}
-					
-					//如果有翻譯
-					if(resultThead[k].cellLanguage!=''){
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-						itemBtn.find(".itemBtnShow").text(cellName==""?resultThead[k].cellName:cellName);
-						//欄位
-						exReportTitle.text(cellName==""?resultThead[k].cellName:cellName);
-						exReportTitle.css('minWidth',resultThead[k].width+"px");
-						exReportVal.text("");
-						exReportVal.css('maxWidth',resultThead[k].width+"px");
-					}else{
-						itemBtn.find(".itemBtnShow").text(resultThead[k].cellName);
-						exReportTitle.find(".itemBtnShow").text(resultThead[k].cellName);
-						//藍位
-						exReportTitle.text(resultThead[k].cellName);
-						exReportTitle.css('minWidth',resultThead[k].width+"px");
-						exReportVal.text("");
-						exReportVal.css('maxWidth',resultThead[k].width+"px");
+				});
+				//==========================監聽==========================
+				//選擇欄位
+				$(document).off("click", "#rcCellOpen button");
+				$(document).on("click", "#rcCellOpen button", function () {
+					//console.log( $(this).attr('title'));
+					$('#rcCellName').attr('title', $(this).attr('title'));
+					$('#rcCellName').val($(this).find('.itemBtnShow').text());
+					$('#rcAddQuery').removeAttr('disabled');
+				});
+				//選擇類型
+				$(document).off("change", "#rcValueType");
+				$(document).on("change", "#rcValueType", function () {
+					// console.log( $(this).val());
+					$('.rcValues').addClass('d-none');
+					$('.rcValues').val('');
+					switch ($(this).val()) {
+						case 'text':
+							$('#rcValueText').removeClass('d-none');
+							break;
+						case 'number':
+							$('#rcValueNumber').removeClass('d-none');
+							break;
+						case 'dateTime':
+							$('#rcValueDateTime').removeClass('d-none');
+							break;
 					}
-					//串接添加
-					itemBtn.appendTo('#exReportItemList');
-					exReportVal.addClass(resultThead[k].cellName);
-					exReportVal.appendTo('#reportValueList');
-					exReportTitle.addClass(resultThead[k].cellName);
-					exReportTitle.appendTo('#reportTitleList');
-				}
-			});
-			//==========================監聽==========================
-			//選擇欄位
-			$(document).off("click", "#rcCellOpen button");
-			$(document).on("click", "#rcCellOpen button", function () {
-				//console.log( $(this).attr('title'));
-				$('#rcCellName').attr('title',$(this).attr('title'));
-				$('#rcCellName').val($(this).find('.itemBtnShow').text());
-				$('#rcAddQuery').removeAttr('disabled');
-			});
-			//選擇類型
-			$(document).off("change", "#rcValueType");
-			$(document).on("change", "#rcValueType", function () {
-				// console.log( $(this).val());
-				 $('.rcValues').addClass('d-none');
-				 $('.rcValues').val('');
-				 switch($(this).val()){ 
-				 case 'text':
-					 $('#rcValueText').removeClass('d-none');
-					 break;
-				 case 'number':
-					 $('#rcValueNumber').removeClass('d-none');
-					 break;
-				 case 'dateTime':
-					 $('#rcValueDateTime').removeClass('d-none');
-					 break;
-				 }
-			//時間格式
-		    report.methods.datetimepickerDate(); 
-			});
-			//添加條件
-			$(document).off("click", "#rcAddQuery");
-			$(document).on("click", "#rcAddQuery", function () {
-				//console.log( $(this).val());
-				if($('#rcCellName').val()!=""){
-					var rcCellTitle = $('#rcCellName').attr('title');
-					var rcCellName = $('#rcCellName').val();
-					var rcWhereTitle = $( "#rcWhere option:selected" ).text();
-					var rcWhereValue = $( "#rcWhere option:selected" ).val();
-					var rcValueTypeTitle = $( "#rcValueType option:selected" ).text();
-					var rcValueTypeValue = $( "#rcValueType option:selected" ).val();
-					
-					var rcValue = "";
-					//Value type?
-					if(!$('#rcValueText').hasClass('d-none')){
-						rcValue = $('#rcValueText').val();
-					}else if(!$('#rcValueNumber').hasClass('d-none')){
-						rcValue = $('#rcValueNumber').val();
-					}else if(!$('#rcValueDateTime').hasClass('d-none')){
-						rcValue = $('#rcValueDateTime').val();
+					//時間格式
+					report.methods.datetimepickerDate();
+				});
+				//添加條件
+				$(document).off("click", "#rcAddQuery");
+				$(document).on("click", "#rcAddQuery", function () {
+					//console.log( $(this).val());
+					if ($('#rcCellName').val() != "") {
+						var rcCellTitle = $('#rcCellName').attr('title');
+						var rcCellName = $('#rcCellName').val();
+						var rcWhereTitle = $("#rcWhere option:selected").text();
+						var rcWhereValue = $("#rcWhere option:selected").val();
+						var rcValueTypeTitle = $("#rcValueType option:selected").text();
+						var rcValueTypeValue = $("#rcValueType option:selected").val();
+
+						var rcValue = "";
+						//Value type?
+						if (!$('#rcValueText').hasClass('d-none')) {
+							rcValue = $('#rcValueText').val();
+						} else if (!$('#rcValueNumber').hasClass('d-none')) {
+							rcValue = $('#rcValueNumber').val();
+						} else if (!$('#rcValueDateTime').hasClass('d-none')) {
+							rcValue = $('#rcValueDateTime').val();
+						}
+						//查詢條件
+						var queryList = rcCellName + ' ' + rcWhereTitle + ' ' + rcValue + ' [' + rcValueTypeTitle + ']';
+						var queryListValue = rcCellTitle + '<_>' + rcWhereValue + '<_>' + rcValue + '<_>' + rcValueTypeValue;
+						//KEY
+						report.data.rcQueryNumber++;
+						var rcQueryNumber = report.data.rcQueryNumber;
+						rcQueryOneEx = $('#rcQueryOneEx').clone();
+						rcQueryOneEx.removeClass('d-none');
+						rcQueryOneEx.attr("id", "rcQueryOne_" + rcQueryNumber);
+						rcQueryOneEx.find(".bi-x-lg").attr('title', "rcQueryOne_" + rcQueryNumber);
+						rcQueryOneEx.find("div").text(queryList);
+						rcQueryOneEx.find("div").addClass("rcQuerySend");
+						rcQueryOneEx.find("div").attr('title', queryListValue);
+						rcQueryOneEx.insertAfter('#rcQueryOneEx');
+						//還原
+						$('#rcCellName').val('');
+						$('#rcValueText').val('');
+						//開放
+						$('#rcAddQuery').attr('disabled', 'disabled');
+						$('#rcSend').removeAttr('disabled');
 					}
-					//查詢條件
-					var queryList = rcCellName+' '+rcWhereTitle+' '+rcValue+' ['+rcValueTypeTitle+']';
-					var queryListValue = rcCellTitle+'<_>'+rcWhereValue+'<_>'+rcValue+'<_>'+rcValueTypeValue;
-					//KEY
-					report.data.rcQueryNumber++;
-					var rcQueryNumber = report.data.rcQueryNumber;
-					rcQueryOneEx = $('#rcQueryOneEx').clone();
-					rcQueryOneEx.removeClass('d-none');
-					rcQueryOneEx.attr("id","rcQueryOne_"+rcQueryNumber);
-					rcQueryOneEx.find(".bi-x-lg").attr('title',"rcQueryOne_"+rcQueryNumber);
-					rcQueryOneEx.find("div").text(queryList);
-					rcQueryOneEx.find("div").addClass("rcQuerySend");
-					rcQueryOneEx.find("div").attr('title',queryListValue);
-					rcQueryOneEx.insertAfter('#rcQueryOneEx');
-					//還原
-					$('#rcCellName').val('');
-					$('#rcValueText').val('');
-					//開放
-					$('#rcAddQuery').attr('disabled','disabled');
-					$('#rcSend').removeAttr('disabled');
-				}
-			});
-			//移除條件
-			$(document).off("click", "#rcClearQuery");
-			$(document).on("click", "#rcClearQuery", function () {
-				//console.log( $(this).val());
-				$('#rcQueryListOpen .bi-x-lg').trigger("click");				
-			});
-			//清除所有
-			$(document).off("click", "#rcClearAll");
-			$(document).on("click", "#rcClearAll", function () {
-				//console.log( $(this).val());
-				$('#rcQueryListOpen .bi-x-lg').trigger("click");	
-				$('#rcAddQuery').attr('disabled','disabled');
-				$('#rcSend').attr('disabled','disabled');
-				$('.rcRe').remove();
-				$('#rcCellName').text('').attr('title','');
-				$('#rcValueText').text('');
-			});
-			//清除特定
-			$(document).off("click", "#rcQueryList .bi-x-lg");
-			$(document).on("click", "#rcQueryList .bi-x-lg", function () {
-				//console.log( $(this).attr('title'));
-				$('#'+$(this).attr('title')).remove();
-			});
-			//監聽-查詢(促發)
-			$(document).off("keyup", ".rcValues ");
-			$(document).on("keyup", ".rcValues ", function (e) {
-				 if (e.key === 'Enter' || e.keyCode === 13) {
-					 $(e.currentTarget).select();
-					 $("#rcAddQuery").trigger( "click" );
-				 }
-			});
-			//傳送條件
-			$(document).off("click", "#rcSend");
-			$(document).on("click", "#rcSend", function () {
-				//console.log( $(this).val());
-				report.methods.reportSend();
-			});
-			//資料匯出
-			$(document).off("click", "#rcExport");
-			$(document).on("click", "#rcExport", function () {
-				//https://github.com/JackGit/table2excel.js
-				//設置
-				var options = {
-					workbook: {
-						views: [{
-							x: 0, y: 0, width: 10000, height: 20000,
-							firstSheet: 0, activeTab: 1, visibility: 'visible'
-						}]
-					},
-					widthRatio: .14,//寬度比例
+				});
+				//移除條件
+				$(document).off("click", "#rcClearQuery");
+				$(document).on("click", "#rcClearQuery", function () {
+					//console.log( $(this).val());
+					$('#rcQueryListOpen .bi-x-lg').trigger("click");
+				});
+				//清除所有
+				$(document).off("click", "#rcClearAll");
+				$(document).on("click", "#rcClearAll", function () {
+					//console.log( $(this).val());
+					$('#rcQueryListOpen .bi-x-lg').trigger("click");
+					$('#rcAddQuery').attr('disabled', 'disabled');
+					$('#rcSend').attr('disabled', 'disabled');
+					$('.rcRe').remove();
+					$('#rcCellName').text('').attr('title', '');
+					$('#rcValueText').text('');
+				});
+				//清除特定
+				$(document).off("click", "#rcQueryList .bi-x-lg");
+				$(document).on("click", "#rcQueryList .bi-x-lg", function () {
+					//console.log( $(this).attr('title'));
+					$('#' + $(this).attr('title')).remove();
+				});
+				//監聽-查詢(促發)
+				$(document).off("keyup", ".rcValues ");
+				$(document).on("keyup", ".rcValues ", function (e) {
+					if (e.key === 'Enter' || e.keyCode === 13) {
+						$(e.currentTarget).select();
+						$("#rcAddQuery").trigger("click");
+					}
+				});
+				//傳送條件
+				$(document).off("click", "#rcSend");
+				$(document).on("click", "#rcSend", function () {
+					//console.log( $(this).val());
+					report.methods.reportSend();
+				});
+				//資料匯出
+				$(document).off("click", "#rcExport");
+				$(document).on("click", "#rcExport", function () {
+					//https://github.com/JackGit/table2excel.js
+					//設置
+					var options = {
+						workbook: {
+							views: [{
+								x: 0, y: 0, width: 10000, height: 20000,
+								firstSheet: 0, activeTab: 1, visibility: 'visible'
+							}]
+						},
+						widthRatio: .14,//寬度比例
 						plugins: [
 							Table2Excel.plugins.fontPlugin,
 							Table2Excel.plugins.fillPlugin,
@@ -449,127 +480,134 @@ report={
 							Table2Excel.plugins.hyperlinkPlugin,
 							Table2Excel.plugins.autoWidthPlugin,
 							{
-								workbookCreated ({ workbook, tables }) {
+								workbookCreated({workbook, tables}) {
 									//創建時(Excel)
-								},worksheetCreated ({ workbook, tables, worksheet, table }) {
+								}, worksheetCreated({workbook, tables, worksheet, table}) {
 									//創建時(分頁簿)
 									//console.log(tables);
-								},workcellCreated ({ workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange }) {
-						  			//創建時(每一格欄位)-呼叫
-						  			//console.log(cell);
-						  		},worksheetCompleted ({ workbook, tables, worksheet, table }) {
-							    	//完成時-呼叫
-								    //worksheet.getRow(1).hidden = true//隱藏第一筆
-								    worksheet.getColumn(1).hidden = true//隱藏第一行
-						    	}
-						  	},
+								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
+									//創建時(每一格欄位)-呼叫
+									//console.log(cell);
+								}, worksheetCompleted({workbook, tables, worksheet, table}) {
+									//完成時-呼叫
+									//worksheet.getRow(1).hidden = true//隱藏第一筆
+									worksheet.getColumn(1).hidden = true//隱藏第一行
+								}
+							},
 						]
 					}
-				
-				const table2Excel = new Table2Excel('#rcReportExcel',options);//id or class or table
-				table2Excel.export($('#nav_functional_unit').text(), 'xlsx');//檔案名稱+副檔名
-			
-			});
-			
-			
-			//時間格式
-            report.methods.datetimepickerDate();
-		},
-		datetimepickerDate(){
-			//日期時間格式
-			$('#report_c .datetimepicker_date').datetimepicker({
-				format: 'yyyy-mm-dd hh:ii:00',
-				pickerPosition: 'bottom-right',
-				//minView:1,
-				// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
-				minuteStep: 30,
-				autoclose: true,
-				endDate: '+1d',
-				datesDisabled: '+1d',
-				todayBtn: true,
-				bootcssVer:5,
-				//......可以同上項目代碼自定義設置
-			});
-			//時間格式
-            $('#report_c .datetimepicker_time').datetimepicker({
-                format: 'hh:ii',
-                startView: 1,
-                minuteStep: 30,
-                pickDate: false,
-                autoclose: true,
-                timeFormat: 'hh:mm',
-            });
-		},
-		//==========================傳送資料==========================
-		reportSend(){
-			var data={};
-			var req_data={};
-			var entityJson=[];
-			//查詢
-			if($("#rcQueryListOpen .rcQuerySend").length>0){
-				$("#rcQueryListOpen .rcQuerySend").each(function( index ) {
-					console.log(index+" : "+$(this).attr("title"));
-					entityJson.push($(this).attr("title"));
+
+					const table2Excel = new Table2Excel('#rcReportExcel', options);//id or class or table
+					table2Excel.export($('#nav_functional_unit').text(), 'xlsx');//檔案名稱+副檔名
+
 				});
-				data['entityReportJson'] = JSON.stringify(entityJson);
-				data['callBackFunction'] = "report";
-				//包裝
-				req_data['data'] = data;
-				req_data['url'] = $('#nav_functional_unit').attr('title')+".basil.ARR";
-				req_data['type'] = "POST";
-				main.methods.ajaxSend(req_data,true);				
-			}
-		},
-		reportReturn(){
-			//查詢回傳
-			console.log("reportReturn");
-			console.log()
-			//Step5.帶入資料
-			if(main.resq_data['entityJson']!=""){
-				report.data.entityJsons = JSON.parse(main.resq_data['entityJson']);
-				console.log(report.data.entityJsons);
-				report.methods.reportReLoad();
-			}
-		},
-		reportReLoad(){
-			//資料處理
-			$('.rcRe').remove();
-			var entityJsons = report.data.entityJsons;
-			for(var x = 0 ; x < entityJsons.length ;x++){
-				var entity = entityJsons[x];//1筆資料
-				var entityDateTime =  report.data.entityDateTime;
-				var reportValueList = $('#reportValueList').clone();
-				reportValueList.attr('id','');
-				reportValueList.removeClass("d-none");
-				reportValueList.addClass("rcRe");
-				//每個資料欄位
-				Object.keys(entity).forEach(function(k){
-					//是否時間格式?
-					if(entityDateTime.indexOf(k)>=0){
-						var dF = new Date(entity[k]);
-						 var dateF = dF.getFullYear()+"-";
-						 dateF += ((dF.getMonth()+1)<10? "0"+(dF.getMonth()+1) : (dF.getMonth()+1))+"-";
-						 dateF += (dF.getDate()<10? "0"+(dF.getDate()):dF.getDate()) +" ";
-						 dateF += (dF.getHours()<10? "0"+dF.getHours():dF.getHours()) +":";
-						 dateF += (dF.getMinutes()<10? "0"+dF.getMinutes():dF.getMinutes())+":";
-						 dateF += (dF.getSeconds()<10? "0"+dF.getSeconds():dF.getSeconds()); 
-						 reportValueList.find('.'+k).text(dateF);
-					}else{
-						reportValueList.find('.'+k).text(entity[k]);
-					}
+
+
+				//時間格式
+				report.methods.datetimepickerDate();
+			},
+			datetimepickerDate() {
+				//日期時間格式
+				$('#report_c .datetimepicker_date').datetimepicker({
+					format: 'yyyy-mm-dd hh:ii:00',
+					pickerPosition: 'bottom-right',
+					//minView:1,
+					// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
+					minuteStep: 30,
+					autoclose: true,
+					endDate: '+1d',
+					datesDisabled: '+1d',
+					todayBtn: true,
+					bootcssVer: 5,
+					//......可以同上項目代碼自定義設置
 				});
-				$('#reportValueList').before(reportValueList);
-				
-				
-			}
-			
-			
+				//時間格式
+				$('#report_c .datetimepicker_time').datetimepicker({
+					format: 'hh:ii',
+					startView: 1,
+					minuteStep: 30,
+					pickDate: false,
+					autoclose: true,
+					timeFormat: 'hh:mm',
+				});
+			},
+			//==========================傳送資料==========================
+			reportSend() {
+				var data = {};
+				var req_data = {};
+				var entityJson = [];
+				//查詢
+				if ($("#rcQueryListOpen .rcQuerySend").length > 0) {
+					$("#rcQueryListOpen .rcQuerySend").each(function (index) {
+						console.log(index + " : " + $(this).attr("title"));
+						entityJson.push($(this).attr("title"));
+					});
+					data['entityReportJson'] = JSON.stringify(entityJson);
+					data['callBackFunction'] = "report";
+					//包裝
+					req_data['data'] = data;
+					req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.ARR";
+					req_data['type'] = "POST";
+					main.methods.ajaxSend(req_data, true);
+				}
+			},
+			reportReturn() {
+				//查詢回傳
+				console.log("reportReturn");
+				console.log()
+				//Step5.帶入資料
+				if (main.resq_data['entityJson'] != "") {
+					report.data.entityJsons = JSON.parse(main.resq_data['entityJson']);
+					console.log(report.data.entityJsons);
+					report.methods.reportReLoad();
+				}
+			},
+			reportReLoad() {
+				//資料處理
+				$('.rcRe').remove();
+				var entityJsons = report.data.entityJsons;
+				for (var x = 0; x < entityJsons.length; x++) {
+					var entity = entityJsons[x];//1筆資料
+					var entityDateTime = report.data.entityDateTime;
+					var reportValueList = $('#reportValueList').clone();
+					reportValueList.attr('id', '');
+					reportValueList.removeClass("d-none");
+					reportValueList.addClass("rcRe");
+					//每個資料欄位
+					Object.keys(entity).forEach(function (k) {
+						//是否時間格式?
+						if (entityDateTime.indexOf(k) >= 0) {
+							var dF = new Date(entity[k]);
+							var dateF = dF.getFullYear() + "-";
+							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+							dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+							dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+							reportValueList.find('.' + k).text(dateF);
+						} else {
+							//如果換行
+							if (entity[k] != "" && entity[k] != null) {
+								var val = entity[k]+"";
+								val = val.replaceAll(/\n/g, "<br/>");
+								reportValueList.find('.' + k).html(val);
+							} else {
+								reportValueList.find('.' + k).text(entity[k]);
+							}
+						}
+					});
+					$('#reportValueList').before(reportValueList);
+
+
+				}
+
+
+			},
+			destroy() {
+				//銷毀
+				console.log("report.html(destroy)");
+
+			},
 		},
-		destroy() {
-			//銷毀
-			console.log("report.html(destroy)");
-			
-		},
-	},	
-};
+	};
 </script>
