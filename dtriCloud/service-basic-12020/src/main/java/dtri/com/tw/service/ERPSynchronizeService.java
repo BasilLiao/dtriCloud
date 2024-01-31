@@ -253,7 +253,7 @@ public class ERPSynchronizeService {
 		Map<String, BiosVersion> biosVersionMaps = new HashMap<>();// bios配對?
 		biosVersionDao.findAll().forEach(b -> {
 			// (機種別_客戶)
-			String biosKey = b.getBvmodel() + "_" + b.getBvcname();
+			String biosKey = b.getBvmodel() + ")_(" + b.getBvcname();
 			// 新 (製令單 與 BIOS)配對上 && 沒登記過
 			if (commandMaps.containsKey(biosKey) && !biosVersionMaps.containsKey(biosKey)) {
 				biosVersionMaps.put(biosKey, b);
@@ -264,10 +264,10 @@ public class ERPSynchronizeService {
 		ArrayList<BasicNotificationMail> readyNeedMails = new ArrayList<BasicNotificationMail>();
 		biosVersionMaps.forEach((k, v) -> {
 			// 如果有客戶
-			if (k.split("_").length == 2) {
+			if (k.split("\\)_\\(").length == 2) {
 				// 機種別
-				String modelName = k.split("_")[0];// 機種別
-				String modelCustomized = k.split("_")[1];// 客戶
+				String modelName = k.split("\\)_\\(")[0];// 機種別
+				String modelCustomized = k.split("\\)_\\(")[1];// 客戶
 				String version = v.getBvversion();// 目前版本
 
 				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
@@ -275,10 +275,10 @@ public class ERPSynchronizeService {
 				ArrayList<String> mainUsers = new ArrayList<String>();
 				ArrayList<String> secondaryUsers = new ArrayList<String>();
 				principals.forEach(u -> {
-					// 主要?次要 ->)_(區分
-					if (u.getBpprimary() == 0) {
+					// 主要?次要?+制令單通知
+					if (u.getBpprimary() == 0 && u.getBponotice()) {
 						mainUsers.add(u.getBpsumail());
-					} else {
+					} else if (u.getBpprimary() == 1 && u.getBponotice()) {
 						secondaryUsers.add(u.getBpsumail());
 					}
 				});
@@ -1682,9 +1682,9 @@ public class ERPSynchronizeService {
 		biosVers.forEach(b -> {
 			String key = b.getBvmodel();
 			// 測試用
-			if (key.equals("DT301CY")) {
-				System.out.println(key);
-			}
+//			if (key.equals("DT301CY")) {
+//				System.out.println(key);
+//			}
 
 			// 一般主要
 			if (b.getBvcname().equals("")) {
@@ -1700,7 +1700,7 @@ public class ERPSynchronizeService {
 				}
 			} else {
 				// 客製化
-				key += "_" + b.getBvcname();
+				key += ")_(" + b.getBvcname();
 				// 如果沒有重複
 				if (!bversionCust.containsKey(key)) {
 					bversionCust.put(key, b);
@@ -1715,7 +1715,7 @@ public class ERPSynchronizeService {
 		});
 		// Step2.檢查那些客製化落後?+匹配對象?
 		bversionCust.forEach((k, v) -> {
-			String modelName = k.split("_")[0];
+			String modelName = k.split("\\)_\\(")[0];
 			int bvaversionCust = v.getBvaversion();
 			// 有比對到機種別 & 版本比較
 			if (bversionDef.containsKey(modelName)) {
@@ -1730,10 +1730,10 @@ public class ERPSynchronizeService {
 					ArrayList<String> mainUsers = new ArrayList<String>();
 					ArrayList<String> secondaryUsers = new ArrayList<String>();
 					principals.forEach(u -> {
-						// 主要?次要 ->)_(區分
-						if (u.getBpprimary() == 0) {
+						// 主要?次要?+有勾選 版本檢查通知
+						if (u.getBpprimary() == 0 && u.getBpmnotice()) {
 							mainUsers.add(u.getBpsumail());
-						} else {
+						} else if (u.getBpprimary() == 1 && u.getBpmnotice()) {
 							secondaryUsers.add(u.getBpsumail());
 						}
 
