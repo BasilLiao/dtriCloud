@@ -184,6 +184,12 @@ public class BiosVersionServiceAc {
 					if (checkData.getBvid().compareTo(entityData.getBvid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 								new String[] { entityData.getBvversion() });
+					} else {
+						// 同一筆資料?// Sysstatus =1 不可修改
+						if (entityData.getSysstatus() == 1 && checkData.getSysstatus() == 1) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+									new String[] { entityData.getBvversion() });
+						}
 					}
 				}
 			}
@@ -221,6 +227,7 @@ public class BiosVersionServiceAc {
 					} else {
 						// 如果只是分支點 改動版本
 						entityDataOld.setBvversion(x.getBvversion());
+						entityDataOld.setBvaversion(x.getBvaversion());
 					}
 				}
 				entityDataOld.setBvcname(x.getBvcname());

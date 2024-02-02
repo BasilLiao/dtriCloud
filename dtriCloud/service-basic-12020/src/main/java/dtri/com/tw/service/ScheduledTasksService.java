@@ -81,7 +81,7 @@ public class ScheduledTasksService {
 				// 機種別
 				synchronizeService.erpSynchronizeProductModel();
 				// 檢查版本
-				synchronizeService.biosVersionCheck();
+				//synchronizeService.biosVersionCheck();
 				// 檢查信件 寄信
 				mailService.readySendCheckEmail();
 
@@ -227,7 +227,7 @@ public class ScheduledTasksService {
 		}
 	}
 
-	// 每日(30)07:00分執行一次
+	// 每日(30)07:30分執行一次
 	// 自動同步
 	@Async
 	@Scheduled(cron = "0 30 07 * * ? ")

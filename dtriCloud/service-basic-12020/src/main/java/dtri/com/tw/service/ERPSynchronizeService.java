@@ -1717,12 +1717,13 @@ public class ERPSynchronizeService {
 		bversionCust.forEach((k, v) -> {
 			String modelName = k.split("\\)_\\(")[0];
 			int bvaversionCust = v.getBvaversion();
+			Boolean lockCust = v.getBvclock();
 			// 有比對到機種別 & 版本比較
 			if (bversionDef.containsKey(modelName)) {
 				int bvaversionDef = bversionDef.get(modelName).getBvaversion();
 				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
-				// 相差n+1版本以上
-				if (bvaversionDef - bvaversionCust >= 2 && principals.size() > 0) {
+				// 相差n+1版本以上+排除鎖定
+				if (bvaversionDef - bvaversionCust >= 2 && principals.size() > 0 && !lockCust) {
 					String versionDefName = bversionDef.get(modelName).getBvversion();
 					String versionCustomizedName = v.getBvversion();
 

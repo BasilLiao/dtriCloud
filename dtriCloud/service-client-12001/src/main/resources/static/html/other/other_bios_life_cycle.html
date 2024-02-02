@@ -121,7 +121,7 @@
 	}
 
 	#search_cr_open tbody {
-		line-height: 70px;
+		line-height: 50px;
 
 	}
 </style>
@@ -198,8 +198,9 @@
 							Def ver
 						</td>
 						<td class="exTbodytd d-none" style="min-width: 100px">
+							<i class="d-none bi bi-lock text-danger"></i>
 							<button id="" type="button"
-								class="model_ver lh-1 col p-3 m-1 btn btn-lg btn-outline-success">
+								class="model_ver lh-1 col p-2 m-1 btn btn-lg btn-outline-success">
 								<b>Ex</b>
 							</button>
 							<div class="d-none unfoundModel">N/A</div>
@@ -620,6 +621,10 @@
 							exTbodytd.find("button").removeClass("btn-outline-success");
 							exTbodytd.find("button").addClass("btn-outline-warning");
 						}
+						//鎖定
+						if (jsonCheckDef[k].bvclock) {
+							exTbodytd.find(".bi-lock").removeClass("d-none");
+						}
 						exTbodytd.removeClass("exTbodytd");
 						exTbodytd.removeClass("d-none");
 						exTbodytd.addClass("model_lv_" + jsonCheckDef[k].bvaversion);
@@ -680,6 +685,10 @@
 								} else if (jsonCheckCustomer[k].bvnosupnote != "") {
 									tagetModel.find("button").removeClass("btn-outline-success");
 									tagetModel.find("button").addClass("btn-outline-warning");
+								}
+								//鎖定
+								if (jsonCheckCustomer[k].bvclock) {
+									tagetModel.find(".bi-lock").removeClass("d-none");
 								}
 								tagetModel.find("button").removeClass("d-none");
 								tagetModel.find(".unfoundModel").addClass("d-none");

@@ -18,7 +18,7 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002, W1003, W1004, W1005
+		E1000, W1000, W1001, W1002, W1003, W1004, W1005, W1006
 	};
 
 	// 故障語言
@@ -56,6 +56,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1005_zh_TW = "[W1005] 服務器尚未開啟!!";
 	public final static String W1005_en_US = "[W1005] The server is not started yet!!";
 	public final static String W1005_vi_VN = "[W1005] Máy chủ chưa được khởi động!!";
+	// 錯誤訊息-不可修改資料
+	public final static String W1006_zh_TW = "[W1006] 不可修改資料 : ${0} !!";
+	public final static String W1006_en_US = "[W1006] Data cannot be modified : ${0} !!";
+	public final static String W1006_vi_VN = "[W1006] Dữ liệu không thể được sửa đổi : ${0} !!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {
@@ -68,7 +72,8 @@ public class CloudExceptionService extends Exception {
 	 * @param message    訊息(如果:有則帶入 沒有澤預設)
 	 * @param Language   國家語言?
 	 */
-	public CloudExceptionService(PackageBean packageBean, ErColor errorColor, ErCode errorCode, Lan language, String[] message) {
+	public CloudExceptionService(PackageBean packageBean, ErColor errorColor, ErCode errorCode, Lan language,
+			String[] message) {
 		super("[" + errorColor + " " + errorCode + "]:" + language + " " + message);
 		this.setErrorColor(errorColor + "");
 		this.setErrorCode(errorCode + "");
@@ -129,7 +134,7 @@ public class CloudExceptionService extends Exception {
 	public void setErrorColor(String errorColor) {
 		this.errorColor = errorColor;
 	}
-	
+
 	/** 轉換文字 **/
 	public static String eStktToSg(Exception e) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
