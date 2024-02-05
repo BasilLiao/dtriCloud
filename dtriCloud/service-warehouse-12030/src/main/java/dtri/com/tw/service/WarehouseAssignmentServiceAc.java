@@ -29,8 +29,8 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
-import dtri.com.tw.pgsql.entity.WarehouseAssignment;
-import dtri.com.tw.pgsql.entity.WarehouseAssignmentDetail;
+import dtri.com.tw.pgsql.entity.WarehouseAssignmentFront;
+import dtri.com.tw.pgsql.entity.WarehouseAssignmentDetailFront;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -90,8 +90,8 @@ public class WarehouseAssignmentServiceAc {
 		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<WarehouseAssignment> entitys = new ArrayList<WarehouseAssignment>();
-		ArrayList<WarehouseAssignmentDetail> entityDetails = new ArrayList<WarehouseAssignmentDetail>();
+		ArrayList<WarehouseAssignmentFront> entitys = new ArrayList<WarehouseAssignmentFront>();
+		ArrayList<WarehouseAssignmentDetailFront> entityDetails = new ArrayList<WarehouseAssignmentDetailFront>();
 		Map<String, String> entityChecks = new HashMap<>();
 		Map<String, Integer> entitySchedulTotail = new HashMap<>();
 		Map<String, Integer> entitySchedulFinish = new HashMap<>();
@@ -121,7 +121,7 @@ public class WarehouseAssignmentServiceAc {
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				WarehouseAssignmentDetail ed = new WarehouseAssignmentDetail();
+				WarehouseAssignmentDetailFront ed = new WarehouseAssignmentDetailFront();
 				ed.setId(Key);
 				ed.setGid(headerKey);
 				// 進料單
@@ -183,7 +183,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setSysstatus(in.getSysstatus());
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
-					WarehouseAssignment e = new WarehouseAssignment();
+					WarehouseAssignmentFront e = new WarehouseAssignmentFront();
 					entityChecks.put(headerKey, headerKey);
 					entitySchedulTotail.put(headerKey, 0);
 					entitySchedulFinish.put(headerKey, 0);
@@ -235,7 +235,7 @@ public class WarehouseAssignmentServiceAc {
 			shippingLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				WarehouseAssignmentDetail ed = new WarehouseAssignmentDetail();
+				WarehouseAssignmentDetailFront ed = new WarehouseAssignmentDetailFront();
 
 				ed.setId(Key);
 				ed.setGid(headerKey);
@@ -297,7 +297,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setSysstatus(sh.getSysstatus());
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
-					WarehouseAssignment e = new WarehouseAssignment();
+					WarehouseAssignmentFront e = new WarehouseAssignmentFront();
 					entityChecks.put(headerKey, headerKey);
 					entitySchedulTotail.put(headerKey, 0);
 					entitySchedulFinish.put(headerKey, 0);
@@ -365,14 +365,14 @@ public class WarehouseAssignmentServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignment", null,
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignmentFront", null,
 					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
 			ArrayList<SystemLanguageCell> languagesDetail = languageDao
-					.findAllByLanguageCellSame("WarehouseAssignmentDetail", null, 2);
+					.findAllByLanguageCellSame("WarehouseAssignmentDetailFront", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -385,8 +385,8 @@ public class WarehouseAssignmentServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseAssignment.class.getDeclaredFields();
-			Field[] fieldDetails = WarehouseAssignmentDetail.class.getDeclaredFields();
+			Field[] fields = WarehouseAssignmentFront.class.getDeclaredFields();
+			Field[] fieldDetails = WarehouseAssignmentDetailFront.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			exceptionCell.add("material");
@@ -435,8 +435,8 @@ public class WarehouseAssignmentServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseAssignment searchData = packageService.jsonToBean(packageBean.getEntityJson(),
-					WarehouseAssignment.class);
+			WarehouseAssignmentFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					WarehouseAssignmentFront.class);
 			// 單別_單號
 			String wasclass = null;
 			String wassn = null;
@@ -463,7 +463,7 @@ public class WarehouseAssignmentServiceAc {
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				WarehouseAssignmentDetail ed = new WarehouseAssignmentDetail();
+				WarehouseAssignmentDetailFront ed = new WarehouseAssignmentDetailFront();
 				ed.setId(Key);
 				ed.setGid(headerKey);
 				// 進料單
@@ -525,7 +525,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setSysstatus(in.getSysstatus());
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
-					WarehouseAssignment e = new WarehouseAssignment();
+					WarehouseAssignmentFront e = new WarehouseAssignmentFront();
 					entityChecks.put(headerKey, headerKey);
 					entitySchedulTotail.put(headerKey, 0);
 					entitySchedulFinish.put(headerKey, 0);
@@ -577,7 +577,7 @@ public class WarehouseAssignmentServiceAc {
 			shippingLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				WarehouseAssignmentDetail ed = new WarehouseAssignmentDetail();
+				WarehouseAssignmentDetailFront ed = new WarehouseAssignmentDetailFront();
 
 				ed.setId(Key);
 				ed.setGid(headerKey);
@@ -641,7 +641,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setSysstatus(sh.getSysstatus());
 				// header
 				if (!entityChecks.containsKey(headerKey)) {
-					WarehouseAssignment e = new WarehouseAssignment();
+					WarehouseAssignmentFront e = new WarehouseAssignmentFront();
 					entityChecks.put(headerKey, headerKey);
 					entitySchedulTotail.put(headerKey, 0);
 					entitySchedulFinish.put(headerKey, 0);
@@ -711,7 +711,7 @@ public class WarehouseAssignmentServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseAssignment());
+		String entityFormatJson = packageService.beanToJson(new WarehouseAssignmentFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
@@ -724,18 +724,18 @@ public class WarehouseAssignmentServiceAc {
 	public PackageBean setModify(PackageBean packageBean, String action) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<WarehouseHistory> entityHistories = new ArrayList<>();
-		ArrayList<WarehouseAssignment> entityDatas = new ArrayList<>();
-		ArrayList<WarehouseAssignmentDetail> entityDetailDatas = new ArrayList<>();
+		ArrayList<WarehouseAssignmentFront> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseAssignmentDetailFront> entityDetailDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			if (action.equals("ReturnSelect")) {
 				entityDetailDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-						new TypeReference<ArrayList<WarehouseAssignmentDetail>>() {
+						new TypeReference<ArrayList<WarehouseAssignmentDetailFront>>() {
 						});
 			} else {
 				entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-						new TypeReference<ArrayList<WarehouseAssignment>>() {
+						new TypeReference<ArrayList<WarehouseAssignmentFront>>() {
 						});
 			}
 

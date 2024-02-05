@@ -138,7 +138,7 @@ public class SystemGroupServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("SystemGroupDetail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("SystemGroupDetailFront", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});

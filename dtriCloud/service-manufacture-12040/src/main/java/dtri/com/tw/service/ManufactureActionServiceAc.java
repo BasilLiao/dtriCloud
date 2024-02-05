@@ -26,8 +26,8 @@ import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseHistoryDao;
 import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
-import dtri.com.tw.pgsql.entity.ManufactureAction;
-import dtri.com.tw.pgsql.entity.ManufactureActionDetail;
+import dtri.com.tw.pgsql.entity.ManufactureActionFront;
+import dtri.com.tw.pgsql.entity.ManufactureActionDetailFront;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
@@ -83,8 +83,8 @@ public class ManufactureActionServiceAc {
 		// 一般模式
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<ManufactureAction> entitys = new ArrayList<ManufactureAction>();
-		ArrayList<ManufactureActionDetail> entityDetails = new ArrayList<ManufactureActionDetail>();
+		ArrayList<ManufactureActionFront> entitys = new ArrayList<ManufactureActionFront>();
+		ArrayList<ManufactureActionDetailFront> entityDetails = new ArrayList<ManufactureActionDetailFront>();
 		Map<String, String> entityChecks = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
@@ -113,7 +113,7 @@ public class ManufactureActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				ManufactureActionDetail e = new ManufactureActionDetail();
+				ManufactureActionDetailFront e = new ManufactureActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -160,7 +160,7 @@ public class ManufactureActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						ManufactureAction eh = new ManufactureAction();
+						ManufactureActionFront eh = new ManufactureActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setMasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -206,14 +206,14 @@ public class ManufactureActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureAction", null,
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureActionFront", null,
 					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
 			ArrayList<SystemLanguageCell> languagesDetail = languageDao
-					.findAllByLanguageCellSame("ManufactureActionDetail", null, 2);
+					.findAllByLanguageCellSame("ManufactureActionDetailFront", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -226,8 +226,8 @@ public class ManufactureActionServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = ManufactureAction.class.getDeclaredFields();
-			Field[] fieldDteails = ManufactureActionDetail.class.getDeclaredFields();
+			Field[] fields = ManufactureActionFront.class.getDeclaredFields();
+			Field[] fieldDteails = ManufactureActionDetailFront.class.getDeclaredFields();
 
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
@@ -255,8 +255,8 @@ public class ManufactureActionServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			ManufactureAction searchData = packageService.jsonToBean(packageBean.getEntityJson(),
-					ManufactureAction.class);
+			ManufactureActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					ManufactureActionFront.class);
 			String masclass = null;
 			String massn = null;
 			String massmuser = searchData.getMastype();
@@ -278,7 +278,7 @@ public class ManufactureActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				ManufactureActionDetail e = new ManufactureActionDetail();
+				ManufactureActionDetailFront e = new ManufactureActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -319,7 +319,7 @@ public class ManufactureActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						ManufactureAction eh = new ManufactureAction();
+						ManufactureActionFront eh = new ManufactureActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setMasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -368,7 +368,7 @@ public class ManufactureActionServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new ManufactureAction());
+		String entityFormatJson = packageService.beanToJson(new ManufactureActionFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
@@ -396,8 +396,8 @@ public class ManufactureActionServiceAc {
 		// 一般模式
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<ManufactureAction> entitys = new ArrayList<ManufactureAction>();
-		ArrayList<ManufactureActionDetail> entityDetails = new ArrayList<ManufactureActionDetail>();
+		ArrayList<ManufactureActionFront> entitys = new ArrayList<ManufactureActionFront>();
+		ArrayList<ManufactureActionDetailFront> entityDetails = new ArrayList<ManufactureActionDetailFront>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -414,7 +414,7 @@ public class ManufactureActionServiceAc {
 		});
 
 		// Step4-1. 取得資料(一般/細節)
-		ManufactureAction searchData = packageService.jsonToBean(packageBean.getEntityJson(), ManufactureAction.class);
+		ManufactureActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), ManufactureActionFront.class);
 
 		if (searchData.getMasclasssn() != null) {
 			List<String> masclasssn = Arrays.asList(searchData.getMasclasssn().split("_"));
@@ -432,7 +432,7 @@ public class ManufactureActionServiceAc {
 						String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 						String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-						ManufactureActionDetail e = new ManufactureActionDetail();
+						ManufactureActionDetailFront e = new ManufactureActionDetailFront();
 						e.setId(Key);
 						e.setGid(headerKey);
 						// 進料單
@@ -489,7 +489,7 @@ public class ManufactureActionServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new ManufactureAction());
+		String entityFormatJson = packageService.beanToJson(new ManufactureActionFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
@@ -501,16 +501,16 @@ public class ManufactureActionServiceAc {
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<ManufactureActionDetail> entityDatas = new ArrayList<>();
+		ArrayList<ManufactureActionDetailFront> entityDatas = new ArrayList<>();
 		ArrayList<WarehouseHistory> entityHistories = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
-					new TypeReference<ArrayList<ManufactureActionDetail>>() {
+					new TypeReference<ArrayList<ManufactureActionDetailFront>>() {
 					});
 			// Step2.資料檢查
-			for (ManufactureActionDetail entityData : entityDatas) {
+			for (ManufactureActionDetailFront entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
 
 				ArrayList<BasicShippingList> checkShippingDatas = shippingListDao.findAllByCheckUser(//

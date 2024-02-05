@@ -9,6 +9,8 @@ import jakarta.persistence.Transient;
 /**
  * @author Basil
  * @see ---共用型---<br>
+ *      Front 前端物件(ID之外其他添加@Transient)<br>
+ * 
  *      sys_c_date : 創建時間<br>
  *      sys_c_user : 創建人名<br>
  *      sys_m_date : 修改時間<br>
@@ -25,8 +27,8 @@ import jakarta.persistence.Transient;
  *      wsl_schedule : 進度<br>
  */
 @Entity
-public class WarehouseSynchronizeDetail {
-	public WarehouseSynchronizeDetail() {
+public class WarehouseSynchronizeDetailFront {
+	public WarehouseSynchronizeDetailFront() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";

@@ -9,6 +9,8 @@ import jakarta.persistence.Transient;
 /**
  * @author Basil
  * @see ---共用型---<br>
+ *      Front 前端物件(ID之外其他添加@Transient)<br>
+ * 
  *      sys_c_date : 創建時間<br>
  *      sys_c_user : 創建人名<br>
  *      sys_m_date : 修改時間<br>
@@ -16,20 +18,12 @@ import jakarta.persistence.Transient;
  *      sys_ver : 修改版本<br>
  *      sys_note : 備註<br>
  * 
- *      ---倉儲區域設置清單---<br>
- *      mas_alias_wmpnb : 倉儲_物料號<br>
- *      mas_erp_t_qty : (帳務)此區域物料數量<br>
- *      mas_t_qty : (實際)此區域物料數量<br>
- *      mas_qc_qty : 進貨待驗<br>
  *      ---單據名稱---<br>
  *      mas_class_name:單據名稱<br>
  *      ---單據資料---<br>
  *      mas_class_nb:單別+單號<br>
  *      mas_sn : 序號<br>
  *      mas_type : 單據類型(領料類/入料類)<br>
- *      mas_m_user : 分配-負責人<br>
- *      mas_f_user : 完成人<br>
- *      mas_sm_user : 產線-點料人<br>
  *      mas_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      mas_p_number : 物料號<br>
  *      mas_p_name : 品名<br>
@@ -38,8 +32,8 @@ import jakarta.persistence.Transient;
  *      mas_e_date : 預計領料日 <br>
  */
 @Entity
-public class ManufactureActionDetail {
-	public ManufactureActionDetail() {
+public class ManufactureActionFront {
+	public ManufactureActionFront() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -49,9 +43,7 @@ public class ManufactureActionDetail {
 		this.sysnote = "";
 		// 倉儲區域清單-清單
 		this.masaliaswmpnb = "";// : 倉儲_物料號<br>
-		this.maserptqty = 0;// : (帳務)此區域物料數量<br>
-		this.mastqty = 0;// : (實際)此區域物料數量<br>
-		this.masqcqty = 0;// : 進貨待驗<br>
+
 	}
 
 	// 共用型
@@ -72,12 +64,6 @@ public class ManufactureActionDetail {
 	// 倉儲區域清單-清單
 	@Transient
 	private String masaliaswmpnb;// : 倉儲+物料號<br>
-	@Transient
-	private Integer maserptqty;// : (帳務)此區域物料數量<br>
-	@Transient
-	private Integer mastqty;// : (實際)此區域物料數量<br>
-	@Transient
-	private Integer masqcqty;// : 進貨待驗<br>
 
 	// 單據
 	@Transient
@@ -90,7 +76,7 @@ public class ManufactureActionDetail {
 	@Transient
 	private String mastype;// : 單據類型(領料類/入料類)<br>
 	@Transient
-	private String massmuser;// : 產線配料人<br>
+	private String masmuser;// : 分配-負責人<br>
 	@Transient
 	private String masfuser;// : 完成人<br>
 	@Transient
@@ -98,13 +84,10 @@ public class ManufactureActionDetail {
 	@Transient
 	private String maspname;// : 品名<br>
 	@Transient
-	private Integer maspnqty;// : 數量<br>
-	@Transient
-	private Integer maspngqty;// : 已完成數量<br>
-	@Transient
 	private Integer masstatus;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	@Transient
 	private Date masedate;// : 預計領/入料日
+
 	@Transient
 	private String mastocommand;// 單據指令對象 json [] A511-123456....<br>
 	@Transient
@@ -178,30 +161,6 @@ public class ManufactureActionDetail {
 		this.masaliaswmpnb = masaliaswmpnb;
 	}
 
-	public Integer getMaserptqty() {
-		return maserptqty;
-	}
-
-	public void setMaserptqty(Integer maserptqty) {
-		this.maserptqty = maserptqty;
-	}
-
-	public Integer getMastqty() {
-		return mastqty;
-	}
-
-	public void setMastqty(Integer mastqty) {
-		this.mastqty = mastqty;
-	}
-
-	public Integer getMasqcqty() {
-		return masqcqty;
-	}
-
-	public void setMasqcqty(Integer masqcqty) {
-		this.masqcqty = masqcqty;
-	}
-
 	public String getMasclassname() {
 		return masclassname;
 	}
@@ -234,12 +193,12 @@ public class ManufactureActionDetail {
 		this.mastype = mastype;
 	}
 
-	public String getMassmuser() {
-		return massmuser;
+	public String getMasmuser() {
+		return masmuser;
 	}
 
-	public void setMassmuser(String massmuser) {
-		this.massmuser = massmuser;
+	public void setMasmuser(String masmuser) {
+		this.masmuser = masmuser;
 	}
 
 	public String getMasfuser() {
@@ -264,14 +223,6 @@ public class ManufactureActionDetail {
 
 	public void setMaspname(String maspname) {
 		this.maspname = maspname;
-	}
-
-	public Integer getMaspnqty() {
-		return maspnqty;
-	}
-
-	public void setMaspnqty(Integer maspnqty) {
-		this.maspnqty = maspnqty;
 	}
 
 	public Integer getMasstatus() {
@@ -322,11 +273,4 @@ public class ManufactureActionDetail {
 		this.mastowho = mastowho;
 	}
 
-	public Integer getMaspngqty() {
-		return maspngqty;
-	}
-
-	public void setMaspngqty(Integer maspngqty) {
-		this.maspngqty = maspngqty;
-	}
 }

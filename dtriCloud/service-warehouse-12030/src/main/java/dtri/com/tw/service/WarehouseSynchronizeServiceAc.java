@@ -27,8 +27,8 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
-import dtri.com.tw.pgsql.entity.WarehouseSynchronize;
-import dtri.com.tw.pgsql.entity.WarehouseSynchronizeDetail;
+import dtri.com.tw.pgsql.entity.WarehouseSynchronizeFront;
+import dtri.com.tw.pgsql.entity.WarehouseSynchronizeDetailFront;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -82,9 +82,9 @@ public class WarehouseSynchronizeServiceAc {
 		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<WarehouseSynchronize> entitys = new ArrayList<WarehouseSynchronize>();
-		ArrayList<WarehouseSynchronizeDetail> entityDetails = new ArrayList<WarehouseSynchronizeDetail>();
-		ArrayList<WarehouseSynchronizeDetail> entityDetailOks = new ArrayList<WarehouseSynchronizeDetail>();
+		ArrayList<WarehouseSynchronizeFront> entitys = new ArrayList<WarehouseSynchronizeFront>();
+		ArrayList<WarehouseSynchronizeDetailFront> entityDetails = new ArrayList<WarehouseSynchronizeDetailFront>();
+		ArrayList<WarehouseSynchronizeDetailFront> entityDetailOks = new ArrayList<WarehouseSynchronizeDetailFront>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -114,7 +114,7 @@ public class WarehouseSynchronizeServiceAc {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 
-				WarehouseSynchronize e = new WarehouseSynchronize();
+				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
 				e.setId(Key);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -150,7 +150,7 @@ public class WarehouseSynchronizeServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
 
-				WarehouseSynchronize e = new WarehouseSynchronize();
+				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
 				e.setId(Key);
 				// 領
 				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -191,7 +191,7 @@ public class WarehouseSynchronizeServiceAc {
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 					e.setId(headerKey);
 					// 進料單
 					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -222,7 +222,7 @@ public class WarehouseSynchronizeServiceAc {
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 					e.setId(headerKey);
 					// 領料單
 					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -267,12 +267,12 @@ public class WarehouseSynchronizeServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronize", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeFront", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeDetail", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeDetailFront", null, 2);
 			languagesDetail.forEach(y -> {
 				System.out.println(y.getSltarget());
 				mapLanguagesDetail.put(y.getSltarget(), y);
@@ -285,8 +285,8 @@ public class WarehouseSynchronizeServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseSynchronize.class.getDeclaredFields();
-			Field[] fieldDetails = WarehouseSynchronizeDetail.class.getDeclaredFields();
+			Field[] fields = WarehouseSynchronizeFront.class.getDeclaredFields();
+			Field[] fieldDetails = WarehouseSynchronizeDetailFront.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			exceptionCell.add("material");
@@ -324,7 +324,7 @@ public class WarehouseSynchronizeServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseSynchronize searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseSynchronize.class);
+			WarehouseSynchronizeFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseSynchronizeFront.class);
 
 			String wasclass = null;
 			String wassn = null;
@@ -353,7 +353,7 @@ public class WarehouseSynchronizeServiceAc {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 
-				WarehouseSynchronize e = new WarehouseSynchronize();
+				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
 				e.setId(Key);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -390,7 +390,7 @@ public class WarehouseSynchronizeServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
 
-				WarehouseSynchronize e = new WarehouseSynchronize();
+				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
 				e.setId(Key);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -428,7 +428,7 @@ public class WarehouseSynchronizeServiceAc {
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 					e.setId(headerKey);
 					// 進料單
 					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -459,7 +459,7 @@ public class WarehouseSynchronizeServiceAc {
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetail e = new WarehouseSynchronizeDetail();
+					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 					e.setId(headerKey);
 					// 領料單
 					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -512,7 +512,7 @@ public class WarehouseSynchronizeServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseSynchronize());
+		String entityFormatJson = packageService.beanToJson(new WarehouseSynchronizeFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");

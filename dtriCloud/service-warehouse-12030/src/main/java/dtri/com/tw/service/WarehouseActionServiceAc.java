@@ -31,8 +31,8 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.ScheduleShortageList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
-import dtri.com.tw.pgsql.entity.WarehouseAction;
-import dtri.com.tw.pgsql.entity.WarehouseActionDetail;
+import dtri.com.tw.pgsql.entity.WarehouseActionFront;
+import dtri.com.tw.pgsql.entity.WarehouseActionDetailFront;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
@@ -100,8 +100,8 @@ public class WarehouseActionServiceAc {
 		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<WarehouseAction> entitys = new ArrayList<WarehouseAction>();
-		ArrayList<WarehouseActionDetail> entityDetails = new ArrayList<WarehouseActionDetail>();
+		ArrayList<WarehouseActionFront> entitys = new ArrayList<WarehouseActionFront>();
+		ArrayList<WarehouseActionDetailFront> entityDetails = new ArrayList<WarehouseActionDetailFront>();
 		Map<String, String> entityChecks = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
@@ -131,7 +131,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				WarehouseActionDetail e = new WarehouseActionDetail();
+				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -178,7 +178,7 @@ public class WarehouseActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						WarehouseAction eh = new WarehouseAction();
+						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -216,7 +216,7 @@ public class WarehouseActionServiceAc {
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
-				WarehouseActionDetail e = new WarehouseActionDetail();
+				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -258,7 +258,7 @@ public class WarehouseActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						WarehouseAction eh = new WarehouseAction();
+						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -304,13 +304,13 @@ public class WarehouseActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAction", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseActionFront", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
 			ArrayList<SystemLanguageCell> languagesDetail = languageDao
-					.findAllByLanguageCellSame("WarehouseActionDetail", null, 2);
+					.findAllByLanguageCellSame("WarehouseActionDetailFront", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -323,8 +323,8 @@ public class WarehouseActionServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = WarehouseAction.class.getDeclaredFields();
-			Field[] fieldDteails = WarehouseActionDetail.class.getDeclaredFields();
+			Field[] fields = WarehouseActionFront.class.getDeclaredFields();
+			Field[] fieldDteails = WarehouseActionDetailFront.class.getDeclaredFields();
 
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
@@ -352,7 +352,7 @@ public class WarehouseActionServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseAction searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseAction.class);
+			WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseActionFront.class);
 			String wasclass = null;
 			String wassn = null;
 			String wastype = searchData.getWastype();
@@ -389,7 +389,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-				WarehouseActionDetail e = new WarehouseActionDetail();
+				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -430,7 +430,7 @@ public class WarehouseActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						WarehouseAction eh = new WarehouseAction();
+						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setWasclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
@@ -468,7 +468,7 @@ public class WarehouseActionServiceAc {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
-				WarehouseActionDetail e = new WarehouseActionDetail();
+				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
 				// 進料單
@@ -509,7 +509,7 @@ public class WarehouseActionServiceAc {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, headerKey);
 						// 限制大小50張單
-						WarehouseAction eh = new WarehouseAction();
+						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
 						eh.setGid(headerKey);
 						eh.setWasclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
@@ -558,7 +558,7 @@ public class WarehouseActionServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseAction());
+		String entityFormatJson = packageService.beanToJson(new WarehouseActionFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
@@ -594,8 +594,8 @@ public class WarehouseActionServiceAc {
 		PageRequest inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
-		ArrayList<WarehouseAction> entitys = new ArrayList<WarehouseAction>();
-		ArrayList<WarehouseActionDetail> entityDetails = new ArrayList<WarehouseActionDetail>();
+		ArrayList<WarehouseActionFront> entitys = new ArrayList<WarehouseActionFront>();
+		ArrayList<WarehouseActionDetailFront> entityDetails = new ArrayList<WarehouseActionDetailFront>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -612,7 +612,7 @@ public class WarehouseActionServiceAc {
 		});
 
 		// Step4-1. 取得資料(一般/細節)
-		WarehouseAction searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseAction.class);
+		WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseActionFront.class);
 
 		if (searchData.getWasclasssn() != null) {
 			List<String> wasclasssn = Arrays.asList(searchData.getWasclasssn().split("_"));
@@ -632,7 +632,7 @@ public class WarehouseActionServiceAc {
 						String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 						String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
 
-						WarehouseActionDetail e = new WarehouseActionDetail();
+						WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 						e.setId(Key);
 						e.setGid(headerKey);
 						// 進料單
@@ -677,7 +677,7 @@ public class WarehouseActionServiceAc {
 						String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 						String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
-						WarehouseActionDetail e = new WarehouseActionDetail();
+						WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 						e.setId(Key);
 						e.setGid(headerKey);
 						// 進料單
@@ -734,7 +734,7 @@ public class WarehouseActionServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new WarehouseAction());
+		String entityFormatJson = packageService.beanToJson(new WarehouseActionFront());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
@@ -747,15 +747,15 @@ public class WarehouseActionServiceAc {
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<WarehouseHistory> entityHistories = new ArrayList<>();
-		ArrayList<WarehouseActionDetail> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseActionDetailFront> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
-					new TypeReference<ArrayList<WarehouseActionDetail>>() {
+					new TypeReference<ArrayList<WarehouseActionDetailFront>>() {
 					});
 			// Step2.資料檢查
-			for (WarehouseActionDetail entityData : entityDatas) {
+			for (WarehouseActionDetailFront entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
 				ArrayList<BasicIncomingList> checkIncomingDatas = incomingListDao.findAllByCheckUser(//
 						entityData.getWasclasssn().split("-")[0], //
@@ -900,12 +900,12 @@ public class WarehouseActionServiceAc {
 	public void setModifyCheck(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		List<ScheduleShortageList> shortageLists = new ArrayList<>();
-		ArrayList<WarehouseActionDetail> entityDatas = new ArrayList<>();
+		ArrayList<WarehouseActionDetailFront> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
-					new TypeReference<ArrayList<WarehouseActionDetail>>() {
+					new TypeReference<ArrayList<WarehouseActionDetailFront>>() {
 					});
 			// =======================資料整理=======================
 			// Step3.一般資料->寫入
