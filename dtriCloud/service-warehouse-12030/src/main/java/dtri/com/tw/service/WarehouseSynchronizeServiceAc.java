@@ -127,6 +127,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
 				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
+				e.setWsspnerpqty(in.getBilpnerpqty());//ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
@@ -364,7 +365,9 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsscuser(in.getBilcuser());// 核准人
 				e.setWsspnumber(in.getBilpnumber());// : 物料號<br>
 				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
-				e.setWsspngqty(in.getBilpngqty());// 已取數量<br>
+				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
+				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
+				e.setWsspnerpqty(in.getBilpnerpqty());//ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
@@ -401,7 +404,9 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsscuser(sh.getBslcuser());// 核准人
 				e.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
 				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
-				e.setWsspngqty(sh.getBslpngqty());// 已取數量<br>
+				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
+				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
+				e.setWsspnerpqty(sh.getBslpnerpqty());//ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();

@@ -120,7 +120,7 @@ public class SystemLanguageCell {
 
 	@Column(name = "sl_cm_type", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String slcmtype;
-	@Column(name = "sl_cm_select", nullable = false, columnDefinition = "varchar(200) default ''")
+	@Column(name = "sl_cm_select", nullable = false, columnDefinition = "varchar(280) default ''")
 	private String slcmselect;
 	@Column(name = "sl_cm_placeholder", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String slcmplaceholder;

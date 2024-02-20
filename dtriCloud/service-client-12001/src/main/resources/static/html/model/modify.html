@@ -160,9 +160,11 @@
 									<td style="max-width: 200px" id="modify_c_ex_ic"><input
 											class="col-12 m-0 p-1 border border-dark form-control" type="password"
 											value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_ip"><input
-											class="col-12 m-0 p-1 border border-dark form-control" type="file" value=""
-											placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_ip">
+										<input class="col-6 m-0 p-1 border border-dark form-control-file" type="file"
+											value="" placeholder="Ex:">
+										<img class="col-6 m-0 p-1" style="width: 120px;">
+									</td>
 									<td style="max-width: 200px" id="modify_c_ex_ii"><i
 											class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
 									<td style="max-width: 200px" id="modify_c_ex_st"><select
@@ -457,6 +459,10 @@
 						case "file":
 							cloneBhv = $("#modify_c_ex_ip").clone();
 							break;
+						case "image":
+							cloneBhv = $("#modify_c_ex_ip").clone();
+							cloneBhv.find("input").attr("accept", ".jpg,.jpeg,.gif,.png");
+							break;
 						case "select":
 							cloneBhv = $("#modify_c_ex_st").clone();
 							//比對是否有匹配選項
@@ -581,6 +587,10 @@
 						case "file":
 							cloneBdv = $("#modify_c_ex_ip").clone();
 							break;
+						case "image":
+							cloneBhv = $("#modify_c_ex_ip").clone();
+							cloneBhv.find("input").attr("accept", ".jpg,.jpeg,.gif,.png");
+							break;
 						case "select":
 							cloneBdv = $("#modify_c_ex_st").clone();
 							//比對是否有匹配選項
@@ -641,12 +651,14 @@
 					cloneBdv.find("select").attr("placeholder", resultDetailThead[k].m_placeholder);
 					cloneBdv.find("input").attr("placeholder", resultDetailThead[k].m_placeholder);
 					cloneBdv.find("textarea").attr("placeholder", resultDetailThead[k].m_placeholder);
+					
 					//Step2-10.定義Class?
 					cloneBdv.find("checkbox").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("select").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("input").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("textarea").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.css('maxWidth', resultDetailThead[k].width + "px");
+					
 					//Step2-N.創建
 					cloneBdt.appendTo($("#batchTdn tr"));
 					cloneBdv.appendTo($("#batchTdv tr"));
@@ -792,7 +804,11 @@
 					console.log("modify_c_date_overwrite");
 					$('#batchThv .entityVal').each(function (index) {
 						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
-						//過濾沒開啟的
+						//過濾-如果是檔案類
+						if ($(this).attr('type') == "file") {
+							return false;
+						}
+						//過濾-沒開啟的
 						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
 							console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
 							//過濾沒資料的
@@ -815,7 +831,11 @@
 						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
 						var batchVal = $(this).val();
 						var replaceVal = $('#batchTrhv .' + $(this).attr('title')).val();
-						//過濾沒開啟的 
+						//過濾-如果是檔案類
+						if ($(this).attr('type') == "file") {
+							return false;
+						}
+						//過濾-沒開啟的 
 						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
 							//過濾沒資料的
 							if (replaceVal != "" && replaceVal != null) {
@@ -912,6 +932,39 @@
 					$('#modify_c_state').text("＞None＜");
 					$('#modify_c_state').attr('title', 'None_');
 				});
+				//上傳檔案?
+				$(document).off("change", ".form-control-file");
+				$(document).on("change", ".form-control-file", function (event) {
+					console.log("form-control-file");
+					var target = $(event.target);
+					$(target[0].parentElement).find("img").attr("src", "");
+					//沒檔案?
+					if (!this.files || !this.files[0]) {
+						target.val("");
+						return;
+					}
+
+					//限制圖片副檔->確定是圖片?
+					if (target.attr("accept") == ".jpg,.jpeg,.gif,.png") {
+						let url = target.val();
+						var is_image = /\.(jpg|jpeg|gif|png)$/.test(url);
+						console.log("image:" + is_image);
+						if (is_image) {
+							const fileReader = new FileReader();
+							//fileReader.off("load");
+							fileReader.addEventListener("load", function (evt) {
+								console.log(evt.target.result);
+								$(target[0].parentElement).find("img").attr("src", evt.target.result);
+							});
+							//讀取上傳圖片->關閉
+							fileReader.readAsDataURL(this.files[0]);
+							removeEventListener("load", fileReader);
+						}
+					}
+				});
+				//上傳檔案?
+
+
 				//清除預設
 				$("#modify_c_date_clearAll").trigger('click');
 				$("#modify_c_detail_clearAll").trigger('click');
@@ -962,7 +1015,22 @@
 								Object.keys(dataOne).forEach(function (k) {
 									//是否時間格式?
 									var value = dataOne[k];
-									if (entityDateTime.indexOf(k) >= 0) {
+
+									//console.log(modifyThvEx.find("."+k).attr('type'));
+									if (modifyThvEx.find("." + k).attr('type') == "checkbox") {
+										//是否為	checkbox
+										if (value == true) {
+											modifyThvEx.find('.' + k).prop('checked', true);
+										} else {
+											modifyThvEx.find('.' + k).prop('checked', false);
+										}
+										modifyThvEx.find("." + k).val(value);
+									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+										//是否為	圖片
+										$(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
+
+									} else if (entityDateTime.indexOf(k) >= 0) {
+										//是否為 時間
 										var dF = new Date(dataOne[k]);
 										value = dF.getFullYear() + "-";
 										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
@@ -970,16 +1038,10 @@
 										value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-									}
-									modifyThvEx.find("." + k).val(value);
-									//是否為	checkbox
-									//console.log(modifyThvEx.find("."+k).attr('type'));
-									if (modifyThvEx.find("." + k).attr('type') == "checkbox") {
-										if (value == true) {
-											modifyThvEx.find('.' + k).prop('checked', true);
-										} else {
-											modifyThvEx.find('.' + k).prop('checked', false);
-										}
+										modifyThvEx.find("." + k).val(value);
+									} else {
+										//非特殊
+										modifyThvEx.find("." + k).val(value);
 									}
 
 								});
@@ -1016,9 +1078,22 @@
 								var dataDetailOne = dataDetails[d];
 								//每個欄位 >對應< 資料
 								Object.keys(dataDetailOne).forEach(function (k) {
-									//是否時間格式?
 									var value = dataDetailOne[k];
-									if (entityDateTime.indexOf(k) >= 0) {
+
+									//console.log(modifyThvEx.find("."+k).attr('type'));
+									if (modifyTdvEx.find("." + k).attr('type') == "checkbox") {
+										//是否為	checkbox
+										if (value == true) {
+											modifyTdvEx.find('.' + k).prop('checked', true);
+										} else {
+											modifyTdvEx.find('.' + k).prop('checked', false);
+										}
+										modifyTdvEx.find("." + k).val(value);
+									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+										//是否為	圖片
+										$(modifyTdvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
+									} else if (entityDateTime.indexOf(k) >= 0) {
+										//是否時間格式?
 										var dF = new Date(dataDetailOne[k]);
 										value = dF.getFullYear() + "-";
 										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
@@ -1026,16 +1101,10 @@
 										value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-									}
-									modifyTdvEx.find("." + k).val(value);
-									//是否為	checkbox
-									//console.log(modifyThvEx.find("."+k).attr('type'));
-									if (modifyTdvEx.find("." + k).attr('type') == "checkbox") {
-										if (value == true) {
-											modifyTdvEx.find('.' + k).prop('checked', true);
-										} else {
-											modifyTdvEx.find('.' + k).prop('checked', false);
-										}
+										modifyTdvEx.find("." + k).val(value);
+									} else {
+										//沒有特殊
+										modifyTdvEx.find("." + k).val(value);
 									}
 								});
 
@@ -1126,6 +1195,11 @@
 						if ($(this).attr("type") == 'checkbox') {
 							val = $(this).is(':checked');
 						}
+						//=file?
+						if ($(this).attr("type") == 'file') {
+							val = $(this.parentElement).find("img").attr("src");
+						}
+
 						entityFormatJson[$(this).attr("title")] = val;
 					});
 					entityJsons.push(entityFormatJson);

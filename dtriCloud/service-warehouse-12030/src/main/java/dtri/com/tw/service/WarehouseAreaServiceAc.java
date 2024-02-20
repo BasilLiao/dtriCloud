@@ -22,8 +22,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
+import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.entity.BasicIncomingList;
+import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -48,6 +52,12 @@ public class WarehouseAreaServiceAc {
 
 	@Autowired
 	private WarehouseAreaDao areaDao;
+
+	@Autowired
+	private BasicIncomingListDao incomingListDao;
+
+	@Autowired
+	private BasicShippingListDao shippingListDao;
 
 	@Autowired
 	private EntityManager em;
@@ -125,8 +135,8 @@ public class WarehouseAreaServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseArea searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseArea.class);
 
-			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(searchData.getWawmpnb(), searchData.getWaslocation(), searchData.getWaalias(),
-					pageable);
+			ArrayList<WarehouseArea> entitys = areaDao.findAllBySearch(searchData.getWawmpnb(),
+					searchData.getWaslocation(), searchData.getWaalias(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -159,13 +169,15 @@ public class WarehouseAreaServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseArea>>() {
+					});
 
 			// Step2.資料檢查
 			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, entityData.getWaalias());
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null,
+						entityData.getWaalias());
 				for (WarehouseArea checkData : checkDatas) {
 					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -177,6 +189,8 @@ public class WarehouseAreaServiceAc {
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
 		ArrayList<WarehouseArea> saveDatas = new ArrayList<>();
+		ArrayList<BasicIncomingList> incomingLists = new ArrayList<>();
+		ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getWaid() != null) {
@@ -200,10 +214,40 @@ public class WarehouseAreaServiceAc {
 				entityDataOld.setChecksum(x.getChecksum());
 
 				saveDatas.add(entityDataOld);
+				// 檢查單據修正位置(入料)
+				incomingListDao.findAllBySearch(null, null, x.getWawmpnb(), null).forEach(in -> {
+					// 供應對象 要有內容
+					if (in.getBiltowho().split("_").length > 1) {
+						// 倉儲_物料
+						String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+						// [單據]要比對到[區域] 儲位物料
+						if (areaKey.contains(x.getWaaliasawmpnb())) {
+							String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
+							in.setBiltowho(in.getBiltowho().replace(oldLocation, x.getWaslocation()));
+							incomingLists.add(in);
+						}
+					}
+				});
+				// 檢查單據修正位置(領料)
+				shippingListDao.findAllBySearch(null, null, x.getWawmpnb(), null).forEach(sh -> {
+					// 供應來源 要有內容
+					if (sh.getBslfromwho().split("_").length > 1) {
+						// 倉儲_物料
+						String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+						// [單據]要比對到[區域] 儲位物料
+						if (areaKey.contains(x.getWaaliasawmpnb())) {
+							String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
+							sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, x.getWaslocation()));
+							shippingLists.add(sh);
+						}
+					}
+				});
 			}
 		});
 		// =======================資料儲存=======================
 		// 資料Data
+		incomingListDao.saveAll(incomingLists);
+		shippingListDao.saveAll(shippingLists);
 		areaDao.saveAll(saveDatas);
 		return packageBean;
 	}
@@ -216,15 +260,18 @@ public class WarehouseAreaServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseArea>>() {
+					});
 
 			// Step2.資料檢查
 			for (WarehouseArea entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null, entityData.getWaalias());
+				ArrayList<WarehouseArea> checkDatas = areaDao.findAllByCheck(entityData.getWawmpnb(), null,
+						entityData.getWaalias());
 				if (checkDatas.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getWawmpnb() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getWawmpnb() });
 				}
 			}
 		}
@@ -258,8 +305,9 @@ public class WarehouseAreaServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseArea>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -289,8 +337,9 @@ public class WarehouseAreaServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseArea>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseArea>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================

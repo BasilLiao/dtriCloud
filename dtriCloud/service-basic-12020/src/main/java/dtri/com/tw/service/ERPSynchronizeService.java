@@ -480,7 +480,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -517,7 +517,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				n = erpToCloudService.shippingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 				saveShLists.add(n);
 			}
 		});
@@ -768,7 +768,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -799,7 +799,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvtg(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 				saveShLists.add(n);
 			}
 		});
@@ -900,7 +900,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -931,7 +931,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvth(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 				saveShLists.add(n);
 			}
 		});
@@ -1069,7 +1069,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -1112,7 +1112,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneInvta(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 				saveShLists.add(n);
 			}
 		});
@@ -1222,7 +1222,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -1253,7 +1253,7 @@ public class ERPSynchronizeService {
 				// 資料轉換
 				erpToCloudService.shippingOneBomtd(n, v, checkSum, wTFs, wKs, wAs);
 				// 自動完成
-				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 				saveShLists.add(n);
 			}
 		});
@@ -1362,7 +1362,7 @@ public class ERPSynchronizeService {
 					// 資料轉換
 					o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
 					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs);
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
@@ -1398,7 +1398,7 @@ public class ERPSynchronizeService {
 				// 如果已經是完成(則不寫入)
 				if (!n.getSysstatus().equals(1)) {
 					// 自動完成
-					erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs);
+					erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(n);
 				}
 			}
@@ -1507,6 +1507,8 @@ public class ERPSynchronizeService {
 
 		// Step4-1. [物料位置] 資料整理轉換
 		Map<String, WarehouseArea> areaSameMap = new HashMap<>();
+		ArrayList<BasicIncomingList> incomingLists = new ArrayList<>();
+		ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
 		areaOlds.forEach(a -> {// 區域庫別代號_物料號_
 			String aKey = a.getWaaliasawmpnb();
 			// 同一筆?
@@ -1531,6 +1533,36 @@ public class ERPSynchronizeService {
 					a.setSysmdate(new Date());
 					a.setSysmuser("system");
 					saveItems.add(a);
+
+					// 檢查單據修正位置(入料)
+					incomingListDao.findAllBySearch(null, null, a.getWawmpnb(), null).forEach(in -> {
+						// 供應對象 要有內容
+						if (in.getBiltowho().split("_").length > 1) {
+							// 倉儲_物料
+							String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+							// [單據]要比對到[區域] 儲位物料
+							if (areaKey.contains(a.getWaaliasawmpnb())) {
+								String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
+								in.setBiltowho(in.getBiltowho().replace(oldLocation, a.getWaslocation()));
+								incomingLists.add(in);
+							}
+						}
+					});
+					// 檢查單據修正位置(領料)
+					shippingListDao.findAllBySearch(null, null, a.getWawmpnb(), null).forEach(sh -> {
+						// 供應來源 要有內容
+						if (sh.getBslfromwho().split("_").length > 1) {
+							// 倉儲_物料
+							String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_"
+									+ sh.getBslpnumber();
+							// [單據]要比對到[區域] 儲位物料
+							if (areaKey.contains(a.getWaaliasawmpnb())) {
+								String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
+								sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, a.getWaslocation()));
+								shippingLists.add(sh);
+							}
+						}
+					});
 				}
 			}
 			areaSameMap.put(a.getWaaliasawmpnb(), a);
@@ -1564,6 +1596,8 @@ public class ERPSynchronizeService {
 			}
 		});
 		areaDao.saveAll(saveItems);
+		incomingListDao.saveAll(incomingLists);
+		shippingListDao.saveAll(shippingLists);
 		// Step5 儲位設定 全新資料?
 		erpSynchronizeWconfig(erpConfigMaps, configOlds);
 
@@ -1616,9 +1650,9 @@ public class ERPSynchronizeService {
 		filterDao.saveAll(saveFilters);
 	}
 
-	// ============ 單據移除(150天以前資料) ============
-	public void remove150DayData() throws Exception {
-		Date countD = Fm_T.to_count(-150, new Date());
+	// ============ 單據移除(120天以前資料) ============
+	public void remove120DayData() throws Exception {
+		Date countD = Fm_T.to_count(-120, new Date());
 
 		incomingListDao.findAllBySyscdateRemove(countD);
 		shippingListDao.findAllBySyscdateRemove(countD);

@@ -304,7 +304,8 @@ public class WarehouseActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseActionFront", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseActionFront",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -352,7 +353,8 @@ public class WarehouseActionServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseActionFront.class);
+			WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					WarehouseActionFront.class);
 			String wasclass = null;
 			String wassn = null;
 			String wastype = searchData.getWastype();
@@ -612,7 +614,8 @@ public class WarehouseActionServiceAc {
 		});
 
 		// Step4-1. 取得資料(一般/細節)
-		WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseActionFront.class);
+		WarehouseActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+				WarehouseActionFront.class);
 
 		if (searchData.getWasclasssn() != null) {
 			List<String> wasclasssn = Arrays.asList(searchData.getWasclasssn().split("_"));
@@ -757,6 +760,7 @@ public class WarehouseActionServiceAc {
 			// Step2.資料檢查
 			for (WarehouseActionDetailFront entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
+				// 入料
 				ArrayList<BasicIncomingList> checkIncomingDatas = incomingListDao.findAllByCheckUser(//
 						entityData.getWasclasssn().split("-")[0], //
 						entityData.getWasclasssn().split("-")[1], //
@@ -765,22 +769,49 @@ public class WarehouseActionServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 							new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
 				}
+				// 領料
 				ArrayList<BasicShippingList> checkShippingDatas = shippingListDao.findAllByCheckUser(//
 						entityData.getWasclasssn().split("-")[0], //
 						entityData.getWasclasssn().split("-")[1], //
 						entityData.getWasnb());
-				if (checkShippingDatas.size() == 0 && !entityData.getWastype().equals("入料類")) {
+				if (checkShippingDatas.size() == 0 && entityData.getWastype().equals("領料類")) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 							new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
+				}
+				// 檢查數量與備註 是否匹配
+				if (checkShippingDatas.size() > 0) {
+
+					// 庫存數
+					List<WarehouseArea> areaLists = areaDao.findAllByWaaliasawmpnb(entityData.getWasaliaswmpnb());
+					if (areaLists.size() > 0) {
+						WarehouseArea area = areaLists.get(0);
+						// 超領:只能備品轉(庫存量<實領量)
+						Boolean checkOK = false;
+						if (area.getWatqty() < entityData.getWaspngqty() && entityData.getSysnote().contains("備品轉")) {
+							// 超領登記:
+							checkOK = true;
+						} else if (area.getWatqty() >= entityData.getWaspngqty()
+								&& entityData.getWaspnqty() == entityData.getWaspngqty()) {
+							// 正常:
+							checkOK = true;
+						} else if (area.getWatqty() > entityData.getWaspngqty()
+								&& (entityData.getSysnote().contains("部分領料")
+										|| entityData.getSysnote().contains("庫存量不足"))) {
+							// 缺少:只能有(部分領料/庫存量不足)
+							checkOK = true;
+						}
+						if (!checkOK) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+									new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
+						}
+					}
 				}
 
 				if (areaDao.findAllByWaaliasawmpnb(entityData.getWasaliaswmpnb()).size() == 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { entityData.getWasaliaswmpnb() + "-配對不上" });
 				}
-
 			}
-
 			// Step2.資料檢查(PASS)
 		}
 		// =======================資料整理=======================
@@ -802,31 +833,33 @@ public class WarehouseActionServiceAc {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
-					// 單據更新
 					BasicIncomingList incomingList = arrayList.get(0);
-					incomingList.setBilfuser(x.getWasfuser());
-					incomingList.setSysmuser(x.getWasfuser());
-					incomingList.setSysnote(x.getSysnote());
-					incomingList.setSysmdate(new Date());
 					// 如果 有同步數量/或已經撿了
 					if (incomingList.getBilpngqty().equals(incomingList.getBilpnqty())) {
 						System.out.println(incomingList.getBilpngqty() + ":" + incomingList.getBilpnqty());
 						// 只登記人->不做數量修正
 					} else {
-						// 超入(須入量<實入量)
 						if (x.getWaspnqty() < x.getWaspngqty()) {
-							incomingList.setBilpnoqty(x.getWaspngqty() - x.getWaspnqty());
+							// 來料多(須入量<實入量)
+							incomingList.setBilpnoqty(x.getWaspngqty() - x.getWaspnqty());// 超入登記
+							incomingList.setSysnote(incomingList.getSysnote() + "[異常:進貨料多]");
+
 						} else if (x.getWaspnqty() > x.getWaspngqty() && x.getSysnote().indexOf("進貨料短少") < 0) {
 							// 來料缺(須入量>實入量)+沒做標記
 							incomingList.setSysnote(incomingList.getSysnote() + "[異常:進貨料短少]");
 						}
 						incomingList.setBilpngqty(x.getWaspngqty());
-						incomingLists.add(incomingList);
 
 						// 庫存更新
 						area.setWatqty(area.getWatqty() + x.getWaspngqty());
 						areaDao.save(area);
 					}
+					// 單據更新
+					incomingList.setBilfuser(x.getWasfuser());
+					incomingList.setSysmuser(x.getWasfuser());
+					incomingList.setSysnote(x.getSysnote());
+					incomingList.setSysmdate(new Date());
+					incomingLists.add(incomingList);
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
@@ -843,21 +876,26 @@ public class WarehouseActionServiceAc {
 					entityHistories.add(history);
 				}
 			} else {
+				// 領料類
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheckUser(wasClass, wasSn, wasNb);
 				// 有資料?
 				if (arrayList.size() > 0) {
 					BasicShippingList shippingList = arrayList.get(0);
-
+					// 超領:只能備品轉(庫存量<實領量)
+					if (area.getWatqty() < x.getWaspngqty() && x.getSysnote().contains("備品轉")) {
+						// 超領登記:
+						shippingList.setBslpnoqty(x.getWaspngqty() - area.getWatqty());
+					} else if (area.getWatqty() >= x.getWaspngqty() && x.getWaspnqty() == x.getWaspngqty()) {
+						// 正常:
+					} else if (area.getWatqty() > x.getWaspngqty()
+							&& (x.getSysnote().contains("部分領料") || x.getSysnote().contains("庫存量不足"))) {
+						// 缺少:只能有(部分領料/庫存量不足)
+					}
 					// 單據更新
 					shippingList.setBslfuser(x.getWasfuser());
 					shippingList.setSysmuser(x.getWasfuser());
 					shippingList.setSysnote(x.getSysnote());
 					shippingList.setSysmdate(new Date());
-					// 超領(庫存量<實領量)
-					if (area.getWatqty() < x.getWaspngqty() && x.getSysnote().indexOf("庫存量不足") < 0) {
-						shippingList.setBslpnoqty(x.getWaspngqty() - area.getWatqty());
-						shippingList.setSysnote(shippingList.getSysnote() + "[異常:庫存量不足]");
-					}
 					shippingList.setBslpngqty(x.getWaspngqty());
 					shippingLists.add(shippingList);
 
@@ -867,7 +905,6 @@ public class WarehouseActionServiceAc {
 					} else {
 						area.setWatqty(area.getWatqty() - x.getWaspngqty());
 					}
-
 					areaDao.save(area);
 
 					// 紀錄更新

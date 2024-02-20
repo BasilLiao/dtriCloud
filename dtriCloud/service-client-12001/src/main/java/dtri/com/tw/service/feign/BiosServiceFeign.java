@@ -60,4 +60,23 @@ public interface BiosServiceFeign {
 	@RequestMapping(value = { "/biosPrincipal/setDetele" }, method = RequestMethod.POST)
 	PackageBean setBiosPrincipalDetele(@RequestBody String jsonPackageBean);
 
+	// ================================BIOS:BIOS顧客標記================================
+	@RequestMapping(value = { "/biosCustomerTag/getSearch" }, method = RequestMethod.POST)
+	PackageBean getBiosCustomerTagSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/biosCustomerTag/getReport" }, method = RequestMethod.POST)
+	PackageBean getBiosCustomerTagReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/biosCustomerTag/setModify" }, method = RequestMethod.POST)
+	PackageBean setBiosCustomerTagModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/biosCustomerTag/setAdd" }, method = RequestMethod.POST)
+	PackageBean setBiosCustomerTagAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/biosCustomerTag/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setBiosCustomerTagInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/biosCustomerTag/setDetele" }, method = RequestMethod.POST)
+	PackageBean setBiosCustomerTagDetele(@RequestBody String jsonPackageBean);
+
 }

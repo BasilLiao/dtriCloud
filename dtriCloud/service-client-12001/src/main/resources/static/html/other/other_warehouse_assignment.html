@@ -981,7 +981,7 @@
 					if ($('.' + this.className + ' .wasclasssn').hasClass('text-info')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -995,7 +995,7 @@
 					if ($('.' + this.className + ' .wasclasssn').hasClass('text-primary')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -1009,7 +1009,7 @@
 					if ($('.' + this.className + ' .wasclasssn').hasClass('text-success')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -1018,13 +1018,12 @@
 							entityJosn[name] = val;
 						});
 						dataHeaderPassAll.push(entityJosn);
-
 					}
 					//登記:急單
 					if ($('.' + this.className + ' .wasclasssn').hasClass('text-warning')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -1039,7 +1038,7 @@
 					if ($('.' + this.className + ' .wasclasssn').hasClass('bg-info')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -1056,7 +1055,7 @@
 						//每個欄位
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
-							var val = $(this).text();
+							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							var name = $(this).attr('class').split(' ')[1];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
@@ -1074,6 +1073,7 @@
 				console.log(dataHeaderUrgency);
 				console.log(dataHeaderPrint);
 				console.log(dataHeaderManufacturePass);
+
 
 
 

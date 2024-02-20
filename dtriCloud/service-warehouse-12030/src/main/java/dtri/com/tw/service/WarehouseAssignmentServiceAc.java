@@ -365,8 +365,8 @@ public class WarehouseAssignmentServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignmentFront", null,
-					2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseAssignmentFront",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -427,7 +427,6 @@ public class WarehouseAssignmentServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
-
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
@@ -450,7 +449,6 @@ public class WarehouseAssignmentServiceAc {
 			if (searchData.getWascuser() == null) {
 				searchData.setWascuser("false");
 			}
-			
 
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
@@ -740,6 +738,36 @@ public class WarehouseAssignmentServiceAc {
 			}
 
 			// Step2.資料檢查(PASS)
+			if (action.equals("PassAll")) {
+				// Step2.資料檢查
+				for (WarehouseAssignmentFront entityData : entityDatas) {
+					// 檢查-數量充足(有資料)
+					String wasClass = entityData.getWasclasssn().split("-")[0];
+					String wasSn = entityData.getWasclasssn().split("-")[1];
+					ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(wasClass, wasSn, null);
+
+					for (BasicShippingList checkData : checkDatas) {
+
+						if (checkData.getBslfromwho().split("_").length > 1) {
+							String areaKey = checkData.getBslfromwho().split("_")[0].replace("[", "") + "_"
+									+ checkData.getBslpnumber();
+							ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+							// 倉庫不夠?(已經有取?/未取?)
+							int qty = 0;
+							if (checkData.getBslpngqty() - checkData.getBslpnqty() >= 0) {
+								// 已經取
+							} else {
+								// 未取完整+完全未取
+								qty = areas.get(0).getWatqty() - checkData.getBslpnqty() + checkData.getBslpngqty();
+								if (areas.size() > 0 && qty < 0) {
+									throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006,
+											Lan.zh_TW, new String[] { checkData.getBslpnumber() + " Qty is:" + qty });
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
@@ -811,7 +839,7 @@ public class WarehouseAssignmentServiceAc {
 				incomingListDao.saveAll(arrayList);
 			} else {
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheck(wasClass, wasSn, null);
-				ArrayList<BasicIncomingList> arrayListNew = new ArrayList<>();
+
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
@@ -828,24 +856,42 @@ public class WarehouseAssignmentServiceAc {
 							t.setBslpalready(1);
 							break;
 						case "PassAll":
-							if (t.getBslcuser().equals("")) {
-								t.setBslcuser(x.getWascuser());
-							}
-							if (t.getBslfuser().equals("")) {
-								t.setBslfuser(x.getWasfuser());
-							}
-							t.setBslpngqty(t.getBslpnqty());
+							boolean checkQty = true;
+							// 更新 儲位物料->有該儲位?
 							if (t.getBslfromwho().split("_").length > 1) {
 								String areaKey = t.getBslfromwho().split("_")[0].replace("[", "") + "_"
 										+ t.getBslpnumber();
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
-									int qty = areas.get(0).getWatqty();
-									qty = qty - t.getBslpnqty() > 0 ? qty - t.getBslpnqty() : 0;
-									areas.get(0).setWatqty(qty);
-									areaDao.save(areas.get(0));
+									// 檢查 已經取多少?未取?已取?
+									if (t.getBslpngqty() - t.getBslpnqty() >= 0) {
+										// 已經取
+									} else {
+										// 未取完整/完全未取
+										int qty = areas.get(0).getWatqty() - t.getBslpnqty() + t.getBslpngqty();
+										// 檢查:是否足夠扣除
+										if (qty - t.getBslpnqty() >= 0) {
+											qty = qty - t.getBslpnqty();
+											areas.get(0).setWatqty(qty);
+											areaDao.save(areas.get(0));
+											checkQty = true;
+										} else {
+											// 不夠
+											checkQty = false;
+										}
+									}
 								}
+							}
+							// 更新單據
+							if (checkQty) {
+								if (t.getBslcuser().equals("")) {
+									t.setBslcuser(x.getWascuser());
+								}
+								if (t.getBslfuser().equals("")) {
+									t.setBslfuser(x.getWasfuser());
+								}
+								t.setBslpngqty(t.getBslpnqty());
 							}
 							break;
 						case "Urgency":
@@ -875,7 +921,6 @@ public class WarehouseAssignmentServiceAc {
 				// =======================資料儲存=======================
 				// 資料Data
 				historyDao.saveAll(entityHistories);
-				incomingListDao.saveAll(arrayListNew);
 				shippingListDao.saveAll(arrayList);
 			}
 		});

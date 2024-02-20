@@ -210,10 +210,12 @@
 							<div class="col-4 p-1">
 								<select id="command_sel" class="lh-1 p-1 m-0 border border-primary rounded"
 									style="width: 100%; height: 100%">
-									<option value="Normal">Normal(正常)</option>
-									<option value="Abnormal_in">Abnormal(進貨料短少)</option>
+									<option value="Normal">Normal(正常.單)</option>
+									<option value="Normal_more">Normal(正常.複)</option>
+									<option value="Abnormal_ture">Abnormal(備品轉)</option>
+									<option value="Abnormal_split">Abnormal(部分領料)</option>
 									<option value="Abnormal_out">Abnormal(庫存量不足)</option>
-									<option value="Abnormal_split">Abnormal(數量切割)</option>
+									<option value="Abnormal_in">Abnormal(進貨料短少)</option>
 									<option value="Sub-storage">Sub-storage(次儲位)</option>
 								</select>
 							</div>
@@ -336,6 +338,7 @@
 			marksLock: {},//有選取的IKeyGKey(鎖定)
 			entityFormatJson: {},//查詢格式
 			btn_send_auto: "",//自動傳送
+			command_sel: "Normal",//預設選項
 			//換頁設置
 			searchPageSet: {
 				total: 100,//批次數量(1-1000)
@@ -712,6 +715,10 @@
 					$(".valTbodyTrD").remove();
 					//準備細節自動查詢用
 					other.data.marksLock = marks;
+					//重新對焦
+					other.data.command_sel = "Normal";
+					$("#command_send input").focus();
+					$("#command_sel").val(other.data.command_sel).change();
 
 					//Step1.清單->有標記+有資料?
 					if (marks != null && other.data.searchPageSet.entityDetailJsons != null) {
@@ -918,10 +925,12 @@
 							//儲位類型
 							var sendData = [];
 							console.log("倉別:" + command_alias + " 儲位類型:" + command_val);
+							var onlyOne = true;//只能一次
 							$('#search_dcr .valTbodyTrD').each(function () {
 								//比對欄位(單據類型+儲位+倉別)
-								var wastowho = $(this).find(".wastowho").text();
+								var wastowho = $(this).find(".wastowho").text();//入料類
 								var wastype = $(this).find(".wastype").text();
+								//必須是入料類才能用
 								if (wastype == "入料類" && wastowho.indexOf(command_val) >= 0 &&
 									wastowho.indexOf(command_alias) >= 0 &&
 									!$(this).find("input").prop("checked")) {
@@ -929,7 +938,7 @@
 									if (command_sel == "Normal") {
 										$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 										$(this).find(".wasfuser").text(accUser);
-
+										other.data.command_sel = "Normal";
 										sendData.push(this);
 										//other.methods.confirmSend(this);
 									} else if (command_sel.indexOf("Abnormal") >= 0) {
@@ -943,9 +952,11 @@
 											} else if (command_sel == "Abnormal_out") {
 												sysnote = "異常:庫存量不足";
 											} else if (command_sel == "Abnormal_split") {
-												sysnote = "異常:數量切割";
+												sysnote = "異常:部分領料";
+											} else if (command_sel == "Abnormal_ture") {
+												sysnote = "異常:備品轉";
 											}
-											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]","") + "[" + sysnote + "]");
+											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]", "") + "[" + sysnote + "]");
 
 											sendData.push(this);
 											//other.methods.confirmSend(this);
@@ -961,9 +972,9 @@
 							console.log("倉別:" + command_alias + " 物料類型:" + command_val);
 							var sendData = [];
 							//比對欄位(單據類型+物料+倉別)
-
+							var onlyOne = true;//只能一次
 							$('#search_dcr .valTbodyTrD').each(function () {
-								var wasfromwho = $(this).find(".wastowho").text();
+								var wasfromwho = $(this).find(".wastowho").text();//入料類
 								var waspnumber = $(this).find(".waspnumber").text();
 								var wastype = $(this).find(".wastype").text();
 								//如果是領料
@@ -974,12 +985,22 @@
 									wasfromwho.indexOf(command_alias) >= 0 &&
 									!$(this).find("input").prop("checked")) {
 									console.log(wasfromwho);
-									if (command_sel == "Normal") {
+									if (command_sel == "Normal" && onlyOne) {
+										onlyOne = false;
 										$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
 										$(this).find(".wasfuser").text(accUser);
+										other.data.command_sel = "Normal";
 										sendData.push(this);
 										//other.methods.confirmSend(this);
-									} else if (command_sel.indexOf("Abnormal") >= 0) {
+									} else if (command_sel == "Normal_more") {
+										//無限制
+										$(this).find(".waspngqty").text($(this).find(".waspnqty").text());
+										$(this).find(".wasfuser").text(accUser);
+										other.data.command_sel = "Normal_more";
+										sendData.push(this);
+
+									} else if (command_sel.indexOf("Abnormal") >= 0 && onlyOne) {
+										onlyOne = false;
 										if ($("#command_qty input").val() != "") {
 											$(this).find(".waspngqty").text($("#command_qty input").val());
 											$(this).find(".wasfuser").text(accUser);
@@ -990,9 +1011,11 @@
 											} else if (command_sel == "Abnormal_out") {
 												sysnote = "異常:庫存量不足";
 											} else if (command_sel == "Abnormal_split") {
-												sysnote = "異常:數量切割";
+												sysnote = "異常:部分領料";
+											} else if (command_sel == "Abnormal_ture") {
+												sysnote = "異常:備品轉";
 											}
-											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]","") + "[" + sysnote + "]");
+											$(this).find(".sysnote").text($(this).find(".sysnote").text().replaceAll("[N/A]", "") + "[" + sysnote + "]");
 
 											sendData.push(this);
 											//other.methods.confirmSend(this);
@@ -1329,7 +1352,7 @@
 				other.methods.searchDetailSend();
 				//重新對焦
 				$("#command_send input").focus();
-				$("#command_sel").val("Normal").change();
+				$("#command_sel").val(other.data.command_sel).change();
 			},
 			//查詢後回傳
 			otherReturn() {

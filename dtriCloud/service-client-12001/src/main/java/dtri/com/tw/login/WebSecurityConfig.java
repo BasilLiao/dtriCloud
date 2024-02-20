@@ -72,6 +72,7 @@ public class WebSecurityConfig {
 	private static final String bios_pri = "/ajax/bios_principal.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
 	private static final String bios_lif = "/ajax/bios_life_cycle.basil";
+	private static final String bios_cus = "/ajax/bios_customer_tag.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -309,8 +310,16 @@ public class WebSecurityConfig {
 				// ----請求-bios_version-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bios_lif).hasAuthority(actionRole(bios_lif, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bios_lif + ".AR").hasAuthority(actionRole(bios_lif, "AR"))// (查詢)
-				
-				
+
+				// ----請求-bios_customer_tag-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bios_cus).hasAuthority(actionRole(bios_cus, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bios_cus + ".AR").hasAuthority(actionRole(bios_cus, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bios_cus + ".ARR").hasAuthority(actionRole(bios_cus, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bios_cus + ".AC").hasAuthority(actionRole(bios_cus, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bios_cus + ".AU").hasAuthority(actionRole(bios_cus, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bios_cus + ".AD").hasAuthority(actionRole(bios_cus, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bios_cus + ".DD").hasAuthority(actionRole(bios_cus, "DD"))// (標記移除)
+
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();
 

@@ -487,7 +487,20 @@
 									//console.log(tables);
 								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
 									//創建時(每一格欄位)-呼叫
-									//console.log(cell);
+									console.log(cell);
+									//https://github.com/exceljs/exceljs/blob/master/README_zh.md#%E5%9B%BE%E7%89%87
+									//沒效果?
+									if ($(cell).find("img").length > 0) {
+										const myBase64Image = $(cell).find("img").attr("src");
+										const imageId2 = workbook.addImage({
+											base64: myBase64Image,
+											extension: 'jpeg',
+										});
+										worksheet.addImage(imageId2, {
+											tl: {col: 0, row: 0},
+											ext: {width: 500, height: 200}
+										});
+									}
 								}, worksheetCompleted({workbook, tables, worksheet, table}) {
 									//完成時-呼叫
 									//worksheet.getRow(1).hidden = true//隱藏第一筆
@@ -588,9 +601,14 @@
 						} else {
 							//如果換行
 							if (entity[k] != "" && entity[k] != null) {
-								var val = entity[k]+"";
-								val = val.replaceAll(/\n/g, "<br/>");
-								reportValueList.find('.' + k).html(val);
+								var val = entity[k] + "";
+								//如果圖片?
+								if (val.indexOf("data:image") >= 0) {
+									reportValueList.find('.' + k).html('<img src="' + val + '" style="height:50px;">');
+								} else {
+									val = val.replaceAll(/\n/g, "<br/>");
+									reportValueList.find('.' + k).html(val);
+								}
 							} else {
 								reportValueList.find('.' + k).text(entity[k]);
 							}
