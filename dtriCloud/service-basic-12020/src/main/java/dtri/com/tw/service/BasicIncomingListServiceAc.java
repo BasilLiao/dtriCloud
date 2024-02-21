@@ -86,7 +86,8 @@ public class BasicIncomingListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicIncomingList", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicIncomingList", null,
+					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -123,10 +124,11 @@ public class BasicIncomingListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			BasicIncomingList searchData = packageService.jsonToBean(packageBean.getEntityJson(), BasicIncomingList.class);
+			BasicIncomingList searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					BasicIncomingList.class);
 
-			ArrayList<BasicIncomingList> entitys = incomingListDao.findAllBySearch(searchData.getBilclass(), searchData.getBilsn(),
-					searchData.getBilpnumber(), pageable);
+			ArrayList<BasicIncomingList> entitys = incomingListDao.findAllBySearch(searchData.getBilclass(),
+					searchData.getBilsn(), searchData.getBilpnumber(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -159,14 +161,15 @@ public class BasicIncomingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicIncomingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicIncomingList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicIncomingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(), entityData.getBilsn(),
-						entityData.getBilpnumber(), null);
+				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(),
+						entityData.getBilsn(), entityData.getBilpnumber(), null);
 				for (BasicIncomingList checkData : checkDatas) {
 					if (checkData.getBilid().compareTo(entityData.getBilid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -212,14 +215,15 @@ public class BasicIncomingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicIncomingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicIncomingList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicIncomingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(), entityData.getBilsn(),
-						entityData.getBilpnumber(), null);
+				ArrayList<BasicIncomingList> checkDatas = incomingListDao.findAllByCheck(entityData.getBilclass(),
+						entityData.getBilsn(), entityData.getBilpnumber(), null);
 				for (BasicIncomingList checkData : checkDatas) {
 					if (checkData.getBilid().compareTo(entityData.getBilid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -257,8 +261,9 @@ public class BasicIncomingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicIncomingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicIncomingList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -288,8 +293,9 @@ public class BasicIncomingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicIncomingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicIncomingList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -329,16 +335,32 @@ public class BasicIncomingListServiceAc {
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
 			cellName = cellName.replace("bil", "bil_");
-			cellName = cellName.replace("bil_class", "bil_class");
+
+			cellName = cellName.replace("bil_erpcuser", "bil_erp_c_user");
 			cellName = cellName.replace("bil_cuser", "bil_c_user");
-			cellName = cellName.replace("bil_e", "bil_e_");
-			cellName = cellName.replace("bil_from", "bil_from_");
-			cellName = cellName.replace("bil_fdate", "bil_f_date");
-			cellName = cellName.replace("bil_pn", "bil_pn_");
-			cellName = cellName.replace("bil_pn_a", "bil_pn_a_");
-			cellName = cellName.replace("bil_pname", "bil_p_name");
+			cellName = cellName.replace("bil_fuser", "bil_f_user");
+			cellName = cellName.replace("bil_suser", "bil_s_user");
+			cellName = cellName.replace("bil_muser", "bil_m_user");
+
+			cellName = cellName.replace("bil_palready", "bil_p_already");
 			cellName = cellName.replace("bil_pnumber", "bil_p_number");
-			cellName = cellName.replace("bil_to", "bil_to_");
+			cellName = cellName.replace("bil_pname", "bil_p_name");
+			cellName = cellName.replace("bil_pspecification", "bil_p_specification");
+			cellName = cellName.replace("bil_pnqty", "bil_pn_qty");
+
+			cellName = cellName.replace("bil_pnaqty", "bil_pn_a_qty");
+			cellName = cellName.replace("bil_pngqty", "bil_pn_g_qty");
+			cellName = cellName.replace("bil_pnoqty", "bil_pn_o_qty");
+			cellName = cellName.replace("bil_pnerpqty", "bil_pn_erp_qty");
+			cellName = cellName.replace("bil_tocommand", "bil_to_command");
+
+			cellName = cellName.replace("bil_fromcommand", "bil_from_command");
+			cellName = cellName.replace("bil_towho", "bil_to_who");
+			cellName = cellName.replace("bil_fromwho", "bil_from_who");
+			cellName = cellName.replace("bil_edate", "bil_e_date");
+			cellName = cellName.replace("bil_fdate", "bil_f_date");
+			cellName = cellName.replace("bil_tfilter", "bil_t_filter");
+
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
 			String valueType = x.getAsString().split("<_>")[3];

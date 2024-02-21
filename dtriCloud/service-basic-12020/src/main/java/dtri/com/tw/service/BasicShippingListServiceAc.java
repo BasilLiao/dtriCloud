@@ -86,7 +86,8 @@ public class BasicShippingListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicShippingList", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicShippingList", null,
+					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -123,10 +124,11 @@ public class BasicShippingListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			BasicShippingList searchData = packageService.jsonToBean(packageBean.getEntityJson(), BasicShippingList.class);
+			BasicShippingList searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					BasicShippingList.class);
 
-			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(searchData.getBslclass(), searchData.getBslsn(),
-					searchData.getBslpnumber(), pageable);
+			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(searchData.getBslclass(),
+					searchData.getBslsn(), searchData.getBslpnumber(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -158,14 +160,15 @@ public class BasicShippingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicShippingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicShippingList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicShippingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(), entityData.getBslsn(),
-						entityData.getBslpnumber(), null);
+				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(),
+						entityData.getBslsn(), entityData.getBslpnumber(), null);
 				for (BasicShippingList checkData : checkDatas) {
 					if (checkData.getBslid().compareTo(entityData.getBslid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -211,14 +214,15 @@ public class BasicShippingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicShippingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicShippingList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicShippingList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(), entityData.getBslsn(),
-						entityData.getBslpnumber(), null);
+				ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(entityData.getBslclass(),
+						entityData.getBslsn(), entityData.getBslpnumber(), null);
 				for (BasicShippingList checkData : checkDatas) {
 					if (checkData.getBslid().compareTo(entityData.getBslid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -256,8 +260,9 @@ public class BasicShippingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicShippingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicShippingList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -287,8 +292,9 @@ public class BasicShippingListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicShippingList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicShippingList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -319,7 +325,7 @@ public class BasicShippingListServiceAc {
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM basic_command_list e Where ";
+		String nativeQuery = "SELECT e.* FROM basic_shipping_list e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];
@@ -327,16 +333,33 @@ public class BasicShippingListServiceAc {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
+
 			cellName = cellName.replace("bsl", "bsl_");
-			cellName = cellName.replace("bsl_c", "bsl_c_");
-			cellName = cellName.replace("bsl_e", "bsl_e_");
-			cellName = cellName.replace("bsl_from", "bsl_from_");
-			cellName = cellName.replace("bsl_fdate", "bsl_f_date");
-			cellName = cellName.replace("bsl_pn", "bsl_pn_");
-			cellName = cellName.replace("bsl_pn_a", "bsl_pn_a_");
-			cellName = cellName.replace("bsl_pname", "bsl_p_name");
+
+			cellName = cellName.replace("bsl_erpcuser", "bsl_erp_c_user");
+			cellName = cellName.replace("bsl_cuser", "bsl_c_user");
+
+			cellName = cellName.replace("bsl_fuser", "bsl_f_user");
+			cellName = cellName.replace("bsl_suser", "bsl_s_user");
+			cellName = cellName.replace("bsl_muser", "bsl_m_user");
+			cellName = cellName.replace("bsl_smuser", "bsl_sm_user");
+			cellName = cellName.replace("bsl_palready", "bsl_p_already");
 			cellName = cellName.replace("bsl_pnumber", "bsl_p_number");
-			cellName = cellName.replace("bsl_to", "bsl_to_");
+			cellName = cellName.replace("bsl_pname", "bsl_p_name");
+			cellName = cellName.replace("bsl_pspecification", "bsl_p_specification");
+			cellName = cellName.replace("bsl_pnqty", "bsl_pn_qty");
+			cellName = cellName.replace("bsl_pnaqty", "bsl_pn_a_qty");
+			cellName = cellName.replace("bsl_pngqty", "bsl_pn_g_qty");
+			cellName = cellName.replace("bsl_pnoqty", "bsl_pn_o_qty");
+			cellName = cellName.replace("bsl_pnerpqty", "bsl_pn_erp_qty");
+			cellName = cellName.replace("bsl_tocommand", "bsl_to_command");
+			cellName = cellName.replace("bsl_fromcommand", "bsl_from_command");
+			cellName = cellName.replace("bsl_towho", "bsl_to_who");
+			cellName = cellName.replace("bsl_fromwho", "bsl_from_who");
+			cellName = cellName.replace("bsl_edate", "bsl_e_date");
+			cellName = cellName.replace("bsl_fdate", "bsl_f_date");
+			cellName = cellName.replace("bsl_tfilter", "bsl_t_filter");
+
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
 			String valueType = x.getAsString().split("<_>")[3];
