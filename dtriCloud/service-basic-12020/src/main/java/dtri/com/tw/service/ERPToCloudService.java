@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
+import dtri.com.tw.mssql.entity.Copth;
 import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
@@ -961,6 +962,74 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBilmuser(bilmuser);
+		return o;
+	}
+
+	// ============ -OK 銷貨單 A231/A232 ============
+	// 領料類-轉換(Mocte)
+	public BasicShippingList shippingOneCopth(BasicShippingList o, Copth m, String checkSum, //
+			Map<String, WarehouseTypeFilter> wTFs, TreeMap<String, WarehouseKeeper> wKs,
+			Map<String, WarehouseArea> wAs) {
+		// 是否結單?
+		int sysstatus = 0;
+		if (m.getTg047().equals("Y")) {
+			sysstatus = 1;
+//			if (o.getBslpngqty().equals(0)) {
+//				o.setBslpngqty(m.getTb004());// 已領庫量
+//			}
+		}
+		// 資料匹配
+		o.setChecksum(checkSum);
+		o.setBslfuser("");
+		o.setBslclass(m.getTh001_th002_th003().split("-")[0]);// 入庫單[別]
+		o.setBslsn(m.getTh001_th002_th003().split("-")[1]);// 入庫單[號]
+		o.setBslnb(m.getTh001_th002_th003().split("-")[2]);// 序號
+		o.setBsltype(m.getTk000());// 入庫單
+		o.setBslcheckin(sysstatus);// 0=未核單 1=已核單
+		o.setBslacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBslpnumber(m.getMb001());// 物料號品號
+		o.setBslpname(m.getMb002());// 品名
+		o.setBslpspecification(m.getMb003());// 規格
+		o.setBslpnqty(m.getTh008());// 數量
+		o.setBslpnerpqty(0);// 數量(領退料數量ERP)
+		o.setSysstatus(sysstatus);// 0=尚未結束,1=結案
+		o.setSysnote(m.getTh018());// 備註
+		o.setBslerpcuser(m.getCreator());// 開單人
+		o.setSyshnote(m.getTg020());// 單據備註
+		// 單據急迫性
+		if (wTFs.containsKey(o.getBslclass())) {
+			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
+		}
+
+		// 預計領料日
+		if (m.getTg042() != null) {
+			o.setBsledate(Fm_T.toYMDate(m.getTg042()));
+		}
+
+		// 而外匹配 [單別]
+		o.setBslfromcommand("[_]");//
+		o.setBsltocommand("[_]");
+		// 而外匹配 [倉別代號+倉別名稱+位置]
+		String bilfromwho = m.getTh007() + "_" + m.getTh007() + "_FF-FF-FF-FF";
+		String wAsKey = m.getTh007() + "_" + m.getMb001();
+		if (wAs.containsKey(wAsKey)) {
+			bilfromwho = m.getTh007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
+		}
+		o.setBsltowho("[_" + m.getTg007() + "]");// 目的[_]
+		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
+		// 而外匹配 [儲位負責]
+		String bilmuser = "";
+		for (String wkey : wKs.keySet()) {
+			String wkeyAccount = wkey.split("_")[0];
+			String wkeyWarehouse = wkey.split("_")[1];
+			String wkeyLocal = wkey.split("_")[2];
+			if (!wkey.equals("") && bilfromwho.indexOf(wkeyLocal) >= 0//
+					&& wkeyWarehouse.equals(m.getTh007())) {
+				bilmuser += wkeyAccount + "_";
+				// break;
+			}
+		}
+		o.setBslmuser(bilmuser);
 		return o;
 	}
 

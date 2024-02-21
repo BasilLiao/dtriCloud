@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import dtri.com.tw.mssql.dao.BomtdDao;
 import dtri.com.tw.mssql.dao.BomtfDao;
+import dtri.com.tw.mssql.dao.CopthDao;
 import dtri.com.tw.mssql.dao.InvmaDao;
 import dtri.com.tw.mssql.dao.InvtaDao;
 import dtri.com.tw.mssql.dao.InvtbDao;
@@ -31,6 +32,7 @@ import dtri.com.tw.mssql.dao.MocthDao;
 import dtri.com.tw.mssql.dao.PurthDao;
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
+import dtri.com.tw.mssql.entity.Copth;
 import dtri.com.tw.mssql.entity.Invma;
 import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtb;
@@ -94,6 +96,8 @@ public class ERPSynchronizeService {
 	PurthDao purthDao;
 	@Autowired
 	InvmaDao invmaDao;
+	@Autowired
+	CopthDao copthDao;
 
 	@Autowired
 	BasicIncomingListDao incomingListDao;
@@ -382,7 +386,7 @@ public class ERPSynchronizeService {
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
-	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571
+	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571/
 	// 委外退料單
 	public void erpSynchronizeMocte() throws Exception {
 		logger.info("===erpSynchronizeMocte: 時間:{}", dateFormat.format(new Date()));
@@ -1407,6 +1411,84 @@ public class ERPSynchronizeService {
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step5. 自動結算
+		erpAutoCheckService.settlementAuto(wAsSave);
+	}
+
+	// ============ 銷貨單 A231/A232
+	public void erpSynchronizeCopth() throws Exception {
+		logger.info("===erpSynchronizeCopth: 時間:{}", dateFormat.format(new Date()));
+		// Step0.資料準備
+		ArrayList<Copth> erpEntitys = copthDao.findAllByCopth();
+		Map<String, Copth> erpShMaps = new HashMap<>();
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		// 存入資料物件
+		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+
+		// Step1.資料整理
+		for (Copth m : erpEntitys) {
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setTh001_th002_th003(m.getTh001_th002_th003().replaceAll("\\s", ""));
+			String nKey = m.getTh001_th002_th003();
+			m.setNewone(true);
+			erpShMaps.put(nKey, m);
+			wTFsSave.put(m.getTh001_th002_th003().replaceAll("\\s", "").split("-")[0], 1);
+		}
+		// Step2.[ERP vs Cloud]舊資料匹配
+		// 領料
+		entityShOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpShMaps.containsKey(oKey)) {
+				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 內容不同=>更新
+				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
+						(!o.getChecksum().equals(nChecksum)
+								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+					Copth m = erpShMaps.get(oKey);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+				}
+			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
+					(o.getBslclass().equals("A231") || o.getBslclass().equals("A232"))) {
+				// 30天/尚未領料 / A231/A232 銷貨單
+				o = autoRemoveService.shippingAuto(o);
+				removeShLists.add(o);// 標記:無此資料
+			}
+		});
+		// Step3.[ERP vs Cloud] 全新資料?
+		// 領料
+		erpShMaps.forEach((key, v) -> {
+			// 測試用
+//				if(key.indexOf("A541-231122019")>=0) {
+//					System.out.println(key);
+//				}
+			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTh020().equals("N")) {
+				BasicShippingList n = new BasicShippingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				n.setChecksum(checkSum);
+				// 資料轉換
+				n = erpToCloudService.shippingOneCopth(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
+				saveShLists.add(n);
+			}
+		});
+		// Step4. 存入資料
+		shippingListDao.saveAll(saveShLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);

@@ -73,6 +73,7 @@ public class ScheduledTasksService {
 				synchronizeService.erpSynchronizeMocth();
 				synchronizeService.erpSynchronizeBomtd();
 				synchronizeService.erpSynchronizeBomtf();
+				synchronizeService.erpSynchronizeCopth();
 
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
