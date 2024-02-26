@@ -779,11 +779,12 @@ public class WarehouseAssignmentServiceAc {
 			String wasType = x.getWastype();
 			if (wasType.equals("入料類")) {
 				ArrayList<BasicIncomingList> arrayList = incomingListDao.findAllByCheck(wasClass, wasSn, null);
-				ArrayList<BasicShippingList> arrayListNew = new ArrayList<>();
+				ArrayList<BasicIncomingList> arrayListNew = new ArrayList<>();
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
 						//
+						ArrayList<WarehouseArea> areas = new ArrayList<WarehouseArea>();
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
 						switch (action) {
@@ -804,7 +805,7 @@ public class WarehouseAssignmentServiceAc {
 							if (t.getBiltowho().split("_").length > 1) {
 								String areaKey = t.getBiltowho().split("_")[0].replace("[", "") + "_"
 										+ t.getBilpnumber();
-								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+								areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
 									int qty = areas.get(0).getWatqty();
@@ -819,6 +820,7 @@ public class WarehouseAssignmentServiceAc {
 						default:
 							break;
 						}
+						arrayListNew.add(t);
 						// 記錄用
 						WarehouseHistory history = new WarehouseHistory();
 						history.setWhtype("指令:入料:(" + action + ")");
@@ -828,24 +830,29 @@ public class WarehouseAssignmentServiceAc {
 								t.getBilnb() + "*" + t.getBilpnqty());
 						history.setWhwmpnb(t.getBilpnumber());
 						history.setWhfuser(t.getBilfuser());
+						if (areas.size() > 0) {
+							history.setWheqty(areas.get(0).getWaerptqty());
+							history.setWhcqty(areas.get(0).getWatqty());
+						}
 						history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
 						entityHistories.add(history);
+
 					});
 				}
 				// =======================資料儲存=======================
 				// 資料Data
 				historyDao.saveAll(entityHistories);
-				shippingListDao.saveAll(arrayListNew);
-				incomingListDao.saveAll(arrayList);
+				incomingListDao.saveAll(arrayListNew);
 			} else {
 				ArrayList<BasicShippingList> arrayList = shippingListDao.findAllByCheck(wasClass, wasSn, null);
-
+				ArrayList<BasicShippingList> arrayListNew = new ArrayList<>();
 				// 有資料?
 				if (arrayList.size() > 0) {
 					arrayList.forEach(t -> {
 						//
 						t.setSysmdate(new Date());
 						t.setSysmuser(packageBean.getUserAccount());
+						ArrayList<WarehouseArea> areas = new ArrayList<WarehouseArea>();
 						switch (action) {
 						case "Agree":
 							if (t.getBslcuser().equals("")) {
@@ -861,18 +868,18 @@ public class WarehouseAssignmentServiceAc {
 							if (t.getBslfromwho().split("_").length > 1) {
 								String areaKey = t.getBslfromwho().split("_")[0].replace("[", "") + "_"
 										+ t.getBslpnumber();
-								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+								areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
 									// 檢查 已經取多少?未取?已取?
 									if (t.getBslpngqty() - t.getBslpnqty() >= 0) {
 										// 已經取
 									} else {
-										// 未取完整/完全未取
+										// 未取完整?/完全未取
+
 										int qty = areas.get(0).getWatqty() - t.getBslpnqty() + t.getBslpngqty();
-										// 檢查:是否足夠扣除
-										if (qty - t.getBslpnqty() >= 0) {
-											qty = qty - t.getBslpnqty();
+										// 檢查:是否足夠扣除[庫存-需領用量+已領用量]
+										if (qty >= 0) {
 											areas.get(0).setWatqty(qty);
 											areaDao.save(areas.get(0));
 											checkQty = true;
@@ -905,6 +912,7 @@ public class WarehouseAssignmentServiceAc {
 						default:
 							break;
 						}
+						arrayListNew.add(t);
 						// 記錄用
 						WarehouseHistory history = new WarehouseHistory();
 						history.setWhtype("指令:領料:(" + action + ")");
@@ -914,14 +922,18 @@ public class WarehouseAssignmentServiceAc {
 								t.getBslnb() + "*" + t.getBslpnqty());
 						history.setWhwmpnb(t.getBslpnumber());
 						history.setWhfuser(t.getBslfuser());
+						if (areas.size() > 0) {
+							history.setWheqty(areas.get(0).getWaerptqty());
+							history.setWhcqty(areas.get(0).getWatqty());
+						}
 						history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
 						entityHistories.add(history);
 					});
 				}
 				// =======================資料儲存=======================
 				// 資料Data
+				shippingListDao.saveAll(arrayListNew);
 				historyDao.saveAll(entityHistories);
-				shippingListDao.saveAll(arrayList);
 			}
 		});
 		// 細節

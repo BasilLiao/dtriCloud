@@ -1199,7 +1199,7 @@ public class ERPSynchronizeService {
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A421"))) {
-				// A141 庫存借入單
+				// A421 組合單
 				o = autoRemoveService.incomingAuto(o);
 				removeInLists.add(o);// 標記:無此資料
 			}
@@ -1209,6 +1209,10 @@ public class ERPSynchronizeService {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
+			// 測試用
+			if (oKey.indexOf("A541-231122019") >= 0) {
+				System.out.println(oKey);
+			}
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
@@ -1239,7 +1243,7 @@ public class ERPSynchronizeService {
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
 		erpInMaps.forEach((key, v) -> {
-			if (v.isNewone() && v.getTk000().equals("入料類")) {
+			if (v.isNewone() && v.getTk000().equals("入料類") && v.getTd010().equals("N")) {
 				BasicIncomingList n = new BasicIncomingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
@@ -1251,7 +1255,7 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			if (v.isNewone() && v.getTk000().equals("領料類")) {
+			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTd010().equals("N")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換

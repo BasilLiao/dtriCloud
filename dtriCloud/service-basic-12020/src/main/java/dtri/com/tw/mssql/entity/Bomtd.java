@@ -288,7 +288,6 @@ public class Bomtd implements Cloneable {
 		return "Invte [te001_te002_te003=" + te001_te002_te003 + ", te004=" + te004 + ", te007=" + te007 + ", te008=" + te008 + ", te010=" + te010
 				+ ", td004=" + td004 + ", td007=" + td007 + ", td010=" + td010 + ", td016=" + td016 + ", mb001=" + mb001 + ", mb002=" + mb002
 				+ ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040
-				+ ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + ", createdate=" + createdate + ", modidate=" + modidate
-				+ ", creator=" + creator + "]";
+				+ ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
 }

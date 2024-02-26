@@ -787,17 +787,20 @@ public class WarehouseActionServiceAc {
 						WarehouseArea area = areaLists.get(0);
 						// 超領:只能備品轉(庫存量<實領量)
 						Boolean checkOK = false;
-						if (area.getWatqty() < entityData.getWaspngqty() && entityData.getSysnote().contains("備品轉")) {
-							// 超領登記:
+						if (area.getWatqty() < entityData.getWaspngqty()
+								&& entityData.getWaspnqty().equals(entityData.getWaspngqty())
+								&& entityData.getSysnote().contains("備品轉")) {
+							// 超領登記: 庫存數量 < 已取數量 &&需領數量 = 已領取數量 && 選:備品轉
 							checkOK = true;
 						} else if (area.getWatqty() >= entityData.getWaspngqty()
-								&& entityData.getWaspnqty() == entityData.getWaspngqty()) {
-							// 正常:
+								&& entityData.getWaspnqty().equals(entityData.getWaspngqty())) {
+							// 正常:庫存數量 >= 已取數量 && 需領數量 = 已領取數量
 							checkOK = true;
-						} else if (area.getWatqty() > entityData.getWaspngqty()
+						} else if (area.getWatqty() <= entityData.getWaspngqty()
+								&& entityData.getWaspnqty() > entityData.getWaspngqty()//
 								&& (entityData.getSysnote().contains("部分領料")
 										|| entityData.getSysnote().contains("庫存量不足"))) {
-							// 缺少:只能有(部分領料/庫存量不足)
+							// 缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(部分領料/庫存量不足)
 							checkOK = true;
 						}
 						if (!checkOK) {
@@ -881,15 +884,15 @@ public class WarehouseActionServiceAc {
 				// 有資料?
 				if (arrayList.size() > 0) {
 					BasicShippingList shippingList = arrayList.get(0);
-					// 超領:只能備品轉(庫存量<實領量)
-					if (area.getWatqty() < x.getWaspngqty() && x.getSysnote().contains("備品轉")) {
-						// 超領登記:
+					if (area.getWatqty() < x.getWaspngqty() && x.getWaspnqty().equals(x.getWaspngqty())
+							&& x.getSysnote().contains("備品轉")) {
+						// 超領登記: 庫存數量 < 已取數量 &&需領數量 = 已領取數量 && 選:備品轉
 						shippingList.setBslpnoqty(x.getWaspngqty() - area.getWatqty());
-					} else if (area.getWatqty() >= x.getWaspngqty() && x.getWaspnqty() == x.getWaspngqty()) {
-						// 正常:
-					} else if (area.getWatqty() > x.getWaspngqty()
+					} else if (area.getWatqty() >= x.getWaspngqty() && x.getWaspnqty().equals(x.getWaspngqty())) {
+						// 正常:庫存數量 >= 已取數量 && 需領數量 = 已領取數量
+					} else if (area.getWatqty() <= x.getWaspngqty() && x.getWaspnqty() > x.getWaspngqty()//
 							&& (x.getSysnote().contains("部分領料") || x.getSysnote().contains("庫存量不足"))) {
-						// 缺少:只能有(部分領料/庫存量不足)
+						// 缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(部分領料/庫存量不足)
 					}
 					// 單據更新
 					shippingList.setBslfuser(x.getWasfuser());
