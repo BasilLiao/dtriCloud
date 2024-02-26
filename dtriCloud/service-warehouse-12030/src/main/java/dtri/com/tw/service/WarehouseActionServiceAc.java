@@ -796,11 +796,14 @@ public class WarehouseActionServiceAc {
 								&& entityData.getWaspnqty().equals(entityData.getWaspngqty())) {
 							// 正常:庫存數量 >= 已取數量 && 需領數量 = 已領取數量
 							checkOK = true;
+						} else if (entityData.getWaspnqty() > entityData.getWaspngqty()
+								&& entityData.getSysnote().contains("部分領料")) {
+							// 假缺少:需領數量 > 已領數量 && 只能有(部分領料)
+							checkOK = true;
 						} else if (area.getWatqty() <= entityData.getWaspngqty()
 								&& entityData.getWaspnqty() > entityData.getWaspngqty()//
-								&& (entityData.getSysnote().contains("部分領料")
-										|| entityData.getSysnote().contains("庫存量不足"))) {
-							// 缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(部分領料/庫存量不足)
+								&& entityData.getSysnote().contains("庫存量不足")) {
+							// 真缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(庫存量不足)
 							checkOK = true;
 						}
 						if (!checkOK) {
@@ -890,9 +893,12 @@ public class WarehouseActionServiceAc {
 						shippingList.setBslpnoqty(x.getWaspngqty() - area.getWatqty());
 					} else if (area.getWatqty() >= x.getWaspngqty() && x.getWaspnqty().equals(x.getWaspngqty())) {
 						// 正常:庫存數量 >= 已取數量 && 需領數量 = 已領取數量
-					} else if (area.getWatqty() <= x.getWaspngqty() && x.getWaspnqty() > x.getWaspngqty()//
-							&& (x.getSysnote().contains("部分領料") || x.getSysnote().contains("庫存量不足"))) {
-						// 缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(部分領料/庫存量不足)
+					} else if (x.getWaspnqty() > x.getWaspngqty() && x.getSysnote().contains("部分領料")) {
+						// 假缺少:需領數量 > 已領數量 && 只能有(部分領料)
+
+					} else if (area.getWatqty() <= x.getWaspngqty() && x.getWaspnqty() > x.getWaspngqty()
+							&& x.getSysnote().contains("庫存量不足")) {
+						// 真缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(部分領料/庫存量不足)
 					}
 					// 單據更新
 					shippingList.setBslfuser(x.getWasfuser());

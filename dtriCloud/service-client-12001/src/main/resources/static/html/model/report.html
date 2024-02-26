@@ -473,11 +473,12 @@
 						},
 						widthRatio: .14,//寬度比例
 						plugins: [
+							/*預設格式(注意:會覆蓋效果)
 							Table2Excel.plugins.fontPlugin,
 							Table2Excel.plugins.fillPlugin,
 							Table2Excel.plugins.formPlugin,
 							Table2Excel.plugins.alignmentPlugin,
-							Table2Excel.plugins.hyperlinkPlugin,
+							Table2Excel.plugins.hyperlinkPlugin,*/
 							Table2Excel.plugins.autoWidthPlugin,
 							{
 								workbookCreated({workbook, tables}) {
@@ -490,21 +491,33 @@
 									console.log(cell);
 									//https://github.com/exceljs/exceljs/blob/master/README_zh.md#%E5%9B%BE%E7%89%87
 									//沒效果?
-									if ($(cell).find("img").length > 0) {
-										const myBase64Image = $(cell).find("img").attr("src");
-										const imageId2 = workbook.addImage({
+									/*if ($(cell).find("img").length > 0) {
+										var myBase64Image = $(cell).find("img").attr("src");
+										console.log(myBase64Image);
+										var imageId2 = workbook.addImage({
 											base64: myBase64Image,
-											extension: 'jpeg',
+											extension: 'png',
 										});
 										worksheet.addImage(imageId2, {
-											tl: {col: 0, row: 0},
+											tl: {col: 1, row: 1},
 											ext: {width: 500, height: 200}
 										});
-									}
+
+									}*/
+
+									//有效果
+									/*workcell.fill = {
+										type: 'pattern',
+										pattern: 'lightGray',
+										fgColor: 'FFFFFF00',
+										bgColor: 'FF0000FF'
+									};*/
 								}, worksheetCompleted({workbook, tables, worksheet, table}) {
 									//完成時-呼叫
 									//worksheet.getRow(1).hidden = true//隱藏第一筆
-									worksheet.getColumn(1).hidden = true//隱藏第一行
+									worksheet.getColumn(1).hidden = true;//隱藏第一行
+
+
 								}
 							},
 						]
@@ -615,11 +628,7 @@
 						}
 					});
 					$('#reportValueList').before(reportValueList);
-
-
 				}
-
-
 			},
 			destroy() {
 				//銷毀
