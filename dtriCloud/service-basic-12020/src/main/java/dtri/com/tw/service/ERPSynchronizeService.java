@@ -26,6 +26,7 @@ import dtri.com.tw.mssql.dao.InvtbDao;
 import dtri.com.tw.mssql.dao.InvtgDao;
 import dtri.com.tw.mssql.dao.InvthDao;
 import dtri.com.tw.mssql.dao.MoctaDao;
+import dtri.com.tw.mssql.dao.MoctaScheduleOutsourcerDao;
 import dtri.com.tw.mssql.dao.MocteDao;
 import dtri.com.tw.mssql.dao.MoctfDao;
 import dtri.com.tw.mssql.dao.MocthDao;
@@ -39,6 +40,7 @@ import dtri.com.tw.mssql.entity.Invtb;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
 import dtri.com.tw.mssql.entity.Mocta;
+import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
 import dtri.com.tw.mssql.entity.Mocth;
@@ -50,6 +52,7 @@ import dtri.com.tw.pgsql.dao.BasicProductModelDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.BiosPrincipalDao;
 import dtri.com.tw.pgsql.dao.BiosVersionDao;
+import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseConfigDao;
 import dtri.com.tw.pgsql.dao.WarehouseKeeperDao;
@@ -62,12 +65,15 @@ import dtri.com.tw.pgsql.entity.BasicProductModel;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.BiosPrincipal;
 import dtri.com.tw.pgsql.entity.BiosVersion;
+import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseConfig;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
+import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.Fm_T;
+import jakarta.annotation.Resource;
 
 @Service
 public class ERPSynchronizeService {
@@ -87,6 +93,8 @@ public class ERPSynchronizeService {
 	@Autowired
 	MoctaDao moctaDao;
 	@Autowired
+	MoctaScheduleOutsourcerDao erpOutsourcerDao;
+	@Autowired
 	MocteDao mocteDao;
 	@Autowired
 	MoctfDao moctfDao;
@@ -99,6 +107,7 @@ public class ERPSynchronizeService {
 	@Autowired
 	CopthDao copthDao;
 
+	// Cloud
 	@Autowired
 	BasicIncomingListDao incomingListDao;
 	@Autowired
@@ -123,6 +132,8 @@ public class ERPSynchronizeService {
 	BiosPrincipalDao biosPrincipalDao;
 	@Autowired
 	BasicNotificationMailDao notificationMailDao;
+	@Autowired
+	ScheduleOutsourcerDao scheduleOutsourcerDao;
 
 	@Autowired
 	ERPToCloudService erpToCloudService;
@@ -130,6 +141,9 @@ public class ERPSynchronizeService {
 	ERPAutoCheckService erpAutoCheckService;
 	@Autowired
 	ERPAutoRemoveService autoRemoveService;
+
+	@Resource
+	ClientServiceFeign serviceFeign;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -408,6 +422,11 @@ public class ERPSynchronizeService {
 			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
+			//測試用
+//			if(nKey.contains("A542-240314004")) {
+//				System.out.println("A542-240314004");
+//			}
+			
 			m.setNewone(true);
 			// 單別性質(退料類 需抓取 物料領退用量)
 			String classNb = m.getTa026_ta027_ta028().split("-")[0];
@@ -469,8 +488,14 @@ public class ERPSynchronizeService {
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
+				// A541-240229002
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
+				// 測試用
+//				if (oKey.contains("A541-240229002")) {
+//					System.out.println("A541-240229002");
+//				}
+
 				// 內容不同=>更新
 				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
 						(!o.getChecksum().equals(nChecksum)
@@ -1883,5 +1908,52 @@ public class ERPSynchronizeService {
 		// Step3.登記寄信件
 		System.out.println(readyNeedMails);
 		notificationMailDao.saveAll(readyNeedMails);
+	}
+
+	// ============ 同步外包生管平台() ============
+	public void erpSynchronizeScheduleOutsourcer() throws Exception {
+		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta();// 目前ERP有的資料
+		Map<String, MoctaScheduleOutsourcer> erpMapOutsourcers = new HashMap<String, MoctaScheduleOutsourcer>();// ERP整理後資料
+		ArrayList<ScheduleOutsourcer> scheduleOutsourcers = scheduleOutsourcerDao.findAllByNotFinish(null);// 尚未結束的
+		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
+		// 資料整理
+		for (MoctaScheduleOutsourcer one : erpOutsourcers) {
+			// 避免時間問題
+			if (one.getTa009() != null && !one.getTa009().equals(""))
+				one.setNewone(true);
+			erpMapOutsourcers.put(one.getTa001_ta002(), one);
+		}
+
+		// 比對資料?
+		scheduleOutsourcers.forEach(o -> {
+			// 有抓取到同樣單據
+			if (erpMapOutsourcers.containsKey(o.getSonb())) {
+				erpMapOutsourcers.get(o.getSonb()).setNewone(false);
+				// sum不同->更新
+				String sum = erpMapOutsourcers.get(o.getSonb()).toString();
+				if (!sum.equals(o.getSosum())) {
+					erpToCloudService.scheduleOutsourcerOne(o, erpMapOutsourcers.get(o.getSonb()), sum);
+					newScheduleOutsourcers.add(o);
+				}
+			} else {
+				// 沒比對到?移除?完成?
+				o.setSysstatus(2);
+				newScheduleOutsourcers.add(o);
+			}
+		});
+		// 新增?
+		erpMapOutsourcers.forEach((k, n) -> {
+			if (n.isNewone()) {
+				ScheduleOutsourcer outsourcer = new ScheduleOutsourcer();
+				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
+				newScheduleOutsourcers.add(outsourcer);
+			}
+		});
+
+		// 更新資料+建立新資料
+		scheduleOutsourcerDao.saveAll(newScheduleOutsourcers);
+		
+		// 測試 通知Client->Websocket(sendAllUsers)
+		serviceFeign.setOutsourcerSynchronizeCell("sendAllUsers");
 	}
 }

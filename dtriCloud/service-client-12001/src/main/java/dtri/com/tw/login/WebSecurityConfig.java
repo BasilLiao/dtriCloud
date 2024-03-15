@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.messaging.Message;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -68,6 +70,7 @@ public class WebSecurityConfig {
 	private static final String manufacture_act = "/ajax/manufacture_action.basil";
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
+	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
 	// BIOS
 	private static final String bios_pri = "/ajax/bios_principal.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
@@ -280,6 +283,13 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_sho + ".AU").hasAuthority(actionRole(schedule_sho, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".AD").hasAuthority(actionRole(schedule_sho, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, schedule_sho + ".DD").hasAuthority(actionRole(schedule_sho, "DD"))// (標記移除)
+				// ----請求-schedule_out-(訪問) ----
+				.requestMatchers(HttpMethod.POST, schedule_out).hasAuthority(actionRole(schedule_out, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, schedule_out + ".AR").hasAuthority(actionRole(schedule_out, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".AU").hasAuthority(actionRole(schedule_out, "AU"))// (修改)
+				.requestMatchers(HttpMethod.GET, "/websocket/schedule_outsourcer/**").permitAll()// (Wwbsocket.S1)
+				.requestMatchers(HttpMethod.POST, "/clinet/schedule_outsourcer_synchronize_cell/**").permitAll()// 同步使用
+																												// (Wwbsocket.S2)
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----

@@ -27,4 +27,11 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleShortageList/setInvalid" }, method = RequestMethod.POST)
 	PackageBean setShortageListInvalid(@RequestBody String jsonPackageBean);
 
+	// ================================通用-外包商排程================================
+	@RequestMapping(value = { "/scheduleOutsourcer/getSearch" }, method = RequestMethod.POST)
+	PackageBean getScheduleOutsourcerSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleOutsourcer/setModify" }, method = RequestMethod.POST)
+	PackageBean setScheduleOutsourcerModify(@RequestBody String jsonPackageBean);
+
 }

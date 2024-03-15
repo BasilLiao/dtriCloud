@@ -27,6 +27,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+		<!-- openfeign Client 平衡負載 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
 		<!-- Spring Boot 監控模塊 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

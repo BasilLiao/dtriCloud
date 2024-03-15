@@ -21,7 +21,9 @@ import com.google.gson.JsonObject;
 import dtri.com.tw.bean.FtpUtilBean;
 import dtri.com.tw.pgsql.dao.SystemConfigDao;
 import dtri.com.tw.pgsql.entity.SystemConfig;
+import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
+import jakarta.annotation.Resource;
 
 /***
  * https://polinwei.com/spring-boot-scheduling-tasks/ 排程 cron:
@@ -50,6 +52,8 @@ public class ScheduledTasksService {
 	@Autowired
 	BasicNotificationMailService mailService;
 
+
+
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Async
 	@Scheduled(fixedDelay = 120000)
@@ -74,6 +78,7 @@ public class ScheduledTasksService {
 				synchronizeService.erpSynchronizeBomtd();
 				synchronizeService.erpSynchronizeBomtf();
 				synchronizeService.erpSynchronizeCopth();
+				synchronizeService.erpSynchronizeScheduleOutsourcer();
 
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
@@ -82,9 +87,11 @@ public class ScheduledTasksService {
 				// 機種別
 				synchronizeService.erpSynchronizeProductModel();
 				// 檢查版本
-				//synchronizeService.biosVersionCheck();
+				// synchronizeService.biosVersionCheck();
 				// 檢查信件 寄信
 				mailService.readySendCheckEmail();
+
+				
 
 			} catch (Exception e) {
 				e.printStackTrace();

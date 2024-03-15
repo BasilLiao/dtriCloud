@@ -6,6 +6,10 @@ import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Copth;
@@ -13,6 +17,7 @@ import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
 import dtri.com.tw.mssql.entity.Mocta;
+import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
 import dtri.com.tw.mssql.entity.Mocth;
@@ -20,6 +25,7 @@ import dtri.com.tw.mssql.entity.Purth;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
+import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
@@ -1091,6 +1097,55 @@ public class ERPToCloudService {
 			}
 		}
 		o.setBslmuser(bilmuser);
+		return o;
+	}
+
+	// 外包-生產管理
+	public ScheduleOutsourcer scheduleOutsourcerOne(ScheduleOutsourcer o, MoctaScheduleOutsourcer m, String checkSum) {
+		// 資料匹配
+
+		// 年-週期
+		if (m.getTa009() != null || !m.getTa009().equals("")) {
+			Date soywdate = Fm_T.toYMDate(m.getTa009());
+			String week = String.format("%02d", Fm_T.getWeek(soywdate));
+			int year = Fm_T.getYear(soywdate);
+			o.setSoywdate(year + "-W" + week);
+		} else {
+			o.setSoywdate("9999-W99");
+		}
+		o.setSoodate(m.getTa009() != null ? Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa009())) : "99991201");// 預計開工時間
+		o.setSofdate(m.getTa010() != null ? Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa010())) : "99991201");// 預計完工時間
+		o.setSonb(m.getTa001_ta002());// --製令單
+		o.setSopnb(m.getTa006());// --產品品號
+		o.setSopname(m.getTa034());// --產品品名
+		o.setSopspecifications(m.getTa035());// --產品規格
+		o.setSorqty(m.getTa015());// 預計生產
+		o.setSookqty(m.getTa017());// 目前生產數
+		o.setSostatus(m.getTa011());// --狀態碼1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+		o.setSonote(m.getTa029());// 製令備註(客戶/國家/訂單)
+		o.setSofname(m.getMa002() + "(" + m.getTa032() + ")");
+		o.setSouname(m.getCreator());// 開單人
+
+		JsonArray soscnotes = new JsonArray();
+		JsonObject soscnoteOne = new JsonObject();
+		// 如果是空的?
+		if (o.getSoscnote().equals("[]")) {
+			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+			soscnoteOne.addProperty("user", m.getCreator());
+			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
+			soscnotes.add(soscnoteOne);
+			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
+		} else {
+			// 不是空的->取出轉換->添加新的
+			soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
+			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+			soscnoteOne.addProperty("user", m.getCreator());
+			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
+			soscnotes.add(soscnoteOne);
+			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
+		}
+
+		o.setSosum(checkSum);// 檢查/更新相同?資料串比對
 		return o;
 	}
 }
