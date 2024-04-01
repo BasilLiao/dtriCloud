@@ -31,7 +31,16 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleOutsourcer/getSearch" }, method = RequestMethod.POST)
 	PackageBean getScheduleOutsourcerSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/scheduleOutsourcer/setModify" }, method = RequestMethod.POST)
-	PackageBean setScheduleOutsourcerModify(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/scheduleOutsourcer/setModifySc" }, method = RequestMethod.PUT)
+	PackageBean setScheduleOutsourcerModifySc(@RequestBody String jsonPackageBean);// 生管
+
+	@RequestMapping(value = { "/scheduleOutsourcer/setModifyMc" }, method = RequestMethod.PUT)
+	PackageBean setScheduleOutsourcerModifyMc(@RequestBody String jsonPackageBean);// 物控
+
+	@RequestMapping(value = { "/scheduleOutsourcer/setModifyWm" }, method = RequestMethod.PUT)
+	PackageBean setScheduleOutsourcerModifyWm(@RequestBody String jsonPackageBean);// 倉儲
+
+	@RequestMapping(value = { "/scheduleOutsourcer/setModifyMp" }, method = RequestMethod.PUT)
+	PackageBean setScheduleOutsourcerModifyMp(@RequestBody String jsonPackageBean);// 製造
 
 }

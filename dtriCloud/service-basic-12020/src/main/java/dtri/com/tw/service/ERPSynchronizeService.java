@@ -17,6 +17,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import dtri.com.tw.mssql.dao.BomtdDao;
 import dtri.com.tw.mssql.dao.BomtfDao;
 import dtri.com.tw.mssql.dao.CopthDao;
@@ -73,6 +77,7 @@ import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.Fm_T;
+import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Service
@@ -141,6 +146,8 @@ public class ERPSynchronizeService {
 	ERPAutoCheckService erpAutoCheckService;
 	@Autowired
 	ERPAutoRemoveService autoRemoveService;
+	@Autowired
+	PackageService packageService;
 
 	@Resource
 	ClientServiceFeign serviceFeign;
@@ -422,11 +429,11 @@ public class ERPSynchronizeService {
 			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
-			//測試用
+			// 測試用
 //			if(nKey.contains("A542-240314004")) {
 //				System.out.println("A542-240314004");
 //			}
-			
+
 			m.setNewone(true);
 			// 單別性質(退料類 需抓取 物料領退用量)
 			String classNb = m.getTa026_ta027_ta028().split("-")[0];
@@ -1235,9 +1242,9 @@ public class ERPSynchronizeService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
-			if (oKey.indexOf("A541-231122019") >= 0) {
-				System.out.println(oKey);
-			}
+//			if (oKey.indexOf("A541-231122019") >= 0) {
+//				System.out.println(oKey);
+//			}
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
@@ -1688,7 +1695,7 @@ public class ERPSynchronizeService {
 			if (v.isNewone()) {
 				// 可能重複?
 				if (areaSameMap.containsKey(v.getMc002() + "_" + v.getMb001())) {
-					System.out.println(v.getMc002() + "_" + v.getMb001());
+					// System.out.println(v.getMc002() + "_" + v.getMb001());
 				} else {
 					// 正則表達式:FF-FF-FF-FF
 					Boolean checkloc = v.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
@@ -1882,7 +1889,6 @@ public class ERPSynchronizeService {
 						} else if (u.getBpprimary() == 1 && u.getBpmnotice()) {
 							secondaryUsers.add(u.getBpsumail());
 						}
-
 					});
 					// 建立信件
 					BasicNotificationMail readyNeedMail = new BasicNotificationMail();
@@ -1906,7 +1912,7 @@ public class ERPSynchronizeService {
 			}
 		});
 		// Step3.登記寄信件
-		System.out.println(readyNeedMails);
+		// System.out.println(readyNeedMails);
 		notificationMailDao.saveAll(readyNeedMails);
 	}
 
@@ -1922,10 +1928,18 @@ public class ERPSynchronizeService {
 			if (one.getTa009() != null && !one.getTa009().equals(""))
 				one.setNewone(true);
 			erpMapOutsourcers.put(one.getTa001_ta002(), one);
+//			//測試用
+//			if(one.getTa001_ta002().equals("A512-240311001")) {
+//				System.out.println(one.getTa001_ta002());
+//			}
 		}
 
 		// 比對資料?
 		scheduleOutsourcers.forEach(o -> {
+//			//測試用
+//			if(o.getSonb().equals("A512-240311001")) {
+//				System.out.println(o.getSonb());
+//			}
 			// 有抓取到同樣單據
 			if (erpMapOutsourcers.containsKey(o.getSonb())) {
 				erpMapOutsourcers.get(o.getSonb()).setNewone(false);
@@ -1952,8 +1966,12 @@ public class ERPSynchronizeService {
 
 		// 更新資料+建立新資料
 		scheduleOutsourcerDao.saveAll(newScheduleOutsourcers);
-		
+		String update = packageService.beanToJson(newScheduleOutsourcers);
+		JsonObject sendAllData = new JsonObject();
+		sendAllData.addProperty("update", update);
+		sendAllData.addProperty("action", "sendAllData");
 		// 測試 通知Client->Websocket(sendAllUsers)
-		serviceFeign.setOutsourcerSynchronizeCell("sendAllUsers");
+
+		serviceFeign.setOutsourcerSynchronizeCell(sendAllData.toString());
 	}
 }

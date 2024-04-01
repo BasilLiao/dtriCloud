@@ -128,7 +128,8 @@ public class ScheduleOutsourcerController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AC" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -141,8 +142,51 @@ public class ScheduleOutsourcerController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AU" }, method = {
+			RequestMethod.PUT }, produces = "application/json;charset=UTF-8")
 	String modify(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AD" }, method = {
+			RequestMethod.DELETE }, produces = "application/json;charset=UTF-8")
+	String invalid(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.DD" }, method = {
+			RequestMethod.DELETE }, produces = "application/json;charset=UTF-8")
+	String delete(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.S1" }, method = {
+			RequestMethod.PUT }, produces = "application/json;charset=UTF-8")
+	String modifySc(@RequestBody String jsonObject) {// 生管
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -163,15 +207,12 @@ public class ScheduleOutsourcerController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setScheduleOutsourcerModify(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setScheduleOutsourcerModifySc(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
-			// Step4.執行=>更新完後=>取得查詢資料=>廣播同步資料
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
-			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			e.printStackTrace();
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
@@ -187,8 +228,9 @@ public class ScheduleOutsourcerController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.AD" }, method = { RequestMethod.DELETE })
-	String invalid(@RequestBody String jsonObject) {
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.S2" }, method = {
+			RequestMethod.PUT }, produces = "application/json;charset=UTF-8")
+	String modifyMc(@RequestBody String jsonObject) {// 物控
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -196,12 +238,43 @@ public class ScheduleOutsourcerController extends AbstractController {
 
 		// Step0.資料準備
 		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setScheduleOutsourcerModifyMc(packageService.beanToJson(packageBean));
+			loggerInf(funName + "[End]", loginUser().getUsername());
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+		}
 		return packageJson;
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.DD" }, method = { RequestMethod.DELETE })
-	String delete(@RequestBody String jsonObject) {
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.S3" }, method = {
+			RequestMethod.PUT }, produces = "application/json;charset=UTF-8")
+	String modifyWm(@RequestBody String jsonObject) {// 倉儲
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -209,6 +282,80 @@ public class ScheduleOutsourcerController extends AbstractController {
 
 		// Step0.資料準備
 		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setScheduleOutsourcerModifyWm(packageService.beanToJson(packageBean));
+			loggerInf(funName + "[End]", loginUser().getUsername());
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+		}
+		return packageJson;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/ajax/schedule_outsourcer.basil.S4" }, method = {
+			RequestMethod.PUT }, produces = "application/json;charset=UTF-8")
+	String modifyMp(@RequestBody String jsonObject) {//製造
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+
+		// Step0.資料準備
+		String packageJson = "{}";
+		PackageBean packageBean = new PackageBean();
+		try {
+			loggerInf(funName + "[Start]", loginUser().getUsername());
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+
+			// Step2.基礎資料整理
+			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
+			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
+			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
+
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.setScheduleOutsourcerModifyMp(packageService.beanToJson(packageBean));
+			loggerInf(funName + "[End]", loginUser().getUsername());
+		} catch (Exception e) {
+			// StepX-2. 未知-故障回報
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+			e.printStackTrace();
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+
+		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
+		try {
+			packageJson = packageService.beanToJson(packageBean);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), loginUser().getUsername());
+		}
 		return packageJson;
 	}
 

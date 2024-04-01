@@ -50,6 +50,7 @@ import jakarta.persistence.Transient;
  *      user:Test,content:""},{}]<br>
  *      somcnote = 物控備註(格式) 人+時間+內容<br>
  *      somcdate = 物控 預計其料日<br>
+ *      somcstatus = 0=未確認/1未齊料/2已齊料<br>
  *      sowmnote = 倉庫備註(格式) 人+時間+內容<br>
  *      sowmprogress = 倉庫 備料進度 50/200<br>
  *      sompnote = 製造備註(格式) 人+時間+內容<br>
@@ -93,33 +94,45 @@ public class ScheduleOutsourcer {
 		this.sofokdate = "";
 		this.souname = "";
 		this.soscnote = "[]";
+		this.soscstatus = 4;
 		this.somcnote = "[]";
 		this.somcdate = "";
+		this.somcstatus = 0;// 0=未確認/1未齊料/2已齊料
 		this.sowmnote = "[]";
 		this.sowmprogress = "";
 		this.sompnote = "[]";
 		this.sompprogress = "";
 		this.sosum = "";// 異動資料判斷?
-		this.locked = false;
 		// 標記更新
-		this.newTage = new JsonObject();
-		this.newTage.addProperty("all", "");
-		this.newTage.addProperty("soscnote", "");
-		this.newTage.addProperty("somcnote", "");
-		this.newTage.addProperty("sowmnote", "");
-		this.newTage.addProperty("sompnote", "");
-		this.newTage.addProperty("sorqty", "");
-		this.newTage.addProperty("sookqty", "");
+		JsonObject tagString = new JsonObject();
+		tagString.addProperty("all", "");
+		// 生管
+		tagString.addProperty("sofodate", "");
+		tagString.addProperty("sofokdate", "");
+		tagString.addProperty("soscstatus", "");
+		tagString.addProperty("soscnote", "");
+		// 物控
+		tagString.addProperty("somcnote", "");
+		tagString.addProperty("somcstatus", "");
+		tagString.addProperty("somcdate", "");
+		// 倉庫
+		tagString.addProperty("sowmnote", "");
+		tagString.addProperty("sowmprogress", "");
+		// 製造
+		tagString.addProperty("sompnote", "");
+		tagString.addProperty("sompprogress", "");
+		// 單據
+		tagString.addProperty("sorqty", "");
+		tagString.addProperty("sookqty", "");
+		tagString.addProperty("sostatus", "");
+		tagString.addProperty("sonote", "");
+		tagString.addProperty("sofname", "");
+		// Locked
+		tagString.addProperty("locked", "");
+		tagString.addProperty("lockedtime", "");
+		tagString.addProperty("lockeduser", "");
 
-		this.newTage.addProperty("sostatus", "");
-		this.newTage.addProperty("sonote", "");
-		this.newTage.addProperty("sofname", "");
-		this.newTage.addProperty("sofodate", "");
-		this.newTage.addProperty("sofokdate", "");
-		this.newTage.addProperty("somcdate", "");
-
-		this.newTage.addProperty("sowmprogress", "");
-		this.newTage.addProperty("sompprogress", "");
+		this.setTag(tagString.toString());
 	}
 
 	// 共用型
@@ -193,6 +206,9 @@ public class ScheduleOutsourcer {
 	private String somcnote;
 	@Column(name = "so_mc_date", nullable = false, columnDefinition = "varchar(20) default ''")
 	private String somcdate;
+	@Column(name = "so_mc_status", nullable = false, columnDefinition = "int default 0")
+	private Integer somcstatus;
+
 	@Column(name = "so_wm_note", nullable = false, columnDefinition = "text default ''")
 	private String sowmnote;
 	@Column(name = "so_wm_progress", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -205,7 +221,9 @@ public class ScheduleOutsourcer {
 	private String sosum;
 
 	@Transient
-	private Boolean locked;// 鎖定?
+	private String somcdates;// 預計期料日-起
+	@Transient
+	private String somcdatee;// 預計期料日-終
 
 	/**
 	 * 新的def<br>
@@ -224,15 +242,14 @@ public class ScheduleOutsourcer {
 	 * "somcdate":"2024-01-01", 物控 預計其料日<br>
 	 * "sowmprogress":"2024-01-01", 倉庫 備料進度 50/200<br>
 	 * "sompprogress":"2024-01-01", 製造 生產進度Ex: 100/500<br>
+	 * 
+	 * locked, true/false<br>
+	 * lockedtime, Long 時間戳記 (5分鐘)<br>
+	 * lockeduser, Acc(綁定帳號)<br>
 	 * }<br>
 	 **/
 	@Transient
-	private JsonObject newTage;
-
-	@Transient
-	private String somcdates;// 起
-	@Transient
-	private String somcdatee;// 終
+	private String tag;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -506,28 +523,12 @@ public class ScheduleOutsourcer {
 		this.sosum = sosum;
 	}
 
-	public Boolean getLocked() {
-		return locked;
-	}
-
-	public void setLocked(Boolean locked) {
-		this.locked = locked;
-	}
-
 	public Integer getSoscstatus() {
 		return soscstatus;
 	}
 
 	public void setSoscstatus(Integer soscstatus) {
 		this.soscstatus = soscstatus;
-	}
-
-	public JsonObject getNewTage() {
-		return newTage;
-	}
-
-	public void setNewTage(JsonObject newTage) {
-		this.newTage = newTage;
 	}
 
 	public String getSomcdates() {
@@ -544,6 +545,22 @@ public class ScheduleOutsourcer {
 
 	public void setSomcdatee(String somcdatee) {
 		this.somcdatee = somcdatee;
+	}
+
+	public Integer getSomcstatus() {
+		return somcstatus;
+	}
+
+	public void setSomcstatus(Integer somcstatus) {
+		this.somcstatus = somcstatus;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 
 }

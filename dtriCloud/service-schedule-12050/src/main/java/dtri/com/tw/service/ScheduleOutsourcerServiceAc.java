@@ -64,6 +64,7 @@ public class ScheduleOutsourcerServiceAc {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "soodate"));// 預計開工日
 		orders.add(new Order(Direction.ASC, "syssort"));// 排序
+		orders.add(new Order(Direction.ASC, "sonb"));// 工單
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -72,7 +73,7 @@ public class ScheduleOutsourcerServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleOutsourcer> entitys = outsourcerDao.findAllBySearch(null, null, null, null, null, null,
-					null, null, null, null, null, pageable);
+					null, null, null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -112,22 +113,28 @@ public class ScheduleOutsourcerServiceAc {
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sopnb", "Ex:產品品號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sopname", "Ex:產品品名?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sopspecifications", "Ex:產品規格?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sofname", "Ex:加工廠?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "souname", "Ex:開單人?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sofodate", "Ex:加工廠上線?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			searchJsons = packageService.searchSet(searchJsons, null, "sofodate", "Ex:加工廠-上線日?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "somcdates", "Ex:預計-齊料日(起)?", true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_1);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "somcdatee", "Ex:預計-齊料日(終)?", true, //
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_1);
 
 			// Step3-5. 建立查詢項目 狀態 0=暫停中/1=未生產/2=已發料/3=生產中 Y=已完工/y=指定完工<br>
 			JsonArray selectStatusArr = new JsonArray();
@@ -138,14 +145,14 @@ public class ScheduleOutsourcerServiceAc {
 			selectStatusArr.add("已完工_Y");
 			selectStatusArr.add("指定完工_y");
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sostatus", "Ex:單據狀態?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
 			// Step3-5. 建立查詢項目
 			selectStatusArr = new JsonArray();
 			selectStatusArr.add("未結束_0");
 			selectStatusArr.add("已結束_2");
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -156,6 +163,7 @@ public class ScheduleOutsourcerServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			ScheduleOutsourcer searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					ScheduleOutsourcer.class);
+			searchData.setSysstatus(searchData.getSysstatus() == null ? 0 : searchData.getSysstatus());
 
 			ArrayList<ScheduleOutsourcer> entitys = outsourcerDao.findAllBySearch(searchData.getSonb(),
 					searchData.getSopnb(), searchData.getSopname(), searchData.getSopspecifications(),
@@ -181,7 +189,8 @@ public class ScheduleOutsourcerServiceAc {
 		String entityFormatJson = packageService.beanToJson(new ScheduleOutsourcer());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("sslid_");
+		packageBean.setEntityIKeyGKey("soid_");
+
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
@@ -191,6 +200,7 @@ public class ScheduleOutsourcerServiceAc {
 	public PackageBean setModify(PackageBean packageBean, String action) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<ScheduleOutsourcer> entityDatas = new ArrayList<>();
+		ArrayList<ScheduleOutsourcer> entityDatasSave = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
@@ -199,34 +209,143 @@ public class ScheduleOutsourcerServiceAc {
 					});
 			// Step2.資料檢查
 		}
+
 		// =======================資料整理=======================
 		// action : mp=製造/wm=倉庫/mc=物控/sc=生管
-		boolean checkOk = switch (action) {
-		case "mp" -> {
-			// 製造修改
+		entityDatas.forEach(x -> {
+			ScheduleOutsourcer o = outsourcerDao.getReferenceById(x.getSoid());
+			JsonArray noteOld = new JsonArray();
+			JsonObject noteOne = new JsonObject();
 
-			yield true;
-		}
-		case "wm" -> {
-			// 倉儲修改
+			switch (action) {
+			case "mp":// 製造修改
+				System.out.println("mp=製造");
+				o.setSysmdate(new Date());
+				o.setSysmuser(packageBean.getUserAccount());
+				if (o.getSompnote().equals("[]")) {
+					// 空的?
+					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+					noteOne.addProperty("user", packageBean.getUserAccount());
+					noteOne.addProperty("content", x.getSompnote());
+					noteOld.add(noteOne);
+					o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+				} else {
+					// 取出先前的-最新資料比對->不同內容->添加新的
+					noteOld = (JsonArray) JsonParser.parseString(o.getSompnote());
+					String contentOld = noteOld.get(0).getAsJsonObject().get("content").getAsString();
+					// 必須不相同
+					if (!contentOld.equals(x.getSompnote())) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSompnote());
+						noteOld.add(noteOne);
+						o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
+				}
 
-			yield true;
-		}
-		case "mc" -> {
-			// 物控修改
+				break;
+			case "wm":// 倉儲修改
+				System.out.println("wm=倉庫");
+				o.setSysmdate(new Date());
+				o.setSysmuser(packageBean.getUserAccount());
+				if (o.getSowmnote().equals("[]")) {
+					// 空的?
+					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+					noteOne.addProperty("user", packageBean.getUserAccount());
+					noteOne.addProperty("content", x.getSowmnote());
+					noteOld.add(noteOne);
+					o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+				} else {
+					// 取出先前的-最新資料比對->不同內容->添加新的
+					noteOld = (JsonArray) JsonParser.parseString(o.getSowmnote());
+					String contentOld = noteOld.get(0).getAsJsonObject().get("content").getAsString();
+					// 必須不相同
+					if (!contentOld.equals(x.getSowmnote())) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSowmnote());
+						noteOld.add(noteOne);
+						o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
+				}
 
-			yield true;
-		}
-		case "sc" -> {
-			// 生管修改
+				break;
+			case "mc":// 物控修改
+				System.out.println("mc=物控");
+				o.setSysmdate(new Date());
+				o.setSysmuser(packageBean.getUserAccount());
 
-			yield true;
-		}
-		default -> false;
-		};
+				if (!x.getSomcdate().equals("")) {
+					Date yMd = Fm_T.toDate(x.getSomcdate());
+					if (yMd.before(new Date())) {// yMd < 今天?=1
+						// 0=未確認/1未齊料/2已齊料
+						o.setSomcstatus(2);
+					}else {
+						o.setSomcstatus(1);
+					}
+					o.setSomcdate(x.getSomcdate());
+				}
+				if (o.getSomcnote().equals("[]")) {
+					// 空的?
+					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+					noteOne.addProperty("user", packageBean.getUserAccount());
+					noteOne.addProperty("content", x.getSomcnote());
+					noteOld.add(noteOne);
+					o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+				} else {
+					// 取出先前的-最新資料比對->不同內容->添加新的
+					noteOld = (JsonArray) JsonParser.parseString(o.getSomcnote());
+					String contentOld = noteOld.get(0).getAsJsonObject().get("content").getAsString();
+					// 必須不相同
+					if (!contentOld.equals(x.getSomcnote())) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSomcnote());
+						noteOld.add(noteOne);
+						o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
+				}
+
+				break;
+			case "sc":// 生管修改
+				System.out.println("sc=生管");
+				o.setSysmdate(new Date());
+				o.setSysmuser(packageBean.getUserAccount());
+
+				o.setSoscstatus(x.getSoscstatus());
+				o.setSofodate(x.getSofodate());
+				o.setSofokdate(x.getSofokdate());
+
+				if (o.getSoscnote().equals("[]")) {
+					// 空的?
+					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+					noteOne.addProperty("user", packageBean.getUserAccount());
+					noteOne.addProperty("content", x.getSoscnote());
+					noteOld.add(noteOne);
+					o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+				} else {
+					// 取出先前的-最新資料比對->不同內容->添加新的
+					noteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
+					String contentOld = noteOld.get(0).getAsJsonObject().get("content").getAsString();
+					// 必須不相同
+					if (!contentOld.equals(x.getSoscnote())) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSoscnote());
+						noteOld.add(noteOne);
+						o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
+				}
+				break;
+			default:
+				break;
+			}
+
+			entityDatasSave.add(o);
+		});
 
 		// =======================資料儲存=======================
-
+		outsourcerDao.saveAll(entityDatasSave);
 		return packageBean;
 	}
 

@@ -17,6 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface ClientServiceFeign {
 
 	// 觸發
-	@RequestMapping(value = { "/clinet/schedule_outsourcer_synchronize_cell" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/websocket/schedule_outsourcer_service" }, method = RequestMethod.POST)
 	String setOutsourcerSynchronizeCell(@RequestBody String json);
 }

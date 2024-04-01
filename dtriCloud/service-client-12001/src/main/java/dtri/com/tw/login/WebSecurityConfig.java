@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.messaging.Message;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -197,8 +195,8 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_ass).hasAuthority(actionRole(warehouse_ass, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_ass + ".AR").hasAuthority(actionRole(warehouse_ass, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.POST, warehouse_ass + ".ARE").hasAuthority(actionRole(warehouse_ass, "AR"))// (立即同步單據)
-				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".SS1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1->打印標記)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S1").hasAuthority(actionRole(warehouse_ass, "S1"))// (修改S1)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S2").hasAuthority(actionRole(warehouse_ass, "S2"))// (修改S2)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S3").hasAuthority(actionRole(warehouse_ass, "S3"))// (修改S3)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S4").hasAuthority(actionRole(warehouse_ass, "S4"))// (修改S4)
@@ -286,10 +284,13 @@ public class WebSecurityConfig {
 				// ----請求-schedule_out-(訪問) ----
 				.requestMatchers(HttpMethod.POST, schedule_out).hasAuthority(actionRole(schedule_out, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, schedule_out + ".AR").hasAuthority(actionRole(schedule_out, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.PUT, schedule_out + ".AU").hasAuthority(actionRole(schedule_out, "AU"))// (修改)
-				.requestMatchers(HttpMethod.GET, "/websocket/schedule_outsourcer/**").permitAll()// (Wwbsocket.S1)
-				.requestMatchers(HttpMethod.POST, "/clinet/schedule_outsourcer_synchronize_cell/**").permitAll()// 同步使用
-																												// (Wwbsocket.S2)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".S1").hasAuthority(actionRole(schedule_out, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".S2").hasAuthority(actionRole(schedule_out, "S2"))// (修改S2)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".S3").hasAuthority(actionRole(schedule_out, "S3"))// (修改S3)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".S4").hasAuthority(actionRole(schedule_out, "S4"))// (修改S4)
+				.requestMatchers(HttpMethod.PUT, schedule_out + ".S4").hasAuthority(actionRole(schedule_out, "S5"))// (修改S5)
+				.requestMatchers(HttpMethod.GET, "/websocket/schedule_outsourcer_client/echo").permitAll()// 前端-請求(Websocket)
+				.requestMatchers(HttpMethod.POST, "/websocket/schedule_outsourcer_service").permitAll()// 後端-同步使用(Websocket)
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----

@@ -1011,7 +1011,7 @@
 								modifyThvEx.removeClass('modifyThvEx');
 								modifyThvEx.addClass('modifyThvM');
 								var dataOne = datas[d];
-								//每個欄位 >對應< 資料
+								//每個欄位 >對應 < 資料
 								Object.keys(dataOne).forEach(function (k) {
 									//是否時間格式?
 									var value = dataOne[k];
@@ -1199,7 +1199,6 @@
 						if ($(this).attr("type") == 'file') {
 							val = $(this.parentElement).find("img").attr("src");
 						}
-
 						entityFormatJson[$(this).attr("title")] = val;
 					});
 					entityJsons.push(entityFormatJson);

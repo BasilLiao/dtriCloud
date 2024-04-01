@@ -1123,7 +1123,9 @@ public class ERPToCloudService {
 		o.setSookqty(m.getTa017());// 目前生產數
 		o.setSostatus(m.getTa011());// --狀態碼1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
 		o.setSonote(m.getTa029());// 製令備註(客戶/國家/訂單)
-		o.setSofname(m.getMa002() + "(" + m.getTa032() + ")");
+		if (!m.getMa002().equals("")) {
+			o.setSofname(m.getMa002() + "(" + m.getTa032() + ")");// --加工廠
+		}
 		o.setSouname(m.getCreator());// 開單人
 
 		JsonArray soscnotes = new JsonArray();
@@ -1136,13 +1138,21 @@ public class ERPToCloudService {
 			soscnotes.add(soscnoteOne);
 			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
 		} else {
-			// 不是空的->取出轉換->添加新的
+			// 不是空的->取出轉換->比對最新資料
 			soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
 			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 			soscnoteOne.addProperty("user", m.getCreator());
 			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
 			soscnotes.add(soscnoteOne);
-			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
+
+			// 取出先前的-最新資料比對->不同內容->添加新的
+			JsonArray soscnoteOld = new JsonArray();
+			soscnoteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
+
+			String contentOld = soscnoteOld.get(0).getAsJsonObject().get("content").getAsString();
+			if (!contentOld.equals(m.getTa029())) {
+				o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
+			}
 		}
 
 		o.setSosum(checkSum);// 檢查/更新相同?資料串比對

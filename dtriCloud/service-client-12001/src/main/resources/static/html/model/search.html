@@ -1134,6 +1134,7 @@
 			//==========================初始化==========================
 			destroy() {
 				//銷毀
+				$(".datetimepicker").remove();
 				$(document).off("click", "#search_c #btn_pageD");
 				$(document).off("click", "#search_c #btn_pageU");
 				$(document).off("click", "#search_c #btn_clearAll");

@@ -9,16 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import dtri.com.tw.websocket.ScheduleOutsourcerWebSocket;
 
 @Controller
 public class ScheduleOutsourcerControllerAC extends AbstractController {
 
-	//@Autowired
-	//private ScheduleOutsourcerWebSocket webSocket;
+	@Autowired
+	private ScheduleOutsourcerWebSocket webSocket;
 
-	// 廣播同步使用
-	@RequestMapping(value = { "/clinet/schedule_outsourcer_synchronize_cell" }, method = {
+	// Service-呼叫用
+	@RequestMapping(value = { "/websocket/schedule_outsourcer_service" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	String OutsourcerSynchronize(@RequestBody String jsonObject) {
@@ -26,18 +29,27 @@ public class ScheduleOutsourcerControllerAC extends AbstractController {
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
 		sysFunction(funName);
-		//
-		System.out.println("" + jsonObject);
+		//System.out.println("" + jsonObject);
+		//資料解析準備
 		boolean isOk = false;
-		
+		JsonObject getJson = new JsonObject();
+		getJson = (JsonObject) JsonParser.parseString(jsonObject);
+		String action = getJson.get("action").getAsString();
+		String update = getJson.get("update").getAsString();
 		// 進行呼叫廣播給所有人更新資料
-		if (jsonObject.equals("sendAllUsers")) {
-//			try {
-//				webSocket.onMessage(jsonObject);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				loggerWarn(eStktToSg(e), loginUser().getUsername());
-//			}
+		if (action.equals("sendAllData")) {
+			try {
+				// {"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}
+				JsonObject sendMessage = new JsonObject();
+				sendMessage.addProperty("user", "system");
+				sendMessage.addProperty("action", action);
+				sendMessage.addProperty("update", update);
+
+				webSocket.onMessage(null, sendMessage.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+				loggerWarn(eStktToSg(e), loginUser().getUsername());
+			}
 			isOk = true;
 		}
 		//

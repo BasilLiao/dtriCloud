@@ -75,10 +75,10 @@ public class ERPAutoCheckService {
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定
 		if (wTFs.containsKey(o.getBilclass())) {
-			System.out.println(o.getBilclass() + " " //
+			/*System.out.println(o.getBilclass() + " " //
 					+ wTFs.get(o.getBilclass()).getWtfaiqty() + " " //
 					+ wTFs.get(o.getBilclass()).getWtfmrcheck() + " "//
-					+ wTFs.get(o.getBilclass()).getWtfsepncheck());
+					+ wTFs.get(o.getBilclass()).getWtfsepncheck());*/
 			// +自動添加
 			if (wTFs.get(o.getBilclass()).getWtfaiqty()) {
 				String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
@@ -195,10 +195,10 @@ public class ERPAutoCheckService {
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定+自動減少
 		if (wTFs.containsKey(o.getBslclass())) {
-			System.out.println(o.getBslclass() + " " //
+			/*System.out.println(o.getBslclass() + " " //
 					+ wTFs.get(o.getBslclass()).getWtfaiqty() + " " //
 					+ wTFs.get(o.getBslclass()).getWtfmrcheck() + " "//
-					+ wTFs.get(o.getBslclass()).getWtfsepncheck());
+					+ wTFs.get(o.getBslclass()).getWtfsepncheck());*/
 			// 自動減少?
 			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();

@@ -27,7 +27,7 @@ public interface MoctaScheduleOutsourcerDao extends JpaRepository<MoctaScheduleO
 			+ "  CTA.CREATE_DATE, "// --單據建立時間
 			+ "  CTA.MODI_DATE, "// --單據修改時間
 			+ "  CTA.TA032, "// --加工廠(代號)
-			+ "  PUR.MA002, "// --加工廠(中文)
+			+ "  ISNULL(PUR.MA002,'') AS MA002, "// --加工廠(中文)
 			+ "  PTD.TD004, "// --客戶品號
 			+ "  PTC.TC012, "// --客戶-訂單單號
 			+ "  PTC.TC001+'-'+PTC.TC002 AS TC001_TC002 "// --公司-訂單單號
@@ -39,8 +39,9 @@ public interface MoctaScheduleOutsourcerDao extends JpaRepository<MoctaScheduleO
 			+ "WHERE "// --
 			+ "	(CTA.TA011 = '1' OR CTA.TA011 = '2' OR CTA.TA011 = '3') "// --
 			+ "	AND (CTA.TA013 = 'Y') "// --
-			// + " AND ((CTA.TA001 = 'A511') OR (CTA.TA001= 'A521')) "// -- 廠內 一般/重工製令單
-			+ "	AND ((CTA.TA001 = 'A512') OR (CTA.TA001= 'A522')) "// -- 廠外 一般/重工製令單
+			+ " AND (CTA.TA006 LIKE '81-105%') "// --
+			+ " AND ((CTA.TA001 = 'A511') OR (CTA.TA001= 'A521') "// -- 廠內 一般/重工製令單
+			+ "	OR (CTA.TA001 = 'A512') OR (CTA.TA001= 'A522')) "// -- 廠外 一般/重工製令單
 			+ "ORDER BY "// --
 			+ "	CTA.TA001+CTA.TA002 ASC "// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值
