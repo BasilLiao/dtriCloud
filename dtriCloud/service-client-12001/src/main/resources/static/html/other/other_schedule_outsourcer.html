@@ -35,7 +35,7 @@
 
 	/*Table 查詢框 表格外框線*/
 	#search_c #search_cr table {
-		max-height: 750px;
+		max-height: 75vh;
 		min-height: 200px;
 		border-collapse: separate;
 		border-spacing: 0px;
@@ -163,19 +163,19 @@
 							</button>
 							<!--置亮編輯-->
 							<button id="btn_br" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning disabled">
 								<b>Bright<br>cancel(S5)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger ">
 								<b>Mark<br>cancel()
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-4 col-lg-3 p-1">
+				<div class="col-6 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
@@ -188,14 +188,23 @@
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Export<br>Excel</b>
 							</button>
+							<button id="btn_inp_excel_ex" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Inport<br>Excel Ex</b>
+							</button>
 							<button id="btn_inp_excel" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Inport<br>Excel</b>
+								class="lh-1 col-6 p-1 m-1 btn btn-sm btn-outline-danger">
+								<div class="row m-0">
+									<div class="col-4 p-0">Inport<br>Excel</div>
+									<div class="col-8 p-0"><input
+											class="col-12 m-0 p-1 border border-dark form-control-file" type="file"
+											value="" placeholder="Ex:" accept=".xlsx"></div>
+								</div>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-8 col-lg-3 p-1">
+				<div class="col-6 col-lg-3 p-1">
 					<div class="border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
@@ -234,6 +243,38 @@
 		</div>
 		<div id="search_c_modify_open" class="row m-0 collapse">
 			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Modify </b>
+			<table id="inputExcelEx" class="d-none">
+				<thead class="">
+					<tr class="">
+						<th>sonb</th>
+						<th>sofodate</th>
+						<th>sofokdate</th>
+						<th>soscstatus</th>
+						<th>soscnote</th>
+						<!--物控-->
+						<th>somcdate</th>
+						<th>somcnote</th>
+						<!--倉庫製造-->
+						<th>sowmnote</th>
+						<th>sompnote</th>
+					</tr>
+				</thead>
+				<tbody class="">
+					<tr class="">
+						<th>工單號</th>
+						<th>生管-加工廠-開工日</th>
+						<th>生管-加工廠-完工日</th>
+						<th>生管-狀態</th>
+						<th>生管-備註</th>
+						<!--物控-->
+						<th>物控-預計期料日</th>
+						<th>物控-備註</th>
+						<!--倉庫製造-->
+						<th>倉庫-備註</th>
+						<th>製造-備註</th>
+					</tr>
+				</tbody>
+			</table>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered table-responsive table-style shadow-sm">
 				<thead class="table-warning fixedCt">
@@ -359,7 +400,7 @@
 				<tbody class="table-white">
 					<tr class="exTbodyTr d-none">
 						<th class="fixedC1 exTbodyTh markFn" style="max-width: 40px;">
-							<div>
+							<div class="">
 								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox"
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
@@ -369,7 +410,7 @@
 					<tr class="exTbodyTrYW d-none">
 						<th colspan="5" class="fixedC1 TbodyThYW" style="background-color: rgb(255, 255, 0);">
 						<th colspan="30" class="TbodyThYWO" style="background-color: rgb(255, 255, 0);">
-						<th colspan="6" class="TbodyThYWO d-none" style="background-color: rgb(255, 255, 0);">
+						<th colspan="5" class="TbodyThYWO d-none" style="background-color: rgb(255, 255, 0);">
 						</th>
 					</tr>
 				</tbody>
@@ -797,14 +838,113 @@
 					console.log("btn_exp_excel");
 					other.methods.exportExcel();
 				});
+
+				//上傳檔案Ex?
+				$(document).off("click", "#btn_inp_excel_ex");
+				$(document).on("click", "#btn_inp_excel_ex", function (event) {
+					var inputExcelEx = $('#inputExcelEx').clone();
+					var options = {
+						workbook: {
+							views: [{
+								x: 0, y: 0, width: 10000, height: 20000,
+								firstSheet: 0, activeTab: 1, visibility: 'visible'
+							}]
+						},
+						widthRatio: 0.55,//寬度比例
+						plugins: [
+							{
+								workbookCreated({workbook, tables}) {
+
+								}, worksheetCreated({workbook, tables, worksheet, table}) {
+
+								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
+
+								}, worksheetCompleted({workbook, tables, worksheet, table}) {
+
+								}
+							},
+						]
+					}
+					const table2Excel = new Table2Excel(inputExcelEx, options);//id or class or table
+					table2Excel.export($('#nav_functional_unit').text() + "_Ex", 'xlsx');//檔案名稱+副檔名
+				});
+				//上傳檔案?
+				$(document).off("change", "#btn_inp_excel .form-control-file");
+				$(document).on("change", "#btn_inp_excel .form-control-file", function (event) {
+					console.log("form-control-file");
+					var target = $(event.target);
+					//沒檔案?
+					if (!this.files || !this.files[0] || target.attr("accept") != ".xlsx") {
+						target.val("");
+						return;
+					}
+					//取得狀態(生管/物控/倉儲.....)
+					var choose = $("#search_c_modify_open .mfy_datas1").find(".mfy_sonb_choose").text();
+					//分析完成->比對資料寫入
+					var jsonResult = other.methods.inputExcel(this.files[0]);
+					jsonResult.then((res) => {
+						console.log(res['inputExcel']);
+						//每個Excel欄位
+						res['inputExcel'].forEach(function (t) {
+							console.log(t);
+							var inExcel = $("#search_c_modify_open ." + t.sonb);
+							//有比對到
+							if (inExcel != null) {
+								switch (choose) {
+									case "pc"://生館
+										inExcel.find(".mfy_sofodate_val").val(t.sofodate);
+										inExcel.find(".mfy_sofokdate_val").val(t.sofokdate);
+										inExcel.find(".mfy_soscstatus_val").val(t.soscstatus);
+										inExcel.find(".mfy_soscnote_val").val(t.soscnote);
+										break
+									case "mc"://物控
+										inExcel.find(".somcdate_val").val(t.somcdate);
+										inExcel.find(".mfy_somcnote_val").val(t.somcnote);
+										break;
+									case "wm"://倉儲
+										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote);
+
+										break;
+									case "pl"://製造
+										inExcel.find(".mfy_sompnote_val").val(t.sompnote);
+										break;
+								}
+							}
+						});
+					});
+				});
 				//WebsocketAction 建立
 				other.methods.websocketInit();
+			},
+			//==========================Excel ==========================
+			inputExcel(file) {
+				var reader = new FileReader();
+				reader.readAsBinaryString(file);
+				//https://www.casper.tw/development/2020/02/16/all-new-promise/
+				//
+				return new Promise((resolve, reject) => {
+					reader.onload = function (e) {
+						var data = e.target.result;
+						var workbook = XLSX.read(data, {
+							type: "binary",
+						});
+						var result = {};
+						workbook.SheetNames.forEach(function (sheetName) {
+							var roa = XLSX.utils.sheet_to_row_object_array(
+								workbook.Sheets[sheetName]
+							);
+							if (roa.length > 0) {
+								result['inputExcel'] = roa;
+							}
+						});
+						resolve(result);
+					};
+				});
 			},
 			exportExcel() {
 				//https://github.com/JackGit/table2excel.js
 				//設置
 				var options = {
-					exclude: ".d-none",
 					workbook: {
 						views: [{
 							x: 0, y: 0, width: 10000, height: 20000,
@@ -853,9 +993,10 @@
 				//資料準備
 				var todayDate = new Date().toISOString().slice(0, 10);
 				var searchReportExcel = $('#searchReportExcel').clone();
-				searchReportExcel.find('input').remove();
+				searchReportExcel.find('.markFn').remove();
 				searchReportExcel.find('button').remove();
 				searchReportExcel.find('.valTbodyTrYW').remove();
+				searchReportExcel.find('.d-none').remove();
 				//searchReportExcel.find('.markFn').remove();
 				//置換資料(換行)
 				searchReportExcel.find('.soscnote').each(function () {
@@ -910,7 +1051,7 @@
 									updateNewData.push(n);
 								}
 							});
-						});		
+						});
 						other.data.searchPageSet.entityJsons = [];
 						other.data.searchPageSet.entityJsons = updateNewData;
 					} else {
@@ -1105,7 +1246,6 @@
 						k += 1;
 						//選擇
 						var mfyEx = $(".mfy_datas" + k);
-						mfyEx.attr("id", sonb);
 						mfyEx.addClass("mfy_datas");
 						mfyEx.removeClass("d-none");
 						//資料
@@ -1162,6 +1302,7 @@
 						}
 						//資料填入
 						mfyEx.attr("id", soid);
+						mfyEx.addClass(sonb);
 						mfyEx.find(".mfy_sonb_val").val(sonb);
 						mfyEx.find(".mfy_sofodate_val").val(sofodate);
 						mfyEx.find(".mfy_sofokdate_val").val(sofokdate);
@@ -1598,6 +1739,8 @@
 				$(document).off("mouseenter mouseleave", ".noteShow");
 				$(document).off("click", "#search_c #btn_confirm");
 				$(document).off("click", "#search_c #btn_exp_excel");
+				$(document).off("change", "#btn_inp_excel .form-control-file");
+				$(document).off("click", "#btn_inp_excel_ex");
 
 				console.log("other.html(destroy)");
 			},

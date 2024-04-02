@@ -17,8 +17,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.mssql.dao.BomtdDao;
@@ -1971,7 +1969,27 @@ public class ERPSynchronizeService {
 		sendAllData.addProperty("update", update);
 		sendAllData.addProperty("action", "sendAllData");
 		// 測試 通知Client->Websocket(sendAllUsers)
+		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
+		sendTo.setSendAllData(sendAllData.toString());
+		sendTo.run();
+	}
 
-		serviceFeign.setOutsourcerSynchronizeCell(sendAllData.toString());
+	// 而外執行
+	public class OutsourcerSynchronizeCell implements Runnable {
+		private String sendAllData;
+
+		@Override
+		public void run() {
+			serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+		}
+
+		public String getSendAllData() {
+			return sendAllData;
+		}
+
+		public void setSendAllData(String sendAllData) {
+			this.sendAllData = sendAllData;
+		}
+
 	}
 }

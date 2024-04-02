@@ -53,7 +53,7 @@ public class ScheduledTasksService {
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Async
 	@Scheduled(fixedDelay = 120000)
-	public synchronized void fixDelay_ERPSynchronizeAutoService() {
+	public void fixDelay_ERPSynchronizeAutoService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
 		if (fixDelay_ERPSynchronizeServiceRun) {

@@ -305,7 +305,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSoscnote().equals("[]")) {
 						JsonArray soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
 						String scnoteNew = n.getSoscnote();
-						String scnoteOld = soscnotes.get(0).getAsJsonObject().get("content").getAsString();
+						String scnoteOld = soscnotes.get(0).getAsJsonObject().get("content").toString();
 						if (soscnotes.size() > 0 && !scnoteNew.equals(scnoteOld)) {
 							tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
 						}
@@ -314,7 +314,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSomcnote().equals("[]")) {
 						JsonArray somcnotes = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
 						if (somcnotes.size() > 0 && !n.getSomcnote()
-								.equals(somcnotes.get(0).getAsJsonObject().get("content").getAsString())) {
+								.equals(somcnotes.get(0).getAsJsonObject().get("content").toString())) {
 							tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}
@@ -328,7 +328,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSowmnote().equals("[]")) {
 						JsonArray somcnotes = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
 						if (somcnotes.size() > 0 && !n.getSowmnote()
-								.equals(somcnotes.get(0).getAsJsonObject().get("content").getAsString())) {
+								.equals(somcnotes.get(0).getAsJsonObject().get("content").toString())) {
 							tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
 						}
 
@@ -340,7 +340,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSompnote().equals("[]") && !n.getSompnote().equals(o.getSompnote())) {
 						JsonArray sompnotes = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
 						if (sompnotes.size() > 0 && !n.getSompnote()
-								.equals(sompnotes.get(0).getAsJsonObject().get("content").getAsString())) {
+								.equals(sompnotes.get(0).getAsJsonObject().get("content").toString())) {
 							tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}
@@ -377,7 +377,8 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					// 修改後解鎖?
 					if (tagString.get("locked").getAsBoolean()) {
 						Long time = (new Date().getTime()) - tagString.get("lockedtime").getAsLong();
-						if (tagString.get("lockeduser").getAsString().equals(userAcc) || time > 300000) {//同一個人或是 時間大於5分鐘 解鎖
+						if (tagString.get("lockeduser").getAsString().equals(userAcc) || time > 30000) {// 同一個人或是
+																										// 時間大於5分鐘 解鎖
 							tagString.addProperty("locked", false);
 							tagString.addProperty("lockedtime", 0L);
 							tagString.addProperty("lockeduser", "");
@@ -408,6 +409,18 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			ok = true;
 			break;
 		case "sendOnlyData":// 用處: 資料庫取出->更新暫存資料->給單一用戶/
+
+			// UnLocked
+			mapOutsourcerTag.forEach((k, tagString) -> {
+				if (tagString.get("locked").getAsBoolean()) {
+					Long time = (new Date().getTime()) - tagString.get("lockedtime").getAsLong();
+					if (time > 30000) {// 時間大於5分鐘 解鎖
+						tagString.addProperty("locked", false);
+						tagString.addProperty("lockedtime", 0L);
+						tagString.addProperty("lockeduser", "");
+					}
+				}
+			});
 			// Step5. 合併
 			mapOutsourcer.forEach((k, v) -> {
 				if (mapOutsourcerTag.containsKey(k)) {
@@ -427,7 +440,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					tagString = mapOutsourcerTag.get(n.getSoid());
 					if (tagString.get("locked").getAsBoolean()) { // 有人勾選 ?且沒過期(1000*60*5 = 5分鐘)?同一個人?
 						Long time = (new Date().getTime()) - tagString.get("lockedtime").getAsLong();
-						if (time < 300000 && !tagString.get("lockeduser").getAsString().equals(userAcc)) {
+						if (time < 30000 && !tagString.get("lockeduser").getAsString().equals(userAcc)) {
 							ok = false;
 						}
 						break;
