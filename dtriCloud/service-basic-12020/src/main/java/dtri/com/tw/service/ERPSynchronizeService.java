@@ -1922,7 +1922,7 @@ public class ERPSynchronizeService {
 		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
 		// 資料整理
 		for (MoctaScheduleOutsourcer one : erpOutsourcers) {
-			// 避免時間問題
+			// 避免時間-問題
 			if (one.getTa009() != null && !one.getTa009().equals(""))
 				one.setNewone(true);
 			erpMapOutsourcers.put(one.getTa001_ta002(), one);
@@ -1955,8 +1955,14 @@ public class ERPSynchronizeService {
 		});
 		// 新增?
 		erpMapOutsourcers.forEach((k, n) -> {
+			ArrayList<ScheduleOutsourcer> OldEndOne = scheduleOutsourcerDao.findAllByFinish(k, null);
 			if (n.isNewone()) {
 				ScheduleOutsourcer outsourcer = new ScheduleOutsourcer();
+				// 檢查是否有舊資料?
+				if (OldEndOne.size() > 0) {
+					outsourcer = OldEndOne.get(0);
+					outsourcer.setSysstatus(0);//開啟
+				}
 				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
 				newScheduleOutsourcers.add(outsourcer);
 			}

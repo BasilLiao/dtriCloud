@@ -1140,17 +1140,17 @@ public class ERPToCloudService {
 		} else {
 			// 不是空的->取出轉換->比對最新資料
 			soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
-			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-			soscnoteOne.addProperty("user", m.getCreator());
-			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
-			soscnotes.add(soscnoteOne);
 
 			// 取出先前的-最新資料比對->不同內容->添加新的
 			JsonArray soscnoteOld = new JsonArray();
 			soscnoteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
-
 			String contentOld = soscnoteOld.get(0).getAsJsonObject().get("content").getAsString();
-			if (!contentOld.equals(m.getTa029())) {
+			String contentNew = m.getTa029();
+			if (!contentOld.equals(contentNew)) {
+				soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+				soscnoteOne.addProperty("user", m.getCreator());
+				soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
+				soscnotes.add(soscnoteOne);
 				o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
 			}
 		}

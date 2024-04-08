@@ -36,4 +36,10 @@ public interface ScheduleOutsourcerDao extends JpaRepository<ScheduleOutsourcer,
 			+ "(c.sostatus ='0' or c.sostatus ='1' or c.sostatus ='2' or c.sostatus ='3')")
 	ArrayList<ScheduleOutsourcer> findAllByNotFinish(Pageable pageable);
 
+	// 檢查用// 狀態:0=暫停中/1=未生產/2=已發料/3=生產中_Y=已完工/y=指定完工
+	@Query("SELECT c FROM ScheduleOutsourcer c WHERE "//
+			+ "(c.sysstatus = 2) and "// 正常=0/移除標記=2
+			+ "(:sonb is null or c.sonb =:sonb)")
+	ArrayList<ScheduleOutsourcer> findAllByFinish(String sonb, Pageable pageable);
+
 }

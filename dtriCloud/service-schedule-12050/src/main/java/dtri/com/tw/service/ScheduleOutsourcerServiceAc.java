@@ -223,12 +223,14 @@ public class ScheduleOutsourcerServiceAc {
 				o.setSysmdate(new Date());
 				o.setSysmuser(packageBean.getUserAccount());
 				if (o.getSompnote().equals("[]")) {
-					// 空的?
-					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-					noteOne.addProperty("user", packageBean.getUserAccount());
-					noteOne.addProperty("content", x.getSompnote());
-					noteOld.add(noteOne);
-					o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					// 空的?+不能是沒輸入值
+					if (!x.getSompnote().equals("")) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSompnote());
+						noteOld.add(noteOne);
+						o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSompnote());
@@ -249,12 +251,14 @@ public class ScheduleOutsourcerServiceAc {
 				o.setSysmdate(new Date());
 				o.setSysmuser(packageBean.getUserAccount());
 				if (o.getSowmnote().equals("[]")) {
-					// 空的?
-					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-					noteOne.addProperty("user", packageBean.getUserAccount());
-					noteOne.addProperty("content", x.getSowmnote());
-					noteOld.add(noteOne);
-					o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					// 空的?+不能是沒輸入值
+					if (!x.getSowmnote().equals("")) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSowmnote());
+						noteOld.add(noteOne);
+						o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSowmnote());
@@ -280,18 +284,20 @@ public class ScheduleOutsourcerServiceAc {
 					if (yMd.before(new Date())) {// yMd < 今天?=1
 						// 0=未確認/1未齊料/2已齊料
 						o.setSomcstatus(2);
-					}else {
+					} else {
 						o.setSomcstatus(1);
 					}
 					o.setSomcdate(x.getSomcdate());
 				}
 				if (o.getSomcnote().equals("[]")) {
-					// 空的?
-					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-					noteOne.addProperty("user", packageBean.getUserAccount());
-					noteOne.addProperty("content", x.getSomcnote());
-					noteOld.add(noteOne);
-					o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					// 空的?+不能是沒輸入值
+					if (!x.getSomcnote().equals("")) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSomcnote());
+						noteOld.add(noteOne);
+						o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSomcnote());
@@ -317,12 +323,14 @@ public class ScheduleOutsourcerServiceAc {
 				o.setSofokdate(x.getSofokdate());
 
 				if (o.getSoscnote().equals("[]")) {
-					// 空的?
-					noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-					noteOne.addProperty("user", packageBean.getUserAccount());
-					noteOne.addProperty("content", x.getSoscnote());
-					noteOld.add(noteOne);
-					o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					// 空的?+不能是沒輸入值
+					if (!x.getSoscnote().equals("")) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSoscnote());
+						noteOld.add(noteOne);
+						o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());

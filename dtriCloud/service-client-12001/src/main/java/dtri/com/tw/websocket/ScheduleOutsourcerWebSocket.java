@@ -90,7 +90,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						new TypeReference<ArrayList<ScheduleOutsourcer>>() {
 						});
 			}
-			// 檢測是否沒有站存資料?
+			// 檢測是否沒有暫存資料?
 			if (mapOutsourcer.size() == 0) {
 				// Step2.排序
 				List<Order> orders = new ArrayList<>();
@@ -302,19 +302,33 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSoscstatus().equals(0) && !n.getSoscstatus().equals(o.getSoscstatus())) {
 						tagString.addProperty("soscstatus", Fm_T.to_y_M_d(new Date()));
 					}
+					// 生館
 					if (!n.getSoscnote().equals("[]")) {
 						JsonArray soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
 						String scnoteNew = n.getSoscnote();
-						String scnoteOld = soscnotes.get(0).getAsJsonObject().get("content").toString();
-						if (soscnotes.size() > 0 && !scnoteNew.equals(scnoteOld)) {
+						String scnoteOld = "";
+						// 如果是第一筆資料?
+						if (soscnotes.size() > 0) {
+							scnoteOld = soscnotes.get(0).getAsJsonObject().get("content").getAsString();
+							if (!scnoteNew.equals(scnoteOld)) {
+								tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
+							}
+						} else if (!scnoteNew.equals("")) {
 							tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}
 					// 物控
 					if (!n.getSomcnote().equals("[]")) {
 						JsonArray somcnotes = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
-						if (somcnotes.size() > 0 && !n.getSomcnote()
-								.equals(somcnotes.get(0).getAsJsonObject().get("content").toString())) {
+						String scnoteNew = n.getSomcnote();
+						String scnoteOld = "";
+						// 如果是第一筆資料?
+						if (somcnotes.size() > 0) {
+							scnoteOld = somcnotes.get(0).getAsJsonObject().get("content").getAsString();
+							if (!scnoteNew.equals(scnoteOld)) {
+								tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
+							}
+						} else if (!scnoteNew.equals("")) {
 							tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}
@@ -326,12 +340,18 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					}
 					// 倉庫
 					if (!n.getSowmnote().equals("[]")) {
-						JsonArray somcnotes = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
-						if (somcnotes.size() > 0 && !n.getSowmnote()
-								.equals(somcnotes.get(0).getAsJsonObject().get("content").toString())) {
+						JsonArray sowmnotes = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
+						String scnoteNew = n.getSowmnote();
+						String scnoteOld = "";
+						// 如果是第一筆資料?
+						if (sowmnotes.size() > 0) {
+							scnoteOld = sowmnotes.get(0).getAsJsonObject().get("content").getAsString();
+							if (!scnoteNew.equals(scnoteOld)) {
+								tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
+							}
+						} else if (!scnoteNew.equals("")) {
 							tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
 						}
-
 					}
 					if (!n.getSowmprogress().equals("") && !n.getSowmprogress().equals(o.getSowmprogress())) {
 						tagString.addProperty("sowmprogress", Fm_T.to_y_M_d(new Date()));
@@ -339,8 +359,15 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					// 製造
 					if (!n.getSompnote().equals("[]") && !n.getSompnote().equals(o.getSompnote())) {
 						JsonArray sompnotes = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
-						if (sompnotes.size() > 0 && !n.getSompnote()
-								.equals(sompnotes.get(0).getAsJsonObject().get("content").toString())) {
+						String scnoteNew = n.getSompnote();
+						String scnoteOld = "";
+						// 如果是第一筆資料?
+						if (sompnotes.size() > 0) {
+							scnoteOld = sompnotes.get(0).getAsJsonObject().get("content").getAsString();
+							if (!scnoteNew.equals(scnoteOld)) {
+								tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
+							}
+						} else if (!scnoteNew.equals("")) {
 							tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}

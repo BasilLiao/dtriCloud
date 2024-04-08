@@ -1385,6 +1385,7 @@
 				//確認選取
 				$('#search_c_modify tbody .mfy_datas').each(function () {
 					var entityJso = [];
+					var regEx = /^\d{4}-\d{2}-\d{2}$/;
 					if ($(this).attr("id") != "") {
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
@@ -1401,9 +1402,15 @@
 								action = "S1";
 								break
 							case "mc"://物控
-								entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
-								entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
-								action = "S2";
+								var somcdate = $(this).find(".mfy_somcdate_val").val()
+								if (somcdate.match(regEx) || somcdate == '') {
+									entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
+									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
+									action = "S2";
+								} else {
+									entityJsons = [];//清除
+									return false;  // Invalid format
+								}
 								break;
 							case "wm"://倉儲
 								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val();
@@ -1426,7 +1433,7 @@
 				data = {};
 				data['entityJson'] = JSON.stringify(entityJsons);
 				data['entityDetailJson'] = JSON.stringify('{}');
-				if (data != null) {
+				if (data != null && entityJsons.length > 0) {
 					//包裝
 					data['callBackFunction'] = "other_modify";
 					req_data['data'] = data;
@@ -1533,8 +1540,8 @@
 				//如果不夠筆數?
 				if (other.data.valTbodyTr < entityJsons.length) {
 					var valTbodyTrAdd = (entityJsons.length - other.data.valTbodyTr);
-					console.log(valTbodyTrAdd);
-					for (var b = other.data.valTbodyTr; b <= entityJsons.length; b++) {
+					console.log("缺:"+valTbodyTrAdd);//要從n+1起算
+					for (var b = (other.data.valTbodyTr+1); b <= entityJsons.length; b++) {
 						var exTbodyTr = $('.exTbodyTr').clone();
 						exTbodyTr.removeClass('exTbodyTr');
 						exTbodyTr.addClass('valTbodyTr_' + b);

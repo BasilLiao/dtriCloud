@@ -171,7 +171,7 @@ public class ScheduleOutsourcer {
 	@Column(name = "so_f_date", nullable = false, columnDefinition = "varchar(20) default ''")
 	private String sofdate;
 
-	@Column(name = "so_nb", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "so_nb", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String sonb;
 	@Column(name = "so_p_nb", nullable = false, columnDefinition = "varchar(100) default ''")
 	private String sopnb;
