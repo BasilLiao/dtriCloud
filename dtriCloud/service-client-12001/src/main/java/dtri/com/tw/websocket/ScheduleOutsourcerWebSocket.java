@@ -309,8 +309,9 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						String scnoteOld = "";
 						// 如果是第一筆資料?
 						if (soscnotes.size() > 0) {
-							scnoteOld = soscnotes.get(0).getAsJsonObject().get("content").getAsString();
-							if (!scnoteNew.equals(scnoteOld)) {
+							scnoteOld = soscnotes.get((soscnotes.size() - 1)).getAsJsonObject().get("content")
+									.getAsString();
+							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
 								tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
 							}
 						} else if (!scnoteNew.equals("")) {
@@ -324,8 +325,9 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						String scnoteOld = "";
 						// 如果是第一筆資料?
 						if (somcnotes.size() > 0) {
-							scnoteOld = somcnotes.get(0).getAsJsonObject().get("content").getAsString();
-							if (!scnoteNew.equals(scnoteOld)) {
+							scnoteOld = somcnotes.get((somcnotes.size() - 1)).getAsJsonObject().get("content")
+									.getAsString();
+							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
 								tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 							}
 						} else if (!scnoteNew.equals("")) {
@@ -345,8 +347,9 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						String scnoteOld = "";
 						// 如果是第一筆資料?
 						if (sowmnotes.size() > 0) {
-							scnoteOld = sowmnotes.get(0).getAsJsonObject().get("content").getAsString();
-							if (!scnoteNew.equals(scnoteOld)) {
+							scnoteOld = sowmnotes.get((sowmnotes.size() - 1)).getAsJsonObject().get("content")
+									.getAsString();
+							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
 								tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
 							}
 						} else if (!scnoteNew.equals("")) {
@@ -363,8 +366,9 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						String scnoteOld = "";
 						// 如果是第一筆資料?
 						if (sompnotes.size() > 0) {
-							scnoteOld = sompnotes.get(0).getAsJsonObject().get("content").getAsString();
-							if (!scnoteNew.equals(scnoteOld)) {
+							scnoteOld = sompnotes.get((sompnotes.size() - 1)).getAsJsonObject().get("content")
+									.getAsString();
+							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
 								tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
 							}
 						} else if (!scnoteNew.equals("")) {

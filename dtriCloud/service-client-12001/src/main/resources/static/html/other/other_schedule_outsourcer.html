@@ -267,7 +267,7 @@
 						<th>生管-狀態</th>
 						<th>生管-備註</th>
 						<!--物控-->
-						<th>物控-預計期料日</th>
+						<th>物控-預計齊料日</th>
 						<th>物控-備註</th>
 						<!--倉庫製造-->
 						<th>倉庫-備註</th>
@@ -286,7 +286,7 @@
 						<th class="mfy_sosc_show mfy_soscstatus" style="min-width: 100px;">生管狀態</th>
 						<th class="mfy_sosc_show mfy_soscnote" style="min-width: 100px;">生管備註</th>
 						<!--物控-->
-						<th class="mfy_somc_show mfy_somcdate" style="min-width: 100px;">預計期料日</th>
+						<th class="mfy_somc_show mfy_somcdate" style="min-width: 100px;">預計齊料日</th>
 						<th class="mfy_somc_show mfy_somcnote" style="min-width: 100px;">物控備註</th>
 						<!--倉庫製造-->
 						<th class="mfy_sowm_show mfy_sowmnote" style="min-width: 100px;">倉庫備註</th>
@@ -998,7 +998,7 @@
 				searchReportExcel.find('.valTbodyTrYW').remove();
 				searchReportExcel.find('.d-none').remove();
 				//searchReportExcel.find('.markFn').remove();
-				//置換資料(換行)
+				//置換資料-生管(換行)
 				searchReportExcel.find('.soscnote').each(function () {
 					var k = "\n"
 					$(this).find('.needbr').each(function () {
@@ -1008,6 +1008,37 @@
 					//console.log(k);
 					$(this).html(k);
 				});
+				//置換資料-物控(換行)
+				searchReportExcel.find('.somcnote').each(function () {
+					var k = "\n"
+					$(this).find('.needbr').each(function () {
+						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
+						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
+					});
+					//console.log(k);
+					$(this).html(k);
+				});
+				//置換資料-倉儲(換行)
+				searchReportExcel.find('.sowmnote').each(function () {
+					var k = "\n"
+					$(this).find('.needbr').each(function () {
+						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
+						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
+					});
+					//console.log(k);
+					$(this).html(k);
+				});
+				//置換資料-製造(換行)
+				searchReportExcel.find('.sompnote').each(function () {
+					var k = "\n"
+					$(this).find('.needbr').each(function () {
+						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
+						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
+					});
+					//console.log(k);
+					$(this).html(k);
+				});
+
 				//置換資料 Note(換行)
 				searchReportExcel.find('.sonote').each(function () {
 					var k = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
@@ -1540,8 +1571,8 @@
 				//如果不夠筆數?
 				if (other.data.valTbodyTr < entityJsons.length) {
 					var valTbodyTrAdd = (entityJsons.length - other.data.valTbodyTr);
-					console.log("缺:"+valTbodyTrAdd);//要從n+1起算
-					for (var b = (other.data.valTbodyTr+1); b <= entityJsons.length; b++) {
+					console.log("缺:" + valTbodyTrAdd);//要從n+1起算
+					for (var b = (other.data.valTbodyTr + 1); b <= entityJsons.length; b++) {
 						var exTbodyTr = $('.exTbodyTr').clone();
 						exTbodyTr.removeClass('exTbodyTr');
 						exTbodyTr.addClass('valTbodyTr_' + b);
@@ -1580,15 +1611,18 @@
 								var note = JSON.parse(entity[k]);
 								var notes = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
 								var noteIns = "";
+								var first = true;
+								var mb_1 = "";
 								note.forEach(function (one) {
+									mb_1 = (first ? "" : "mb-1"); first = false;//間格用
 									var content = one['content'];
 									content = content.replaceAll('\n', '</br>');
-
-									noteIns = '<div class="row m-0 border border-secondary mb-1">' +
-										'<div class="col-12 m-0 p-0 row needbr">' +
+									noteIns = '<div class="row m-0 border border-secondary ' + mb_1 + '">' +
+										'<div class="col-12 m-0 p-0 row needbr ">' +
 										one['user'] + ' ／ ' + one['date'] +
 										'</div>' +
-										'<div class="col-12 border border-secondary notes needbr" style="word-break:break-word;white-space:normal;height: 100%;min-height:50px;">' + content + '</div>' +
+										'<div class="col-12 p-1 pb-0 text-start border border-secondary notes needbr" ' +
+										'style="word-break:break-word;white-space:normal;height: 100%;min-height:50px;">' + content + '</div>' +
 										'</div>' + noteIns;
 								});
 								notes += noteIns + '</div>';
@@ -1647,8 +1681,10 @@
 										break;
 								}
 								$('.valTbodyTr_' + valTrNb + ' .' + k).text(somcstatus);
-							}
-							else {
+							} else if (k == "sonote") {//製令單備註
+								$('.valTbodyTr_' + valTrNb + ' .' + k).html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + entity[k] + '</div>');
+
+							} else {
 								//一般文字
 								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
 							}
@@ -1686,7 +1722,7 @@
 						yyW00Qty += (entity["sorqty"] - entity["sookqty"]);
 						console.log("年-週期:" + yyW00 + " / 周-未產總數:" + yyW00Qty);
 						//Step4.插入
-						exTbodyTrYW.insertBefore('.valTbodyTr_' + valTrNb);
+						//exTbodyTrYW.insertBefore('.valTbodyTr_' + valTrNb);
 						//Step5.最後一筆?
 						if ((pageSN + x) == entityJsons.length - 1) {
 							$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
