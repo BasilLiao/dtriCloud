@@ -7,10 +7,14 @@
 	}
 
 	/*Table 自動隱藏*/
-	#search_c .table-responsive th,
-	#search_c .table-responsive td {
+	#search_c .table-responsive th {
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	#search_c .table-responsive td {
+		text-overflow: ellipsis;
 		overflow: hidden;
 	}
 
@@ -90,6 +94,22 @@
 	#search_c .checkbox_16 {
 		width: 16px;
 		height: 16px;
+	}
+
+	/**指定靠左*/
+	.sonb,
+	.sopnb,
+	.sopname,
+	.sopspecifications,
+	.soscstatus,
+	.somcstatus,
+	.souname {
+		text-align: left !important;
+	}
+
+	.noteShow {
+		line-height: 16px;
+		font-size: 14px;
 	}
 </style>
 <div id="search_c" class="row p-0 m-0">
@@ -898,7 +918,7 @@
 										inExcel.find(".mfy_soscnote_val").val(t.soscnote);
 										break
 									case "mc"://物控
-										inExcel.find(".somcdate_val").val(t.somcdate);
+										inExcel.find(".mfy_somcdate_val").val(t.somcdate);
 										inExcel.find(".mfy_somcnote_val").val(t.somcnote);
 										break;
 									case "wm"://倉儲
@@ -1373,7 +1393,16 @@
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
 						entityJson['soid'] = parseInt($(this).attr("id"));
-						entityJson['sonb'] = $(this).find("mfy_sonb_val").val();
+						entityJson['sonb'] = $(this).find(".mfy_sonb_val").val();
+						entityJson['sofodate'] = "";
+						entityJson['sofokdate'] = "";
+						entityJson['soscstatus'] = "4";
+						entityJson['soscnote'] = "";
+						entityJson['somcdate'] = "";
+						entityJson['somcnote'] = "";
+						entityJson['sowmnote'] = "";
+						entityJson['sompnote'] = "";
+
 						choose = $(this).find(".mfy_sonb_choose").text();
 						switch (choose) {
 							case "pc"://生館
@@ -1622,7 +1651,7 @@
 										one['user'] + ' ／ ' + one['date'] +
 										'</div>' +
 										'<div class="col-12 p-1 pb-0 text-start border border-secondary notes needbr" ' +
-										'style="word-break:break-word;white-space:normal;height: 100%;min-height:50px;">' + content + '</div>' +
+										'style="word-break:break-word;white-space:normal;height: 100%;min-height:60px;">' + content + '</div>' +
 										'</div>' + noteIns;
 								});
 								notes += noteIns + '</div>';

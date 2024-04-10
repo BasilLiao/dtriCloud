@@ -92,46 +92,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			}
 			// 檢測是否沒有暫存資料?
 			if (mapOutsourcer.size() == 0) {
-				// Step2.排序
-				List<Order> orders = new ArrayList<>();
-				orders.add(new Order(Direction.ASC, "soodate"));// 預計開工日
-				orders.add(new Order(Direction.ASC, "syssort"));// 排序
-				orders.add(new Order(Direction.ASC, "sonb"));// 工單
-				// 一般模式
-				PageRequest pageable = PageRequest.of(0, 1000, Sort.by(orders));
-				scheduleOutsourcerDao.findAllBySearch(null, null, null, null, pageable).forEach(o -> {
-					if (!mapOutsourcer.containsKey(o.getSoid())) {
-						mapOutsourcer.put(o.getSoid(), o);
-					}
-					JsonObject tagString = new JsonObject();
-					tagString.addProperty("all", "");
-					// 生管
-					tagString.addProperty("sofodate", "");
-					tagString.addProperty("sofokdate", "");
-					tagString.addProperty("soscstatus", "");
-					tagString.addProperty("soscnote", "");
-					// 物控
-					tagString.addProperty("somcnote", "");
-					tagString.addProperty("somcstatus", "");
-					tagString.addProperty("somcdate", "");
-					// 倉庫
-					tagString.addProperty("sowmnote", "");
-					tagString.addProperty("sowmprogress", "");
-					// 製造
-					tagString.addProperty("sompnote", "");
-					tagString.addProperty("sompprogress", "");
-					// 單據
-					tagString.addProperty("sorqty", "");
-					tagString.addProperty("sookqty", "");
-					tagString.addProperty("sostatus", "");
-					tagString.addProperty("sonote", "");
-					tagString.addProperty("sofname", "");
-					// Locked
-					tagString.addProperty("locked", false);
-					tagString.addProperty("lockedtime", 0L);
-					tagString.addProperty("lockeduser", "");
-					mapOutsourcerTag.put(o.getSoid(), tagString);
-				});
+				reLoad();
 			}
 			// User?
 			if (session != null) {
@@ -420,11 +381,13 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			}
 			// Step2.排序
 			List<Order> orders = new ArrayList<>();
-			orders.add(new Order(Direction.ASC, "soodate"));// 預計開工日
-			orders.add(new Order(Direction.ASC, "syssort"));// 排序
+			orders.add(new Order(Direction.ASC, "soscstatus"));// 生管狀態
+			orders.add(new Order(Direction.ASC, "sofodate"));// 加工廠開工日
+			orders.add(new Order(Direction.ASC, "somcdate"));// 預計齊料日
 			orders.add(new Order(Direction.ASC, "sonb"));// 工單
 			// 一般模式
 			// Step3.資料庫->更新資料->暫存
+			mapOutsourcer = new LinkedHashMap<Long, ScheduleOutsourcer>();
 			PageRequest pageable = PageRequest.of(0, 1000, Sort.by(orders));
 			scheduleOutsourcerDao.findAllBySearch(null, null, null, null, pageable).forEach(o -> {
 				mapOutsourcer.put(o.getSoid(), o);
@@ -573,6 +536,56 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 		dataJsonRe.addProperty("status", ok);
 		dataJsonRe.addProperty("action", action);
 		return dataJsonRe;
+	}
+
+	// 資料重新整理?
+	public synchronized void reLoad() {
+		// Step2.排序
+		mapOutsourcer = new LinkedHashMap<Long, ScheduleOutsourcer>();
+		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "soscstatus"));// 生管狀態
+		orders.add(new Order(Direction.ASC, "sofodate"));// 加工廠開工日
+		orders.add(new Order(Direction.ASC, "somcdate"));// 預計齊料日
+		orders.add(new Order(Direction.ASC, "sonb"));// 工單
+		// 一般模式
+		PageRequest pageable = PageRequest.of(0, 1000, Sort.by(orders));
+		scheduleOutsourcerDao.findAllBySearch(null, null, null, null, pageable).forEach(o -> {
+			// ===資料登記===
+			if (!mapOutsourcer.containsKey(o.getSoid())) {
+				mapOutsourcer.put(o.getSoid(), o);
+			}
+			// ===標記登記===
+			if (!mapOutsourcerTag.containsKey(o.getSoid())) {
+				JsonObject tagString = new JsonObject();
+				tagString.addProperty("all", "");
+				// 生管
+				tagString.addProperty("sofodate", "");
+				tagString.addProperty("sofokdate", "");
+				tagString.addProperty("soscstatus", "");
+				tagString.addProperty("soscnote", "");
+				// 物控
+				tagString.addProperty("somcnote", "");
+				tagString.addProperty("somcstatus", "");
+				tagString.addProperty("somcdate", "");
+				// 倉庫
+				tagString.addProperty("sowmnote", "");
+				tagString.addProperty("sowmprogress", "");
+				// 製造
+				tagString.addProperty("sompnote", "");
+				tagString.addProperty("sompprogress", "");
+				// 單據
+				tagString.addProperty("sorqty", "");
+				tagString.addProperty("sookqty", "");
+				tagString.addProperty("sostatus", "");
+				tagString.addProperty("sonote", "");
+				tagString.addProperty("sofname", "");
+				// Locked
+				tagString.addProperty("locked", false);
+				tagString.addProperty("lockedtime", 0L);
+				tagString.addProperty("lockeduser", "");
+				mapOutsourcerTag.put(o.getSoid(), tagString);
+			}
+		});
 	}
 
 	// 將 Spring 注入的 ApplicationContext 保存到靜態變數?
