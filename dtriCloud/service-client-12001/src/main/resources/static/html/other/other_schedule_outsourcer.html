@@ -1154,7 +1154,7 @@
 			websocketSendMessage(action) {
 				//{"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}
 				//包裝語法
-				var objson = {};
+				var objson = {}; 
 				var objstring = {};
 				objson.user = $("#menu_login_name").attr("alt");
 				objson.update = other.data.entityJsonForWebsocket;
