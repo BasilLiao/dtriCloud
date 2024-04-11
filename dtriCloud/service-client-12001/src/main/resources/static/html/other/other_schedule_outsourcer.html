@@ -295,7 +295,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<table style="height: 500px;"
+			<table style="max-height: 500px;min-height: 200px;"
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered table-responsive table-style shadow-sm">
 				<thead class="table-warning fixedCt">
 					<tr class="">
@@ -912,21 +912,21 @@
 							if (inExcel != null) {
 								switch (choose) {
 									case "pc"://生館
-										inExcel.find(".mfy_sofodate_val").val(t.sofodate);
-										inExcel.find(".mfy_sofokdate_val").val(t.sofokdate);
-										inExcel.find(".mfy_soscstatus_val").val(t.soscstatus);
-										inExcel.find(".mfy_soscnote_val").val(t.soscnote);
+										inExcel.find(".mfy_sofodate_val").val(t.sofodate == null ? inExcel.find(".mfy_sofodate_val").val() : t.sofodate);
+										inExcel.find(".mfy_sofokdate_val").val(t.sofokdate == null ? inExcel.find(".mfy_sofokdate_val").val() : t.sofokdate);
+										inExcel.find(".mfy_soscstatus_val").val(t.soscstatus == null ? inExcel.find(".mfy_soscstatus_val").val() : t.soscstatus);
+										inExcel.find(".mfy_soscnote_val").val(t.soscnote == null ? inExcel.find(".mfy_soscnote_val").val() : t.soscnote);
 										break
 									case "mc"://物控
-										inExcel.find(".mfy_somcdate_val").val(t.somcdate);
-										inExcel.find(".mfy_somcnote_val").val(t.somcnote);
+										inExcel.find(".mfy_somcdate_val").val(t.somcdate == null ? inExcel.find(".mfy_somcdate_val").val() : t.somcdate);
+										inExcel.find(".mfy_somcnote_val").val(t.somcnote == null ? inExcel.find(".mfy_somcnote_val").val() : t.somcnote);
 										break;
 									case "wm"://倉儲
-										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote);
+										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote == null ? inExcel.find(".mfy_sowmnote_val").val() : t.sowmnote);
 
 										break;
 									case "pl"://製造
-										inExcel.find(".mfy_sompnote_val").val(t.sompnote);
+										inExcel.find(".mfy_sompnote_val").val(t.sompnote == null ? inExcel.find(".mfy_sompnote_val").val() : t.sompnote);
 										break;
 								}
 							}
@@ -1154,7 +1154,7 @@
 			websocketSendMessage(action) {
 				//{"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}
 				//包裝語法
-				var objson = {}; 
+				var objson = {};
 				var objstring = {};
 				objson.user = $("#menu_login_name").attr("alt");
 				objson.update = other.data.entityJsonForWebsocket;

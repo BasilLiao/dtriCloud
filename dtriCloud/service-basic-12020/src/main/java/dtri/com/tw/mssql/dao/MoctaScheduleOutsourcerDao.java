@@ -39,7 +39,7 @@ public interface MoctaScheduleOutsourcerDao extends JpaRepository<MoctaScheduleO
 			+ "WHERE "// --
 			+ "	(CTA.TA011 = '1' OR CTA.TA011 = '2' OR CTA.TA011 = '3') "// --
 			+ "	AND (CTA.TA013 = 'Y') "// --
-			+ " AND (CTA.TA006 LIKE '81-105%') "// --
+			+ " AND (CTA.TA006 LIKE '81-105%' OR CTA.TA006 = '81-228-582070') "// --
 			+ " AND ((CTA.TA001 = 'A511') OR (CTA.TA001= 'A521') "// -- 廠內 一般/重工製令單
 			+ "	OR (CTA.TA001 = 'A512') OR (CTA.TA001= 'A522')) "// -- 廠外 一般/重工製令單
 			+ "ORDER BY "// --
