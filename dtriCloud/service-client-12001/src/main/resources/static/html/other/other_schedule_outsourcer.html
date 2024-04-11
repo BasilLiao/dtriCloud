@@ -295,7 +295,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<table
+			<table style="height: 500px;"
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered table-responsive table-style shadow-sm">
 				<thead class="table-warning fixedCt">
 					<tr class="">
@@ -1072,8 +1072,8 @@
 			},
 
 			//==========================Websocket傳送動作==========================
-			//WebsocketAction
-			websocketInit() {
+			//WebsocketAction(objstring)objstring:如果有異常連線重新請求
+			websocketInit(objstring) {
 				var ws = "ws://";
 				ws += location.host;
 				ws += "/DTRcloud/websocket/schedule_outsourcer_client/echo?userAcc=";
@@ -1145,6 +1145,10 @@
 					// 連線開啟時
 					console.log("連線開啟");
 					other.methods.websocketSendMessage("sendOnlyData");
+					if (objstring != null) {//如果有異常斷線?重新請求
+						other.data.websocket.send(objstring);
+					}
+
 				}
 			},
 			websocketSendMessage(action) {
@@ -1179,8 +1183,16 @@
 						break;
 				}
 				objstring = JSON.stringify(objson);
-				// 建立連線後，往伺服器傳送資訊
-				other.data.websocket.send(objstring);
+				//不小心關閉了?
+				if (other.data.websocket.readyState === WebSocket.CLOSED) {
+					other.methods.websocketInit(objstring);
+				} else {
+					// 建立連線後，往伺服器傳送資訊
+					other.data.websocket.send(objstring);
+				}
+
+
+
 			},
 			//==========================時間格式載入==========================
 			datetimepickerDate() {
