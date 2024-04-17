@@ -902,7 +902,7 @@
 								//異動資料
 								$('.' + this.className + ' .wassmuser').text($('#menu_login_name').text());
 								//標記顏色
-								$('.' + this.className + ' .wasclasssn').addClass('bg-info');
+								$('.' + this.className + ' .wasclasssn').addClass('text-info');
 								break;
 							case "btn_returnSelect":
 								//標記顏色 
@@ -917,7 +917,7 @@
 								break;
 							case "btn_printerForm":
 								//標記顏色
-								$('.' + this.className + ' .wasclasssn').addClass('text-info');
+								$('.' + this.className + ' .wasclasssn').addClass('bg-info');
 								break;
 						}
 					}
@@ -982,7 +982,7 @@
 				//確認選取
 				$('#search_cr_open tbody tr').each(function () {
 					//標記:以打印
-					if ($('.' + this.className + ' .wasclasssn').hasClass('text-info')) {
+					if ($('.' + this.className + ' .wasclasssn').hasClass('bg-info')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
 							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
@@ -1039,7 +1039,7 @@
 
 					}
 					//登記:配料清點人Pass
-					if ($('.' + this.className + ' .wasclasssn').hasClass('bg-info')) {
+					if ($('.' + this.className + ' .wasclasssn').hasClass('text-info')) {
 						var entityJosn = {};
 						$(this).find('.valTbodytd').each(function (index) {
 							var val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
@@ -1085,7 +1085,7 @@
 				$('#search_cr_open .valTbodytd').
 					removeClass('text-success').removeClass('text-primary').
 					removeClass('text-warning').removeClass('text-danger').
-					removeClass('bg-info').removeClass('bg-info');
+					removeClass('text-info').removeClass('bg-info');
 
 				var action = "";
 				var type = "PUT";
