@@ -532,7 +532,7 @@ public class ERPToCloudService {
 			Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
-		if (m.getTi022().equals("3")) {
+		if (m.getTh027().equals("N") || m.getTh027().equals("3")) {
 			sysstatus = 1;
 //			if (o.getBilpngqty().equals(0)) {
 //				o.setBilpngqty(m.getTi009());// 已入庫量
@@ -681,6 +681,7 @@ public class ERPToCloudService {
 		o.setBiledate(new Date());// 預計入料日
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());
+		o.setSyshnote(m.getTa005());// 單頭備註
 		o.setBilerpcuser(m.getCreator());// 開單人
 		// 單據急迫性
 		if (wTFs.containsKey(o.getBilclass())) {
@@ -751,6 +752,7 @@ public class ERPToCloudService {
 		o.setBslpnqty(m.getTb007());// 數量
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());
+		o.setSyshnote(m.getTa005());// 單頭備註
 		o.setBslerpcuser(m.getCreator());// 開單人
 		// 單據急迫性
 		if (wTFs.containsKey(o.getBslclass())) {

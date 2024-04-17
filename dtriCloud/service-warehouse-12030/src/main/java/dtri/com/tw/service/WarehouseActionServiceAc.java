@@ -757,6 +757,9 @@ public class WarehouseActionServiceAc {
 			entityDatas = packageService.jsonToBean(packageBean.getEntityDetailJson(),
 					new TypeReference<ArrayList<WarehouseActionDetailFront>>() {
 					});
+			// 可能合併備料(儲位_物料,剩餘數量)
+			Map<String, Integer> totalArea = new HashMap<String, Integer>();
+
 			// Step2.資料檢查
 			for (WarehouseActionDetailFront entityData : entityDatas) {
 				// 檢查-名稱重複(沒資料 已經被登記過)
@@ -795,7 +798,19 @@ public class WarehouseActionServiceAc {
 						} else if (area.getWatqty() >= entityData.getWaspngqty()
 								&& entityData.getWaspnqty().equals(entityData.getWaspngqty())) {
 							// 正常:庫存數量 >= 已取數量 && 需領數量 = 已領取數量
-							checkOK = true;
+							if (totalArea.containsKey(entityData.getWasaliaswmpnb())) {
+								Integer qty = totalArea.get(entityData.getWasaliaswmpnb());
+								// 可能複數刷入
+								if (qty >= entityData.getWaspngqty()) {
+									qty = qty - entityData.getWaspngqty();
+									totalArea.put(entityData.getWasaliaswmpnb(), qty);
+									checkOK = true;
+								}
+							} else {
+								totalArea.put(entityData.getWasaliaswmpnb(),
+										area.getWatqty() - entityData.getWaspngqty());
+								checkOK = true;
+							}
 						} else if (entityData.getWaspnqty() > entityData.getWaspngqty()
 								&& entityData.getSysnote().contains("部分領料")) {
 							// 假缺少:需領數量 > 已領數量 && 只能有(部分領料)

@@ -36,6 +36,8 @@ public class Invta implements Cloneable {
 
 	@Column(name = "TB018")
 	private String tb018;// --確認碼
+	@Column(name = "TA005")
+	private String ta005;// --單據備註
 	@Column(name = "TA016")
 	private String ta016;// --簽核狀態碼
 
@@ -250,13 +252,22 @@ public class Invta implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "Invta [tb001_tb002_tb003=" + tb001_tb002_tb003 + ", tb007=" + tb007 + ", tb012=" + tb012 + ", tb013=" + tb013 + ", tb018=" + tb018
-				+ ", ta016=" + ta016 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017 + ", mb032=" + mb032
-				+ ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+		return "Invta [tb001_tb002_tb003=" + tb001_tb002_tb003 + ", tb007=" + tb007 + ", tb012=" + tb012 + ", tb013="
+				+ tb013 + ", tb018=" + tb018 + ", ta016=" + ta016 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003="
+				+ mb003 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040="
+				+ mb040 + ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
 	}
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public String getTa005() {
+		return ta005;
+	}
+
+	public void setTa005(String ta005) {
+		this.ta005 = ta005;
 	}
 }

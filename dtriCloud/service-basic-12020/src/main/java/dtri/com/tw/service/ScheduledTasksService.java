@@ -54,7 +54,7 @@ public class ScheduledTasksService {
 	@Async
 	@Scheduled(fixedDelay = 120000)
 	public void fixDelay_ERPSynchronizeAutoService() {
-		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
+		logger.info("===ERP_fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
 		if (fixDelay_ERPSynchronizeServiceRun) {
 			fixDelay_ERPSynchronizeServiceRun = false;
@@ -66,7 +66,7 @@ public class ScheduledTasksService {
 				synchronizeService.erpSynchronizeInvta();
 				synchronizeService.erpSynchronizeInvtg();
 				synchronizeService.erpSynchronizeInvth();
-
+				//
 				synchronizeService.erpSynchronizeMocta();
 				synchronizeService.erpSynchronizeMocte();
 				synchronizeService.erpSynchronizeMoctf();
@@ -78,12 +78,7 @@ public class ScheduledTasksService {
 				synchronizeService.erpSynchronizeWtypeFilter();
 				// 移除多於資料
 				synchronizeService.remove120DayData();
-				// 機種別
-				synchronizeService.erpSynchronizeProductModel();
-				// 檢查版本
-				// synchronizeService.biosVersionCheck();
-				// 檢查信件 寄信
-				mailService.readySendCheckEmail();
+
 				// 外包生管排程
 				synchronizeService.erpSynchronizeScheduleOutsourcer();
 
@@ -96,44 +91,36 @@ public class ScheduledTasksService {
 		}
 	}
 
-	// 手動比對單據
+	// 每日(30)07:30分執行一次
+	// 自動同步(ERP產品抓取for BIOS)
 	@Async
-	public synchronized void fixDelay_ERPSynchronizeService() {
-		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
-		// ============ 物料+儲位同步 ============
-		if (fixDelay_ERPSynchronizeServiceRun) {
-			fixDelay_ERPSynchronizeServiceRun = false;
-			try {
-				// 事先準備匹配
-				synchronizeService.initERPSynchronizeService();//
-				// 單據
-				// ============ A111 費用領料單 / A112 費用退料單 / A119 料號調整單 / A121 倉庫調撥單 ============
-				// synchronizeService.erpSynchronizeInvta();
-				// ============ A131 庫存借出單 / A141 庫存借入單 ============
-				// synchronizeService.erpSynchronizeInvtg();
-				// ============ 借出歸還A151 / 借入歸還單A161 ============
-				// synchronizeService.erpSynchronizeInvth();
+	@Scheduled(cron = "0 30 07 * * ? ")
+	public void updateEveryday() {
+		try {
+			// 移除多於資料()
+			synchronizeService.remove120DayData();
+			// 機種別
+			synchronizeService.erpSynchronizeProductModel();
+			// 檢查版本
+			synchronizeService.biosVersionCheck();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+		}
+	}
 
-				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 /
-				// A571
-				synchronizeService.erpSynchronizeMocte();
-				// ============A581 生產入庫單 ============
-				// synchronizeService.erpSynchronizeMoctf();
-				// ============ A591 委外進貨單 ============
-				// synchronizeService.erpSynchronizeMocth();
-				// ============ 組合單 / A421 ============
-				// synchronizeService.erpSynchronizeBomtd();
-				// ============ OK 拆解單 / A431 ============
-				// synchronizeService.erpSynchronizeBomtf();
-				// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
-				// synchronizeService.erpSynchronizePurth();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
-				fixDelay_ERPSynchronizeServiceRun = true;
-			}
-			fixDelay_ERPSynchronizeServiceRun = true;
+	// 每日(3分鐘)
+	// 自動同步(Mail Auto 檢查)
+	@Async
+	@Scheduled(fixedDelay = 180000)
+	public void fixDelay_MailAutoService() {
+		logger.info("===Mail_fixedRate: 時間:{}", dateFormat.format(new Date()));
+		try {
+			// 檢查信件 寄信
+			mailService.readySendCheckEmail();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 		}
 	}
 
@@ -229,27 +216,50 @@ public class ScheduledTasksService {
 		}
 	}
 
-	// 每日(30)07:30分執行一次
-	// 自動同步
-	@Async
-	@Scheduled(cron = "0 30 07 * * ? ")
-	public void updateEveryday() {
-		try {
-			// 移除多於資料()
-			synchronizeService.remove120DayData();
-			// 機種別
-			synchronizeService.erpSynchronizeProductModel();
-			// 檢查版本
-			synchronizeService.biosVersionCheck();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
-		}
-	}
-
 	/** 同步中? **/
 	public synchronized static boolean isFixDelay_ERPSynchronizeServiceRun() {
 		return fixDelay_ERPSynchronizeServiceRun;
+	}
+
+	// 手動比對單據
+	@Async
+	public synchronized void fixDelay_ERPSynchronizeService() {
+		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
+		// ============ 物料+儲位同步 ============
+		if (fixDelay_ERPSynchronizeServiceRun) {
+			fixDelay_ERPSynchronizeServiceRun = false;
+			try {
+				// 事先準備匹配
+				synchronizeService.initERPSynchronizeService();//
+				// 單據
+				// ============ A111 費用領料單 / A112 費用退料單 / A119 料號調整單 / A121 倉庫調撥單 ============
+				// synchronizeService.erpSynchronizeInvta();
+				// ============ A131 庫存借出單 / A141 庫存借入單 ============
+				// synchronizeService.erpSynchronizeInvtg();
+				// ============ 借出歸還A151 / 借入歸還單A161 ============
+				// synchronizeService.erpSynchronizeInvth();
+
+				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 /
+				// A571
+				synchronizeService.erpSynchronizeMocte();
+				// ============A581 生產入庫單 ============
+				// synchronizeService.erpSynchronizeMoctf();
+				// ============ A591 委外進貨單 ============
+				// synchronizeService.erpSynchronizeMocth();
+				// ============ 組合單 / A421 ============
+				// synchronizeService.erpSynchronizeBomtd();
+				// ============ OK 拆解單 / A431 ============
+				// synchronizeService.erpSynchronizeBomtf();
+				// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
+				// synchronizeService.erpSynchronizePurth();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+				fixDelay_ERPSynchronizeServiceRun = true;
+			}
+			fixDelay_ERPSynchronizeServiceRun = true;
+		}
 	}
 
 //	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法

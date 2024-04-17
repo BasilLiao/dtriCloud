@@ -48,8 +48,8 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "		  MA.MA003,"//
 			+ "		  MB.MB008,"//
 			+ "		  MB.MB001"//
-			+ "		FROM INVMB AS MB "//
-			+ "		LEFT JOIN INVMA AS MA "//
+			+ "		FROM [DTR_TW].[dbo].INVMB AS MB "//
+			+ "		LEFT JOIN [DTR_TW].[dbo].INVMA AS MA "//
 			+ "		  ON MB.MB008 = MA.MA002 "//
 			+ "		WHERE MA.MA003 IS NOT NULL) AS INVMAB)AS INVMAB " //--成品皆關聯(品號基本資料檔)\n
 			+ "	ON INVMAB.MB001= MOCTA.TA006 "//

@@ -336,7 +336,12 @@ public class ERPSynchronizeService {
 		// Step0.資料準備
 		ArrayList<Purth> erpInEntitys = purthDao.findAllByPurth();// [ERP]資料
 		Map<String, Purth> erpInMaps = new HashMap<>();// [ERP]資料
-		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// [Cloud]資料
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A341");
+		bilclass.add("A342");
+		bilclass.add("A343");
+		bilclass.add("A345");
+		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
@@ -413,8 +418,15 @@ public class ERPSynchronizeService {
 		ArrayList<Mocte> erpEntitys = mocteDao.findAllByMocte();
 		Map<String, Mocte> erpInMaps = new HashMap<>();
 		Map<String, Mocte> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A541");
+		bilclass.add("A542");
+		bilclass.add("A543");
+		bilclass.add("A551");
+		bilclass.add("A561");
+		bilclass.add("A571");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
@@ -570,7 +582,10 @@ public class ERPSynchronizeService {
 		// Step0.資料準備
 		ArrayList<Moctf> erpEntitys = moctfDao.findAllByMoctf();
 		Map<String, Moctf> erpInMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A581");
+
+		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 
@@ -596,9 +611,8 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (o.getBilfuser().equals("ERP_Remove(Auto)") || (!o.getChecksum().equals(nChecksum)
+						&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
 					Moctf m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 自動恢復(入)
@@ -645,7 +659,10 @@ public class ERPSynchronizeService {
 		// Step0.資料準備
 		ArrayList<Mocth> erpEntitys = mocthDao.findAllByMocth();
 		Map<String, Mocth> erpInMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A591");
+
+		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
@@ -722,8 +739,11 @@ public class ERPSynchronizeService {
 		ArrayList<Invtg> erpEntitys = invtgDao.findAllByMocth();
 		Map<String, Invtg> erpInMaps = new HashMap<>();
 		Map<String, Invtg> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A131");
+		bilclass.add("A141");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
@@ -853,8 +873,11 @@ public class ERPSynchronizeService {
 		ArrayList<Invth> erpEntitys = invthDao.findAllByMocth();
 		Map<String, Invth> erpInMaps = new HashMap<>();
 		Map<String, Invth> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A151");
+		bilclass.add("A161");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
@@ -978,15 +1001,21 @@ public class ERPSynchronizeService {
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
 
-	// ============ A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單 ============
+	// ============ A111 費用領料單/ A112 費用退料單/A115/ A119 料號調整單/ A121 倉庫調撥單 ============
 	public void erpSynchronizeInvta() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invta> erpEntitys = invtaDao.findAllByMocta();
 		Map<String, Invta> erpInMaps = new HashMap<>();
 		Map<String, Invta> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A111");
+		bilclass.add("A112");
+		bilclass.add("A115");
+		bilclass.add("A119");
+		bilclass.add("A121");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
@@ -1166,8 +1195,10 @@ public class ERPSynchronizeService {
 		ArrayList<Bomtd> erpEntitys = bomtdDao.findAllByBomtd();
 		Map<String, Bomtd> erpInMaps = new HashMap<>();
 		Map<String, Bomtd> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A421");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
@@ -1311,8 +1342,10 @@ public class ERPSynchronizeService {
 		ArrayList<Bomtf> erpEntitys = bomtfDao.findAllByBomtf();
 		Map<String, Bomtf> erpInMaps = new HashMap<>();
 		Map<String, Bomtf> erpShMaps = new HashMap<>();
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0);// 取得[Cloud]
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A431");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
@@ -1456,7 +1489,10 @@ public class ERPSynchronizeService {
 		// Step0.資料準備
 		ArrayList<Copth> erpEntitys = copthDao.findAllByCopth();
 		Map<String, Copth> erpShMaps = new HashMap<>();
-		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0);// 取得[Cloud]
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A231");
+		bilclass.add("A232");
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
@@ -1625,8 +1661,8 @@ public class ERPSynchronizeService {
 		Map<String, WarehouseArea> areaSameMap = new HashMap<>();
 		ArrayList<BasicIncomingList> incomingLists = new ArrayList<>();
 		ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
-		areaOlds.forEach(a -> {// 區域庫別代號_物料號_
-			String aKey = a.getWaaliasawmpnb();
+		areaOlds.forEach(areaOld -> {// 區域庫別代號_物料號_
+			String aKey = areaOld.getWaaliasawmpnb();
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
 				// 測試用
@@ -1634,54 +1670,60 @@ public class ERPSynchronizeService {
 //					System.out.println(aKey);
 //				}
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
-				Invtb av = erpItemMaps.get(aKey);
-				String checkSum = av.toString().replaceAll("\\s", "");
-				if (!checkSum.equals(a.getChecksum())) {
+				Invtb areaNew = erpItemMaps.get(aKey);
+				String checkSumNew = areaNew.toString().replaceAll("\\s", "");
+				String checkSumOld = areaOld.getChecksum();
+				if (!checkSumNew.equals(checkSumOld)) {
 					// 正則表達式:FF-FF-FF-FF
-					Boolean checkloc = av.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
-					a.setWawmpnb(av.getMb001());// 物料號
-					a.setWaalias(av.getMc002());// 倉庫別
-					a.setWaaliasawmpnb(av.getMc002() + "_" + av.getMb001());// 倉庫別+物料號
-					a.setWaslocation(checkloc ? av.getMc003() : a.getWaslocation());// 物料位置
-					a.setWaaname(av.getCmc002() == null ? "" : av.getCmc002());// 倉庫名稱
-					a.setWaerptqty(av.getMc007());// 倉儲數量
-					a.setChecksum(checkSum);
-					a.setSysmdate(new Date());
-					a.setSysmuser("system");
-					saveItems.add(a);
+					Boolean checkloc = areaNew.getMc003().matches("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
 
-					// 檢查單據修正位置(入料)
-					incomingListDao.findAllBySearch(null, null, a.getWawmpnb(), null).forEach(in -> {
-						// 供應對象 要有內容
-						if (in.getBiltowho().split("_").length > 1) {
-							// 倉儲_物料
-							String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
-							// [單據]要比對到[區域] 儲位物料
-							if (areaKey.contains(a.getWaaliasawmpnb())) {
-								String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
-								in.setBiltowho(in.getBiltowho().replace(oldLocation, a.getWaslocation()));
-								incomingLists.add(in);
+					// 新舊儲位不同時?
+					if (checkloc && !areaNew.getMc003().equals(areaOld.getWaslocation())) {
+						// 檢查單據修正位置(入料)
+						incomingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null).forEach(in -> {
+							// 供應對象 要有內容
+							if (in.getBiltowho().split("_").length > 1) {
+								// 倉儲_物料
+								String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_"
+										+ in.getBilpnumber();
+								// [單據]要比對到[區域] 儲位物料
+								if (areaKey.contains(areaOld.getWaaliasawmpnb())) {
+									String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
+									in.setBiltowho(in.getBiltowho().replace(oldLocation, areaOld.getWaslocation()));
+									incomingLists.add(in);
+								}
 							}
-						}
-					});
-					// 檢查單據修正位置(領料)
-					shippingListDao.findAllBySearch(null, null, a.getWawmpnb(), null).forEach(sh -> {
-						// 供應來源 要有內容
-						if (sh.getBslfromwho().split("_").length > 1) {
-							// 倉儲_物料
-							String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_"
-									+ sh.getBslpnumber();
-							// [單據]要比對到[區域] 儲位物料
-							if (areaKey.contains(a.getWaaliasawmpnb())) {
-								String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
-								sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, a.getWaslocation()));
-								shippingLists.add(sh);
+						});
+						// 檢查單據修正位置(領料)
+						shippingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null).forEach(sh -> {
+							// 供應來源 要有內容
+							if (sh.getBslfromwho().split("_").length > 1) {
+								// 倉儲_物料
+								String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_"
+										+ sh.getBslpnumber();
+								// [單據]要比對到[區域] 儲位物料
+								if (areaKey.contains(areaOld.getWaaliasawmpnb())) {
+									String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
+									sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, areaOld.getWaslocation()));
+									shippingLists.add(sh);
+								}
 							}
-						}
-					});
+						});
+					}
+					// 修正資料
+					areaOld.setWawmpnb(areaNew.getMb001());// 物料號
+					areaOld.setWaalias(areaNew.getMc002());// 倉庫別
+					areaOld.setWaaliasawmpnb(areaNew.getMc002() + "_" + areaNew.getMb001());// 倉庫別+物料號
+					areaOld.setWaslocation(checkloc ? areaNew.getMc003() : areaOld.getWaslocation());// 物料位置
+					areaOld.setWaaname(areaNew.getCmc002() == null ? "" : areaNew.getCmc002());// 倉庫名稱
+					areaOld.setWaerptqty(areaNew.getMc007());// 倉儲數量
+					areaOld.setChecksum(checkSumNew);
+					areaOld.setSysmdate(new Date());
+					areaOld.setSysmuser("system");
+					saveItems.add(areaOld);
 				}
 			}
-			areaSameMap.put(a.getWaaliasawmpnb(), a);
+			areaSameMap.put(areaOld.getWaaliasawmpnb(), areaOld);
 		});
 
 		// Step4-2. [物料位置] 全新資料?
@@ -1961,7 +2003,7 @@ public class ERPSynchronizeService {
 				// 檢查是否有舊資料?
 				if (OldEndOne.size() > 0) {
 					outsourcer = OldEndOne.get(0);
-					outsourcer.setSysstatus(0);//開啟
+					outsourcer.setSysstatus(0);// 開啟
 				}
 				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
 				newScheduleOutsourcers.add(outsourcer);

@@ -23,8 +23,8 @@ public class WebSocketConfiguration {
 	public ServletServerContainerFactoryBean createWebSocketContainer() {
 		ServletServerContainerFactoryBean containerFactoryBean = new ServletServerContainerFactoryBean();
 		// 設置WebSocket大小
-		containerFactoryBean.setMaxTextMessageBufferSize(512000);//緩衝大小
-		containerFactoryBean.setMaxBinaryMessageBufferSize(512000);
+		containerFactoryBean.setMaxTextMessageBufferSize(256000);//緩衝大小
+		containerFactoryBean.setMaxBinaryMessageBufferSize(256000);
 		containerFactoryBean.setMaxSessionIdleTimeout(15 * 60000L);//時間
 		return containerFactoryBean;
 

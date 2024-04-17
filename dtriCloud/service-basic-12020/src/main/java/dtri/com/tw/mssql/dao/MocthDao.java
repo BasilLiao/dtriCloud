@@ -52,6 +52,7 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "WHERE "//
 			+ " MOCTI.TI001 is not null "//
 			+ "	AND MOCTI.TI007 > 0 "// --數量不為0
+			+ "	AND (MOCTI.TI048 ='N' OR MOCTI.TI048='3') "// --
 			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112)"//
 			+ "	OR MOCTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY"//

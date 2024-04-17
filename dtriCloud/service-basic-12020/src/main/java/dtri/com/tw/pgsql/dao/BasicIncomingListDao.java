@@ -2,6 +2,7 @@ package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +13,10 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, Long> {
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
-			+ "(:sysstatus is null or c.sysstatus=:sysstatus) "//
+			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and "//
+			+ "(COALESCE(:bilclass) is null or c.bilclass IN :bilclass) "//
 			+ "order by c.bilclass asc, c.bilpnumber asc")
-	ArrayList<BasicIncomingList> findAllByStatus(Integer sysstatus);
+	ArrayList<BasicIncomingList> findAllByStatus(Integer sysstatus, List<String> bilclass);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass LIKE %:bilclass%) and "//

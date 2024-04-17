@@ -2,6 +2,7 @@ package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +14,9 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) "//
+			+ "(COALESCE(:bslclass) is null or c.bslclass IN :bslclass) "//
 			+ "order by c.bslclass asc, c.bslpnumber asc")
-	ArrayList<BasicShippingList> findAllByStatus(Integer sysstatus);
+	ArrayList<BasicShippingList> findAllByStatus(Integer sysstatus, List<String> bslclass);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass=:bslclass) and "//

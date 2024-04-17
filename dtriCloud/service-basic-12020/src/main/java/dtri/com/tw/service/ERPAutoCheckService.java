@@ -75,15 +75,16 @@ public class ERPAutoCheckService {
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定
 		if (wTFs.containsKey(o.getBilclass())) {
-			/*System.out.println(o.getBilclass() + " " //
-					+ wTFs.get(o.getBilclass()).getWtfaiqty() + " " //
-					+ wTFs.get(o.getBilclass()).getWtfmrcheck() + " "//
-					+ wTFs.get(o.getBilclass()).getWtfsepncheck());*/
+			/*
+			 * System.out.println(o.getBilclass() + " " // +
+			 * wTFs.get(o.getBilclass()).getWtfaiqty() + " " // +
+			 * wTFs.get(o.getBilclass()).getWtfmrcheck() + " "// +
+			 * wTFs.get(o.getBilclass()).getWtfsepncheck());
+			 */
 			// +自動添加
 			if (wTFs.get(o.getBilclass()).getWtfaiqty()) {
 				String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 				String wAsKey = wcKey + "_" + o.getBilpnumber();
-				o.setSysstatus(1);// 已完成
 				o.setBilcuser("System(Type_Auto)");
 				o.setBilfuser("System(Type_Auto)");
 				o.setBilpngqty(o.getBilpnqty());// 數量
@@ -195,10 +196,12 @@ public class ERPAutoCheckService {
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定+自動減少
 		if (wTFs.containsKey(o.getBslclass())) {
-			/*System.out.println(o.getBslclass() + " " //
-					+ wTFs.get(o.getBslclass()).getWtfaiqty() + " " //
-					+ wTFs.get(o.getBslclass()).getWtfmrcheck() + " "//
-					+ wTFs.get(o.getBslclass()).getWtfsepncheck());*/
+			/*
+			 * System.out.println(o.getBslclass() + " " // +
+			 * wTFs.get(o.getBslclass()).getWtfaiqty() + " " // +
+			 * wTFs.get(o.getBslclass()).getWtfmrcheck() + " "// +
+			 * wTFs.get(o.getBslclass()).getWtfsepncheck());
+			 */
 			// 自動減少?
 			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
@@ -206,18 +209,18 @@ public class ERPAutoCheckService {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
 				if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
-					// 已經有 登記過?
-					checkQty = wAs.get(wAsKey).getWatqty() - wAsSave.get(wAsKey) - o.getBslpnqty() >= 0;
+					// 已經有 登記過?(取得目前倉庫數量+((負數)累計扣數量 - (正數)需用數量))
+					checkQty = wAs.get(wAsKey).getWatqty() + (wAsSave.get(wAsKey) - o.getBslpnqty()) >= 0;
 				} else if (wAs.containsKey(wAsKey) && !wAsSave.containsKey(wAsKey)) {
 					// 還沒有 登記過?
 					checkQty = wAs.get(wAsKey).getWatqty() - o.getBslpnqty() >= 0;
 				} else {
 					// 沒配到
-					checkQty = true;
+					checkQty = false;
 				}
 				// 動作
+				o.setBslcuser("System(Type_Auto)");
 				if (checkQty) {
-					o.setBslcuser("System(Type_Auto)");
 					o.setBslfuser("System(Type_Auto)");
 					o.setBslpngqty(o.getBslpnqty());// 數量
 					// 已經有?
@@ -256,18 +259,18 @@ public class ERPAutoCheckService {
 					// 檢查數量是否-充足?
 					boolean checkQty = false;
 					if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
-						// 已經有 登記過?
-						checkQty = wAs.get(wAsKey).getWatqty() - wAsSave.get(wAsKey) - o.getBslpnqty() >= 0;
+						// 已經有 登記過?(取得目前倉庫數量+((負數)累計扣數量 - (正數)需用數量))
+						checkQty = wAs.get(wAsKey).getWatqty() + (wAsSave.get(wAsKey) - o.getBslpnqty()) >= 0;
 					} else if (wAs.containsKey(wAsKey) && !wAsSave.containsKey(wAsKey)) {
 						// 還沒有 登記過?
 						checkQty = wAs.get(wAsKey).getWatqty() - o.getBslpnqty() >= 0;
 					} else {
 						// 沒配到
-						checkQty = true;
+						checkQty = false;
 					}
 					// 動作
+					o.setBslcuser("System(Config_Auto)");
 					if (checkQty) {
-						o.setBslcuser("System(Config_Auto)");
 						o.setBslfuser("System(Config_Auto)");
 						o.setBslpngqty(o.getBslpnqty());// 數量
 						// 已經有?
@@ -304,18 +307,18 @@ public class ERPAutoCheckService {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
 				if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
-					// 已經有 登記過?
-					checkQty = wAs.get(wAsKey).getWatqty() - wAsSave.get(wAsKey) - o.getBslpnqty() >= 0;
+					// 已經有 登記過?(取得目前倉庫數量+((負數)累計扣數量 - (正數)需用數量))
+					checkQty = wAs.get(wAsKey).getWatqty() + (wAsSave.get(wAsKey) - o.getBslpnqty()) >= 0;
 				} else if (wAs.containsKey(wAsKey) && !wAsSave.containsKey(wAsKey)) {
 					// 還沒有 登記過?
 					checkQty = wAs.get(wAsKey).getWatqty() - o.getBslpnqty() >= 0;
 				} else {
 					// 沒配到
-					checkQty = true;
+					checkQty = false;
 				}
 				// 動作
+				o.setBslcuser("System(Material_Auto)");
 				if (checkQty) {
-					o.setBslcuser("System(Material_Auto)");
 					o.setBslfuser("System(Material_Auto)");
 					o.setBslpngqty(o.getBslpnqty());// 數量
 					// 已經有?

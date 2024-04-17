@@ -512,6 +512,9 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					tagString.addProperty("sostatus", "");
 					tagString.addProperty("sonote", "");
 					tagString.addProperty("sofname", "");
+					tagString.addProperty("soodate", "");
+					tagString.addProperty("sofdate", "");
+					 
 					mapOutsourcerTag.put(br.getSoid(), tagString);
 				}
 			});

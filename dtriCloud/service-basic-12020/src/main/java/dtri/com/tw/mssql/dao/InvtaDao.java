@@ -17,6 +17,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "	INVTB.TB012, "// --出庫
 			+ "	INVTB.TB013, "// --入庫
 			+ "	INVTB.TB018, "// --確認碼 Y/N/V
+			+ "	INVTA.TA005, "//--備註
 			+ "	INVTA.TA016, "// --簽核碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
