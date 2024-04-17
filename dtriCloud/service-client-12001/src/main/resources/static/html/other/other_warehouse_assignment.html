@@ -703,6 +703,10 @@
 											exTbodyTr.find('.' + s).text(dateF);
 										} else {
 											exTbodyTr.find('.' + s).text(entity[s]);
+											//特別標記
+											if (s == 'waspngqty' && entity['waspngqty'] != entity['waspnqty']) {
+												exTbodyTr.find('.' + s).addClass('bg-warning');
+											}
 										}
 									});
 									//marks標記?	->帶入[mark]

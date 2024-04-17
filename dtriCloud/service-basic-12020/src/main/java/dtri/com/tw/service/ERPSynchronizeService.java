@@ -727,7 +727,6 @@ public class ERPSynchronizeService {
 		// Step4. 存入資料
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
-
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
 	}
