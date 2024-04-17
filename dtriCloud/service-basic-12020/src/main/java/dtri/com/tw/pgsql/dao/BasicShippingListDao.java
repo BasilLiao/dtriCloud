@@ -14,7 +14,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) "//
-			+ "(COALESCE(:bslclass) is null or c.bslclass IN :bslclass) "//
+			+ "and (COALESCE(:bslclass) is null or c.bslclass IN :bslclass) "//
 			+ "order by c.bslclass asc, c.bslpnumber asc")
 	ArrayList<BasicShippingList> findAllByStatus(Integer sysstatus, List<String> bslclass);
 
