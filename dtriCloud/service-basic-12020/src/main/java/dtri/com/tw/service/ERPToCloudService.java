@@ -1133,7 +1133,7 @@ public class ERPToCloudService {
 		JsonArray soscnotes = new JsonArray();
 		JsonObject soscnoteOne = new JsonObject();
 		// 如果是空的?
-		if (o.getSoscnote().equals("[]")) {
+		if (o.getSoscnote().equals("[]") || o.getSoscnote().equals("")) {
 			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 			soscnoteOne.addProperty("user", m.getCreator());
 			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
@@ -1145,8 +1145,9 @@ public class ERPToCloudService {
 
 			// 取出先前的-最新資料比對->不同內容->添加新的
 			JsonArray soscnoteOld = new JsonArray();
-			soscnoteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
-			String contentOld = soscnoteOld.get(0).getAsJsonObject().get("content").getAsString();
+			soscnoteOld = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
+			String contentOld = soscnoteOld.get((soscnoteOld.size() - 1)).getAsJsonObject().get("content")
+					.getAsString();
 			String contentNew = m.getTa029();
 			if (!contentOld.equals(contentNew)) {
 				soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
