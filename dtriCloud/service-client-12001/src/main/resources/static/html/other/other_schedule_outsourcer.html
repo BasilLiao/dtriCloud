@@ -1317,8 +1317,8 @@
 						//資料
 						var soid = $(this).find(".soid").text();
 						var sonb = $(this).find(".sonb").text();
-						var sofodate = $(this).find(".sofodate").text();
-						var sofokdate = $(this).find(".sofokdate").text();
+						var sofodate = $(this).find(".sofodate").html().replaceAll("<br>","\n");
+						var sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>","\n");
 						var soscstatus = $(this).find(".soscstatus").attr('title');
 						var somcdate = $(this).find(".somcdate").text();
 						var soscnote = "";
@@ -1329,7 +1329,7 @@
 							case "btn_pc"://生管
 								//生館
 								if ($(this).find(".soscnote .notes").length > 0) {
-									soscnote = $(this).find(".soscnote .notes").first().text();
+									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>","\n");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sosc_show").removeClass("d-none");
@@ -1338,7 +1338,7 @@
 							case "btn_mc"://物控
 								//悟空
 								if ($(this).find(".somcnote .notes").length > 0) {
-									somcnote = $(this).find(".somcnote .notes").first().text();
+									somcnote = $(this).find(".somcnote .notes").first().html().replaceAll("<br>","\n");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somc_show").removeClass("d-none");
@@ -1347,7 +1347,7 @@
 							case "btn_wm"://倉儲
 								//倉庫
 								if ($(this).find(".sowmnote .notes").length > 0) {
-									sowmnote = $(this).find(".sowmnote .notes").first().text();
+									sowmnote = $(this).find(".sowmnote .notes").first().html().replaceAll("<br>","\n");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sowm_show").removeClass("d-none");
@@ -1355,7 +1355,7 @@
 							case "btn_pl"://製造
 								//製造
 								if ($(this).find(".sompnote .notes").length > 0) {
-									sompnote = $(this).find(".sompnote .notes").first().text();
+									sompnote = $(this).find(".sompnote .notes").first().html().replaceAll("<br>","\n");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somp_show").removeClass("d-none");

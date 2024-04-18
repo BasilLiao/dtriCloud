@@ -1147,8 +1147,8 @@ public class ERPToCloudService {
 			JsonArray soscnoteOld = new JsonArray();
 			soscnoteOld = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
 			String contentOld = soscnoteOld.get((soscnoteOld.size() - 1)).getAsJsonObject().get("content")
-					.getAsString();
-			String contentNew = m.getTa029();
+					.getAsString().replaceAll("\n", "");
+			String contentNew = m.getTa029().replaceAll("\n", "");;
 			if (!contentOld.equals(contentNew)) {
 				soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 				soscnoteOne.addProperty("user", m.getCreator());

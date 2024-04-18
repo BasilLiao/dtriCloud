@@ -245,7 +245,6 @@ public class MoctaScheduleOutsourcer {
 		return "MoctaScheduleOutsourcer [mocid=" + mocid + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006
 				+ ", ta034=" + ta034 + ", ta035=" + ta035 + ", ta015=" + ta015 + ", ta017=" + ta017 + ", ta009=" + ta009
 				+ ", ta010=" + ta010 + ", ta011=" + ta011 + ", ta029=" + ta029 + ", ta054=" + ta054 + ", ta032=" + ta032
-				+ ", ma002=" + ma002 + ", td004=" + td004 + ", tc012=" + tc012 + ", tc001_tc002=" + tc001_tc002
-				+ ", createdate=" + createdate + ", modidate=" + modidate + ", creator=" + creator + "]";
+				+ ", ma002=" + ma002 + ", td004=" + td004 + ", tc012=" + tc012 + ", tc001_tc002=" + tc001_tc002 + "]";
 	}
 }

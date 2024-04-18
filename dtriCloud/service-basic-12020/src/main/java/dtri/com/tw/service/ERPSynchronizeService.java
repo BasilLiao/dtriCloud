@@ -330,7 +330,8 @@ public class ERPSynchronizeService {
 
 	}
 
-	// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
+	// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/A344 模具進貨單 / A345 無採購進貨單
+	// ============
 	public void erpSynchronizePurth() throws Exception {
 		logger.info("===erpSynchronizePurth: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
@@ -340,6 +341,7 @@ public class ERPSynchronizeService {
 		bilclass.add("A341");
 		bilclass.add("A342");
 		bilclass.add("A343");
+		bilclass.add("A344");
 		bilclass.add("A345");
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
@@ -382,8 +384,8 @@ public class ERPSynchronizeService {
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A341") || o.getBilclass().equals("A342") || o.getBilclass().equals("A343")
-							|| o.getBilclass().equals("A345"))) {
-				// 距今日(30天內) /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
+							|| o.getBilclass().equals("A344") || o.getBilclass().equals("A345"))) {
+				// 距今日(30天內) /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/A344 模具進貨單/ A345 無採購進貨單
 				o = autoRemoveService.incomingAuto(o);
 				removeInLists.add(o);// 標記:無此資料
 			}
@@ -1665,7 +1667,7 @@ public class ERPSynchronizeService {
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
 				// 測試用
-//				if (aKey.equals("A0002_81-105-361134")) {
+//				if (aKey.equals("A0002_25-540-080026")) {
 //					System.out.println(aKey);
 //				}
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
@@ -1688,7 +1690,9 @@ public class ERPSynchronizeService {
 								// [單據]要比對到[區域] 儲位物料
 								if (areaKey.contains(areaOld.getWaaliasawmpnb())) {
 									String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
-									in.setBiltowho(in.getBiltowho().replace(oldLocation, areaOld.getWaslocation()));
+									String newBiltowho = in.getBiltowho().replace(oldLocation,
+											areaOld.getWaslocation());
+									in.setBiltowho(newBiltowho);
 									incomingLists.add(in);
 								}
 							}
@@ -1703,7 +1707,9 @@ public class ERPSynchronizeService {
 								// [單據]要比對到[區域] 儲位物料
 								if (areaKey.contains(areaOld.getWaaliasawmpnb())) {
 									String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
-									sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, areaOld.getWaslocation()));
+									String newBslfromwho = sh.getBslfromwho().replace(oldLocation,
+											areaOld.getWaslocation());
+									sh.setBslfromwho(newBslfromwho);
 									shippingLists.add(sh);
 								}
 							}

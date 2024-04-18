@@ -69,7 +69,7 @@ public class ERPAutoCheckService {
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
 //		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
-//			System.out.println("A121-231117002-0001");
+//			System.out.println("A541-240419004-0001");
 //		}
 
 		// 單據自動?
@@ -189,8 +189,8 @@ public class ERPAutoCheckService {
 		boolean wCsCheck = true;// 倉別自動
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
-//		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A542-231130004")) {
-//			System.out.println("A542-231130004");
+//		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A541-240418031")) {
+//			System.out.println("A541-240418031"+o.getBslpnumber());
 //		}
 
 		// 單據自動?
@@ -203,7 +203,7 @@ public class ERPAutoCheckService {
 			 * wTFs.get(o.getBslclass()).getWtfsepncheck());
 			 */
 			// 自動減少?
-			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
+			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			if (wTFs.get(o.getBslclass()).getWtfaiqty()) {
 				// 檢查數量是否-充足?
@@ -301,7 +301,7 @@ public class ERPAutoCheckService {
 		// Step3. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
 		if (wMs.containsKey(o.getBslpnumber()) && wCsCheck) {
 			// 自動減少?
-			String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
+			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			if (wMs.get(o.getBslpnumber()).getWmaiqty()) {
 				// 檢查數量是否-充足?

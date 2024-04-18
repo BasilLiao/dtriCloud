@@ -253,41 +253,41 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 				for (ScheduleOutsourcer n : arrayList) {
 					tagString = mapOutsourcerTag.get(n.getSoid());
 					o = mapOutsourcer.get(n.getSoid());
-					// 生管
-					if (!n.getSofodate().equals("") && !n.getSofodate().equals(o.getSofodate())) {
-						tagString.addProperty("sofodate", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSofokdate().equals("") && !n.getSofokdate().equals(o.getSofokdate())) {
-						tagString.addProperty("sofokdate", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSoscstatus().equals(0) && !n.getSoscstatus().equals(o.getSoscstatus())) {
-						tagString.addProperty("soscstatus", Fm_T.to_y_M_d(new Date()));
-					}
-					// 生館
-					if (!n.getSoscnote().equals("[]")) {
-						JsonArray soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
-						String scnoteNew = n.getSoscnote();
-						String scnoteOld = "";
-						// 如果是第一筆資料?
-						if (soscnotes.size() > 0) {
-							scnoteOld = soscnotes.get((soscnotes.size() - 1)).getAsJsonObject().get("content")
-									.getAsString();
-							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
-								tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
-							}
-						} else if (!scnoteNew.equals("")) {
-							tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
-						}
-					}
+//					// 生管
+//					if (!n.getSofodate().equals("") && !n.getSofodate().equals(o.getSofodate())) {
+//						tagString.addProperty("sofodate", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSofokdate().equals("") && !n.getSofokdate().equals(o.getSofokdate())) {
+//						tagString.addProperty("sofokdate", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSoscstatus().equals(0) && !n.getSoscstatus().equals(o.getSoscstatus())) {
+//						tagString.addProperty("soscstatus", Fm_T.to_y_M_d(new Date()));
+//					}
+//					// 生館
+//					if (!n.getSoscnote().equals("[]")) {
+//						JsonArray soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
+//						String scnoteNew = n.getSoscnote();
+//						String scnoteOld = "";
+//						// 如果是第一筆資料?
+//						if (soscnotes.size() > 0) {
+//							scnoteOld = soscnotes.get((soscnotes.size() - 1)).getAsJsonObject().get("content")
+//									.getAsString();
+//							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
+//								tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
+//							}
+//						} else if (!scnoteNew.equals("")) {
+//							tagString.addProperty("soscnote", Fm_T.to_y_M_d(new Date()));
+//						}
+//					}
 					// 物控
 					if (!n.getSomcnote().equals("[]")) {
 						JsonArray somcnotes = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
-						String scnoteNew = n.getSomcnote();
+						String scnoteNew = n.getSomcnote().replaceAll("\n", "");
 						String scnoteOld = "";
 						// 如果是第一筆資料?
 						if (somcnotes.size() > 0) {
 							scnoteOld = somcnotes.get((somcnotes.size() - 1)).getAsJsonObject().get("content")
-									.getAsString();
+									.getAsString().replaceAll("\n", "");;
 							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
 								tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 							}
@@ -301,66 +301,66 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSomcdate().equals("") && !n.getSomcdate().equals(o.getSomcdate())) {
 						tagString.addProperty("somcdate", Fm_T.to_y_M_d(new Date()));
 					}
-					// 倉庫
-					if (!n.getSowmnote().equals("[]")) {
-						JsonArray sowmnotes = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
-						String scnoteNew = n.getSowmnote();
-						String scnoteOld = "";
-						// 如果是第一筆資料?
-						if (sowmnotes.size() > 0) {
-							scnoteOld = sowmnotes.get((sowmnotes.size() - 1)).getAsJsonObject().get("content")
-									.getAsString();
-							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
-								tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
-							}
-						} else if (!scnoteNew.equals("")) {
-							tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
-						}
-					}
-					if (!n.getSowmprogress().equals("") && !n.getSowmprogress().equals(o.getSowmprogress())) {
-						tagString.addProperty("sowmprogress", Fm_T.to_y_M_d(new Date()));
-					}
-					// 製造
-					if (!n.getSompnote().equals("[]") && !n.getSompnote().equals(o.getSompnote())) {
-						JsonArray sompnotes = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
-						String scnoteNew = n.getSompnote();
-						String scnoteOld = "";
-						// 如果是第一筆資料?
-						if (sompnotes.size() > 0) {
-							scnoteOld = sompnotes.get((sompnotes.size() - 1)).getAsJsonObject().get("content")
-									.getAsString();
-							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
-								tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
-							}
-						} else if (!scnoteNew.equals("")) {
-							tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
-						}
-					}
-					if (!n.getSompprogress().equals("") && !n.getSompprogress().equals(o.getSompprogress())) {
-						tagString.addProperty("sompprogress", Fm_T.to_y_M_d(new Date()));
-					}
-					// 單據
-					if (!n.getSorqty().equals(0) && !n.getSorqty().equals(o.getSorqty())) {
-						tagString.addProperty("sorqty", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSookqty().equals(0) && !n.getSookqty().equals(o.getSookqty())) {
-						tagString.addProperty("sookqty", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSostatus().equals("0") && !n.getSostatus().equals(o.getSostatus())) {
-						tagString.addProperty("sostatus", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSonote().equals("") && !n.getSonote().equals(o.getSonote())) {
-						tagString.addProperty("sonote", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSofname().equals("") && !n.getSofname().equals(o.getSofname())) {
-						tagString.addProperty("sofname", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSoodate().equals("") && !n.getSoodate().equals(o.getSoodate())) {
-						tagString.addProperty("soodate", Fm_T.to_y_M_d(new Date()));
-					}
-					if (!n.getSofdate().equals("") && !n.getSofdate().equals(o.getSofdate())) {
-						tagString.addProperty("sofdate", Fm_T.to_y_M_d(new Date()));
-					}
+//					// 倉庫
+//					if (!n.getSowmnote().equals("[]")) {
+//						JsonArray sowmnotes = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
+//						String scnoteNew = n.getSowmnote();
+//						String scnoteOld = "";
+//						// 如果是第一筆資料?
+//						if (sowmnotes.size() > 0) {
+//							scnoteOld = sowmnotes.get((sowmnotes.size() - 1)).getAsJsonObject().get("content")
+//									.getAsString();
+//							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
+//								tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
+//							}
+//						} else if (!scnoteNew.equals("")) {
+//							tagString.addProperty("sowmnote", Fm_T.to_y_M_d(new Date()));
+//						}
+//					}
+//					if (!n.getSowmprogress().equals("") && !n.getSowmprogress().equals(o.getSowmprogress())) {
+//						tagString.addProperty("sowmprogress", Fm_T.to_y_M_d(new Date()));
+//					}
+//					// 製造
+//					if (!n.getSompnote().equals("[]") && !n.getSompnote().equals(o.getSompnote())) {
+//						JsonArray sompnotes = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
+//						String scnoteNew = n.getSompnote();
+//						String scnoteOld = "";
+//						// 如果是第一筆資料?
+//						if (sompnotes.size() > 0) {
+//							scnoteOld = sompnotes.get((sompnotes.size() - 1)).getAsJsonObject().get("content")
+//									.getAsString();
+//							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
+//								tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
+//							}
+//						} else if (!scnoteNew.equals("")) {
+//							tagString.addProperty("sompnote", Fm_T.to_y_M_d(new Date()));
+//						}
+//					}
+//					if (!n.getSompprogress().equals("") && !n.getSompprogress().equals(o.getSompprogress())) {
+//						tagString.addProperty("sompprogress", Fm_T.to_y_M_d(new Date()));
+//					}
+//					// 單據
+//					if (!n.getSorqty().equals(0) && !n.getSorqty().equals(o.getSorqty())) {
+//						tagString.addProperty("sorqty", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSookqty().equals(0) && !n.getSookqty().equals(o.getSookqty())) {
+//						tagString.addProperty("sookqty", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSostatus().equals("0") && !n.getSostatus().equals(o.getSostatus())) {
+//						tagString.addProperty("sostatus", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSonote().equals("") && !n.getSonote().equals(o.getSonote())) {
+//						tagString.addProperty("sonote", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSofname().equals("") && !n.getSofname().equals(o.getSofname())) {
+//						tagString.addProperty("sofname", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSoodate().equals("") && !n.getSoodate().equals(o.getSoodate())) {
+//						tagString.addProperty("soodate", Fm_T.to_y_M_d(new Date()));
+//					}
+//					if (!n.getSofdate().equals("") && !n.getSofdate().equals(o.getSofdate())) {
+//						tagString.addProperty("sofdate", Fm_T.to_y_M_d(new Date()));
+//					}
 					if (!n.getSonb().equals("") && !n.getSonb().equals(o.getSonb())) {
 						tagString.addProperty("all", Fm_T.to_y_M_d(new Date()));
 					}

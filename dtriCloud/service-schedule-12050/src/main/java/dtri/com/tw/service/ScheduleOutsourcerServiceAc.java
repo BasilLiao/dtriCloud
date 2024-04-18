@@ -235,10 +235,11 @@ public class ScheduleOutsourcerServiceAc {
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSompnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content")
-							.getAsString();
+					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
+							.replaceAll("\n", "");
+					String contentNew = x.getSompnote().replaceAll("\n", "");
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(x.getSompnote()) && !x.getSompnote().equals("")) {
+					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSompnote());
@@ -264,10 +265,11 @@ public class ScheduleOutsourcerServiceAc {
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSowmnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content")
-							.getAsString();
+					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
+							.replaceAll("\n", "");
+					String contentNew = x.getSowmnote().replaceAll("\n", "");
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(x.getSowmnote()) && !x.getSowmnote().equals("")) {
+					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSowmnote());
@@ -306,10 +308,11 @@ public class ScheduleOutsourcerServiceAc {
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSomcnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content")
-							.getAsString();
+					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
+							.replaceAll("\n", "");
+					String contentNew = x.getSomcnote().replaceAll("\n", "");
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(x.getSomcnote()) && !x.getSomcnote().equals("")) {
+					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSomcnote());
@@ -340,10 +343,11 @@ public class ScheduleOutsourcerServiceAc {
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
 					noteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content")
-							.getAsString();
+					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
+							.replaceAll("\n", "");
+					String contentNew = x.getSoscnote().replaceAll("\n", "");
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(x.getSoscnote()) && !x.getSoscnote().equals("")) {
+					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSoscnote());
