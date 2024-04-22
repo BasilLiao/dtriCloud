@@ -22,11 +22,13 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
 			+ "(c.bilfuser != 'ERP_Remove(Auto)') and "//
+			+ "(:bilfuser is null or (:bilfuser ='true' and c.bilfuser != '') or (:bilfuser ='false'  and c.bilfuser = '')) and "// 已領料_//
+																																	// 未領料
 			+ "(:bilcuser is null or (:bilcuser ='true' and c.bilcuser != '') or (:bilcuser ='false'  and c.bilcuser = '')) and "// 已核准人//
 																																	// 未核准人
 			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
 	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand,
-			String biltype, String bilcuser, Integer sysstatus, Pageable pageable);
+			String biltype, String bilcuser, String bilfuser, Integer sysstatus, Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//

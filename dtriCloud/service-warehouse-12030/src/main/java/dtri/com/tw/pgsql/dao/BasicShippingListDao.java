@@ -22,10 +22,10 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
 			+ "(c.bslfuser != 'ERP_Remove(Auto)') and "//
-			+ "(:bslcuser is null or (:bslcuser ='true' and  c.bslcuser != '') "
-			+ "or (:bslcuser ='false' and  c.bslcuser = '')) and "// 已核准人_ 未核准人
-			+ "(:bslfuser is null or (:bslfuser ='true' and  c.bslfuser != '') "
-			+ "or (:bslfuser ='false' and  c.bslfuser = '')) and "// 已領料_ 未領料
+			+ "(:bslfuser is null or (:bslfuser ='true' and  c.bslfuser != '') or (:bslfuser ='false' and  c.bslfuser = '')) and "// 已領料_
+																																	// 未領料
+			+ "(:bslcuser is null or (:bslcuser ='true' and  c.bslcuser != '') or (:bslcuser ='false' and  c.bslcuser = '')) and "// 已核准人_
+																																	// 未核准人
 			+ "(:bslfromcommand is null or c.bslfromcommand LIKE %:bslfromcommand%) ")
 	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand,
 			String bsltype, String bslcuser, String bslfuser, Integer sysstatus, Pageable pageable);

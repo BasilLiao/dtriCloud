@@ -1297,7 +1297,7 @@ public class ERPSynchronizeService {
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A421"))) {
-				// A131 庫存借出單
+				// A421
 				o = autoRemoveService.shippingAuto(o);
 				removeShLists.add(o);// 標記:無此資料
 			}
@@ -1438,8 +1438,8 @@ public class ERPSynchronizeService {
 					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A421"))) {
-				// A131 庫存借出單
+					(o.getBslclass().equals("A431"))) {
+				// A431
 				o = autoRemoveService.shippingAuto(o);
 				removeShLists.add(o);// 標記:無此資料
 			}
