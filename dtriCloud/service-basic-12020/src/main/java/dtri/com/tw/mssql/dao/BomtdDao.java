@@ -50,9 +50,10 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
-			+ " WHERE"//
-			+ "	BOMTE.TE001 is not null"//
-			+ "	AND BOMTE.TE008 > 0"//
+			+ " WHERE "//
+			+ "	BOMTE.TE001 is not null "//
+			+ "	AND BOMTE.TE008 > 0 "//
+			+ " AND BOMTE.TE001='A421' "//
 			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR BOMTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " ORDER BY "//

@@ -10,7 +10,7 @@ import dtri.com.tw.mssql.entity.Purth;
 public interface PurthDao extends JpaRepository<Purth, Long> {
 
 	// 多筆查詢範例
-	@Query(value = " SELECT "// --進貨單
+	@Query(value = " SELECT "// --進貨單 進貨單 A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
 			+ "	ROW_NUMBER() OVER(order by PURTH.TH001) AS PURTH_ID,"//
 			+ "	(PURTH.TH011+'-'+PURTH.TH012+'-'+PURTH.TH013) AS TH011_TH012_TH013,"// --採購單
 			+ "	(PURTH.TH001+'-'+PURTH.TH002) AS TH001_TH002,"// --進貨單
@@ -50,6 +50,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	PURTH.TH028 != '3' "// 除了 不合格
 			+ "	AND (PURTH.TH030 LIKE 'N' OR PURTH.TH030 LIKE 'Y' ) "// 已結項目 與 未結項目
 			+ "	AND PURTH.TH007 > 0 "// 數量大於0
+			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
 			+ "	AND (PURTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR PURTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//

@@ -50,8 +50,9 @@ public interface BomtfDao extends JpaRepository<Bomtf, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE"//
-			+ "	BOMTG.TG001 is not null"//
-			+ "	AND BOMTG.TG008 > 0"//
+			+ "	BOMTG.TG001 is not null "//
+			+ "	AND BOMTG.TG008 > 0 "//
+			+ " AND BOMTG.TG001 = 'A431' "//
 			+ "	AND (BOMTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR BOMTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " ORDER BY"//

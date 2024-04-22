@@ -31,9 +31,9 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "	CMSMC.MC002,"// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002,"// --供應商名稱
 			+ "	'領料類'  AS TK000 ,"//
-			+ "	INVTI.CREATE_DATE,"//--建立單據時間
-			+ "	INVTI.MODI_DATE,"//--修改單據時間
-			+ "	INVTI.CREATOR "//--建立單據者
+			+ "	INVTI.CREATE_DATE,"// --建立單據時間
+			+ "	INVTI.MODI_DATE,"// --修改單據時間
+			+ "	INVTI.CREATOR "// --建立單據者
 			+ " FROM "//
 			+ "	[DTR_TW].[dbo].INVTH"//
 			+ "	LEFT JOIN "//
@@ -50,7 +50,8 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
 			+ "	INVTI.TI001 is not null "//
-			+ "	AND INVTI.TI009 > 0 "//數量大於0
+			+ "	AND INVTI.TI009 > 0 "// 數量大於0
+			+ " AND (INVTI.TI001='A151' OR INVTI.TI001='A161')"//
 			+ "	AND (INVTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR INVTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//

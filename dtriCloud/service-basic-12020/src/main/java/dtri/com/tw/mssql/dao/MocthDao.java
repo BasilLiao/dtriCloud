@@ -10,7 +10,7 @@ import dtri.com.tw.mssql.entity.Mocth;
 public interface MocthDao extends JpaRepository<Mocth, Long> {
 
 	// 多筆查詢範例
-	@Query(value = "SELECT	"// --委外進貨
+	@Query(value = "SELECT	"// --委外進貨 A591
 			+ "	ROW_NUMBER() OVER(order by MOCTI.TI001) AS MOCTH_ID,"//
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003) AS TI001_TI002_TI003,"// --委外進貨單
 			+ "	(MOCTI.TI013+'-'+TRIM(MOCTI.TI014)) AS TI013_TI014,"// --製令單
@@ -52,8 +52,9 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "WHERE "//
 			+ " MOCTI.TI001 is not null "//
 			+ "	AND MOCTI.TI007 > 0 "// --數量不為0
+			+ " AND (MOCTI.TI001='A591') "// --
 			+ "	AND (MOCTI.TI048 ='N' OR MOCTI.TI048='3') "// --
-			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112)"//
+			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR MOCTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY"//
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003)   ASC"// --單號+序號

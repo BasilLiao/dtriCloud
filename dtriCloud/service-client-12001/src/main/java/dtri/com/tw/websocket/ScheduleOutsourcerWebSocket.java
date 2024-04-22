@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -103,10 +104,41 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			} else {
 				// Server 來的要把資料轉換(生館)
 				entityDatas.forEach(n -> {
-					if (!n.getSoscnote().equals("[]")) {
-						String soscnote = JsonParser.parseString(n.getSoscnote()).getAsJsonArray().get(0)
-								.getAsJsonObject().get("content").getAsString();
+					// 生管
+					if (n.getSoscnote() != null && !n.getSoscnote().equals("[]") && !n.getSoscnote().equals("")) {
+						JsonArray soscnotes = JsonParser.parseString(n.getSoscnote()).getAsJsonArray();
+						String soscnote = soscnotes.get(soscnotes.size() - 1).getAsJsonObject().get("content")
+								.getAsString();
 						n.setSoscnote(soscnote);
+					} else {
+						n.setSoscnote("[]");
+					}
+					// 物控
+					if (n.getSomcnote() != null && !n.getSomcnote().equals("[]") && !n.getSomcnote().equals("")) {
+						JsonArray somcnotes = JsonParser.parseString(n.getSomcnote()).getAsJsonArray();
+						String somcnote = somcnotes.get(somcnotes.size() - 1).getAsJsonObject().get("content")
+								.getAsString();
+						n.setSomcnote(somcnote);
+					} else {
+						n.setSomcnote("[]");
+					}
+					// 倉儲
+					if (n.getSowmnote() != null && !n.getSowmnote().equals("[]") && !n.getSowmnote().equals("")) {
+						JsonArray sowmnotes = JsonParser.parseString(n.getSowmnote()).getAsJsonArray();
+						String sowmnote = sowmnotes.get(sowmnotes.size() - 1).getAsJsonObject().get("content")
+								.getAsString();
+						n.setSowmnote(sowmnote);
+					} else {
+						n.setSowmnote("[]");
+					}
+					// 製造
+					if (n.getSompnote() != null && !n.getSompnote().equals("[]") && !n.getSompnote().equals("")) {
+						JsonArray sompnotes = JsonParser.parseString(n.getSompnote()).getAsJsonArray();
+						String sompnote = sompnotes.get(sompnotes.size() - 1).getAsJsonObject().get("content")
+								.getAsString();
+						n.setSompnote(sompnote);
+					} else {
+						n.setSompnote("[]");
 					}
 				});
 			}
@@ -283,16 +315,23 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					if (!n.getSomcnote().equals("[]")) {
 						JsonArray somcnotes = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
 						String scnoteNew = n.getSomcnote().replaceAll("\n", "");
-						String scnoteOld = "";
 						// 如果是第一筆資料?
-						if (somcnotes.size() > 0) {
-							scnoteOld = somcnotes.get((somcnotes.size() - 1)).getAsJsonObject().get("content")
-									.getAsString().replaceAll("\n", "");;
-							if (!scnoteNew.equals(scnoteOld) && !scnoteNew.equals("")) {
+						if (somcnotes.size() == 0 && !scnoteNew.equals("")) {
+							tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
+						} else if (somcnotes.size() > 0 && !scnoteNew.equals("")) {
+							// 如果多筆資料	
+							boolean checkNotSame = true;
+							for (JsonElement somcnote : somcnotes) {
+								String scnoteOld = somcnote.getAsJsonObject().get("content").getAsString()
+										.replaceAll("\n", "");
+								if (scnoteNew.equals(scnoteOld)) {
+									checkNotSame = false;
+									break;
+								}
+							}
+							if (checkNotSame) {
 								tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 							}
-						} else if (!scnoteNew.equals("")) {
-							tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 						}
 					}
 					if (!n.getSomcstatus().equals(0) && !n.getSomcstatus().equals(o.getSomcstatus())) {
@@ -514,7 +553,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 					tagString.addProperty("sofname", "");
 					tagString.addProperty("soodate", "");
 					tagString.addProperty("sofdate", "");
-					 
+
 					mapOutsourcerTag.put(br.getSoid(), tagString);
 				}
 			});

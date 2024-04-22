@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -1132,7 +1133,7 @@ public class ERPToCloudService {
 
 		JsonArray soscnotes = new JsonArray();
 		JsonObject soscnoteOne = new JsonObject();
-		// 如果是空的?
+		// 如果是空的(第一筆)?
 		if (o.getSoscnote().equals("[]") || o.getSoscnote().equals("")) {
 			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 			soscnoteOne.addProperty("user", m.getCreator());
@@ -1140,16 +1141,24 @@ public class ERPToCloudService {
 			soscnotes.add(soscnoteOne);
 			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
 		} else {
-			// 不是空的->取出轉換->比對最新資料
+			// 不是空的(第N筆資料)->取出轉換->比對最新資料
 			soscnotes = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
 
 			// 取出先前的-最新資料比對->不同內容->添加新的
 			JsonArray soscnoteOld = new JsonArray();
 			soscnoteOld = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
-			String contentOld = soscnoteOld.get((soscnoteOld.size() - 1)).getAsJsonObject().get("content")
-					.getAsString().replaceAll("\n", "");
-			String contentNew = m.getTa029().replaceAll("\n", "");;
-			if (!contentOld.equals(contentNew)) {
+			String contentNew = m.getTa029().replaceAll("\n", "");
+			Boolean checkNotSame = true;
+			// 比對每一筆資料
+			for (JsonElement jsonElement : soscnoteOld) {
+				String contentOld = jsonElement.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+				if (contentOld.equals(contentNew)) {
+					checkNotSame = false;
+					break;
+				}
+			}
+			// 確定不同 才能更新
+			if (checkNotSame) {
 				soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 				soscnoteOne.addProperty("user", m.getCreator());
 				soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用

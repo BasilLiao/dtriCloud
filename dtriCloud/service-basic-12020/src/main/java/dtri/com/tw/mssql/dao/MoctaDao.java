@@ -10,7 +10,7 @@ import dtri.com.tw.mssql.entity.Mocta;
 public interface MoctaDao extends JpaRepository<Mocta, Long> {
 
 	// 多筆查詢範例
-	@Query(value = " SELECT  "// --製令單
+	@Query(value = " SELECT  "// --製令單A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單
 			+ " ROW_NUMBER() OVER(order by INVMB.MB001) AS MOCTA_ID,"//
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
@@ -51,27 +51,28 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "		FROM [DTR_TW].[dbo].INVMB AS MB "//
 			+ "		LEFT JOIN [DTR_TW].[dbo].INVMA AS MA "//
 			+ "		  ON MB.MB008 = MA.MA002 "//
-			+ "		WHERE MA.MA003 IS NOT NULL) AS INVMAB)AS INVMAB " //--成品皆關聯(品號基本資料檔)\n
-			+ "	ON INVMAB.MB001= MOCTA.TA006 "//
-			+ "	LEFT JOIN "//
-			+ "	[DTR_TW].[dbo].INVMB AS INVMB "// --倉庫別
-			+ "	ON MOCTB.TB003 = INVMB.MB001 "//
-			+ "	LEFT JOIN "//
-			+ "	[DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
-			+ "	ON INVMB.MB017 = CMSMC.MC001 "//
-			+ "	LEFT JOIN "//
-			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
-			+ "	ON PURMA.MA001 = INVMB.MB032 "//
+			+ "		WHERE MA.MA003 IS NOT NULL) AS INVMAB)AS INVMAB " // --成品皆關聯(品號基本資料檔)\n
+			+ "	 ON INVMAB.MB001= MOCTA.TA006 "//
+			+ "	 LEFT JOIN "//
+			+ "	 [DTR_TW].[dbo].INVMB AS INVMB "// --倉庫別
+			+ "	 ON MOCTB.TB003 = INVMB.MB001 "//
+			+ "	 LEFT JOIN "//
+			+ "	 [DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
+			+ "	 ON INVMB.MB017 = CMSMC.MC001 "//
+			+ "	 LEFT JOIN "//
+			+ "	 [DTR_TW].[dbo].PURMA AS PURMA "// --廠商
+			+ "	 ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	(TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
-			+ "	AND MOCTB.TB004 > 0 "// --數量不為0
-			+ "	AND MOCTB.TB018 = 'Y' "// --確認碼
-			+ " AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
-			+ "	OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
+			+ "	 (TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
+			+ "	 AND MOCTB.TB004 > 0 "// --數量不為0
+			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
+			+ "	 AND MOCTB.TB018 = 'Y' "// --確認碼
+			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
+			+ "	 OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " ORDER BY "//
-			+ "	MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
-			+ "	INVMB.MB001 ASC,"// --物料
-			+ "	MOCTA.TA009 ASC"// --時間
+			+ "	 MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
+			+ "	 INVMB.MB001 ASC,"// --物料
+			+ "	 MOCTA.TA009 ASC"// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Mocta> findAllByMocta();
 

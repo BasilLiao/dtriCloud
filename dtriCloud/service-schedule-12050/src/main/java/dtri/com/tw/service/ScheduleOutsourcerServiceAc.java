@@ -215,7 +215,7 @@ public class ScheduleOutsourcerServiceAc {
 		// action : mp=製造/wm=倉庫/mc=物控/sc=生管
 		entityDatas.forEach(x -> {
 			ScheduleOutsourcer o = outsourcerDao.getReferenceById(x.getSoid());
-			JsonArray noteOld = new JsonArray();
+			JsonArray noteOlds = new JsonArray();
 			JsonObject noteOne = new JsonObject();
 
 			switch (action) {
@@ -229,22 +229,28 @@ public class ScheduleOutsourcerServiceAc {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSompnote());
-						noteOld.add(noteOne);
-						o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSompnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOld = (JsonArray) JsonParser.parseString(o.getSompnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
-							.replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
 					String contentNew = x.getSompnote().replaceAll("\n", "");
+					boolean checkNotSame = true;
+					for (JsonElement noteOld : noteOlds) {
+						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+						if (contentOld.equals(contentNew)) {
+							checkNotSame = false;
+							break;
+						}
+					}
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
+					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSompnote());
-						noteOld.add(noteOne);
-						o.setSompnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSompnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				}
 
@@ -259,22 +265,28 @@ public class ScheduleOutsourcerServiceAc {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSowmnote());
-						noteOld.add(noteOne);
-						o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSowmnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOld = (JsonArray) JsonParser.parseString(o.getSowmnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
-							.replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
 					String contentNew = x.getSowmnote().replaceAll("\n", "");
+					boolean checkNotSame = true;
+					for (JsonElement noteOld : noteOlds) {
+						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+						if (contentOld.equals(contentNew)) {
+							checkNotSame = false;
+							break;
+						}
+					}
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
+					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSowmnote());
-						noteOld.add(noteOne);
-						o.setSowmnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSowmnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				}
 
@@ -302,22 +314,29 @@ public class ScheduleOutsourcerServiceAc {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSomcnote());
-						noteOld.add(noteOne);
-						o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSomcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOld = (JsonArray) JsonParser.parseString(o.getSomcnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
-							.replaceAll("\n", "");
 					String contentNew = x.getSomcnote().replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
+					boolean checkNotSame = true;
+					for (JsonElement noteOld : noteOlds) {
+						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+						if (contentOld.equals(contentNew)) {
+							checkNotSame = false;
+							break;
+						}
+					}
+
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
+					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSomcnote());
-						noteOld.add(noteOne);
-						o.setSomcnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSomcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				}
 
@@ -337,22 +356,30 @@ public class ScheduleOutsourcerServiceAc {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSoscnote());
-						noteOld.add(noteOne);
-						o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSoscnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
 					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOld = (JsonArray) JsonParser.parseString(o.getSoscnote());
-					String contentOld = noteOld.get((noteOld.size() - 1)).getAsJsonObject().get("content").getAsString()
-							.replaceAll("\n", "");
+					noteOlds = (JsonArray) JsonParser.parseString(o.getSoscnote());
 					String contentNew = x.getSoscnote().replaceAll("\n", "");
+					boolean checkNotSame = true;
+					for (JsonElement noteOld : noteOlds) {
+						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+						if (contentOld.equals(contentNew)) {
+							System.out.println(contentOld);
+							System.out.println(contentNew);
+							checkNotSame = false;
+							break;
+						}
+					}
 					// 必須不相同+不能是沒輸入值
-					if (!contentOld.equals(contentNew) && !contentNew.equals("")) {
+					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());
 						noteOne.addProperty("content", x.getSoscnote());
-						noteOld.add(noteOne);
-						o.setSoscnote(noteOld.toString());// 生管備註(格式)人+時間+內容
+						noteOlds.add(noteOne);
+						o.setSoscnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				}
 				break;

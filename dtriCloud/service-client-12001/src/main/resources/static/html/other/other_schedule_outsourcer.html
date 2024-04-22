@@ -1318,18 +1318,21 @@
 						var soid = $(this).find(".soid").text();
 						var sonb = $(this).find(".sonb").text();
 						var sofodate = $(this).find(".sofodate").html().replaceAll("<br>","\n");
+						sofodate = sofodate.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 						var sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>","\n");
+						sofokdate = sofokdate.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 						var soscstatus = $(this).find(".soscstatus").attr('title');
 						var somcdate = $(this).find(".somcdate").text();
 						var soscnote = "";
 						var somcnote = "";
 						var sowmnote = "";
 						var sompnote = "";
-						switch (order) {
+						switch (order) {	
 							case "btn_pc"://生管
 								//生館
 								if ($(this).find(".soscnote .notes").length > 0) {
-									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>","\n");
+									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>","\n")
+									soscnote = soscnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sosc_show").removeClass("d-none");
@@ -1339,6 +1342,7 @@
 								//悟空
 								if ($(this).find(".somcnote .notes").length > 0) {
 									somcnote = $(this).find(".somcnote .notes").first().html().replaceAll("<br>","\n");
+									somcnote = somcnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somc_show").removeClass("d-none");
@@ -1348,6 +1352,7 @@
 								//倉庫
 								if ($(this).find(".sowmnote .notes").length > 0) {
 									sowmnote = $(this).find(".sowmnote .notes").first().html().replaceAll("<br>","\n");
+									sowmnote = sowmnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sowm_show").removeClass("d-none");
@@ -1356,6 +1361,7 @@
 								//製造
 								if ($(this).find(".sompnote .notes").length > 0) {
 									sompnote = $(this).find(".sompnote .notes").first().html().replaceAll("<br>","\n");
+									sompnote = sompnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somp_show").removeClass("d-none");

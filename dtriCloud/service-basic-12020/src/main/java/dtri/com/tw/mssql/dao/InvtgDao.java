@@ -31,9 +31,9 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	CMSMC.MC002, "// --主要-倉別名稱
 			+ "	COALESCE(PURMA.MA002,'') AS MA002, "// --供應商名稱
 			+ "	'領料類' AS TK000 ,"//
-			+ "	INVTG.CREATE_DATE,"//--建立單據時間
-			+ "	INVTG.MODI_DATE,"//--修改單據時間
-			+ "	INVTG.CREATOR "//--建立單據者
+			+ "	INVTG.CREATE_DATE,"// --建立單據時間
+			+ "	INVTG.MODI_DATE,"// --修改單據時間
+			+ "	INVTG.CREATOR "// --建立單據者
 			+ " FROM "//
 			+ "	[DTR_TW].[dbo].INVTF"//
 			+ "	LEFT JOIN "//
@@ -51,7 +51,8 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "WHERE"//
 			+ "	INVTG.TG022!='V'"//
 			+ "	AND INVTG.TG001 is not null"//
-			+ "	AND INVTG.TG009 > 0 "//數量大於0
+			+ "	AND INVTG.TG009 > 0 "// 數量大於0
+			+ " AND (INVTG.TG001='A131' OR INVTG.TG001='A141') "//
 			+ "	AND (INVTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR INVTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//

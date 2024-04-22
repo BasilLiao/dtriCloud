@@ -12,7 +12,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --領/退料單(領/退料單 A541 廠內領料單/ A542 補料單/ A551 委外領料單/ A561 廠內退料單/ A571 委外退料單)
 			+ "	ROW_NUMBER() OVER(order by MOCTE.TE001) AS MOCTE_ID, "//
-			+ "	TE001+'-'+TRIM(TE002)+'-'+TE003 AS TE001_TE002_TE003, "// --出料單號
+			+ "	MOCTE.TE001+'-'+TRIM(MOCTE.TE002)+'-'+MOCTE.TE003 AS TE001_TE002_TE003, "// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002, "// --製令單
 			+ "	MOCTA.TA006, "// --產品品號
 			+ "	MOCTA.TA009, "// --預計開工
@@ -23,7 +23,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA035, "// --產品規格
 			+ "	MOCTC.TC007, "// --領單頭備註
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004, "// --(需領用 - 已領用) = 未領用
-			+ "	CEILING(MOCTE.TE005) AS TE005, "//(退料用),--物料領退用量
+			+ "	CEILING(MOCTE.TE005) AS TE005, "// (退料用),--物料領退用量
 			+ " MOCTB.TB005, "// --已領用
 			+ "	MOCTE.TE008 AS TB009, "// --(改為 領調/退料單的)庫別
 			+ "	MOCTC.TC008, "// --單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
@@ -70,7 +70,10 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 > 0 "// --數量不為0
-			+ " OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))"//退料機制
+			+ " AND (MOCTE.TE001 = 'A541' OR MOCTE.TE001 = 'A542' "
+			+ " OR MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A551' OR MOCTE.TE001 = 'A561' OR  MOCTE.TE001 = 'A571'"//
+			+ " ) "//
+			+ " OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))"// 退料機制
 			+ "ORDER BY "//
 			+ " MOCTC.TC008 asc, "//
 			+ "	(MOCTE.TE001 + MOCTE.TE002+MOCTE.TE003) asc"// --單號+序號
