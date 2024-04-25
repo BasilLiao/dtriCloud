@@ -33,6 +33,7 @@ import jakarta.persistence.Transient;
  *      was_c_user : 核准人<br>
  *      was_m_user : 可分配-負責人<br>
  *      was_f_user : 完成人<br>
+ *      was_sm_user : 產線配料人<br>
  *      was_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      was_p_number : 物料號<br>
  *      was_p_name : 品名<br>
@@ -61,6 +62,7 @@ public class WarehouseAssignmentFront {
 		// 倉儲區域清單-清單
 		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
 		this.wasschedule = "0/0";
+		this.wascischedule = "0/0";
 		this.waserpcuser = "";
 		this.wassmuser = "";
 	}
@@ -129,6 +131,8 @@ public class WarehouseAssignmentFront {
 	private Date wasedate;// : 預計領/入料日
 	@Transient
 	private String wasschedule;// 進度(50/100)
+	@Transient
+	private String wascischedule;// 集結-進度(50/100)
 	@Transient
 	private String waspalready;// 是否已打印(已打印/未打印)
 	@Transient
@@ -420,6 +424,14 @@ public class WarehouseAssignmentFront {
 
 	public void setWassmuser(String wassmuser) {
 		this.wassmuser = wassmuser;
+	}
+
+	public String getWascischedule() {
+		return wascischedule;
+	}
+
+	public void setWascischedule(String wascischedule) {
+		this.wascischedule = wascischedule;
 	}
 
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
@@ -31,8 +32,8 @@ import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.ScheduleShortageList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
-import dtri.com.tw.pgsql.entity.WarehouseActionFront;
 import dtri.com.tw.pgsql.entity.WarehouseActionDetailFront;
+import dtri.com.tw.pgsql.entity.WarehouseActionFront;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
@@ -884,7 +885,7 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
-					history.setWhtype("入料");
+					history.setWhtype("入料(User)");
 					history.setWhwmslocation(incomingList.getBiltowho());
 					history.setWhcontent(//
 							incomingList.getBilclass() + "-" + incomingList.getBilsn() + "-" + //
@@ -933,7 +934,7 @@ public class WarehouseActionServiceAc {
 
 					// 紀錄更新
 					WarehouseHistory history = new WarehouseHistory();
-					history.setWhtype("領料");
+					history.setWhtype("領料(User)");
 					history.setWhwmslocation(shippingList.getBslfromwho());
 					history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
 							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + // 領料單
@@ -1012,4 +1013,41 @@ public class WarehouseActionServiceAc {
 			shortageListDao.saveAll(shortageLists);
 		}
 	}
+
+	/** 修改資料 */
+	@Transactional
+	public PackageBean setModifyCheckIn(PackageBean packageBean) throws Exception {
+		// =======================資料準備 =======================
+		JsonObject reData = new JsonObject();
+		reData.addProperty("Action", "SS1");
+		reData.addProperty("finish", 0);
+		reData.addProperty("total", 0);
+		// =======================資料檢查=======================
+		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
+			String val = JsonParser.parseString(packageBean.getEntityDetailJson()).getAsJsonObject().get("sysnote")
+					.getAsString();
+			System.out.println(val);
+			String OrderID = val.split("_")[1];
+			String userAcc = val.split("_")[2];
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByCheck(OrderID.split("-")[0],
+					OrderID.split("-")[1], null);
+			shippingLists.forEach(c -> {
+				if (c.getBslfuser().equals(userAcc) || c.getBslfuser().contains("System") ) {
+					c.setBslfucheckin(true);
+				}
+				if (c.getBslfucheckin()) {
+					reData.addProperty("finish", reData.get("finish").getAsInt() + 1);
+				}
+			});
+			// 查不到資料
+			if (shippingLists.size() == 0) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+			}
+			reData.addProperty("total", shippingLists.size());
+		}
+
+		packageBean.setCallBackValue(reData.toString());
+		return packageBean;
+	}
+
 }

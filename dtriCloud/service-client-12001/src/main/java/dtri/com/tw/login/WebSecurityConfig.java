@@ -207,6 +207,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, warehouse_act).hasAuthority(actionRole(warehouse_act, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, warehouse_act + ".AR").hasAuthority(actionRole(warehouse_act, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, warehouse_act + ".S1").hasAuthority(actionRole(warehouse_act, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, warehouse_act + ".SS1").hasAuthority(actionRole(warehouse_act, "S1"))// (修改S1)
 
 				// -客製化
 				// ----請求-warehouse_synchronize-(訪問) ----

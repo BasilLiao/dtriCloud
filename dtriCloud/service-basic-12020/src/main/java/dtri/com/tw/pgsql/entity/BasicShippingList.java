@@ -91,6 +91,7 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
+		this.bslfucheckin = false;
 		this.bslsuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
@@ -212,6 +213,9 @@ public class BasicShippingList {
 	private Boolean bsltfilter;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@Column(name = "bsl_f_u_checkin", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bslfucheckin;
 
 	@JsonIgnore
 	@Column(name = "check_rm", nullable = false, columnDefinition = "boolean default true")
@@ -593,6 +597,14 @@ public class BasicShippingList {
 
 	public void setBslsmuser(String bslsmuser) {
 		this.bslsmuser = bslsmuser;
+	}
+
+	public Boolean getBslfucheckin() {
+		return bslfucheckin;
+	}
+
+	public void setBslfucheckin(Boolean bslfucheckin) {
+		this.bslfucheckin = bslfucheckin;
 	}
 
 }

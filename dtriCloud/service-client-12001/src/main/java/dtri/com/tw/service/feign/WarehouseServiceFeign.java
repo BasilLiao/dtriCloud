@@ -63,6 +63,9 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseAction/setModifyNormal" }, method = RequestMethod.POST)
 	PackageBean setActionModifyNormal(@RequestBody String jsonPackageBean);
+	
+	@RequestMapping(value = { "/warehouseAction/setModifyCheckIn" }, method = RequestMethod.POST)
+	PackageBean setActionModifyCheckIn(@RequestBody String jsonPackageBean);
 
 //	@RequestMapping(value = { "/warehouseAction/getReport" }, method = RequestMethod.POST)
 //	PackageBean getActionReport(@RequestBody String jsonPackageBean);

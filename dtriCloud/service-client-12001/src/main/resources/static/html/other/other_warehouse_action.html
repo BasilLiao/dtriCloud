@@ -111,6 +111,16 @@
 		background: #ffc107;
 	}
 
+	/*checkIn 高度*/
+	#searchCheckin input:focus {
+		background: #ffc107;
+	}
+
+	#searchCheckin input {
+		height: 100%;
+	}
+
+
 	/*高量顯示*/
 	.bg-show {
 		background: #ffc1073b;
@@ -323,6 +333,68 @@
 					</tr>
 				</tbody>
 			</table>
+		</div>
+	</div>
+	<!-- 登記集料面板 -->
+	<div id="search_c_checkin" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#search_c_checkin_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse" id="search_c_checkin_open">
+			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Check In </b>
+			<div id="searchCheckin" class="col border border-primary  row m-0 p-0 shadow-sm">
+				<div class="col-4 col-lg-3 p-1">
+					<div class="border border-secondary rounded">
+						<div class="searchTitle title_color fw-bolder rounded-top">CheckIn</div>
+						<div class="p-1" style="height: 56px;">
+							<input class="col-12 m-0 p-1 border border-dark form-control" type="password"
+								id="checkInCode" name="" readonly="readonly" placeholder="Ex:********">
+						</div>
+					</div>
+				</div>
+				<div class="col-4 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="searchTitle title_color fw-bolder rounded-top">OrderID</div>
+						<div class="p-1" style="height: 56px;">
+							<input class="col-12 m-0 p-1 border border-dark form-control" type="text" id="OrderID"
+								name="" readonly="readonly" placeholder="Ex:A541-123456789">
+						</div>
+					</div>
+				</div>
+				<div class="col-4 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="searchTitle title_color fw-bolder rounded-top">UserAcc</div>
+						<div class="p-1" style="height: 56px;">
+							<input class="col-12 m-0 p-1 border border-dark form-control" type="text" id="UserAcc"
+								name="" readonly="readonly" placeholder="Ex:Joy">
+						</div>
+					</div>
+				</div>
+				<div class="col-8 col-lg-9 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="searchTitle title_color fw-bolder rounded-top">Status</div>
+						<div class="row m-0" style="min-height: 56px;">
+							<b id="checkin_ms" class="">N/N<br></b>
+						</div>
+					</div>
+				</div>
+				<div class="col-4 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="searchTitle title_color fw-bolder rounded-top">Action</div>
+						<div class="row m-0" style="min-height: 56px;">
+							<button id="btn_checkin_clear" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								<b>Clear<br>All()</b>
+							</button>
+							<button id="btn_checkin" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+								<b>CheckIn<br>(S1)</b>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -870,6 +942,7 @@
 
 				});
 
+
 				//監聽-打印
 				$(document).off("click", "#search_c #btn_printerForm");
 				$(document).on("click", "#search_c #btn_printerForm", function (event) {
@@ -1036,6 +1109,103 @@
 						$('#command_send input').val(command_val + e.key);
 					}
 					$("#command_send input").focus();
+				});
+				//=========================checkin=========================
+				//監聽-取消
+				$(document).off("click", "#search_c_checkin #btn_checkin_clear");
+				$(document).on("click", "#search_c_checkin #btn_checkin_clear", function (event) {
+					console.log("btn_checkin_clear");
+					$('#checkInCode').val("");
+					$('#OrderID').val("");
+					$('#UserAcc').val("");
+					$("#searchCheckin #checkInCode").focus();
+					$("#searchCheckin #checkin_ms").removeClass('bg-success').removeClass('bg-warning').removeClass('bg-danger');
+					$("#searchCheckin #checkin_ms").html('N/N<br>');
+
+				});
+				//監聽-登記
+				$(document).off("click", "#search_c_checkin #btn_checkin");
+				$(document).on("click", "#search_c_checkin #btn_checkin", function (event) {
+					console.log("btn_checkin");
+					//送出
+					$("#searchCheckin #checkin_ms").removeClass('bg-success').removeClass('bg-warning').removeClass('bg-danger');
+					$("#searchCheckin #checkin_ms").html('N/N<br>');
+					if ($("#searchCheckin #checkInCode").val() == "**********" &&
+						$("#searchCheckin #OrderID").val() != "" &&
+						$("#searchCheckin #UserAcc").val() != "") {
+						var sendData = $("#searchCheckin #checkInCode").val();
+						sendData += "_" + $("#searchCheckin #OrderID").val();
+						sendData += "_" + $("#searchCheckin #UserAcc").val();
+						other.methods.checkInSend(sendData);
+					} else {
+						//It's OK !!,Please mark complete!!
+						//Not finished yet, please continue the work~
+						$("#searchCheckin #checkin_ms").html('N/N<br>Error!! Please check again!!');
+						$("#searchCheckin #checkin_ms").addClass('bg-danger');
+					}
+
+				});
+				//監聽-集結物料
+				$(document).off("keydown", "#searchCheckin input");
+				$(document).on("keydown", "#searchCheckin input", function (e) {
+					console.log(e.currentTarget.id + ":" + e.key);
+					if (e.key == 'Backspace') {
+						var checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
+						//自動切換
+						switch (e.currentTarget.id) {
+							case "checkInCode":
+								if (checkin_val == "") {
+									$("#searchCheckin #checkInCode").focus();
+								}
+								break;
+							case "OrderID":
+								if (checkin_val == "") {
+									$("#searchCheckin #checkInCode").focus();
+								}
+								break;
+							case "UserAcc":
+								if (checkin_val == "") {
+									$("#searchCheckin #OrderID").focus();
+								}
+								break;
+						}
+						$("#searchCheckin #" + e.currentTarget.id).val("");
+					} else if (e.key == 'Enter') {
+						switch (e.currentTarget.id) {
+							case "checkInCode":
+								$("#searchCheckin #OrderID").focus();
+								break;
+							case "OrderID":
+								$("#searchCheckin #UserAcc").focus();
+								break;
+							case "UserAcc":
+								//送出
+								$("#searchCheckin #checkin_ms").removeClass('bg-success').removeClass('bg-warning').removeClass('bg-danger');
+								$("#searchCheckin #checkin_ms").html('N/N<br>');
+								if ($("#searchCheckin #checkInCode").val() == "**********" &&
+									$("#searchCheckin #OrderID").val() != "" &&
+									$("#searchCheckin #UserAcc").val() != "") {
+									var sendData = $("#searchCheckin #checkInCode").val();
+									sendData += "_" + $("#searchCheckin #OrderID").val();
+									sendData += "_" + $("#searchCheckin #UserAcc").val();
+									other.methods.checkInSend(sendData);
+								} else {
+									//It's OK !!,Please mark complete!!
+									//Not finished yet, please continue the work~
+									$("#searchCheckin #checkin_ms").html('N/N<br>Error!! Please check again!!');
+									$("#searchCheckin #checkin_ms").addClass('bg-danger');
+								}
+
+								$("#searchCheckin #UserAcc").val("");
+								break;
+						}
+					} else if (e.key == 'Shift') {
+						//排除
+					} else {
+						//一班輸入
+						var checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
+						$("#searchCheckin #" + e.currentTarget.id).val(checkin_val + e.key);
+					}
 				});
 
 				//監聽-切換對焦
@@ -1274,6 +1444,32 @@
 				other.methods.datetimepickerDate();
 
 			},
+			//集結物料修改
+			checkInSend(val) {
+				var entityJosn = {};
+				entityJosn['sysnote'] = val;
+				//
+				var action = "";
+				var type = "PUT";
+				var data = null;
+				var req_data = {};
+				var searchPageSet = {};
+				action = "SS1";
+				//傳送....
+				data = {};
+				data['entityJson'] = JSON.stringify('{}');
+				data['entityDetailJson'] = JSON.stringify(entityJosn);
+
+				if (data != null) {
+					//包裝
+					data['callBackFunction'] = "other_modify";
+					req_data['data'] = data;
+					req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil." + action;//AC/AD....
+					req_data['type'] = type;//POST/PUT/DELETE...
+					main.methods.ajaxSend(req_data, true);
+				}
+				return false;
+			},
 
 			//==========================資料載入==========================
 			otherReLoad() {
@@ -1348,11 +1544,34 @@
 			//==========================回傳接收==========================
 			//修改後回傳
 			otherModifyReturn() {
-				clearTimeout(other.data.btn_send_auto);
-				other.methods.searchDetailSend();
-				//重新對焦
-				$("#command_send input").focus();
-				$("#command_sel").val(other.data.command_sel).change();
+				if (main.resq_data.callBackValue != "") {
+					//集結物料促發
+					var jsonCheckin = JSON.parse(main.resq_data.callBackValue);
+					console.log(jsonCheckin);
+					//還原
+					$("#searchCheckin #checkin_ms").removeClass('bg-success').removeClass('bg-warning').removeClass('bg-danger');
+					$("#searchCheckin #checkin_ms").html('N/N<br>');
+					//判別
+					if (jsonCheckin['finish'] == jsonCheckin['total']) {
+						$("#searchCheckin #checkin_ms").html(jsonCheckin['finish'] + '/' + jsonCheckin['total'] +
+							"<br>It's OK !!,Please mark complete!!");
+						$("#searchCheckin #checkin_ms").addClass('bg-success');
+					} else if (jsonCheckin['finish'] < jsonCheckin['total']) {
+						$("#searchCheckin #checkin_ms").html(jsonCheckin['finish'] + '/' + jsonCheckin['total'] +
+							"<br>Not finished yet, please continue the work~");
+						$("#searchCheckin #checkin_ms").addClass('bg-warning');
+					} else {
+						$("#searchCheckin #checkin_ms").html('N/N<br>Error!! Please check again!!');
+						$("#searchCheckin #checkin_ms").addClass('bg-danger');
+					}
+
+				} else {
+					clearTimeout(other.data.btn_send_auto);
+					other.methods.searchDetailSend();
+					//重新對焦
+					$("#command_send input").focus();
+					$("#command_sel").val(other.data.command_sel).change();
+				}
 			},
 			//查詢後回傳
 			otherReturn() {
@@ -1435,6 +1654,11 @@
 				$(document).off("change", "#command_sel");
 				$(document).off("keydown", "#command_send input");
 				$(document).off("keydown", "#command_qty input");
+
+				$(document).off("keydown", "#searchCheckin input");
+				$(document).off("click", "#search_c_checkin #btn_checkin_clear");
+				$(document).off("click", "#search_c_checkin #btn_checkin");
+
 
 				$(document).off("click", "#search_c #btn_detail");
 				$(document).off("click", "#search_c #exthDetailAll");

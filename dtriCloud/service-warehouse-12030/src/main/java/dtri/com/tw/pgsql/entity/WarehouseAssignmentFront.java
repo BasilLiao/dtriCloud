@@ -62,6 +62,7 @@ public class WarehouseAssignmentFront {
 		// 倉儲區域清單-清單
 		this.wasaliaswmpnb = "";// : 倉儲_物料號<br>
 		this.wasschedule = "0/0";
+		this.wascischedule = "0/0";
 		this.waserpcuser = "";
 		this.wassmuser = "";
 	}
@@ -130,6 +131,8 @@ public class WarehouseAssignmentFront {
 	private Date wasedate;// : 預計領/入料日
 	@Transient
 	private String wasschedule;// 進度(50/100)
+	@Transient
+	private String wascischedule;// 集結-進度(50/100)
 	@Transient
 	private String waspalready;// 是否已打印(已打印/未打印)
 	@Transient
@@ -421,6 +424,14 @@ public class WarehouseAssignmentFront {
 
 	public void setWassmuser(String wassmuser) {
 		this.wassmuser = wassmuser;
+	}
+
+	public String getWascischedule() {
+		return wascischedule;
+	}
+
+	public void setWascischedule(String wascischedule) {
+		this.wascischedule = wascischedule;
 	}
 
 }
