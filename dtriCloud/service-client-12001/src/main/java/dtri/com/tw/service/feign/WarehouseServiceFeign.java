@@ -63,7 +63,7 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseAction/setModifyNormal" }, method = RequestMethod.POST)
 	PackageBean setActionModifyNormal(@RequestBody String jsonPackageBean);
-	
+
 	@RequestMapping(value = { "/warehouseAction/setModifyCheckIn" }, method = RequestMethod.POST)
 	PackageBean setActionModifyCheckIn(@RequestBody String jsonPackageBean);
 
@@ -131,6 +131,10 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseHistory/setDetele" }, method = RequestMethod.POST)
 	PackageBean setHistoryDetele(@RequestBody String jsonPackageBean);
+
+	// ================================報告-工作統計================================
+	@RequestMapping(value = { "/warehouseWorkStatistics/getSearch" }, method = RequestMethod.POST)
+	PackageBean getWorkStatisticsSearch(@RequestBody String jsonPackageBean);
 
 	// ================================設定-區域負責人================================
 	@RequestMapping(value = { "/warehouseKeeper/getSearch" }, method = RequestMethod.POST)
