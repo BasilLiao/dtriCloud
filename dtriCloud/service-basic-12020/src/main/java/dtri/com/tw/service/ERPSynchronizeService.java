@@ -220,7 +220,7 @@ public class ERPSynchronizeService {
 				bslnb = 1;
 			}
 			// 建立序號
-			String nKey = m.getTa001_ta002() + "-" + String.format("%04d", bslnb) + "-" + m.getMb001();
+			String nKey = m.getTa001_ta002() + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002().replaceAll("\\s", ""));
@@ -235,8 +235,8 @@ public class ERPSynchronizeService {
 		// 存入資料物件
 		// Step3. 資料整理轉換
 		entityOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+單項目號+物料號)
-			String oKey = o.getBclclass() + "-" + o.getBclsn() + "-" + o.getBclnb() + "-" + o.getBclpnumber();
+			// 基本資料準備:檢碼(單類別+單序號+物料號)
+			String oKey = o.getBclclass() + "-" + o.getBclsn() + "-" + o.getBclpnumber();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpMaps.containsKey(oKey)) {
@@ -244,8 +244,8 @@ public class ERPSynchronizeService {
 				erpMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
 				if (o.getBclfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum) && //
-								(o.getBclfuser().equals("") || o.getBclfuser().indexOf("System") >= 0))) {
+						(!o.getChecksum().equals(nChecksum)
+								&& (o.getBclfuser().equals("") || o.getBclfuser().indexOf("System") >= 0))) {
 					Mocta m = erpMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換

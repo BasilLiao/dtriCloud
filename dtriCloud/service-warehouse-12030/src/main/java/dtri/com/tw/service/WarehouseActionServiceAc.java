@@ -1029,11 +1029,14 @@ public class WarehouseActionServiceAc {
 			System.out.println(val);
 			String OrderID = val.split("_")[1];
 			String userAcc = val.split("_")[2];
+			ArrayList<BasicShippingList> shippingListNews = new ArrayList<BasicShippingList>();
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByCheck(OrderID.split("-")[0],
 					OrderID.split("-")[1], null);
 			shippingLists.forEach(c -> {
-				if (c.getBslfuser().equals(userAcc) || c.getBslfuser().contains("System") ) {
+				if ((!userAcc.equals("") && !c.getBslfuser().equals("") && c.getBslfuser().equals(userAcc)) || //
+						c.getBslfuser().contains("System")) {
 					c.setBslfucheckin(true);
+					shippingListNews.add(c);
 				}
 				if (c.getBslfucheckin()) {
 					reData.addProperty("finish", reData.get("finish").getAsInt() + 1);
@@ -1044,6 +1047,8 @@ public class WarehouseActionServiceAc {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
 			reData.addProperty("total", shippingLists.size());
+			//存入
+			shippingListDao.saveAll(shippingListNews);
 		}
 
 		packageBean.setCallBackValue(reData.toString());

@@ -15,12 +15,14 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
+			+ " MOCTA.TA029, "//--生管備註
 			+ "	MOCTA.TA050, "// --訂單生產加工包裝資訊(客戶資訊)
 			+ " INVMAB.MA003,"// --產品機型
+			+ "	MOCTB.TB015, "// --預計領料日
 			+ " MOCTA.TA009, "// --預計開工日
 			+ "	MOCTA.TA010, "// --預計完工日
-			+ "	MOCTB.TB015, "// --預計領料日
-			+ "	CEILING(MOCTB.TB004)AS TB004 , "// --正數 預計領
+			+ " MOCTA.TA011, "// --,--確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+			+ "	CEILING(MOCTB.TB004) AS TB004, "// --正數 預計領
 			+ "	MOCTB.TB005, "// --負數 已領用量
 			+ "	(TB004 - TB005) AS TB004_TB005, "// --需領用-已領用(正數 預計領 / 負數 已領用量)
 			+ "	INVMB.MB001, "// --品號
@@ -64,7 +66,6 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	 ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
 			+ "	 (TA011 = '1' OR TA011 = '2' OR TA011 = '3') "//
-			+ "	 AND MOCTB.TB004 > 0 "// --數量不為0
 			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
 			+ "	 AND MOCTB.TB018 = 'Y' "// --確認碼
 			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//

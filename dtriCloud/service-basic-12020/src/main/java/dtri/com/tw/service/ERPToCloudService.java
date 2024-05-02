@@ -65,6 +65,7 @@ public class ERPToCloudService {
 		if (!m.getTb015().equals("")) {
 			o.setBcledate(Fm_T.toYMDate(m.getTb015()));// 預計領料日
 		}
+		o.setSyshnote(m.getTa029());//生管備註
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());// 日期
 		return o;

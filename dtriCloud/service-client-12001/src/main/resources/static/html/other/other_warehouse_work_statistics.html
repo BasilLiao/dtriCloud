@@ -283,7 +283,7 @@
 			btn_send_auto: "",//自動傳送
 			//換頁設置
 			otherPageSet: {
-				total: 2000,//批次數量(1-1000)
+				total: 400000,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
 				pageSize: 100,//每頁數量(1-20)
@@ -976,7 +976,9 @@
 									var entityVal = JSON.parse(entity[k]);//所有員工
 									$('.valTbodyTr_' + valTrNb + ' .valTbodytd_re').text(0);//預設0
 									Object.keys(entityVal).forEach(function (v) {
-										$('.valTbodyTr_' + valTrNb + ' .' + v.replaceAll('(', '').replaceAll(')', '')).text(entityVal[v]);
+										//var ss = '<i class="bi bi-award markFn" style="width: 22px; height: 24px;"></i>';
+										var vv = v.replaceAll('(', '').replaceAll(')', '');
+										$('.valTbodyTr_' + valTrNb + ' .' + vv).html(entityVal[v]);
 										totalQty += entityVal[v];
 									});
 								} else if (k == 'wwspercentage') {
