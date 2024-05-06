@@ -106,7 +106,7 @@ public class ManufactureActionServiceAc {
 			//
 
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByManufactureSearchAction(null, null,
-					null, null, shPageable);
+					null, null, null, shPageable);
 
 			// 領料
 			shippingLists.forEach(sh -> {
@@ -206,8 +206,8 @@ public class ManufactureActionServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureActionFront", null,
-					2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ManufactureActionFront",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -247,6 +247,12 @@ public class ManufactureActionServiceAc {
 			selectArr.add("未點料_未點料");
 			searchJsons = packageService.searchSet(searchJsons, selectArr, "mastype", "Ex:已點料狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			selectArr = new JsonArray();
+			selectArr.add("含有(6F)_6F");
+			selectArr.add("含有(4F)_4F");
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "sysnote", "Ex:含有樓層?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -270,7 +276,7 @@ public class ManufactureActionServiceAc {
 			//
 			ArrayList<BasicShippingList> shippingLists = new ArrayList<>();
 			shippingLists = shippingListDao.findAllByManufactureSearchAction(masclass, massn, null, massmuser,
-					shPageable);
+					searchData.getSysnote(), shPageable);
 
 			// Step4-2.資料區分(一般/細節)
 			// 領料
@@ -414,7 +420,8 @@ public class ManufactureActionServiceAc {
 		});
 
 		// Step4-1. 取得資料(一般/細節)
-		ManufactureActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), ManufactureActionFront.class);
+		ManufactureActionFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+				ManufactureActionFront.class);
 
 		if (searchData.getMasclasssn() != null) {
 			List<String> masclasssn = Arrays.asList(searchData.getMasclasssn().split("_"));

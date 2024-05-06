@@ -33,6 +33,8 @@ public class Mocte {
 	private String ta006;// 成品品號
 	@Column(name = "TA009")
 	private String ta009;// 預計開工日
+	@Column(name = "TA010")
+	private String ta010;// 預計完工日
 	@Column(name = "TA011")
 	private String ta011;// 確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
 	@Column(name = "TA015")
@@ -388,6 +390,14 @@ public class Mocte {
 
 	public void setTa011(String ta011) {
 		this.ta011 = ta011;
+	}
+
+	public String getTa010() {
+		return ta010;
+	}
+
+	public void setTa010(String ta010) {
+		this.ta010 = ta010;
 	}
 
 }

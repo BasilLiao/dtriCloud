@@ -130,6 +130,8 @@ public class WarehouseAssignmentFront {
 	@Transient
 	private Date wasedate;// : 預計領/入料日
 	@Transient
+	private Date wassdate;// : 預計出貨日
+	@Transient
 	private String wasschedule;// 進度(50/100)
 	@Transient
 	private String wascischedule;// 集結-進度(50/100)
@@ -432,6 +434,14 @@ public class WarehouseAssignmentFront {
 
 	public void setWascischedule(String wascischedule) {
 		this.wascischedule = wascischedule;
+	}
+
+	public Date getWassdate() {
+		return wassdate;
+	}
+
+	public void setWassdate(Date wassdate) {
+		this.wassdate = wassdate;
 	}
 
 }

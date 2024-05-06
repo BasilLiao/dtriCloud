@@ -91,6 +91,7 @@ public class BasicShippingList {
 		this.bslcheckin = 0;
 		this.bslcuser = "";
 		this.bslfuser = "";
+		this.bslfucheckin = false;
 		this.bslsuser = "";
 		this.bslacceptance = 0;
 		this.bslpnumber = "";
@@ -108,6 +109,7 @@ public class BasicShippingList {
 		this.bslstatus = 0;
 		this.bslfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.bslsdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bsltfilter = false;
 		this.bslpalready = 0;
 		this.checkrm = true;
@@ -208,10 +210,16 @@ public class BasicShippingList {
 	private Date bsledate;
 	@Column(name = "bsl_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bslfdate;
+	@Column(name = "bsl_s_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date bslsdate;
+
 	@Column(name = "bsl_t_filter", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bsltfilter;
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@Column(name = "bsl_f_u_checkin", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bslfucheckin;
 
 	@JsonIgnore
 	@Column(name = "check_rm", nullable = false, columnDefinition = "boolean default true")
@@ -593,6 +601,22 @@ public class BasicShippingList {
 
 	public void setBslsmuser(String bslsmuser) {
 		this.bslsmuser = bslsmuser;
+	}
+
+	public Boolean getBslfucheckin() {
+		return bslfucheckin;
+	}
+
+	public void setBslfucheckin(Boolean bslfucheckin) {
+		this.bslfucheckin = bslfucheckin;
+	}
+
+	public Date getBslsdate() {
+		return bslsdate;
+	}
+
+	public void setBslsdate(Date bslsdate) {
+		this.bslsdate = bslsdate;
 	}
 
 }

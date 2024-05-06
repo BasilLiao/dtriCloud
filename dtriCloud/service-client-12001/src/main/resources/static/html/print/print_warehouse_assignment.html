@@ -31,9 +31,9 @@
 								<b>Print Label<br>(AR)
 								</b>
 							</button>
-							<button id="btn_print_manufacture" type="button" onclick="print.methods.printManufacture()"
+							<button id="btn_print_header" type="button" onclick="print.methods.printHeader()"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Print<br>Manufacture()
+								<b>Print<br>Header()
 								</b>
 							</button>
 							<button id="btn_print_clearAll" type="button"
@@ -55,7 +55,8 @@
 		</div>
 		<div id="print_c_content_open" class="row p-0 m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
+				style="max-height: calc(100vh - 260px);overflow: auto;">
 				<div id="print_l" class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
 					<div id="printContent">
 						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
@@ -108,14 +109,16 @@
 							<table style="border:1px solid rgb(0, 0, 0);width: 100%; font-size: 50px;">
 								<tbody>
 									<tr style="height: 100px;">
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
-											發料時間:</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
+											預計(發料日):<div class="pr_wasedate"></div>
+										</td>
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
 											優先順序:</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
-											生產樓層:</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 26px;vertical-align: top;">
-											出貨時間:</td>
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
+											標記集結:</td>
+										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
+											預計(出貨日):<div class="pr_wassdate"></div>
+										</td>
 									</tr>
 									<tr style="border:1px solid rgb(0, 0, 0);">
 										<td>製令單:</td>
@@ -124,7 +127,7 @@
 									</tr>
 									<tr style="border:1px solid rgb(0, 0, 0);">
 										<td>品號:</td>
-										<td class="pr_bslfromcommand_sn" colspan="2">90-123-123456</td>
+										<td class="pr_bslfromcommand_sn" colspan="3">90-123-123456</td>
 										<td class=""></td>
 									</tr>
 									<tr style="border:1px solid rgb(0, 0, 0);">
@@ -132,9 +135,9 @@
 										<td class="pr_bslfromcommand_qty" colspan="2" style="text-align:center">100</td>
 										<td class=""></td>
 									</tr>
-									<tr style="height: 100px;">
-										<td>備註:</td>
-										<td colspan="2"></td>
+									<tr style="height: 100px;font-size: 35px;">
+										<td>樓層<br>&備註:</td>
+										<td colspan="3" class="pr_syshnote"></td>
 										<td></td>
 									</tr>
 									<tr style="border:1px solid rgb(0, 0, 0);">
@@ -195,7 +198,7 @@
 					printWindow.document.close();
 					printWindow.print();
 				},
-				printManufacture() {
+				printHeader() {
 					//供給單
 					var divContents = $("#printContent_m").html();
 					var printWindow = window.open('', '', 'height=800,width=800');
@@ -236,6 +239,7 @@
 
 					//一般
 					var pr_bslclass_bslsn = {};
+					var hSn = 0;
 					Object.keys(sortJson).forEach(function (k) {
 						console.log(sortJson[k]);
 						var h = sortJson[k];
@@ -286,6 +290,22 @@
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0]);//製令單
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量
+							print_m_ex.find(".pr_syshnote").text(dataHeader[hSn].syshnote);//樓層備註
+
+
+							var dF = new Date(dataHeader[hSn].wasedate);
+							var dateF = dF.getFullYear() + "-";
+							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+							print_m_ex.find(".pr_wasedate").text(dateF);//預計開工
+
+							dF = new Date(dataHeader[hSn].wassdate);
+							dateF = dF.getFullYear() + "-";
+							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+							print_m_ex.find(".pr_wassdate").text(dateF);//預計出貨
+
+
 							print_m_ex.find(".pr_bslfromcommand_qrcode").text("");//
 							print_m_ex.find(".pr_bslclass_bslsn_qrcode").text("");//
 							print_m_ex.css("paddingTop", "25px");
@@ -298,6 +318,7 @@
 							print_m_ex2.removeClass("noprint");
 							print_m_ex2.css("pageBreakAfter", "");
 							$('#print_m #print_m_start').after(print_m_ex2);
+							hSn+=1;
 						}
 					});
 					//細節

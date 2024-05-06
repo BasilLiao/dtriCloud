@@ -53,7 +53,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "	OR (INVTB.TB001 ='A112'AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A115'AND INVTB.TB018='N') "//
 			+ "	OR (INVTB.TB001 ='A119' AND INVTB.TB018='Y') "//
-			+ "	OR (INVTB.TB001 ='A121'AND INVTB.TB018='Y')) "//
+			+ "	OR ((INVTB.TB001 ='A121'AND INVTB.TB018='Y') OR (INVTB.TB001 ='A121'AND INVTB.TB018='N'))) "//
 			+ "	AND (INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "// 今天
 			+ "	OR INVTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ "ORDER BY"//

@@ -47,7 +47,8 @@ import jakarta.persistence.Table;
  *      bcl_from_who:物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
  *      bcl_status:單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      bcl_e_date:預計時間(入料日) 指 單一項目 到齊時間 或是預定 入料時間<br>
- *      bcl_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
+ *      bcl_f_date:預計時間(齊料日) 指 整張單都到齊 的時間<br>
+ *      bcl_s_date:預計時間(完工日) 指 完成時間<br>
  * 
  * 
  */
@@ -97,7 +98,11 @@ public class BasicCommandList {
 		this.bclstatus = 0;
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.bclsdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.checkrm = true;
+		//
+		this.bclcustomer = "";
+		this.bclmodel = "";
 	}
 
 	// 共用型
@@ -141,6 +146,10 @@ public class BasicCommandList {
 	private String bcltype;
 	@Column(name = "bcl_product", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclproduct;
+	@Column(name = "bcl_model", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bclmodel;
+	@Column(name = "bcl_customer", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bclcustomer;
 
 	@Column(name = "bcl_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bclcheckin;
@@ -152,7 +161,7 @@ public class BasicCommandList {
 	private String bclfuser;
 	@Column(name = "bcl_m_user", nullable = false, columnDefinition = "varchar(160) default ''")
 	private String bclmuser;
-	
+
 	@Column(name = "bcl_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bclacceptance;
 
@@ -182,6 +191,9 @@ public class BasicCommandList {
 	private Date bcledate;
 	@Column(name = "bcl_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bclfdate;
+	@Column(name = "bcl_s_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date bclsdate;
+
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
 
@@ -439,13 +451,16 @@ public class BasicCommandList {
 
 	@Override
 	public String toString() {
-		return "BasicCommandList [syscdate=" + syscdate + ", syscuser=" + syscuser + ", sysmdate=" + sysmdate + ", sysmuser=" + sysmuser
-				+ ", sysodate=" + sysodate + ", sysouser=" + sysouser + ", sysheader=" + sysheader + ", sysstatus=" + sysstatus + ", syssort="
-				+ syssort + ", sysnote=" + sysnote + ", bclid=" + bclid + ", bclnb=" + bclnb + ", bclclass=" + bclclass + ", bclsn=" + bclsn
-				+ ", bcltype=" + bcltype + ", bclcheckin=" + bclcheckin + ", bclcuser=" + bclcuser + ", bclfuser=" + bclfuser + ", bclacceptance="
-				+ bclacceptance + ", bclpnumber=" + bclpnumber + ", bclpname=" + bclpname + ", bclpspecification=" + bclpspecification + ", bclpnqty="
-				+ bclpnqty + ", bcltocommand=" + bcltocommand + ", bclfromcommand=" + bclfromcommand + ", bcltowho=" + bcltowho + ", bclfromwho="
-				+ bclfromwho + ", bclstatus=" + bclstatus + ", bcledate=" + bcledate + ", bclfdate=" + bclfdate + ", checksum=" + checksum + "]";
+		return "BasicCommandList [syscdate=" + syscdate + ", syscuser=" + syscuser + ", sysmdate=" + sysmdate
+				+ ", sysmuser=" + sysmuser + ", sysodate=" + sysodate + ", sysouser=" + sysouser + ", sysheader="
+				+ sysheader + ", sysstatus=" + sysstatus + ", syssort=" + syssort + ", sysnote=" + sysnote + ", bclid="
+				+ bclid + ", bclnb=" + bclnb + ", bclclass=" + bclclass + ", bclsn=" + bclsn + ", bcltype=" + bcltype
+				+ ", bclcheckin=" + bclcheckin + ", bclcuser=" + bclcuser + ", bclfuser=" + bclfuser
+				+ ", bclacceptance=" + bclacceptance + ", bclpnumber=" + bclpnumber + ", bclpname=" + bclpname
+				+ ", bclpspecification=" + bclpspecification + ", bclpnqty=" + bclpnqty + ", bcltocommand="
+				+ bcltocommand + ", bclfromcommand=" + bclfromcommand + ", bcltowho=" + bcltowho + ", bclfromwho="
+				+ bclfromwho + ", bclstatus=" + bclstatus + ", bcledate=" + bcledate + ", bclfdate=" + bclfdate
+				+ ", checksum=" + checksum + "]";
 	}
 
 	public String getBclproduct() {
@@ -494,6 +509,30 @@ public class BasicCommandList {
 
 	public void setBclmuser(String bclmuser) {
 		this.bclmuser = bclmuser;
+	}
+
+	public String getBclmodel() {
+		return bclmodel;
+	}
+
+	public void setBclmodel(String bclmodel) {
+		this.bclmodel = bclmodel;
+	}
+
+	public String getBclcustomer() {
+		return bclcustomer;
+	}
+
+	public void setBclcustomer(String bclcustomer) {
+		this.bclcustomer = bclcustomer;
+	}
+
+	public Date getBclsdate() {
+		return bclsdate;
+	}
+
+	public void setBclsdate(Date bclsdate) {
+		this.bclsdate = bclsdate;
 	}
 
 }

@@ -65,7 +65,14 @@ public class ERPToCloudService {
 		if (!m.getTb015().equals("")) {
 			o.setBcledate(Fm_T.toYMDate(m.getTb015()));// 預計領料日
 		}
-		o.setSyshnote(m.getTa029());//生管備註
+		if (!m.getTa009().equals("")) {
+			o.setBclfdate(Fm_T.toYMDate(m.getTa009()));// --預計開工日
+		}
+		if (!m.getTa010().equals("")) {
+			o.setBclsdate(Fm_T.toYMDate(m.getTa010()));// --預計完工日
+		}
+
+		o.setSyshnote(m.getTa029());// 生管備註
 		o.setSysstatus(0);// 未完成
 		o.setSysmdate(new Date());// 日期
 		return o;
@@ -244,6 +251,10 @@ public class ERPToCloudService {
 		// 預計領料日
 		if (m.getTa009() != null) {
 			o.setBsledate(Fm_T.toYMDate(m.getTa009()));
+		}
+		// 預計完工日
+		if (m.getTa010() != null) {
+			o.setBslsdate(Fm_T.toYMDate(m.getTa010()));
 		}
 
 		// 而外匹配 [單別]

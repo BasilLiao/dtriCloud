@@ -13,13 +13,15 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 	// 製造-點料
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//
+			+ "(c.bslclass = 'A541' or c.bslclass = 'A542') and "//
 			+ "(:bslsn is null or  c.bslsn LIKE %:bslsn%) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "// 類型
+			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "// 含有備註
 			+ "(c.bslfuser !='') and "// 已完成-負責人
 			+ "(c.bslcuser !='') and " // 核准人
 			+ "((:bslsmuser is null and c.bslsmuser ='') or (:bslsmuser='未點料' and c.bslsmuser ='') or (:bslsmuser='已點料' and c.bslsmuser !='')) ") // 已完成-產線點料
 	ArrayList<BasicShippingList> findAllByManufactureSearchAction(String bslclass, String bslsn, String bsltype,
-			String bslsmuser, Pageable pageable);
+			String bslsmuser, String syshnote, Pageable pageable);
 
 	// 製造-點料
 	@Query("SELECT c FROM BasicShippingList c WHERE "//

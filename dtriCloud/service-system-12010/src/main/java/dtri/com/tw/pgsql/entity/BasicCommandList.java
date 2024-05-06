@@ -47,7 +47,8 @@ import jakarta.persistence.Table;
  *      bcl_from_who:物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
  *      bcl_status:單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      bcl_e_date:預計時間(入料日) 指 單一項目 到齊時間 或是預定 入料時間<br>
- *      bcl_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
+ *      bcl_f_date:預計時間(齊料日) 指 整張單都到齊 的時間<br>
+ *      bcl_s_date:預計時間(完工日) 指 完成時間<br>
  * 
  * 
  */
@@ -97,6 +98,7 @@ public class BasicCommandList {
 		this.bclstatus = 0;
 		this.bclfdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
+		this.bclsdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.checkrm = true;
 		//
 		this.bclcustomer = "";
@@ -189,6 +191,9 @@ public class BasicCommandList {
 	private Date bcledate;
 	@Column(name = "bcl_f_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date bclfdate;
+	@Column(name = "bcl_s_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date bclsdate;
+
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
 
@@ -520,6 +525,14 @@ public class BasicCommandList {
 
 	public void setBclcustomer(String bclcustomer) {
 		this.bclcustomer = bclcustomer;
+	}
+
+	public Date getBclsdate() {
+		return bclsdate;
+	}
+
+	public void setBclsdate(Date bclsdate) {
+		this.bclsdate = bclsdate;
 	}
 
 }

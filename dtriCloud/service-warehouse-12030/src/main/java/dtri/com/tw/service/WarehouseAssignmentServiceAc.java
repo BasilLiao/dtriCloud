@@ -325,6 +325,7 @@ public class WarehouseAssignmentServiceAc {
 					e.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					e.setWasstatusname(ed.getWasstatusname());
 					e.setWasedate(sh.getBsledate());// 預計領料/預計入料
+					e.setWassdate(sh.getBslsdate());// 預計出貨
 					e.setWastocommand(sh.getBsltocommand());// 指令(對象)
 					e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 					e.setWastowho(sh.getBsltowho());// 物件(對象)
@@ -674,6 +675,7 @@ public class WarehouseAssignmentServiceAc {
 					e.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					e.setWasstatusname(ed.getWasstatusname());
 					e.setWasedate(sh.getBsledate());// 預計領料/預計入料
+					e.setWassdate(sh.getBslsdate());// 預計出貨
 					e.setWastocommand(sh.getBsltocommand());// 指令(對象)
 					e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 					e.setWastowho(sh.getBsltowho());// 物件(對象)
@@ -729,7 +731,7 @@ public class WarehouseAssignmentServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_wasedate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_wasedate_wassdate");
 		return packageBean;
 	}
 
@@ -827,7 +829,8 @@ public class WarehouseAssignmentServiceAc {
 								// 更新單據+紀錄
 								if (checkOK) {
 									t.setBilcuser(t.getBilcuser().equals("") ? x.getWascuser() : t.getBilcuser());
-									t.setBilfuser(t.getBilfuser().equals("") ? "System("+x.getWasfuser()+")" : t.getBilfuser());
+									t.setBilfuser(t.getBilfuser().equals("") ? "System(" + x.getWasfuser() + ")"
+											: t.getBilfuser());
 									t.setBilpngqty(t.getBilpnqty());
 									// 記錄用
 									WarehouseHistory history = new WarehouseHistory();
@@ -896,7 +899,8 @@ public class WarehouseAssignmentServiceAc {
 								// 更新單據+紀錄
 								if (checkOK) {
 									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
-									t.setBslfuser(t.getBslfuser().equals("") ? "System("+x.getWasfuser()+")" : t.getBslfuser());
+									t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
+											: t.getBslfuser());
 									t.setBslpngqty(t.getBslpnqty());
 									// 記錄用
 									WarehouseHistory history = new WarehouseHistory();

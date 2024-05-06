@@ -148,7 +148,7 @@ public class BasicShippingListServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("bslid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bsledate_bslfdate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bsledate_bslfdate_bslsdate");
 		return packageBean;
 	}
 

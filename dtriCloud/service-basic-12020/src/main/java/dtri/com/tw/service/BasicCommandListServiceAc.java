@@ -148,7 +148,7 @@ public class BasicCommandListServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("bclid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bcledate_bclfdate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bcledate_bclfdate_bclsdate");
 		return packageBean;
 	}
 
