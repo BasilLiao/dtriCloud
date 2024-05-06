@@ -386,6 +386,8 @@
 						exTbodytd.addClass('fixedC1');
 						exTbodytd.css('left', "40px");
 					}
+
+
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
 						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
@@ -408,6 +410,8 @@
 				});
 				//Step2.查詢結果標題(細節)-資料
 				check1 = true;
+				var withFixed = 40;
+				var fix3 = 1;//固定3格
 				if (JSON.stringify(resultDetailThead) == '{}') {
 					$('#btn_detail').addClass('disabled');
 					$('#search_dcr').addClass('d-none');
@@ -427,12 +431,17 @@
 					exTbodytd.addClass(resultDetailThead[k].cellName);
 					//固定第一格式
 					if (check1 && resultDetailThead[k].show == 1) {
-						check1 = false;
+						if (fix3 == 3) {
+							check1 = false;
+						}
 						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', "40px");
+						exTheadth.css('left', withFixed+"px");
 						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', "40px");
+						exTbodytd.css('left', withFixed+"px");
+						withFixed += resultDetailThead[k].width;
+						fix3 += 1;
 					}
+
 					//如果有翻譯
 					if (resultDetailThead[k].cellLanguage != '') {
 						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
