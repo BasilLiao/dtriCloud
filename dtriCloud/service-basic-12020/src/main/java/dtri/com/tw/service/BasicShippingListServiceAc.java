@@ -193,6 +193,7 @@ public class BasicShippingListServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
 				entityDataOld.setBslstatus(x.getBslstatus());
+				entityDataOld.setBslcheckin(x.getBslcheckin());
 				// 修改
 				entityDataOld.setBslpnqty(x.getBslpnqty());
 				entityDataOld.setBslpnaqty(x.getBslpnaqty());

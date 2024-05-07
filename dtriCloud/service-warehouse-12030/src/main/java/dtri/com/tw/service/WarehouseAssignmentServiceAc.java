@@ -117,7 +117,7 @@ public class WarehouseAssignmentServiceAc {
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null,
 					null, "false", 0, inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null,
-					null, "false", 0, shPageable);
+					null, null, "false", 0, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
@@ -418,6 +418,12 @@ public class WarehouseAssignmentServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "wasfuser", "Ex:完成人?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
+			selectWasfuserArr = new JsonArray();
+			selectWasfuserArr.add("未完成_false");
+			selectWasfuserArr.add("已完成_true");
+			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "wassmuser", "Ex:配料員?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
@@ -428,13 +434,13 @@ public class WarehouseAssignmentServiceAc {
 			selectArr.add("領料類_領料類");
 			selectArr.add("入料類_入料類");
 			searchJsons = packageService.searchSet(searchJsons, selectArr, "wastype", "Ex:單據類型?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
 			selectStatusArr.add("未結單_0");
 			selectStatusArr.add("已結單_1");
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -464,7 +470,7 @@ public class WarehouseAssignmentServiceAc {
 					searchData.getWasfuser(), searchData.getSysstatus(), inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
-					searchData.getWasfuser(), searchData.getSysstatus(), shPageable);
+					searchData.getWasfuser(), searchData.getWassmuser(), searchData.getSysstatus(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {

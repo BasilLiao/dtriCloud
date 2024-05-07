@@ -26,9 +26,11 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 																																	// 未領料
 			+ "(:bslcuser is null or (:bslcuser ='true' and  c.bslcuser != '') or (:bslcuser ='false' and  c.bslcuser = '')) and "// 已核准人_
 																																	// 未核准人
+			+ "(:bslsmuser is null or (:bslsmuser ='true' and  c.bslsmuser != '') or (:bslsmuser ='false' and  c.bslsmuser = '')) and "// 已核准人_
+
 			+ "(:bslfromcommand is null or c.bslfromcommand LIKE %:bslfromcommand%) ")
 	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand,
-			String bsltype, String bslcuser, String bslfuser, Integer sysstatus, Pageable pageable);
+			String bsltype, String bslcuser, String bslfuser, String bslsmuser, Integer sysstatus, Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//

@@ -1130,9 +1130,9 @@
 								break;
 						}
 						//Step4.刷新資料
-
-
-						other.methods.otherReLoad(action);
+						if (!$("#btn_not_sync").prop("checked")) {
+							other.methods.otherReLoad(action);
+						}
 					} else {
 						//失敗時候也清除
 						$("#btn_markCancel").trigger('click');
@@ -1317,22 +1317,22 @@
 						//資料
 						var soid = $(this).find(".soid").text();
 						var sonb = $(this).find(".sonb").text();
-						var sofodate = $(this).find(".sofodate").html().replaceAll("<br>","\n");
-						sofodate = sofodate.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
-						var sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>","\n");
-						sofokdate = sofokdate.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
+						var sofodate = $(this).find(".sofodate").html().replaceAll("<br>", "\n");
+						sofodate = sofodate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+						var sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>", "\n");
+						sofokdate = sofokdate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 						var soscstatus = $(this).find(".soscstatus").attr('title');
 						var somcdate = $(this).find(".somcdate").text();
 						var soscnote = "";
 						var somcnote = "";
 						var sowmnote = "";
 						var sompnote = "";
-						switch (order) {	
+						switch (order) {
 							case "btn_pc"://生管
 								//生館
 								if ($(this).find(".soscnote .notes").length > 0) {
-									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>","\n")
-									soscnote = soscnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
+									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>", "\n")
+									soscnote = soscnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sosc_show").removeClass("d-none");
@@ -1341,8 +1341,8 @@
 							case "btn_mc"://物控
 								//悟空
 								if ($(this).find(".somcnote .notes").length > 0) {
-									somcnote = $(this).find(".somcnote .notes").first().html().replaceAll("<br>","\n");
-									somcnote = somcnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
+									somcnote = $(this).find(".somcnote .notes").first().html().replaceAll("<br>", "\n");
+									somcnote = somcnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somc_show").removeClass("d-none");
@@ -1351,8 +1351,8 @@
 							case "btn_wm"://倉儲
 								//倉庫
 								if ($(this).find(".sowmnote .notes").length > 0) {
-									sowmnote = $(this).find(".sowmnote .notes").first().html().replaceAll("<br>","\n");
-									sowmnote = sowmnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
+									sowmnote = $(this).find(".sowmnote .notes").first().html().replaceAll("<br>", "\n");
+									sowmnote = sowmnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sowm_show").removeClass("d-none");
@@ -1360,8 +1360,8 @@
 							case "btn_pl"://製造
 								//製造
 								if ($(this).find(".sompnote .notes").length > 0) {
-									sompnote = $(this).find(".sompnote .notes").first().html().replaceAll("<br>","\n");
-									sompnote = sompnote.replaceAll("&gt;",">").replaceAll("&lt;","<").replaceAll("&amp;","&");
+									sompnote = $(this).find(".sompnote .notes").first().html().replaceAll("<br>", "\n");
+									sompnote = sompnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
 								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somp_show").removeClass("d-none");

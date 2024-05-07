@@ -506,14 +506,13 @@ public class ERPSynchronizeService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
+			if (oKey.indexOf("A541-240507024") >= 0) {
+				System.out.println(oKey);
+			}
 			if (erpShMaps.containsKey(oKey)) {
 				// A541-240229002
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				// 測試用
-//				if (oKey.contains("A541-240229002")) {
-//					System.out.println("A541-240229002");
-//				}
 
 				// 內容不同=>更新
 				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
@@ -1272,7 +1271,7 @@ public class ERPSynchronizeService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
-//			if (oKey.indexOf("A541-231122019") >= 0) {
+//			if (oKey.indexOf("-240507024") >= 0) {
 //				System.out.println(oKey);
 //			}
 			// 同一筆資料?
