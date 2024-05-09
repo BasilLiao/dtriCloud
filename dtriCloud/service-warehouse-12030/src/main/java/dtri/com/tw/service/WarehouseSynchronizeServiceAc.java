@@ -103,11 +103,15 @@ public class WarehouseSynchronizeServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(null, null, null, inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(null, null, null, shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(null, null, null,
+					inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(null, null, null,
+					shPageable);
 			// 細節(清單)
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(null, null, null, inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(null, null, null, shPageable);
+			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(null,
+					null, null, null, inPageable);
+			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(null,
+					null, null, null, shPageable);
 
 			// 進料
 			incomingLists.forEach(in -> {
@@ -127,7 +131,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
 				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(in.getBilpnerpqty());//ERP(帳務)數量
+				e.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
@@ -164,7 +168,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
 				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(sh.getBslpnerpqty());//ERP(帳務)數量
+				e.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
@@ -268,12 +272,14 @@ public class WarehouseSynchronizeServiceAc {
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeFront", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeFront",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("WarehouseSynchronizeDetailFront", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao
+					.findAllByLanguageCellSame("WarehouseSynchronizeDetailFront", null, 2);
 			languagesDetail.forEach(y -> {
 				System.out.println(y.getSltarget());
 				mapLanguagesDetail.put(y.getSltarget(), y);
@@ -313,7 +319,7 @@ public class WarehouseSynchronizeServiceAc {
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectWssfuserArr = new JsonArray();
-			selectWssfuserArr.add("未完成單_0");
+			selectWssfuserArr.add("未撿完單_0");
 			selectWssfuserArr.add("已撿完單_1");
 			searchJsons = packageService.searchSet(searchJsons, selectWssfuserArr, "wssfuser", "Ex:完成?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
@@ -325,7 +331,8 @@ public class WarehouseSynchronizeServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			WarehouseSynchronizeFront searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseSynchronizeFront.class);
+			WarehouseSynchronizeFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					WarehouseSynchronizeFront.class);
 
 			String wasclass = null;
 			String wassn = null;
@@ -336,14 +343,16 @@ public class WarehouseSynchronizeServiceAc {
 				wasclass = searchData.getWssclasssn();
 			}
 
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(wasclass, wassn, searchData.getWsstype(),
-					inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(wasclass, wassn, searchData.getWsstype(),
-					shPageable);
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(wasclass, wassn,
+					searchData.getWsstype(), inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(wasclass, wassn,
+					searchData.getWsstype(), shPageable);
 
 			// 細節(清單)
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(wasclass, wassn, null, inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(wasclass, wassn, null, shPageable);
+			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(
+					wasclass, wassn, searchData.getWsstype(), searchData.getSysstatus(), inPageable);
+			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(
+					wasclass, wassn, searchData.getWsstype(), searchData.getSysstatus(), shPageable);
 			// 細節(完成清單)
 			Map<String, Integer> listTotail = new HashMap<>();
 			Map<String, Integer> listFinish = new HashMap<>();
@@ -367,7 +376,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
 				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(in.getBilpnerpqty());//ERP(帳務)數量
+				e.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
@@ -406,7 +415,7 @@ public class WarehouseSynchronizeServiceAc {
 				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
 				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
 				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(sh.getBslpnerpqty());//ERP(帳務)數量
+				e.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
@@ -492,12 +501,12 @@ public class WarehouseSynchronizeServiceAc {
 				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
 			});
 
-			// 進度
+			// 進度(必須看是否完成?)
 			entityDetails.forEach(ent -> {
 				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
 				int lfh = listFinish.get(ent.getId());
 				int ltl = listTotail.get(ent.getId());
-				if (lfh == ltl) {
+				if (lfh == ltl || (searchData.getWssfuser() != null && searchData.getWssfuser().equals("0"))) {
 					entityDetailOks.add(ent);
 				}
 			});
@@ -542,7 +551,8 @@ public class WarehouseSynchronizeServiceAc {
 			object.keySet().forEach((k) -> {
 				System.out.println(k);
 				// 入料
-				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], k.split("-")[2]);
+				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						k.split("-")[2]);
 				if (ins.size() > 0) {
 					ins.forEach((update_in) -> {
 						update_in.setBilsuser(packageBean.getUserAccount());
@@ -555,7 +565,8 @@ public class WarehouseSynchronizeServiceAc {
 					incomingListDao.saveAll(ins);
 				}
 				// 領料
-				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], k.split("-")[2]);
+				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						k.split("-")[2]);
 				if (shs.size() > 0) {
 					shs.forEach((update_sh) -> {
 						update_sh.setBslsuser(packageBean.getUserAccount());
@@ -578,7 +589,8 @@ public class WarehouseSynchronizeServiceAc {
 			areaDao.saveAll(areas);
 
 			// 入料單-進行(匹配)->將數量修正 寫入
-			ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "", null);
+			ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "",
+					null);
 			reAll.forEach(bil -> {
 				bil.setBilpngqty(bil.getBilpnqty());
 			});
@@ -597,7 +609,8 @@ public class WarehouseSynchronizeServiceAc {
 			object.keySet().forEach((k) -> {
 				System.out.println(k);
 				// 入料
-				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], null);
+				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						null);
 				if (ins.size() > 0) {
 					ins.forEach((update_in) -> {
 						update_in.setBilsuser(packageBean.getUserAccount());
@@ -610,7 +623,8 @@ public class WarehouseSynchronizeServiceAc {
 					incomingListDao.saveAll(ins);
 				}
 				// 領料
-				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1], null);
+				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						null);
 				if (shs.size() > 0) {
 					shs.forEach((update_sh) -> {
 						update_sh.setBslsuser(packageBean.getUserAccount());

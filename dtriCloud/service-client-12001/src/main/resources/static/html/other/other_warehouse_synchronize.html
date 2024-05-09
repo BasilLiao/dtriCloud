@@ -35,15 +35,16 @@
 
 	/*Table 表格外框線*/
 	#search_c #search_cr table {
-		max-height: 570px;
-		min-height: 200px;
+		max-height: calc(100vh - 400px);
+		min-height: 500px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
 
 	/*Table 表格外框線*/
 	#search_c #search_dcr table {
-		max-height: 570px;
+		max-height: calc(100vh - 400px);
+		min-height: 500px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
@@ -138,22 +139,22 @@
 							</button>
 							<button id="btn_synchronize_qty" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Synchronize<br>Qty(S1)
+								<b>Syn<br>Qty(S1)
 								</b>
 							</button>
 							<button id="btn_synchronize_item" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Synchronize<br>Item.OK(S2)
-								</b>
-							</button>
-							<button id="btn_synchronize_remove" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Synchronize<br>RemoveAll(S3)
+								<b>Syn<br>Item.OK!(S2)
 								</b>
 							</button>
 							<button id="btn_synchronize_doc" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Synchronize<br>Doc.OK!(S4)
+								<b>Syn<br>Document.OK!(S4)
+								</b>
+							</button>
+							<button id="btn_synchronize_remove" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Syn Document<br>Remove(S3)
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button"
@@ -209,7 +210,7 @@
 				data-bs-target="#search_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_cr_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Item(list) </b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -244,8 +245,8 @@
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="search_dcr_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
+		<div id="search_dcr_open" class="row m-0 collapse">
+			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Document(list) </b>
 			<table
 				class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -293,7 +294,7 @@
 				total: 100,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
-				pageSize: 100,//每頁數量(1-20)
+				pageSize: 200,//每頁數量(1-20)
 				entityJsons: [],//資料
 				entityDetailJsons: [],//細節資料
 				entityIKey: "",//ID
@@ -653,7 +654,7 @@
 						$("#search_dcr_open .exTbodyTh").find("input").trigger("click");
 					}
 				});
-				//監聽-細節
+				//監聽-細節(Doc)
 				$(document).off("click", "#search_c #btn_detail");
 				$(document).on("click", "#search_c #btn_detail", function (event) {
 					console.log("btn_detail");
