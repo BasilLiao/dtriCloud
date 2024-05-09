@@ -188,12 +188,14 @@
 					printWindow.document.write('</body></html>');
 					//查詢
 					$(".printList").each(function (index) {
-						var id = this.id;
-						var pr_bslpnumber = $(this).find(".pr_bslpnumber").text();//物料號
-						var pr_bslfromwho = $(this).find(".pr_bslfromwho").attr("alt");//倉別
-						$(printWindow.document).find('#' + id + ' .pr_qrcode').qrcode({width: 50, height: 50, text: pr_bslfromwho + "_" + pr_bslpnumber});
-						$(printWindow.document).find('.printList').css("width", "370px");
-						console.log(this.id + ":" + pr_bslfromwho + "_" + pr_bslpnumber);
+						if (this.id != "") {
+							var id = this.id;
+							var pr_bslpnumber = $(this).find(".pr_bslpnumber").text();//物料號
+							var pr_bslfromwho = $(this).find(".pr_bslfromwho").attr("alt");//倉別
+							$(printWindow.document).find('#' + id + ' .pr_qrcode').qrcode({width: 50, height: 50, text: pr_bslfromwho + "_" + pr_bslpnumber});
+							$(printWindow.document).find('.printList').css("width", "370px");
+							console.log(this.id + ":" + pr_bslfromwho + "_" + pr_bslpnumber);
+						}
 					});
 					printWindow.document.close();
 					printWindow.print();
@@ -318,10 +320,17 @@
 							print_m_ex2.removeClass("noprint");
 							print_m_ex2.css("pageBreakAfter", "");
 							$('#print_m #print_m_start').after(print_m_ex2);
-							hSn+=1;
+							hSn += 1;
 						}
 					});
-					//細節
+					//細節(區分)
+					var print_ex = $('#print_ex').clone();
+					print_ex.attr("id", "");
+					print_ex.removeClass("noprint");
+					print_ex.addClass("printList");
+					print_ex.css("height", "94px");
+					print_ex.html("===區分線/備註事項===");
+					$('#print_l #print_start').after(print_ex);
 				},
 				destroy() {
 					//銷毀

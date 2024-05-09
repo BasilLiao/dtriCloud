@@ -506,7 +506,9 @@ public class WarehouseSynchronizeServiceAc {
 				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
 				int lfh = listFinish.get(ent.getId());
 				int ltl = listTotail.get(ent.getId());
-				if (lfh == ltl || (searchData.getWssfuser() != null && searchData.getWssfuser().equals("0"))) {
+				if (searchData.getWssfuser() == null || // 都顯示
+						(lfh == ltl && searchData.getWssfuser().equals("1")) || // 已撿完
+						(lfh != ltl && searchData.getWssfuser().equals("0"))) {// 沒撿完
 					entityDetailOks.add(ent);
 				}
 			});

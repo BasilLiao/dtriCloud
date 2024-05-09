@@ -350,6 +350,8 @@
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
 				var check1 = true;
+				var withFixed = 40;
+				var fix3 = 1;//固定3格
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
 					//複製格式
@@ -367,14 +369,17 @@
 					if (resultThead[k].cellName == 'wsspngqty') {
 						exTbodytd.addClass("border-danger");
 					}
-
 					//固定第一格式
 					if (check1 && resultThead[k].show == 1) {
-						check1 = false;
+						if (fix3 == 3) {
+							check1 = false;
+						}
 						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', "40px");
+						exTheadth.css('left', withFixed + "px");
 						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', "40px");
+						exTbodytd.css('left', withFixed + "px");
+						withFixed += resultThead[k].width;
+						fix3 += 1;
 					}
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
@@ -387,10 +392,6 @@
 						exTheadth.css('minWidth', resultThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultThead[k].width + "px");
 					}
-
-
-
-
 					//如果隱藏
 					if (resultThead[k].show == 0) {
 						exTheadth.addClass('d-none');
@@ -406,6 +407,9 @@
 					$('#btn_detail').addClass('disabled');
 					$('#search_dcr').addClass('d-none');
 				}
+				check1 = true;
+				withFixed = 40;
+				fix3 = 1;//固定3格
 				Object.keys(resultDetailThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultDetailThead[k]);
 					//複製格式
@@ -421,11 +425,15 @@
 					exTbodytd.addClass(resultDetailThead[k].cellName);
 					//固定第一格式
 					if (check1 && resultDetailThead[k].show == 1) {
-						check1 = false;
+						if (fix3 == 3) {
+							check1 = false;
+						}
 						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', "40px");
+						exTheadth.css('left', withFixed + "px");
 						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', "40px");
+						exTbodytd.css('left', withFixed + "px");
+						withFixed += resultDetailThead[k].width;
+						fix3 += 1;
 					}
 					//如果有翻譯
 					if (resultDetailThead[k].cellLanguage != '') {
