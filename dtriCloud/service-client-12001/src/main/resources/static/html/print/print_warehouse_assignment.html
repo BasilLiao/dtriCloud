@@ -212,14 +212,16 @@
 					printWindow.document.write('</body></html>');
 					//查詢
 					$(".printList").each(function (index) {
-						var id = this.id;
-						var pr_bslclass_bslsn = $(this).find(".pr_bslclass_bslsn").text();//領料單
-						var pr_bslfromcommand = $(this).find(".pr_bslfromcommand").text();//製令單
-						$(printWindow.document).find('#' + id + ' .pr_bslclass_bslsn_qrcode').qrcode({width: 50, height: 50, text: pr_bslclass_bslsn});
-						$(printWindow.document).find('#' + id + ' .pr_bslfromcommand_qrcode').qrcode({width: 50, height: 50, text: pr_bslfromcommand});
+						if (this.id != "") {
+							var id = this.id;
+							var pr_bslclass_bslsn = $(this).find(".pr_bslclass_bslsn").text();//領料單
+							var pr_bslfromcommand = $(this).find(".pr_bslfromcommand").text();//製令單
+							$(printWindow.document).find('#' + id + ' .pr_bslclass_bslsn_qrcode').qrcode({width: 50, height: 50, text: pr_bslclass_bslsn});
+							$(printWindow.document).find('#' + id + ' .pr_bslfromcommand_qrcode').qrcode({width: 50, height: 50, text: pr_bslfromcommand});
 
-						$(printWindow.document).find('.printList').css("width", "100%");
-						console.log(this.id + ":" + pr_bslclass_bslsn);
+							$(printWindow.document).find('.printList').css("width", "100%");
+							console.log(this.id + ":" + pr_bslclass_bslsn);
+						}
 					});
 
 					printWindow.document.close();

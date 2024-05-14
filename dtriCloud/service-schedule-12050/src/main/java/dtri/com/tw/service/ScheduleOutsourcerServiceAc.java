@@ -233,17 +233,17 @@ public class ScheduleOutsourcerServiceAc {
 						o.setSompnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
-					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOlds = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSompnote().replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
+					JsonElement noteOld = noteOlds.get(noteOlds.size()-1).getAsJsonObject();
 					boolean checkNotSame = true;
-					for (JsonElement noteOld : noteOlds) {
-						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-						if (contentOld.equals(contentNew)) {
-							checkNotSame = false;
-							break;
-						}
+					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					if (contentOld.equals(contentNew)) {
+						checkNotSame = false;
+						break;
 					}
+					
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
@@ -269,17 +269,17 @@ public class ScheduleOutsourcerServiceAc {
 						o.setSowmnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
-					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOlds = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSowmnote().replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSowmnote()).getAsJsonArray();
+					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
-					for (JsonElement noteOld : noteOlds) {
-						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-						if (contentOld.equals(contentNew)) {
-							checkNotSame = false;
-							break;
-						}
+					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					if (contentOld.equals(contentNew)) {
+						checkNotSame = false;
+						break;
 					}
+					
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
@@ -318,16 +318,15 @@ public class ScheduleOutsourcerServiceAc {
 						o.setSomcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
-					// 取出先前的-最新資料比對->不同內容->添加新的
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSomcnote().replaceAll("\n", "");
 					noteOlds = JsonParser.parseString(o.getSomcnote()).getAsJsonArray();
+					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
-					for (JsonElement noteOld : noteOlds) {
-						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-						if (contentOld.equals(contentNew)) {
-							checkNotSame = false;
-							break;
-						}
+					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					if (contentOld.equals(contentNew)) {
+						checkNotSame = false;
+						break;
 					}
 
 					// 必須不相同+不能是沒輸入值
@@ -360,19 +359,17 @@ public class ScheduleOutsourcerServiceAc {
 						o.setSoscnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
 				} else {
-					// 取出先前的-最新資料比對->不同內容->添加新的
-					noteOlds = (JsonArray) JsonParser.parseString(o.getSoscnote());
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSoscnote().replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSoscnote()).getAsJsonArray();
+					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
-					for (JsonElement noteOld : noteOlds) {
-						String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-						if (contentOld.equals(contentNew)) {
-							System.out.println(contentOld);
-							System.out.println(contentNew);
-							checkNotSame = false;
-							break;
-						}
+					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					if (contentOld.equals(contentNew)) {
+						checkNotSame = false;
+						break;
 					}
+
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
