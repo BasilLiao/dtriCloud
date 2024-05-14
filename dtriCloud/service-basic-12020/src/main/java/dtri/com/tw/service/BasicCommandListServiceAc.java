@@ -65,7 +65,7 @@ public class BasicCommandListServiceAc {
 		orders.add(new Order(Direction.ASC, "bclclass"));// 單別
 		orders.add(new Order(Direction.ASC, "bclsn"));// 單號
 		orders.add(new Order(Direction.ASC, "bclnb"));// 單號
-		
+
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
@@ -77,6 +77,12 @@ public class BasicCommandListServiceAc {
 
 			// Step3-2.資料區分(一般/細節)
 
+			// 如果有小於值
+			entitys.forEach(s -> {
+				if (s.getBclpnqty() < 0) {
+					s.setBclpnumber(s.getBclpnumber() + " ✪");
+				}
+			});
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
@@ -87,7 +93,8 @@ public class BasicCommandListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicCommandList", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BasicCommandList", null,
+					2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -124,10 +131,18 @@ public class BasicCommandListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			BasicCommandList searchData = packageService.jsonToBean(packageBean.getEntityJson(), BasicCommandList.class);
+			BasicCommandList searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					BasicCommandList.class);
 
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(searchData.getBclclass(), searchData.getBclsn(),
-					searchData.getBclpnumber(), pageable);
+			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(searchData.getBclclass(),
+					searchData.getBclsn(), searchData.getBclpnumber(), pageable);
+			// 如果有小於值
+			entitys.forEach(s -> {
+				if (s.getBclpnqty() < 0) {
+					s.setBclpnumber(s.getBclpnumber() + " ✪");
+				}
+			});
+
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -160,14 +175,15 @@ public class BasicCommandListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicCommandList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicCommandList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(), entityData.getBclsn(),
-						entityData.getBclpnumber(), null);
+				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(),
+						entityData.getBclsn(), entityData.getBclpnumber(), null);
 				for (BasicCommandList checkData : checkDatas) {
 					if (checkData.getBclid().compareTo(entityData.getBclid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -212,14 +228,15 @@ public class BasicCommandListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicCommandList>>() {
+					});
 
 			// Step2.資料檢查
 			for (BasicCommandList entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(), entityData.getBclsn(),
-						entityData.getBclpnumber(), null);
+				ArrayList<BasicCommandList> checkDatas = commandListDao.findAllByComList(entityData.getBclclass(),
+						entityData.getBclsn(), entityData.getBclpnumber(), null);
 				for (BasicCommandList checkData : checkDatas) {
 					if (checkData.getBclid().compareTo(entityData.getBclid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -257,8 +274,9 @@ public class BasicCommandListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicCommandList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -288,8 +306,9 @@ public class BasicCommandListServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<BasicCommandList>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<BasicCommandList>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
