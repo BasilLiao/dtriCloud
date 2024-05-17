@@ -19,12 +19,25 @@ import jakarta.persistence.Transient;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
+ *      ---倉儲區域設置清單---<br>
+ *      wss_erp_t_qty : (帳務)此區域物料數量<br>
+ *      wss_t_qty : (實際)此區域物料數量<br>
  *      ---單據名稱---<br>
- *      wsl_class_name:單據名稱<br>
+ *      wss_class_name:單據名稱<br>
  *      ---單據資料---<br>
- *      wsl_class_nb:單別+單號<br>
- *      wsl_type : 單據類型(領料類/入料類)<br>
- *      wsl_schedule : 進度<br>
+ *      wss_class_nb:單別+單號<br>
+ *      wss_sn : 序號<br>
+ *      wss_type : 單據類型(領料類/入料類)<br>
+ *      wss_c_user : 核准人<br>
+ *      wss_m_user : 可分配-負責人<br>
+ *      wss_f_user : 完成人<br>
+ *      wss_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
+ *      wss_p_number : 物料號<br>
+ *      wss_p_name : 品名<br>
+ *      wss_pn_qty : 數量<br>
+ *      wss_pn_g_qty : 已(領入)數量<br>
+ *      wss_pn_o_qty : 超(領入)數量<br>
+ *      wss_pn_erp_qty : 領退料(帳務)數量<br>
  */
 @Entity
 public class WarehouseSynchronizeDetailFront {
@@ -41,7 +54,12 @@ public class WarehouseSynchronizeDetailFront {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		this.wslschedule = "0/0";
+		this.wsspngqty = 0;
+		// 倉儲區域清單-清單
+		this.wsserptqty = 0;// : (帳務)此區域物料數量<br>
+		this.wsstqty = 0;// : (實際)此區域物料數量<br>
+		this.wsspnoqty = 0;// 超領量
+		this.wsspnerpqty = 0;//
 	}
 
 	// 共用型
@@ -67,15 +85,36 @@ public class WarehouseSynchronizeDetailFront {
 	private String sysnote;
 	@Id
 	private String id;// 單別+單號+序號
+	@Transient
+	private String gid;// 單別+單號
+	// 倉儲區域清單-清單
+	@Transient
+	private Integer wsserptqty;// : (帳務)此區域物料數量<br>
+	@Transient
+	private Integer wsstqty;// : (實際)此區域物料數量<br>
 	// 單據
 	@Transient
-	private String wslclassname;// :單據名稱<br>
+	private String wssclassname;// :單據名稱<br>
 	@Transient
-	private String wslclasssn;// :單別+單號<br>
+	private String wssclasssn;// :單別+單號<br>
 	@Transient
-	private String wsltype;// : 單據類型(領料類/入料類)<br>
+	private String wssnb;// : 序號<br>
 	@Transient
-	private String wslschedule;// 進度(已完成/總數項目)
+	private String wsstype;// : 單據類型(領料類/入料類)<br>
+	@Transient
+	private String wsscuser;// 核准人
+	@Transient
+	private String wssfuser;// : 完成人<br>
+	@Transient
+	private String wsspnumber;// : 物料號<br>
+	@Transient
+	private Integer wsspnqty;// : 需(領/取)數量<br>
+	@Transient
+	private Integer wsspngqty;// : 已(領/取)數量<br>
+	@Transient
+	private Integer wsspnoqty;// : 超(領/取)數量<br>
+	@Transient
+	private Integer wsspnerpqty;// : 領退料(帳務)數量<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -165,36 +204,116 @@ public class WarehouseSynchronizeDetailFront {
 		this.id = id;
 	}
 
-	public String getWslclassname() {
-		return wslclassname;
+	public Integer getWsserptqty() {
+		return wsserptqty;
 	}
 
-	public void setWslclassname(String wslclassname) {
-		this.wslclassname = wslclassname;
+	public void setWsserptqty(Integer wsserptqty) {
+		this.wsserptqty = wsserptqty;
 	}
 
-	public String getWslclasssn() {
-		return wslclasssn;
+	public Integer getWsstqty() {
+		return wsstqty;
 	}
 
-	public void setWslclasssn(String wslclasssn) {
-		this.wslclasssn = wslclasssn;
+	public void setWsstqty(Integer wsstqty) {
+		this.wsstqty = wsstqty;
 	}
 
-	public String getWsltype() {
-		return wsltype;
+	public String getWssclassname() {
+		return wssclassname;
 	}
 
-	public void setWsltype(String wsltype) {
-		this.wsltype = wsltype;
+	public void setWssclassname(String wssclassname) {
+		this.wssclassname = wssclassname;
 	}
 
-	public String getWslschedule() {
-		return wslschedule;
+	public String getWssclasssn() {
+		return wssclasssn;
 	}
 
-	public void setWslschedule(String wslschedule) {
-		this.wslschedule = wslschedule;
+	public void setWssclasssn(String wssclasssn) {
+		this.wssclasssn = wssclasssn;
+	}
+
+	public String getWssnb() {
+		return wssnb;
+	}
+
+	public void setWssnb(String wssnb) {
+		this.wssnb = wssnb;
+	}
+
+	public String getWsstype() {
+		return wsstype;
+	}
+
+	public void setWsstype(String wsstype) {
+		this.wsstype = wsstype;
+	}
+
+	public String getWsscuser() {
+		return wsscuser;
+	}
+
+	public void setWsscuser(String wsscuser) {
+		this.wsscuser = wsscuser;
+	}
+
+	public String getWssfuser() {
+		return wssfuser;
+	}
+
+	public void setWssfuser(String wssfuser) {
+		this.wssfuser = wssfuser;
+	}
+
+	public String getWsspnumber() {
+		return wsspnumber;
+	}
+
+	public void setWsspnumber(String wsspnumber) {
+		this.wsspnumber = wsspnumber;
+	}
+
+	public Integer getWsspnqty() {
+		return wsspnqty;
+	}
+
+	public void setWsspnqty(Integer wsspnqty) {
+		this.wsspnqty = wsspnqty;
+	}
+
+	public Integer getWsspngqty() {
+		return wsspngqty;
+	}
+
+	public void setWsspngqty(Integer wsspngqty) {
+		this.wsspngqty = wsspngqty;
+	}
+
+	public Integer getWsspnoqty() {
+		return wsspnoqty;
+	}
+
+	public void setWsspnoqty(Integer wsspnoqty) {
+		this.wsspnoqty = wsspnoqty;
+	}
+
+	public Integer getWsspnerpqty() {
+		return wsspnerpqty;
+	}
+
+	public void setWsspnerpqty(Integer wsspnerpqty) {
+		this.wsspnerpqty = wsspnerpqty;
+	}
+
+	public String getGid() {
+		return gid;
+	}
+
+	public void setGid(String gid) {
+		this.gid = gid;
 	}
 
 }

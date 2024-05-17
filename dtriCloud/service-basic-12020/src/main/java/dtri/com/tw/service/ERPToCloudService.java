@@ -174,6 +174,7 @@ public class ERPToCloudService {
 		o.setSysnote(m.getTe014());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		o.setSyshnote(m.getTc007());// 單頭備註
+
 		// 預計入料日
 		if (m.getTa009() != null) {
 			o.setBiledate(Fm_T.toYMDate(m.getTa009()));

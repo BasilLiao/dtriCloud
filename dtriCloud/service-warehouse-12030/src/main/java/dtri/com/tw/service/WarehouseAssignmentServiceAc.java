@@ -115,9 +115,9 @@ public class WarehouseAssignmentServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null,
-					null, "false", 0, inPageable);
+					null, "false", 0, null, inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null,
-					null, null, "false", 0, shPageable);
+					null, null, "false", 0, null, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
@@ -410,19 +410,25 @@ public class WarehouseAssignmentServiceAc {
 			selectArrStat.add("未核准_false");
 			selectArrStat.add("已核准_true");
 			searchJsons = packageService.searchSet(searchJsons, selectArrStat, "wascuser", "Ex:核准?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			JsonArray selectWasfuserArr = new JsonArray();
 			selectWasfuserArr.add("未完成_false");
 			selectWasfuserArr.add("已完成_true");
 			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "wasfuser", "Ex:完成人?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
+			// Step3-5. 建立查詢項目
+			selectWasfuserArr = new JsonArray();
+			selectWasfuserArr.add("4F_4F");
+			selectWasfuserArr.add("6F_6F");
+			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "syshnote", "Ex:單據備註(樓層)?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			selectWasfuserArr = new JsonArray();
 			selectWasfuserArr.add("未完成_false");
 			selectWasfuserArr.add("已完成_true");
 			searchJsons = packageService.searchSet(searchJsons, selectWasfuserArr, "wassmuser", "Ex:配料員?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wasclasssn", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
@@ -467,10 +473,11 @@ public class WarehouseAssignmentServiceAc {
 
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
-					searchData.getWasfuser(), searchData.getSysstatus(), inPageable);
+					searchData.getWasfuser(), searchData.getSysstatus(), searchData.getSyshnote(), inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
-					searchData.getWasfuser(), searchData.getWassmuser(), searchData.getSysstatus(), shPageable);
+					searchData.getWasfuser(), searchData.getWassmuser(), searchData.getSysstatus(),
+					searchData.getSyshnote(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			// 進料
 			incomingLists.forEach(in -> {
@@ -835,21 +842,23 @@ public class WarehouseAssignmentServiceAc {
 								// 更新單據+紀錄
 								if (checkOK) {
 									t.setBilcuser(t.getBilcuser().equals("") ? x.getWascuser() : t.getBilcuser());
-									t.setBilfuser(t.getBilfuser().equals("") ? "System(" + x.getWasfuser() + ")"
-											: t.getBilfuser());
 									t.setBilpngqty(t.getBilpnqty());
-									// 記錄用
-									WarehouseHistory history = new WarehouseHistory();
-									history.setWhtype("入料(指令:" + action + ")");
-									history.setWhwmslocation(t.getBiltowho());
-									history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + // 入料單
-											t.getBilnb() + "*" + t.getBilpnqty());
-									history.setWhwmpnb(t.getBilpnumber());
-									history.setWhfuser(t.getBilfuser());
-									history.setWheqty(area.getWaerptqty());
-									history.setWhcqty(area.getWatqty());
-									history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
-									entityHistories.add(history);
+									if (!t.getBilfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
+										t.setBilfuser(t.getBilfuser().equals("") ? "System(" + x.getWasfuser() + ")"
+												: t.getBilfuser());
+										// 記錄用
+										WarehouseHistory history = new WarehouseHistory();
+										history.setWhtype("入料(指令:" + action + ")");
+										history.setWhwmslocation(t.getBiltowho());
+										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + // 入料單
+												t.getBilnb() + "*" + t.getBilpnqty());
+										history.setWhwmpnb(t.getBilpnumber());
+										history.setWhfuser(t.getBilfuser());
+										history.setWheqty(area.getWaerptqty());
+										history.setWhcqty(area.getWatqty());
+										history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
+										entityHistories.add(history);
+									}
 								}
 							}
 							break;
@@ -905,22 +914,24 @@ public class WarehouseAssignmentServiceAc {
 								// 更新單據+紀錄
 								if (checkOK) {
 									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
-									t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
-											: t.getBslfuser());
 									t.setBslpngqty(t.getBslpnqty());
-									// 記錄用
-									WarehouseHistory history = new WarehouseHistory();
-									history.setWhtype("領料(指令:" + action + ")");
-									history.setWhwmslocation(t.getBslfromwho());
-									history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
-											t.getBslclass() + "-" + t.getBslsn() + "-" + // 領料單
-											t.getBslnb() + "*" + t.getBslpnqty());
-									history.setWhwmpnb(t.getBslpnumber());
-									history.setWhfuser(t.getBslfuser());
-									history.setWheqty(area.getWaerptqty());
-									history.setWhcqty(area.getWatqty());
-									history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
-									entityHistories.add(history);
+									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
+										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
+												: t.getBslfuser());
+										// 記錄用
+										WarehouseHistory history = new WarehouseHistory();
+										history.setWhtype("領料(指令:" + action + ")");
+										history.setWhwmslocation(t.getBslfromwho());
+										history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
+												t.getBslclass() + "-" + t.getBslsn() + "-" + // 領料單
+												t.getBslnb() + "*" + t.getBslpnqty());
+										history.setWhwmpnb(t.getBslpnumber());
+										history.setWhfuser(t.getBslfuser());
+										history.setWheqty(area.getWaerptqty());
+										history.setWhcqty(area.getWatqty());
+										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
+										entityHistories.add(history);
+									}
 								}
 							}
 							break;

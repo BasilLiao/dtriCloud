@@ -70,7 +70,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ " WHERE "//
 			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
-			+ "	AND (MOCTB.TB004-MOCTB.TB005 > 0 "// --數量不為0
+			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "// --數量不為0
+			+ "	AND MOCTE.TE019 ='N' "//
 			+ " AND (MOCTE.TE001 = 'A541' OR MOCTE.TE001 = 'A542' "
 			+ " OR MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A551' OR MOCTE.TE001 = 'A561' OR  MOCTE.TE001 = 'A571'"//
 			+ " ) "//

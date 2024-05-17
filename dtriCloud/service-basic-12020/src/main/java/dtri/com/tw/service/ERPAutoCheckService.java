@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
+import dtri.com.tw.pgsql.dao.WarehouseHistoryDao;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseConfig;
+import dtri.com.tw.pgsql.entity.WarehouseHistory;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 
@@ -19,6 +21,9 @@ import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 public class ERPAutoCheckService {
 	@Autowired
 	private WarehouseAreaDao areaDao;
+
+	@Autowired
+	private WarehouseHistoryDao historyDao;
 
 	// 入料類-自動化(歸還)
 	public BasicIncomingList incomingAutoRe(BasicIncomingList o, //
@@ -61,16 +66,23 @@ public class ERPAutoCheckService {
 	// 入料類-自動化
 	public BasicIncomingList incomingAuto(BasicIncomingList o, //
 			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
-			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
+			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs, //
+			Map<String, WarehouseArea> wAs) {// 庫別
 
 		// 是否在檢測下一層(單據->倉別->物料)
 		boolean wTFsCheck = true;// 單據自動(true->繼續/false->停止)
 		boolean wCsCheck = true;// 倉別自動
+
 		// boolean wMsCheck = true;// 物料自動
 		// 測試用
 //		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
 //			System.out.println("A541-240419004-0001");
 //		}
+		// 如果是0則直接完成
+		if (o.getBilpnqty().equals(0)) {
+			o.setBilcuser("System(Zero)");
+			o.setBilfuser("System(Zero)");
+		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定
@@ -175,6 +187,25 @@ public class ERPAutoCheckService {
 				}
 			}
 		}
+		// 自動化 物料異動紀錄
+		if (o.getBilfuser().contains("System")) {
+			// 紀錄更新
+			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
+			String wAsKey = wcKey + "_" + o.getBilpnumber();
+			WarehouseArea area = wAs.get(wAsKey);
+			WarehouseHistory history = new WarehouseHistory();
+			history.setWhtype("入料(" + o.getBilfuser() + ")");
+			history.setWhwmslocation(o.getBiltowho());
+			history.setWhcontent(//
+					o.getBilclass() + "-" + o.getBilsn() + "-" + //
+							o.getBilnb() + "*" + o.getBilpnqty());
+			history.setWhwmpnb(o.getBilpnumber());
+			history.setWhfuser(o.getBilfuser());
+			history.setWheqty(area != null ? area.getWaerptqty() : 0);
+			history.setWhcqty(area != null ? area.getWatqty() : 0);
+			history.setWhcheckin(o.getBilcheckin() == 0 ? "未核單" : "已核單");
+			historyDao.save(history);
+		}
 		return o;
 	}
 
@@ -192,6 +223,12 @@ public class ERPAutoCheckService {
 //		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A541-240418031")) {
 //			System.out.println("A541-240418031"+o.getBslpnumber());
 //		}
+		// 如果是0則直接完成
+		if (o.getBslpnqty().equals(0)) {
+			o.setBslcuser("System(Zero)");
+			o.setBslfuser("System(Zero)");
+			o.setBslsmuser("System(Zero)");
+		}
 
 		// 單據自動?
 		// Step1. 必須有匹配該單據設定+自動減少
@@ -338,6 +375,25 @@ public class ERPAutoCheckService {
 					o.setBslfuser("System(Material_Pass)");
 				}
 			}
+		}
+		// 自動化 物料異動紀錄
+		if (o.getBslfuser().contains("System")) {
+			// 紀錄更新
+			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
+			String wAsKey = wcKey + "_" + o.getBslpnumber();
+			WarehouseArea area = wAs.get(wAsKey);
+			WarehouseHistory history = new WarehouseHistory();
+			history.setWhtype("領料(" + o.getBslfuser() + ")");
+			history.setWhwmslocation(o.getBslfromwho());
+			history.setWhcontent(//
+					o.getBslclass() + "-" + o.getBslsn() + "-" + //
+							o.getBslnb() + "*" + o.getBslpnqty());
+			history.setWhwmpnb(o.getBslpnumber());
+			history.setWhfuser(o.getBslfuser());
+			history.setWheqty(area != null ? area.getWaerptqty() : 0);
+			history.setWhcqty(area != null ? area.getWatqty() : 0);
+			history.setWhcheckin(o.getBslcheckin() == 0 ? "未核單" : "已核單");
+			historyDao.save(history);
 		}
 		return o;
 	}

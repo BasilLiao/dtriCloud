@@ -64,7 +64,7 @@ public class WarehouseSynchronizeServiceAc {
 		// Step1.批次分頁
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 2000;
+		int total = 50000;
 		int batch = 0;
 
 		// Step2.排序
@@ -83,8 +83,9 @@ public class WarehouseSynchronizeServiceAc {
 		PageRequest shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseSynchronizeFront> entitys = new ArrayList<WarehouseSynchronizeFront>();
+		ArrayList<WarehouseSynchronizeFront> entityOks = new ArrayList<WarehouseSynchronizeFront>();
+		Map<String, Boolean> entityMarks = new HashMap<String, Boolean>();
 		ArrayList<WarehouseSynchronizeDetailFront> entityDetails = new ArrayList<WarehouseSynchronizeDetailFront>();
-		ArrayList<WarehouseSynchronizeDetailFront> entityDetailOks = new ArrayList<WarehouseSynchronizeDetailFront>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -102,24 +103,116 @@ public class WarehouseSynchronizeServiceAc {
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
-			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(null, null, null,
-					inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(null, null, null,
-					shPageable);
-			// 細節(清單)
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(null,
-					null, null, null, inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(null,
-					null, null, null, shPageable);
+			// 單據清單
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchDetailSynchronize(null, null,
+					null, null, inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchDetailSynchronize(null, null,
+					null, null, shPageable);
+			// 單據內容
+			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchSynchronize(null, null,
+					null, inPageable);
+			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchSynchronize(null, null,
+					null, shPageable);
 
-			// 進料
+			// header (完成清單)
+			Map<String, Integer> listTotail = new HashMap<>();
+			Map<String, Integer> listFinish = new HashMap<>();
 			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+					e.setId(headerKey);
+					e.setGid(headerKey);
+					// 進料單
+					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+
+					// System
+					e.setSyscdate(in.getSyscdate());
+					e.setSyscuser(in.getSyscuser());
+					e.setSysmdate(in.getSysmdate());
+					e.setSysmuser(in.getSysmuser());
+					e.setSysnote(in.getSysnote());
+					e.setSysstatus(in.getSysstatus());
+					// header
+					entitys.add(e);
+				} else {
+					// 如果有異常或是尚未滿足
+					if (in.getSysnote().contains("異常") || !in.getBilpnqty().equals(in.getBilpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+			});
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+					e.setId(headerKey);
+					e.setGid(headerKey);
+					// 領料單
+					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+					// System
+					e.setSyscdate(sh.getSyscdate());
+					e.setSyscuser(sh.getSyscuser());
+					e.setSysmdate(sh.getSysmdate());
+					e.setSysmuser(sh.getSysmuser());
+					e.setSysnote(sh.getSysnote());
+					e.setSysstatus(sh.getSysstatus());
+					// header
+					entitys.add(e);
+				} else {
+					// 如果有異常或是尚未滿足
+					if (sh.getSysnote().contains("異常") || !sh.getBslpnqty().equals(sh.getBslpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+			});
+			// 進度
+			entitys.forEach(ent -> {
+				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+				int lfh = listFinish.get(ent.getId());
+				int ltl = listTotail.get(ent.getId());
+				if (lfh == ltl) {
+					entityOks.add(ent);
+				}
+				// 異常?
+				if (entityMarks.containsKey(ent.getWslclasssn())) {
+					ent.setWslclassname("✪ " + ent.getWslclassname());
+				}
+			});
+			// 進料
+			incomingDetailLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 
-				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 				e.setId(Key);
+				e.setGid(headerKey);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
 				e.setWssclasssn(headerKey);// 單據+單據號
@@ -148,15 +241,16 @@ public class WarehouseSynchronizeServiceAc {
 				e.setSysnote(in.getSysnote());
 				e.setSysstatus(in.getSysstatus());
 				// header
-				entitys.add(e);
+				entityDetails.add(e);
 			});
 			// 領料
-			shippingLists.forEach(sh -> {
+			shippingDetailLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
 
-				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 				e.setId(Key);
+				e.setGid(headerKey);
 				// 領
 				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
 				e.setWssclasssn(headerKey);// 單據+單據號
@@ -184,87 +278,14 @@ public class WarehouseSynchronizeServiceAc {
 				e.setSysmuser(sh.getSysmuser());
 				e.setSysnote(sh.getSysnote());
 				e.setSysstatus(sh.getSysstatus());
-				entitys.add(e);
-			});
-			// 細節(完成清單)
-			Map<String, Integer> listTotail = new HashMap<>();
-			Map<String, Integer> listFinish = new HashMap<>();
-			incomingDetailLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				// 登記進度
-				if (!listTotail.containsKey(headerKey)) {
-					listTotail.put(headerKey, 1);
-					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-					e.setId(headerKey);
-					// 進料單
-					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
-
-					// System
-					e.setSyscdate(in.getSyscdate());
-					e.setSyscuser(in.getSyscuser());
-					e.setSysmdate(in.getSysmdate());
-					e.setSysmuser(in.getSysmuser());
-					e.setSysnote(in.getSysnote());
-					e.setSysstatus(in.getSysstatus());
-					// header
-					entityDetails.add(e);
-				} else {
-					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
-				}
-				// 登記完成項目?
-				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
-					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
-				}
-			});
-			shippingDetailLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				// 登記進度
-				if (!listTotail.containsKey(headerKey)) {
-					listTotail.put(headerKey, 1);
-					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-					e.setId(headerKey);
-					// 領料單
-					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-					// System
-					e.setSyscdate(sh.getSyscdate());
-					e.setSyscuser(sh.getSyscuser());
-					e.setSysmdate(sh.getSysmdate());
-					e.setSysmuser(sh.getSysmuser());
-					e.setSysnote(sh.getSysnote());
-					e.setSysstatus(sh.getSysstatus());
-					// header
-					entityDetails.add(e);
-				} else {
-					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
-				}
-				// 登記完成項目?
-				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
-					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
-				}
-			});
-			// 進度
-			entityDetails.forEach(ent -> {
-				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
-				int lfh = listFinish.get(ent.getId());
-				int ltl = listTotail.get(ent.getId());
-				if (lfh == ltl) {
-					entityDetailOks.add(ent);
-				}
+				entityDetails.add(e);
 			});
 
 			// 類別(一般模式)
 			// 資料包裝
-			String entityJsonDatas = packageService.beanToJson(entitys);
+			String entityJsonDatas = packageService.beanToJson(entityOks);
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
 			packageBean.setEntityJson(entityJsonDatas);
-			String entityJsonDetails = packageService.beanToJson(entityDetailOks);
 			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
@@ -303,13 +324,13 @@ public class WarehouseSynchronizeServiceAc {
 			resultDetailTJsons = packageService.resultSet(fieldDetails, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wssclasssn", "Ex:單別-單號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wslclasssn", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectArr = new JsonArray();
 			selectArr.add("領料類_領料類");
 			selectArr.add("入料類_入料類");
-			searchJsons = packageService.searchSet(searchJsons, selectArr, "wsstype", "Ex:單據類型?", true, //
+			searchJsons = packageService.searchSet(searchJsons, selectArr, "wsltype", "Ex:單據類型?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
@@ -321,7 +342,7 @@ public class WarehouseSynchronizeServiceAc {
 			JsonArray selectWssfuserArr = new JsonArray();
 			selectWssfuserArr.add("未撿完單_0");
 			selectWssfuserArr.add("已撿完單_1");
-			searchJsons = packageService.searchSet(searchJsons, selectWssfuserArr, "wssfuser", "Ex:完成?", true, //
+			searchJsons = packageService.searchSet(searchJsons, selectWssfuserArr, "wslfuser", "Ex:完成人?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -336,35 +357,134 @@ public class WarehouseSynchronizeServiceAc {
 
 			String wasclass = null;
 			String wassn = null;
-			if (searchData.getWssclasssn() != null && searchData.getWssclasssn().split("-").length == 2) {
-				wasclass = searchData.getWssclasssn().split("-")[0];
-				wassn = searchData.getWssclasssn().split("-")[1];
+			if (searchData.getWslclasssn() != null && searchData.getWslclasssn().split("-").length == 2) {
+				wasclass = searchData.getWslclasssn().split("-")[0];
+				wassn = searchData.getWslclasssn().split("-")[1];
 			} else {
-				wasclass = searchData.getWssclasssn();
+				wasclass = searchData.getWslclasssn();
 			}
-
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchSynchronize(wasclass, wassn,
-					searchData.getWsstype(), inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchSynchronize(wasclass, wassn,
-					searchData.getWsstype(), shPageable);
-
+			// 一般
+			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchDetailSynchronize(wasclass,
+					wassn, searchData.getWsltype(), searchData.getSysstatus(), inPageable);
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchDetailSynchronize(wasclass,
+					wassn, searchData.getWsltype(), searchData.getSysstatus(), shPageable);
 			// 細節(清單)
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchDetailSynchronize(
-					wasclass, wassn, searchData.getWsstype(), searchData.getSysstatus(), inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchDetailSynchronize(
-					wasclass, wassn, searchData.getWsstype(), searchData.getSysstatus(), shPageable);
+			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchSynchronize(wasclass,
+					wassn, searchData.getWsltype(), inPageable);
+			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchSynchronize(wasclass,
+					wassn, searchData.getWsltype(), shPageable);
+
 			// 細節(完成清單)
 			Map<String, Integer> listTotail = new HashMap<>();
 			Map<String, Integer> listFinish = new HashMap<>();
 
 			// Step4-2.資料區分(一般/細節)
-			// 進料
+			// 一般
 			incomingLists.forEach(in -> {
+				String headerKey = in.getBilclass() + "-" + in.getBilsn();
+				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+					e.setId(headerKey);
+					e.setGid(headerKey);
+					// 進料單
+					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+
+					// System
+					e.setSyscdate(in.getSyscdate());
+					e.setSyscuser(in.getSyscuser());
+					e.setSysmdate(in.getSysmdate());
+					e.setSysmuser(in.getSysmuser());
+					e.setSysnote(in.getSysnote());
+					e.setSysstatus(in.getSysstatus());
+					// header
+					entitys.add(e);
+				} else {
+					// 如果有異常或是尚未滿足
+					if (in.getSysnote().contains("異常") || !in.getBilpnqty().equals(in.getBilpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
+
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+			});
+			shippingLists.forEach(sh -> {
+				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
+				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				// 登記進度
+				if (!listTotail.containsKey(headerKey)) {
+					listTotail.put(headerKey, 1);
+					listFinish.put(headerKey, 0);
+					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+					e.setId(headerKey);
+					e.setGid(headerKey);
+					// 領料單
+					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+					e.setWslclasssn(headerKey);// 單據+單據號
+					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+					// System
+					e.setSyscdate(sh.getSyscdate());
+					e.setSyscuser(sh.getSyscuser());
+					e.setSysmdate(sh.getSysmdate());
+					e.setSysmuser(sh.getSysmuser());
+					e.setSysnote(sh.getSysnote());
+					e.setSysstatus(sh.getSysstatus());
+					// header
+					entitys.add(e);
+				} else {
+					// 如果有異常或是尚未滿足
+					if (sh.getSysnote().contains("異常") || !sh.getBslpnqty().equals(sh.getBslpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
+					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
+				}
+				// 登記完成項目?
+				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
+					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
+				}
+			});
+			// 進度
+			entitys.forEach(ent -> {
+				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+			});
+
+			// 進度(必須看是否完成?)
+			entitys.forEach(ent -> {
+				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
+				int lfh = listFinish.get(ent.getId());
+				int ltl = listTotail.get(ent.getId());
+				if (searchData.getWslfuser() == null || // 都顯示
+						(lfh == ltl && searchData.getWslfuser().equals("1")) || // 已撿完
+						(lfh != ltl && searchData.getWslfuser().equals("0"))) {// 沒撿完
+					entityOks.add(ent);
+				}
+				// 異常?
+				if (entityMarks.containsKey(ent.getWslclasssn())) {
+					ent.setWslclassname("✪ " + ent.getWslclassname());
+				}
+			});
+			// 細節
+			// 進料
+			incomingDetailLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 
-				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 				e.setId(Key);
+				e.setGid(headerKey);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
 				e.setWssclasssn(headerKey);// 單據+單據號
@@ -393,17 +513,17 @@ public class WarehouseSynchronizeServiceAc {
 				e.setSysnote(in.getSysnote());
 				e.setSysstatus(in.getSysstatus());
 				// header
-				entitys.add(e);
+				entityDetails.add(e);
 
 			});
-
 			// 領料
-			shippingLists.forEach(sh -> {
+			shippingDetailLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
 
-				WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
+				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
 				e.setId(Key);
+				e.setGid(headerKey);
 				// 進料單
 				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
 				e.setWssclasssn(headerKey);// 單據+單據號
@@ -432,92 +552,14 @@ public class WarehouseSynchronizeServiceAc {
 				e.setSysnote(sh.getSysnote());
 				e.setSysstatus(sh.getSysstatus());
 				// header
-				entitys.add(e);
-			});
-			// 細節
-			incomingDetailLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				// 登記進度
-				if (!listTotail.containsKey(headerKey)) {
-					listTotail.put(headerKey, 1);
-					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-					e.setId(headerKey);
-					// 進料單
-					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
-
-					// System
-					e.setSyscdate(in.getSyscdate());
-					e.setSyscuser(in.getSyscuser());
-					e.setSysmdate(in.getSysmdate());
-					e.setSysmuser(in.getSysmuser());
-					e.setSysnote(in.getSysnote());
-					e.setSysstatus(in.getSysstatus());
-					// header
-					entityDetails.add(e);
-				} else {
-					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
-				}
-				// 登記完成項目?
-				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
-					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
-				}
-			});
-			shippingDetailLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				// 登記進度
-				if (!listTotail.containsKey(headerKey)) {
-					listTotail.put(headerKey, 1);
-					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-					e.setId(headerKey);
-					// 領料單
-					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-					// System
-					e.setSyscdate(sh.getSyscdate());
-					e.setSyscuser(sh.getSyscuser());
-					e.setSysmdate(sh.getSysmdate());
-					e.setSysmuser(sh.getSysmuser());
-					e.setSysnote(sh.getSysnote());
-					e.setSysstatus(sh.getSysstatus());
-					// header
-					entityDetails.add(e);
-				} else {
-					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
-				}
-				// 登記完成項目?
-				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
-					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
-				}
-			});
-			// 進度
-			entityDetails.forEach(ent -> {
-				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
-			});
-
-			// 進度(必須看是否完成?)
-			entityDetails.forEach(ent -> {
-				ent.setWslschedule(listFinish.get(ent.getId()) + "/" + listTotail.get(ent.getId()));
-				int lfh = listFinish.get(ent.getId());
-				int ltl = listTotail.get(ent.getId());
-				if (searchData.getWssfuser() == null || // 都顯示
-						(lfh == ltl && searchData.getWssfuser().equals("1")) || // 已撿完
-						(lfh != ltl && searchData.getWssfuser().equals("0"))) {// 沒撿完
-					entityDetailOks.add(ent);
-				}
+				entityDetails.add(e);
 			});
 
 			// 類別(一般模式)
 			// 資料包裝
-			String entityJsonDatas = packageService.beanToJson(entitys);
+			String entityJsonDatas = packageService.beanToJson(entityOks);
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
 			packageBean.setEntityJson(entityJsonDatas);
-			String entityJsonDetails = packageService.beanToJson(entityDetailOks);
 			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// 查不到資料
@@ -547,10 +589,11 @@ public class WarehouseSynchronizeServiceAc {
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
 		if (action.equals("Item")) {
-			String finishItem = packageBean.getEntityJson().replaceAll("_", "");
+			String finishItem = packageBean.getEntityDetailJson();
 			JsonObject object = packageService.StringToJson(finishItem);
 			Date updateDate = new Date();
 			object.keySet().forEach((k) -> {
+				k = k.split("_")[0];
 				System.out.println(k);
 				// 入料
 				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
@@ -600,15 +643,33 @@ public class WarehouseSynchronizeServiceAc {
 
 		}
 		if (action.equals("Remove")) {
-			incomingListDao.deleteAll();
-			shippingListDao.deleteAll();
+			// 完成確認
+			String finishObj = packageBean.getEntityJson();
+			JsonObject object = packageService.StringToJson(finishObj);
+			object.keySet().forEach((k) -> {
+				k = k.split("_")[0];
+				System.out.println(k);
+				// 入料
+				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						null);
+				if (ins.size() > 0) {
+					// incomingListDao.deleteAll(ins);
+				}
+				// 領料
+				ArrayList<BasicShippingList> shs = shippingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],
+						null);
+				if (shs.size() > 0) {
+					// shippingListDao.deleteAll(shs);
+				}
+			});
 		}
 		if (action.equals("Finish")) {
 			// 完成確認
-			String finishItem = packageBean.getEntityDetailJson().replaceAll("_", "");
-			JsonObject object = packageService.StringToJson(finishItem);
+			String finishObj = packageBean.getEntityJson();
+			JsonObject object = packageService.StringToJson(finishObj);
 			Date updateDate = new Date();
 			object.keySet().forEach((k) -> {
+				k = k.split("_")[0];
 				System.out.println(k);
 				// 入料
 				ArrayList<BasicIncomingList> ins = incomingListDao.findAllByCheck(k.split("-")[0], k.split("-")[1],

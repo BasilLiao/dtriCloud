@@ -21,6 +21,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass% ) and "//
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
+			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
 			+ "(c.bslfuser != 'ERP_Remove(Auto)') and "//
 			+ "(:bslfuser is null or (:bslfuser ='true' and  c.bslfuser != '') or (:bslfuser ='false' and  c.bslfuser = '')) and "// 已領料_
 																																	// 未領料
@@ -30,7 +31,8 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 
 			+ "(:bslfromcommand is null or c.bslfromcommand LIKE %:bslfromcommand%) ")
 	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand,
-			String bsltype, String bslcuser, String bslfuser, String bslsmuser, Integer sysstatus, Pageable pageable);
+			String bsltype, String bslcuser, String bslfuser, String bslsmuser, Integer sysstatus, String syshnote,
+			Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//
@@ -47,9 +49,9 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass% ) and "//
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
-			+ "((c.bslpnqty !=c.bslpngqty or c.bslpnoqty !=0) or "// 領的數量不同於需求量
+			+ "((c.bslpnqty  >=0) or "// 需領的數量大於等於 0
 			+ " (c.bslclass='A541' and c.bslpngqty != c.bslpnerpqty)) and "// ERP(領退數量(帳務)="A541" && 已領用量 !=領退數量(帳務) )
-			+ "(c.bslfuser != 'ERP_Remove(Auto)') and (c.bslfuser != '') and (c.bslsuser = '') and (c.bslsuser = '') ") // 已完成+最後-同步人
+			+ "(c.bslfuser != 'ERP_Remove(Auto)') and (c.bslsuser = '')") // 已完成+最後-同步人
 	ArrayList<BasicShippingList> findAllBySearchSynchronize(String bslclass, String bslsn, String bsltype,
 			Pageable pageable);
 

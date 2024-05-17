@@ -21,6 +21,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
+			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
 			+ "(c.bilfuser != 'ERP_Remove(Auto)') and "//
 			+ "(:bilfuser is null or (:bilfuser ='true' and c.bilfuser != '') or (:bilfuser ='false'  and c.bilfuser = '')) and "// 已領料_//
 																																	// 未領料
@@ -28,7 +29,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 																																	// 未核准人
 			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
 	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand,
-			String biltype, String bilcuser, String bilfuser, Integer sysstatus, Pageable pageable);
+			String biltype, String bilcuser, String bilfuser, Integer sysstatus, String syshnote, Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
@@ -46,9 +47,9 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
-			+ "((c.bilpnqty !=c.bilpngqty or c.bilpnoqty !=0) or "// 領的數量不同於需求量 或
+			+ "((c.bilpnoqty >=0) or "// 需入的數量大於等於0 或
 			+ " (c.bilclass='A541' and c.bilpngqty != c.bilpnerpqty)) and "// ERP(領退數量(帳務)="A541" && 已領用量 !=領退數量(帳務) )
-			+ "(c.bilfuser != 'ERP_Remove(Auto)') and (c.bilfuser != '') and (c.bilsuser = '') and (c.bilsuser = '') ") // 已完成+最後-同步人
+			+ "(c.bilfuser != 'ERP_Remove(Auto)') and (c.bilsuser = '') ") // 已完成+最後-同步人
 	ArrayList<BasicIncomingList> findAllBySearchSynchronize(String bilclass, String bilsn, String biltype,
 			Pageable pageable);
 
