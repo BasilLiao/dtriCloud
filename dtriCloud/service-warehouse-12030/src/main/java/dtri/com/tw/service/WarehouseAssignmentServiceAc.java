@@ -140,6 +140,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWaspngqty(in.getBilpngqty());// : (已)數量<br>
 				ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
+				ed.setWasfucheckin(false);// 集結
 
 				switch (in.getBilstatus()) {
 				case 0:
@@ -258,6 +259,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWaspngqty(sh.getBslpngqty());// : (已)數量<br>
 				ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
+				ed.setWasfucheckin(sh.getBslfucheckin());// 集結
 				switch (sh.getBslstatus()) {
 				case 0:
 					ed.setWasstatusname("預設(3天)");
@@ -503,7 +505,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWaspngqty(in.getBilpngqty());// : (已)數量<br>
 				ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
-
+				ed.setWasfucheckin(false);// 集結
 				switch (in.getBilstatus()) {
 				case 0:
 					ed.setWasstatusname("預設(3天)");
@@ -623,6 +625,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWaspngqty(sh.getBslpngqty());// : (已)數量<br>
 				ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
+				ed.setWasfucheckin(sh.getBslfucheckin());// 集結
 				switch (sh.getBslstatus()) {
 				case 0:
 					ed.setWasstatusname("預設(3天)");
@@ -922,6 +925,7 @@ public class WarehouseAssignmentServiceAc {
 								if (checkOK) {
 									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
 									t.setBslpngqty(t.getBslpnqty());
+									t.setBslfucheckin(true);//已集結
 									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
 										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
 												: t.getBslfuser());

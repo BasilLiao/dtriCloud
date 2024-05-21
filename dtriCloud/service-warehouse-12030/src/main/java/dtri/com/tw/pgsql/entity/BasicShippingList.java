@@ -57,6 +57,7 @@ import jakarta.persistence.Table;
  *      bsl_status:單據狀態 3 = 取消 / 4=暫停/5=全數歸還 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
  *      bsl_e_date:預計時間(領料日) 指 單一項目 到齊時間 或是預定 領料時間<br>
  *      bsl_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
+ *      bsl_f_u_checkin:已經集結?<br>
  * 
  * 
  */

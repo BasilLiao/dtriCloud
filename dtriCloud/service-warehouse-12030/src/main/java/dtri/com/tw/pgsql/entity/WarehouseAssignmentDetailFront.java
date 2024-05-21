@@ -9,8 +9,8 @@ import jakarta.persistence.Transient;
 /**
  * @author Basil
  * @see ---共用型---<br>
- *       Front 前端物件(ID之外其他添加@Transient)<br>
- *       
+ *      Front 前端物件(ID之外其他添加@Transient)<br>
+ * 
  *      sys_c_date : 創建時間<br>
  *      sys_c_user : 創建人名<br>
  *      sys_m_date : 修改時間<br>
@@ -39,9 +39,11 @@ import jakarta.persistence.Transient;
  *      was_p_name : 品名<br>
  *      was_pn_qty : (領/入)數量<br>
  *      was_pn_g_qty :已(領/入)數量<br>
+ * 
  *      was_status : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      was_e_date : 預計領料日 <br>
  *      was_from_command : 指示來源<br>
+ *      was_f_u_checkin : 集結?<br>
  */
 @Entity
 public class WarehouseAssignmentDetailFront {
@@ -67,6 +69,7 @@ public class WarehouseAssignmentDetailFront {
 		this.waspnqty = 0;
 		this.waspngqty = 0;
 		this.wassmuser = "";
+		this.wasfucheckin = false;
 	}
 
 	// 共用型
@@ -121,6 +124,9 @@ public class WarehouseAssignmentDetailFront {
 	private String wasmuser;// : 可分配-負責人<br>
 	@Transient
 	private String wasfuser;// : 完成人<br>
+	@Transient
+	private Boolean wasfucheckin;// : 集結人<br>
+
 	@Transient
 	private String wassmuser;// : 產線完成人<br>
 	@Transient
@@ -454,6 +460,14 @@ public class WarehouseAssignmentDetailFront {
 
 	public void setWaspngqty(Integer waspngqty) {
 		this.waspngqty = waspngqty;
+	}
+
+	public Boolean getWasfucheckin() {
+		return wasfucheckin;
+	}
+
+	public void setWasfucheckin(Boolean wasfucheckin) {
+		this.wasfucheckin = wasfucheckin;
 	}
 
 }
