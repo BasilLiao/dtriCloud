@@ -168,6 +168,7 @@ public class WarehouseAssignmentServiceAc {
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					areaKey = areaKey.replaceAll(" ", "");
 					if (areaMaps.containsKey(areaKey)) {
 						ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 						ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
@@ -284,6 +285,7 @@ public class WarehouseAssignmentServiceAc {
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					areaKey = areaKey.replaceAll(" ", "");
 					if (areaMaps.containsKey(areaKey)) {
 						ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 						ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
@@ -529,6 +531,7 @@ public class WarehouseAssignmentServiceAc {
 				// 倉儲(必須符合格式)
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					areaKey = areaKey.replaceAll(" ", "");
 					if (areaMaps.containsKey(areaKey)) {
 						ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 						ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
@@ -647,6 +650,7 @@ public class WarehouseAssignmentServiceAc {
 				// 倉儲(必須符合格式)
 				if (sh.getBslfromwho().split("_").length > 1) {
 					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					areaKey = areaKey.replaceAll(" ", "");
 					if (areaMaps.containsKey(areaKey)) {
 						ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 						ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
@@ -782,6 +786,7 @@ public class WarehouseAssignmentServiceAc {
 						if (checkData.getBslfromwho().split("_").length > 1) {
 							String areaKey = checkData.getBslfromwho().split("_")[0].replace("[", "") + "_"
 									+ checkData.getBslpnumber();
+							areaKey = areaKey.replaceAll(" ", "");
 							ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 							// 倉庫不夠?(已經有取?/未取?)
 							int qty = 0;
@@ -830,6 +835,7 @@ public class WarehouseAssignmentServiceAc {
 							if (t.getBiltowho().split("_").length > 1) {
 								String areaKey = t.getBiltowho().split("_")[0];
 								areaKey = areaKey.replace("[", "") + "_" + t.getBilpnumber();
+								areaKey = areaKey.replaceAll(" ", "");
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
@@ -853,7 +859,7 @@ public class WarehouseAssignmentServiceAc {
 										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + // 入料單
 												t.getBilnb() + "*" + t.getBilpnqty());
 										history.setWhwmpnb(t.getBilpnumber());
-										history.setWhfuser(t.getBilfuser());
+										history.setWhfuser(packageBean.getUserAccount());
 										history.setWheqty(area.getWaerptqty());
 										history.setWhcqty(area.getWatqty());
 										history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
@@ -899,6 +905,7 @@ public class WarehouseAssignmentServiceAc {
 							if (t.getBslfromwho().split("_").length > 1) {
 								String areaKey = t.getBslfromwho().split("_")[0];
 								areaKey = areaKey.replace("[", "") + "_" + t.getBslpnumber();
+								areaKey = areaKey.replaceAll(" ", "");
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量
 								if (areas.size() > 0) {
@@ -926,7 +933,7 @@ public class WarehouseAssignmentServiceAc {
 												t.getBslclass() + "-" + t.getBslsn() + "-" + // 領料單
 												t.getBslnb() + "*" + t.getBslpnqty());
 										history.setWhwmpnb(t.getBslpnumber());
-										history.setWhfuser(t.getBslfuser());
+										history.setWhfuser(packageBean.getUserAccount());
 										history.setWheqty(area.getWaerptqty());
 										history.setWhcqty(area.getWatqty());
 										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
@@ -974,6 +981,7 @@ public class WarehouseAssignmentServiceAc {
 								if (t.getBiltowho().split("_").length > 1) {
 									String areaKey = t.getBiltowho().split("_")[0];
 									areaKey = areaKey.replace("[", "") + "_" + t.getBilpnumber();
+									areaKey = areaKey.replaceAll(" ", "");
 									ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 									// 倉庫更新數量
 									if (areas.size() > 0) {
@@ -997,7 +1005,7 @@ public class WarehouseAssignmentServiceAc {
 											t.getBilsn() + "-" + //
 											t.getBilnb() + "*" + t.getBilpngqty());
 									history.setWhwmpnb(t.getBilpnumber());
-									history.setWhfuser(t.getBilfuser());
+									history.setWhfuser(packageBean.getUserAccount());
 									history.setWheqty(area.getWaerptqty());
 									history.setWhcqty(area.getWatqty());
 									history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
@@ -1037,6 +1045,7 @@ public class WarehouseAssignmentServiceAc {
 								if (t.getBslfromwho().split("_").length > 1) {
 									String areaKey = t.getBslfromwho().split("_")[0];
 									areaKey = areaKey.replace("[", "") + "_" + t.getBslpnumber();
+									areaKey = areaKey.replaceAll(" ", "");
 									ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 									// 倉庫更新數量
 									if (areas.size() > 0) {
@@ -1057,7 +1066,7 @@ public class WarehouseAssignmentServiceAc {
 											t.getBslsn() + "-" + //
 											t.getBslnb() + "*" + t.getBslpngqty());
 									history.setWhwmpnb(t.getBslpnumber());
-									history.setWhfuser(t.getBslfuser());
+									history.setWhfuser(packageBean.getUserAccount());
 									history.setWheqty(area.getWaerptqty());
 									history.setWhcqty(area.getWatqty());
 									history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");

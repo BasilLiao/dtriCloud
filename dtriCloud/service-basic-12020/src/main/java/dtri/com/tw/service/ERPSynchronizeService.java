@@ -1707,6 +1707,7 @@ public class ERPSynchronizeService {
 									String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
 									String newBiltowho = in.getBiltowho().replace(oldLocation,
 											areaOld.getWaslocation());
+									newBiltowho = newBiltowho.replaceAll(" ", "");
 									in.setBiltowho(newBiltowho);
 									incomingLists.add(in);
 								}
@@ -1724,6 +1725,7 @@ public class ERPSynchronizeService {
 									String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
 									String newBslfromwho = sh.getBslfromwho().replace(oldLocation,
 											areaOld.getWaslocation());
+									newBslfromwho = newBslfromwho.replaceAll(" ", "");
 									sh.setBslfromwho(newBslfromwho);
 									shippingLists.add(sh);
 								}

@@ -123,6 +123,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTh009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
 		// 而外匹配 [儲位負責]
@@ -196,6 +197,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[_" + m.getTa021() + "]");// 目的來源[_生產線]
 		// 而外匹配 [儲位負責]
@@ -267,6 +269,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTb009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_" + m.getTa021() + "]");// 目的[_生產線]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -332,6 +335,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg010() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[_生產線]");// 目的來源[_生產線]
 		// 而外匹配 [儲位負責]
@@ -399,6 +403,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTi009() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[_委外生產線]");// 目的來源[_生產線]
 		// 而外匹配 [儲位負責]
@@ -460,6 +465,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
 		// 而外匹配 [儲位負責]
@@ -521,6 +527,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTg007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_" + m.getTf015() + "]");// 目的[_借出對象]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -585,6 +592,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTi008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
 		// 而外匹配 [儲位負責]
@@ -648,6 +656,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTi007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[" + "_" + m.getTh006() + "]");// 目的[_歸還對象]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -721,6 +730,7 @@ public class ERPToCloudService {
 //		if (wAs.containsKey(wAsKey)) {
 //			bilfromwho = m.getTb012() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 //		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");// 目的對象[_倉庫]
 		o.setBilfromwho("[_]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -786,6 +796,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTb012() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_]");// 目的來源[_倉庫]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -847,6 +858,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTd010() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
 		// 而外匹配 [儲位負責]
@@ -908,6 +920,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTe007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_" + m.getTd004() + "]");// 目的[_對象]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -969,6 +982,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTg007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		biltowho = biltowho.replaceAll(" ", "");// 過濾空格
 		o.setBiltowho("[" + biltowho + "]");
 		o.setBilfromwho("[" + m.getMb032() + "_" + m.getMa002() + "]");// 目的來源[供應商]
 		// 而外匹配 [儲位負責]
@@ -1037,6 +1051,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTh007() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_" + m.getTg007() + "]");// 目的[_]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]
@@ -1098,6 +1113,7 @@ public class ERPToCloudService {
 		if (wAs.containsKey(wAsKey)) {
 			bilfromwho = m.getTf008() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();
 		}
+		bilfromwho = bilfromwho.replaceAll(" ", "");
 		o.setBsltowho("[_]");// 目的[_對象]
 		o.setBslfromwho("[" + bilfromwho + "]");// 目的來源[_倉庫]
 		// 而外匹配 [儲位負責]

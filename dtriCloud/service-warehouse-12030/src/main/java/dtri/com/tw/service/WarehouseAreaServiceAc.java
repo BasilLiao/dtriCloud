@@ -220,9 +220,10 @@ public class WarehouseAreaServiceAc {
 					if (in.getBiltowho().split("_").length > 1) {
 						// 倉儲_物料
 						String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+						areaKey = areaKey.replaceAll(" ", "");
 						// [單據]要比對到[區域] 儲位物料
 						if (areaKey.contains(x.getWaaliasawmpnb())) {
-							String oldLocation = in.getBiltowho().split("_")[2].replace("]", "");
+							String oldLocation = in.getBiltowho().split("_")[2].replace("]", "").replaceAll(" ", "");
 							in.setBiltowho(in.getBiltowho().replace(oldLocation, x.getWaslocation()));
 							incomingLists.add(in);
 						}
@@ -234,9 +235,10 @@ public class WarehouseAreaServiceAc {
 					if (sh.getBslfromwho().split("_").length > 1) {
 						// 倉儲_物料
 						String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+						areaKey = areaKey.replaceAll(" ", "");
 						// [單據]要比對到[區域] 儲位物料
 						if (areaKey.contains(x.getWaaliasawmpnb())) {
-							String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "");
+							String oldLocation = sh.getBslfromwho().split("_")[2].replace("]", "").replaceAll(" ", "");
 							sh.setBslfromwho(sh.getBslfromwho().replace(oldLocation, x.getWaslocation()));
 							shippingLists.add(sh);
 						}

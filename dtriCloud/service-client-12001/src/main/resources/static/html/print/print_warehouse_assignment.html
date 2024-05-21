@@ -243,7 +243,6 @@
 
 					//一般
 					var pr_bslclass_bslsn = {};
-					var hSn = 0;
 					Object.keys(sortJson).forEach(function (k) {
 						console.log(sortJson[k]);
 						var h = sortJson[k];
@@ -294,21 +293,25 @@
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0]);//製令單
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量
-							print_m_ex.find(".pr_syshnote").text(dataHeader[hSn].syshnote);//樓層備註
 
 
-							var dF = new Date(dataHeader[hSn].wasedate);
-							var dateF = dF.getFullYear() + "-";
-							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-							print_m_ex.find(".pr_wasedate").text(dateF);//預計開工
-
-							dF = new Date(dataHeader[hSn].wassdate);
-							dateF = dF.getFullYear() + "-";
-							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-							print_m_ex.find(".pr_wassdate").text(dateF);//預計出貨
-
+							dataHeader.forEach(function (hds)  {
+								console.log(hds);
+								if(hds.gid==print_ex.find(".pr_bslclass_bslsn").text()){
+									print_m_ex.find(".pr_syshnote").text(hds.syshnote);//樓層備註
+									var dF = new Date(hds.wasedate);
+									var dateF = dF.getFullYear() + "-";
+									dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+									dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+									print_m_ex.find(".pr_wasedate").text(dateF);//預計開工
+		
+									dF = new Date(hds.wassdate);
+									dateF = dF.getFullYear() + "-";
+									dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+									dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+									print_m_ex.find(".pr_wassdate").text(dateF);//預計出貨
+								}
+							});
 
 							print_m_ex.find(".pr_bslfromcommand_qrcode").text("");//
 							print_m_ex.find(".pr_bslclass_bslsn_qrcode").text("");//
@@ -322,7 +325,6 @@
 							print_m_ex2.removeClass("noprint");
 							print_m_ex2.css("pageBreakAfter", "");
 							$('#print_m #print_m_start').after(print_m_ex2);
-							hSn += 1;
 						}
 					});
 					//細節(區分)
