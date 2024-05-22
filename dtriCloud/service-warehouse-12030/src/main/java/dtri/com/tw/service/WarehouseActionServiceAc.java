@@ -783,7 +783,7 @@ public class WarehouseActionServiceAc {
 							new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
 				}
 				// 檢查數量與備註 是否匹配
-				if (checkShippingDatas.size() > 0) {
+				if (checkShippingDatas.size() > 0 && entityData.getWastype().equals("領料類")) {
 
 					// 庫存數
 					List<WarehouseArea> areaLists = areaDao.findAllByWaaliasawmpnb(entityData.getWasaliaswmpnb());
@@ -822,6 +822,7 @@ public class WarehouseActionServiceAc {
 							// 真缺少: 庫存數量 <= 已取數量 && 需領數量 > 已領取數量 && 只能有(庫存量不足)
 							checkOK = true;
 						}
+
 						if (!checkOK) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
 									new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
@@ -873,7 +874,8 @@ public class WarehouseActionServiceAc {
 						incomingList.setBilpngqty(x.getWaspngqty());
 
 						// 庫存更新
-						area.setWatqty(area.getWatqty() + x.getWaspngqty());
+						Integer watqty = area.getWatqty() + x.getWaspngqty();
+						area.setWatqty(watqty);
 						areaDao.save(area);
 					}
 					// 單據更新
@@ -1047,7 +1049,7 @@ public class WarehouseActionServiceAc {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
 			reData.addProperty("total", shippingLists.size());
-			//存入
+			// 存入
 			shippingListDao.saveAll(shippingListNews);
 		}
 
