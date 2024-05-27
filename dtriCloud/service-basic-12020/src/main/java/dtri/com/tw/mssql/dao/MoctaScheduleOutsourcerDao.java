@@ -38,7 +38,7 @@ public interface MoctaScheduleOutsourcerDao extends JpaRepository<MoctaScheduleO
 			+ "     LEFT JOIN [DTR_TW].[dbo].COPTC AS PTC ON (PTC.TC001+PTC.TC002 = PTD.TD001+PTD.TD002) "// --
 			+ "     LEFT JOIN [DTR_TW].[dbo].PURMA AS PUR ON (PUR.MA001 = CTA.TA032) "// --
 			+ "WHERE "// --
-			+ "	((:ta013 is null OR CTA.TA013 = :ta013) "// -- 作廢狀態Y/N/V
+			+ "	(:ta013 is null OR CTA.TA013 = :ta013) "// -- 作廢狀態Y/N/V
 			+ "	AND ((:ta001ta002 is null AND (CTA.TA011 = '1' OR CTA.TA011 = '2' OR CTA.TA011 = '3')) "
 			+ " OR REPLACE(CTA.TA001+'-'+CTA.TA002, ' ', '') = :ta001ta002 ) "// --
 			+ " AND (CTA.TA006 LIKE '81-105%' OR CTA.TA006 = '81-228-582070') "// --
