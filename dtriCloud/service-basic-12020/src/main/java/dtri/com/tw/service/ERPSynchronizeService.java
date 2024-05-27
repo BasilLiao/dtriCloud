@@ -1979,7 +1979,7 @@ public class ERPSynchronizeService {
 
 	// ============ 同步外包生管平台() ============
 	public void erpSynchronizeScheduleOutsourcer() throws Exception {
-		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta(null);// 目前ERP有的資料
+		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta(null, "Y");// 目前ERP有的資料
 		Map<String, MoctaScheduleOutsourcer> erpMapOutsourcers = new HashMap<String, MoctaScheduleOutsourcer>();// ERP整理後資料
 		ArrayList<ScheduleOutsourcer> scheduleOutsourcers = scheduleOutsourcerDao.findAllByNotFinish(null);// 尚未結束的
 		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
@@ -2011,7 +2011,8 @@ public class ERPSynchronizeService {
 					newScheduleOutsourcers.add(o);
 				}
 			} else {
-				ArrayList<MoctaScheduleOutsourcer> erpOutsourcersEnd = erpOutsourcerDao.findAllByMocta(o.getSonb());
+				ArrayList<MoctaScheduleOutsourcer> erpOutsourcersEnd = erpOutsourcerDao.findAllByMocta(o.getSonb(),
+						null);
 				if (erpOutsourcersEnd.size() == 1) {
 					// 更新最後一次?
 					o = erpToCloudService.scheduleOutsourcerOne(o, erpOutsourcersEnd.get(0),

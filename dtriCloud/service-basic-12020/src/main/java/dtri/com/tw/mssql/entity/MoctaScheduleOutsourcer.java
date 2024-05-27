@@ -44,6 +44,8 @@ public class MoctaScheduleOutsourcer {
 	private String ta010;// 預計完工日
 	@Column(name = "TA011")
 	private String ta011;// 狀態碼1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+	@Column(name = "TA013")
+	private String ta013;// 作廢狀態Y/N/V
 
 	@Column(name = "TA029")
 	private String ta029;// --製令備註(客戶/國家/訂單)
@@ -246,5 +248,13 @@ public class MoctaScheduleOutsourcer {
 				+ ", ta034=" + ta034 + ", ta035=" + ta035 + ", ta015=" + ta015 + ", ta017=" + ta017 + ", ta009=" + ta009
 				+ ", ta010=" + ta010 + ", ta011=" + ta011 + ", ta029=" + ta029 + ", ta054=" + ta054 + ", ta032=" + ta032
 				+ ", ma002=" + ma002 + ", td004=" + td004 + ", tc012=" + tc012 + ", tc001_tc002=" + tc001_tc002 + "]";
+	}
+
+	public String getTa013() {
+		return ta013;
+	}
+
+	public void setTa013(String ta013) {
+		this.ta013 = ta013;
 	}
 }

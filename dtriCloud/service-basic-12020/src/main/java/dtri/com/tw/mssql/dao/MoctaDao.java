@@ -25,6 +25,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	CEILING(MOCTB.TB004) AS TB004, "// --正數 預計領
 			+ "	MOCTB.TB005, "// --負數 已領用量
 			+ "	(TB004 - TB005) AS TB004_TB005, "// --需領用-已領用(正數 預計領 / 負數 已領用量)
+			+ "	MOCTB.TB017, "// --項目備註
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格

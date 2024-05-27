@@ -32,7 +32,6 @@ public class Mocta {
 	@Column(name = "TA006")
 	private String ta006;// 成品品號
 
-	
 	@Column(name = "TA029")
 	private String ta029;// ,--生管備註
 	@Column(name = "TA050")
@@ -46,7 +45,9 @@ public class Mocta {
 	private String ta010;// 預計完工日
 	@Column(name = "TA011")
 	private String ta011;// --確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
-	
+	@Column(name = "TB017")
+	private String tb017;// --料項備註
+
 	@Column(name = "TB015")
 	private String tb015;// 預計領料日
 	@Column(name = "TB004")
@@ -329,6 +330,14 @@ public class Mocta {
 
 	public void setTa029(String ta029) {
 		this.ta029 = ta029;
+	}
+
+	public String getTb017() {
+		return tb017;
+	}
+
+	public void setTb017(String tb017) {
+		this.tb017 = tb017;
 	}
 
 }

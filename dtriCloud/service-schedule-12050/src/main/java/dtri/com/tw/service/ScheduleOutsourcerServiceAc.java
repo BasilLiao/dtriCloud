@@ -145,6 +145,7 @@ public class ScheduleOutsourcerServiceAc {
 			selectStatusArr.add("生產中_3");
 			selectStatusArr.add("已完工_Y");
 			selectStatusArr.add("指定完工_y");
+			selectStatusArr.add("已作廢_V");
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sostatus", "Ex:單據狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 

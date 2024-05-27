@@ -1692,6 +1692,15 @@
 									case "3":
 										sostatus = "生產中";
 										break;
+									case "Y":
+										sostatus = "已完工";
+										break;
+									case "y":
+										sostatus = "指定完工";
+										break;
+									case "V":
+										sostatus = "已作廢";
+										break;
 								}
 								$('.valTbodyTr_' + valTrNb + ' .' + k).text(sostatus);
 							} else if (k == "soscstatus") {

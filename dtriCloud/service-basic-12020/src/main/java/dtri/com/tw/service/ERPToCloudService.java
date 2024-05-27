@@ -62,6 +62,7 @@ public class ERPToCloudService {
 		o.setBcltowho("[_]");// 目的對象
 		o.setBclfromwho("[" + m.getMb017() + "_" + m.getMc002() + "]");// 目的來源-[倉別代號+倉別名稱]
 		o.setBclerpcuser(m.getCreator());// 開單人
+		o.setSysnote(m.getTb017());// 料項備註
 		if (!m.getTb015().equals("")) {
 			o.setBcledate(Fm_T.toYMDate(m.getTb015()));// 預計領料日
 		}
@@ -1154,6 +1155,10 @@ public class ERPToCloudService {
 		o.setSorqty(m.getTa015());// 預計生產
 		o.setSookqty(m.getTa017());// 目前生產數
 		o.setSostatus(m.getTa011());// --狀態碼1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+		// 作廢?
+		if (m.getTa013().equals("V")) {
+			o.setSostatus("V");
+		}
 		o.setSonote(m.getTa029());// 製令備註(客戶/國家/訂單)
 		if (!m.getMa002().equals("")) {
 			o.setSofname(m.getMa002() + "(" + m.getTa032() + ")");// --加工廠
