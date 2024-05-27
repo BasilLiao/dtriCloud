@@ -70,7 +70,7 @@ public class WarehouseAssignmentServiceAc {
 		// Step1.批次分頁
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 9999;
+		int total = 10000;
 		int batch = 0;
 
 		// Step2.排序
@@ -114,9 +114,14 @@ public class WarehouseAssignmentServiceAc {
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 			//
-			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(null, null, null, null,
-					null, "false", 0, null, inPageable);
-			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(null, null, null, null,
+			ArrayList<BasicIncomingList> incomingLists = new ArrayList<BasicIncomingList>();
+			// 第一次載入不帶入 進料類 ->第一次A541
+			/*
+			 * ArrayList<BasicIncomingList> incomingLists =
+			 * incomingListDao.findAllBySearchStatus(null, null, null, null, null, "false",
+			 * 0, null, inPageable);
+			 */
+			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus("A541", null, null, null,
 					null, null, "false", 0, null, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
@@ -234,6 +239,7 @@ public class WarehouseAssignmentServiceAc {
 					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
 					entitySchedulCheckInFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
 				}
+
 			});
 
 			// 領料
@@ -925,7 +931,7 @@ public class WarehouseAssignmentServiceAc {
 								if (checkOK) {
 									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
 									t.setBslpngqty(t.getBslpnqty());
-									t.setBslfucheckin(true);//已集結
+									t.setBslfucheckin(true);// 已集結
 									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
 										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
 												: t.getBslfuser());
