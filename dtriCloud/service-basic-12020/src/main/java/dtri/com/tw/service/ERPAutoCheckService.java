@@ -33,7 +33,7 @@ public class ERPAutoCheckService {
 		// 取得Key
 		String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 		String wAsKey = wcKey + "_" + o.getBilpnumber();
-		wAsKey = wAsKey.replaceAll(" ","");
+		wAsKey = wAsKey.replaceAll(" ", "");
 		// 已經有?
 		if (wAsSave.containsKey(wAsKey)) {
 			int s = wAsSave.get(wAsKey) - o.getBilpnqty();
@@ -51,7 +51,7 @@ public class ERPAutoCheckService {
 			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
 		String wcKey = o.getBsltowho().split("_")[0].replace("[", "").replace("]", "");
 		String wAsKey = wcKey + "_" + o.getBslpnumber();
-		wAsKey = wAsKey.replaceAll(" ","");
+		wAsKey = wAsKey.replaceAll(" ", "");
 		// 已經有?
 		if (wAsSave.containsKey(wAsKey)) {
 			int s = wAsSave.get(wAsKey) + o.getBslpnqty();
@@ -99,7 +99,7 @@ public class ERPAutoCheckService {
 			if (wTFs.get(o.getBilclass()).getWtfaiqty()) {
 				String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 				String wAsKey = wcKey + "_" + o.getBilpnumber();
-				wAsKey = wAsKey.replaceAll(" ","");
+				wAsKey = wAsKey.replaceAll(" ", "");
 				o.setBilcuser("System(Type_Auto)");
 				o.setBilfuser("System(Type_Auto)");
 				o.setBilpngqty(o.getBilpnqty());// 數量
@@ -130,7 +130,7 @@ public class ERPAutoCheckService {
 		if (o.getBiltowho().split("_").length == 3 && wTFsCheck) {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			// 測試用
 //			if(wAsKey.equals("A0041_81-105-38210G")) {
 //				System.out.println(wAsKey);
@@ -170,7 +170,7 @@ public class ERPAutoCheckService {
 		if (wMs.containsKey(o.getBilpnumber()) && wCsCheck) {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			if (wMs.get(o.getBilpnumber()).getWmaiqty()) {
 				o.setBilcuser("System(Material_Auto)");
 				o.setBilfuser("System(Material_Auto)");
@@ -197,7 +197,7 @@ public class ERPAutoCheckService {
 			// 紀錄更新
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			WarehouseArea area = wAs.get(wAsKey);
 			WarehouseHistory history = new WarehouseHistory();
 			history.setWhtype("入料(" + o.getBilfuser() + ")");
@@ -248,7 +248,7 @@ public class ERPAutoCheckService {
 			// 自動減少?
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			if (wTFs.get(o.getBslclass()).getWtfaiqty()) {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
@@ -296,7 +296,7 @@ public class ERPAutoCheckService {
 		if (o.getBslfromwho().split("_").length == 3 && wTFsCheck) {
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			// 取得倉別
 			if (wCs.containsKey(wcKey)) {
 				// 自動減少?
@@ -348,7 +348,11 @@ public class ERPAutoCheckService {
 			// 自動減少?
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
+			// 測試
+			if (o.getBslpnumber().equals("25-120-030391")) {
+				System.out.println("序號:" + o.getBslsn() + "-" + o.getBslnb() + "/" + o.getBslpnumber());
+			}
 			if (wMs.get(o.getBslpnumber()).getWmaiqty()) {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
@@ -390,7 +394,7 @@ public class ERPAutoCheckService {
 			// 紀錄更新
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
-			wAsKey = wAsKey.replaceAll(" ","");
+			wAsKey = wAsKey.replaceAll(" ", "");
 			WarehouseArea area = wAs.get(wAsKey);
 			WarehouseHistory history = new WarehouseHistory();
 			history.setWhtype("領料(" + o.getBslfuser() + ")");

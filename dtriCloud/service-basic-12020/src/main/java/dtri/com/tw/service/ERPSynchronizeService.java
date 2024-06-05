@@ -74,6 +74,7 @@ import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.service.feign.ClientServiceFeign;
+import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
@@ -455,6 +456,9 @@ public class ERPSynchronizeService {
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
 				m.setTk000("領料類");
+				if (nKey.indexOf("A542-240529007") >= 0) {
+					System.out.println(nKey);
+				}
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTa026_ta027_ta028().split("-")[0], 1);
 			} else {
@@ -513,9 +517,9 @@ public class ERPSynchronizeService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
-//			if (oKey.indexOf("A541-240507024") >= 0) {
-//				System.out.println(oKey);
-//			}
+			if (oKey.indexOf("A542-240529007") >= 0) {
+				System.out.println(oKey);
+			}
 			if (erpShMaps.containsKey(oKey)) {
 				// A541-240229002
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
@@ -2056,7 +2060,11 @@ public class ERPSynchronizeService {
 
 		@Override
 		public void run() {
-			serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+			try {
+				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+			} catch (Exception e) {
+				logger.warn(CloudExceptionService.eStktToSg(e));
+			}
 		}
 
 		public String getSendAllData() {

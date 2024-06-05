@@ -62,8 +62,8 @@ public class BasicCommandListServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "bclclass"));// 單別
-		orders.add(new Order(Direction.ASC, "bclsn"));// 單號
+		orders.add(new Order(Direction.DESC, "bclclass"));// 單別
+		orders.add(new Order(Direction.DESC, "bclsn"));// 單號
 		orders.add(new Order(Direction.ASC, "bclnb"));// 單號
 
 		// 一般模式
