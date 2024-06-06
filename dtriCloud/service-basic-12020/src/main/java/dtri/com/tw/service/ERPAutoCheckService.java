@@ -121,7 +121,7 @@ public class ERPAutoCheckService {
 			}
 			// 都沒勾
 			if (!wTFs.get(o.getBilclass()).getWtfmrcheck() && !wTFs.get(o.getBilclass()).getWtfsepncheck()) {
-				wTFsCheck = false;
+				//wTFsCheck = false;
 			}
 		}
 
@@ -160,14 +160,14 @@ public class ERPAutoCheckService {
 					}
 					// 都沒勾
 					if (!wCs.get(wcKey).getWcmrcheck() && !wCs.get(wcKey).getWcsepncheck()) {
-						wCsCheck = false;
+						//wCsCheck = false;
 					}
 				}
 			}
 		}
 		// 物料自動?
 		// Step3. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
-		if (wMs.containsKey(o.getBilpnumber()) && wCsCheck) {
+		if (wMs.containsKey(o.getBilpnumber()) && wCsCheck && wTFsCheck) {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
@@ -198,6 +198,7 @@ public class ERPAutoCheckService {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
+			Integer wAsQty = wAsSave.get(wAsKey) != null ? wAsSave.get(wAsKey) : 0;
 			WarehouseArea area = wAs.get(wAsKey);
 			WarehouseHistory history = new WarehouseHistory();
 			history.setWhtype("入料(" + o.getBilfuser() + ")");
@@ -208,7 +209,7 @@ public class ERPAutoCheckService {
 			history.setWhwmpnb(o.getBilpnumber());
 			history.setWhfuser(o.getBilfuser());
 			history.setWheqty(area != null ? area.getWaerptqty() : 0);
-			history.setWhcqty(area != null ? area.getWatqty() : 0);
+			history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
 			history.setWhcheckin(o.getBilcheckin() == 0 ? "未核單" : "已核單");
 			historyDao.save(history);
 		}
@@ -287,7 +288,7 @@ public class ERPAutoCheckService {
 				}
 				// 都沒勾起[單據管理人(攔截)/欄位管理人(攔截)]
 				if (!wTFs.get(o.getBslclass()).getWtfmrcheck() && !wTFs.get(o.getBslclass()).getWtfsepncheck()) {
-					wTFsCheck = false;// 停止
+					//wTFsCheck = false;// 停止
 				}
 			}
 		}
@@ -325,7 +326,6 @@ public class ERPAutoCheckService {
 							wAsSave.put(wAsKey, -o.getBslpnqty());
 						}
 					}
-
 					wCsCheck = false;
 				} else {
 					// 倉別管理人(攔截)->沒有勾起來 自動Pass
@@ -337,14 +337,14 @@ public class ERPAutoCheckService {
 						o.setBslfuser("System(Config_Pass)");
 					}
 					if (!wCs.get(wcKey).getWcmrcheck() && !wCs.get(wcKey).getWcsepncheck()) {
-						wCsCheck = false;
+						//wCsCheck = false;
 					}
 				}
 			}
 		}
 		// 物料自動?
 		// Step3. 必須標準格式 Ex:[A0002_原物料倉_2F-B1-06-01]
-		if (wMs.containsKey(o.getBslpnumber()) && wCsCheck) {
+		if (wMs.containsKey(o.getBslpnumber()) && wCsCheck && wTFsCheck) {
 			// 自動減少?
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
@@ -395,6 +395,7 @@ public class ERPAutoCheckService {
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
+			Integer wAsQty = wAsSave.get(wAsKey) != null ? wAsSave.get(wAsKey) : 0;
 			WarehouseArea area = wAs.get(wAsKey);
 			WarehouseHistory history = new WarehouseHistory();
 			history.setWhtype("領料(" + o.getBslfuser() + ")");
@@ -405,7 +406,7 @@ public class ERPAutoCheckService {
 			history.setWhwmpnb(o.getBslpnumber());
 			history.setWhfuser(o.getBslfuser());
 			history.setWheqty(area != null ? area.getWaerptqty() : 0);
-			history.setWhcqty(area != null ? area.getWatqty() : 0);
+			history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
 			history.setWhcheckin(o.getBslcheckin() == 0 ? "未核單" : "已核單");
 			historyDao.save(history);
 		}

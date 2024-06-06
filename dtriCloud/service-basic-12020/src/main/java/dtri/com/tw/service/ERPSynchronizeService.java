@@ -201,7 +201,6 @@ public class ERPSynchronizeService {
 		materialDao.findAll().forEach(m -> {
 			wMs.put(m.getWmpnb(), m);
 		});
-
 		wAsSave = new HashMap<>();// 自動更新清單
 	}
 
@@ -272,62 +271,11 @@ public class ERPSynchronizeService {
 				}
 			}
 		});
-		// Step4. mail BIOS 通知?
-		// bios
-		Map<String, BiosVersion> biosVersionMaps = new HashMap<>();// bios配對?
-		biosVersionDao.findAll().forEach(b -> {
-			// (機種別_客戶)
-			String biosKey = b.getBvmodel() + ")_(" + b.getBvcname();
-			// 新 (製令單 與 BIOS)配對上 && 沒登記過
-			if (commandMaps.containsKey(biosKey) && !biosVersionMaps.containsKey(biosKey)) {
-				biosVersionMaps.put(biosKey, b);
-			}
-		});
-
-		// BOIS->配對人->寄件登記
-		ArrayList<BasicNotificationMail> readyNeedMails = new ArrayList<BasicNotificationMail>();
-		biosVersionMaps.forEach((k, v) -> {
-			// 如果有客戶
-			if (k.split("\\)_\\(").length == 2) {
-				// 機種別
-				String modelName = k.split("\\)_\\(")[0];// 機種別
-				String modelCustomized = k.split("\\)_\\(")[1];// 客戶
-				String version = v.getBvversion();// 目前版本
-
-				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
-				// 寄信件對象
-				ArrayList<String> mainUsers = new ArrayList<String>();
-				ArrayList<String> secondaryUsers = new ArrayList<String>();
-				principals.forEach(u -> {
-					// 主要?次要?+制令單通知
-					if (u.getBpprimary() == 0 && u.getBponotice()) {
-						mainUsers.add(u.getBpsumail());
-					} else if (u.getBpprimary() == 1 && u.getBponotice()) {
-						secondaryUsers.add(u.getBpsumail());
-					}
-				});
-				// 建立信件
-				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
-				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "][" + modelName + "][" + version + "]["
-						+ modelCustomized + "]"//
-						+ "Cloud system BIOS recommended update notification!");
-				readyNeedMail.setBnmcontent("Please check the model :[" + modelName + "] BIOS needs to be updated,\n"//
-						+ "customized version/customer is :[" + version + " / " + modelCustomized + "]");
-				readyNeedMail.setBnmkind("BIOS");
-				readyNeedMail.setBnmmail(mainUsers + "");
-				readyNeedMail.setBnmmailcc(secondaryUsers + "");
-				// 檢查信件(避免重複)
-				if (notificationMailDao.findAllByCheck(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
-						.size() == 0) {
-					readyNeedMails.add(readyNeedMail);
-				}
-			}
-		});
-
 		// Step4. 存入資料
 		commandListDao.saveAll(commandLists);//
 		commandListDao.deleteAll(removeCommandLists);
-		// notificationMailDao.saveAll(readyNeedMails);
+		// 檢查新的致令單BIOS?
+		// biosNewOrderCheck(commandMaps);
 
 	}
 
@@ -368,24 +316,30 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Purth m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A341") || o.getBilclass().equals("A342") || o.getBilclass().equals("A343")
-							|| o.getBilclass().equals("A344") || o.getBilclass().equals("A345"))) {
+					(o.getBilclass().equals("A341") || //
+							o.getBilclass().equals("A342") || //
+							o.getBilclass().equals("A343") || //
+							o.getBilclass().equals("A344") || //
+							o.getBilclass().equals("A345"))) {
 				// 距今日(30天內) /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/A344 模具進貨單/ A345 無採購進貨單
 				o = autoRemoveService.incomingAuto(o);
 				removeInLists.add(o);// 標記:無此資料
@@ -411,6 +365,7 @@ public class ERPSynchronizeService {
 
 		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 自動更新清單
 	}
 
 	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571/
@@ -456,9 +411,10 @@ public class ERPSynchronizeService {
 			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
 			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
 				m.setTk000("領料類");
-				if (nKey.indexOf("A542-240529007") >= 0) {
-					System.out.println(nKey);
-				}
+				// 測試用
+//				if (nKey.indexOf("A542-240529007") >= 0) {
+//					System.out.println(nKey);
+//				}
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTa026_ta027_ta028().split("-")[0], 1);
 			} else {
@@ -482,15 +438,15 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || !o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Mocte m = erpInMaps.get(oKey);
-					// 尚未領料 or 系統標記 可修改
+					// 尚未入料 or 系統標記 可修改
 					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
 							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().indexOf("System") >= 0) {
+							|| o.getBilfuser().contains("System")) {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
+						if (o.getBilfuser().contains("System")) {
 							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 						}
 						// 資料轉換
@@ -516,25 +472,24 @@ public class ERPSynchronizeService {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
-			// 同一筆資料?
-			if (oKey.indexOf("A542-240529007") >= 0) {
-				System.out.println(oKey);
-			}
+//			if (oKey.indexOf("A542-240529007") >= 0) {
+//				System.out.println(oKey);
+//			}
+			// 比對同一筆資料?->修正
 			if (erpShMaps.containsKey(oKey)) {
-				// A541-240229002
-				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
+				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");// ERP檢查碼
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || !o.getChecksum().equals(nChecksum)) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Mocte m = erpShMaps.get(oKey);
 					// 尚未領料 or 系統標記 可修改
 					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
 							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().indexOf("System") >= 0) {
+							|| o.getBslfuser().contains("System")) {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
+						if (o.getBslfuser().contains("System")) {
 							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 						}
 						// 資料轉換
@@ -548,11 +503,13 @@ public class ERPSynchronizeService {
 						// 標記二次修正(數量不同+料號不同)
 						o.setBslfuser("✪ " + o.getBslfuser());
 					}
-
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A541") || o.getBslclass().equals("A542") || //
-							o.getBslclass().equals("A543") || o.getBslclass().equals("A551"))) {
+					(o.getBslclass().equals("A541") || //
+							o.getBslclass().equals("A542") || //
+							o.getBslclass().equals("A543") || //
+							o.getBslclass().equals("A551"))) {
+				// 比對不到資料->移除
 				// 30天/尚未領料 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
 				o = autoRemoveService.shippingAuto(o);
 				removeShLists.add(o);// 標記:無此資料
@@ -595,6 +552,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 自動更新清單
 	}
 
 	// ============A581 生產入庫單 ============
@@ -632,19 +590,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || (!o.getChecksum().equals(nChecksum)
-						&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Moctf m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A581"))) {
@@ -672,6 +634,7 @@ public class ERPSynchronizeService {
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ A591 委外進貨單 ============
@@ -707,21 +670,24 @@ public class ERPSynchronizeService {
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				// 尚未領料 or 系統標記 可修改
+				if (!o.getChecksum().equals(nChecksum)) {
 					Mocth m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A591"))) {
@@ -750,6 +716,7 @@ public class ERPSynchronizeService {
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ A131 庫存借出單/ A141 庫存借入單 ============
@@ -798,20 +765,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Invtg m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveInLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A141"))) {
@@ -830,20 +800,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Invtg m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未領料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A131"))) {
@@ -884,6 +857,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ 借出歸還A151/借入歸還單A161 ============
@@ -933,20 +907,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Invth m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveInLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A151"))) {
@@ -965,20 +942,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Invth m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未領料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A161"))) {
@@ -1019,6 +999,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ A111 費用領料單/ A112 費用退料單/A115/ A119 料號調整單/ A121 倉庫調撥單 ============
@@ -1109,7 +1090,7 @@ public class ERPSynchronizeService {
 					Invta m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
+					if (o.getBilfuser().contains("System")) {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
 					}
 					// 資料轉換
@@ -1140,20 +1121,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Invta m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未領料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A111") || //
@@ -1206,6 +1190,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ 組合單/A421 ============
@@ -1263,20 +1248,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Bomtd m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveInLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A421"))) {
@@ -1299,20 +1287,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Bomtd m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A421"))) {
@@ -1353,6 +1344,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ OK 拆解單/A431 ============
@@ -1409,20 +1401,23 @@ public class ERPSynchronizeService {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Bomtf m = erpInMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(入)
-					if (o.getBilfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBilfuser().equals("")//
+							|| o.getBilfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(入)
+						if (o.getBilfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveInLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveInLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
 					(o.getBilclass().equals("A431"))) {
@@ -1441,20 +1436,24 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Bomtf m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未入料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+						String checkSum = m.toString().replaceAll("\\s", "");
+
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A431"))) {
@@ -1501,6 +1500,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ 銷貨單 A231/A232
@@ -1537,20 +1537,24 @@ public class ERPSynchronizeService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBslfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBslfuser().equals("") || o.getBslfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Copth m = erpShMaps.get(oKey);
-					String checkSum = m.toString().replaceAll("\\s", "");
-					// 自動恢復(領)
-					if (o.getBslfuser().indexOf("System") >= 0) {
-						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+					// 尚未領料 or 系統標記 可修改
+					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
+							|| o.getBslfuser().equals("")//
+							|| o.getBslfuser().contains("System")) {
+
+						String checkSum = m.toString().replaceAll("\\s", "");
+						// 自動恢復(領)
+						if (o.getBslfuser().indexOf("System") >= 0) {
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						}
+						// 資料轉換
+						o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);
+						// 自動完成
+						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+						saveShLists.add(o);
 					}
-					// 資料轉換
-					o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);
-					// 自動完成
-					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(o);
 				}
 			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
 					(o.getBslclass().equals("A231") || o.getBslclass().equals("A232"))) {
@@ -1582,6 +1586,7 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
+		wAsSave = new HashMap<>();// 清除結算
 	}
 
 	// ============ 物料+儲位同步 ============
@@ -1882,6 +1887,62 @@ public class ERPSynchronizeService {
 		biosVersionDao.saveAll(newBiosVers);
 	}
 
+	// 檢查是否有新的製令單
+	public void biosNewOrderCheck(Map<String, BasicCommandList> commandMaps) throws Exception {
+		// Step4. mail BIOS 通知?
+		// bios
+		Map<String, BiosVersion> biosVersionMaps = new HashMap<>();// bios配對?
+		biosVersionDao.findAll().forEach(b -> {
+			// (機種別_客戶)
+			String biosKey = b.getBvmodel() + ")_(" + b.getBvcname();
+			// 新 (製令單 與 BIOS)配對上 && 沒登記過
+			if (commandMaps.containsKey(biosKey) && !biosVersionMaps.containsKey(biosKey)) {
+				biosVersionMaps.put(biosKey, b);
+			}
+		});
+
+		// BOIS->配對人->寄件登記
+		ArrayList<BasicNotificationMail> readyNeedMails = new ArrayList<BasicNotificationMail>();
+		biosVersionMaps.forEach((k, v) -> {
+			// 如果有客戶
+			if (k.split("\\)_\\(").length == 2) {
+				// 機種別
+				String modelName = k.split("\\)_\\(")[0];// 機種別
+				String modelCustomized = k.split("\\)_\\(")[1];// 客戶
+				String version = v.getBvversion();// 目前版本
+
+				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
+				// 寄信件對象
+				ArrayList<String> mainUsers = new ArrayList<String>();
+				ArrayList<String> secondaryUsers = new ArrayList<String>();
+				principals.forEach(u -> {
+					// 主要?次要?+制令單通知
+					if (u.getBpprimary() == 0 && u.getBponotice()) {
+						mainUsers.add(u.getBpsumail());
+					} else if (u.getBpprimary() == 1 && u.getBponotice()) {
+						secondaryUsers.add(u.getBpsumail());
+					}
+				});
+				// 建立信件
+				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "][" + modelName + "][" + version + "]["
+						+ modelCustomized + "]"//
+						+ "Cloud system BIOS recommended update notification!");
+				readyNeedMail.setBnmcontent("Please check the model :[" + modelName + "] BIOS needs to be updated,\n"//
+						+ "customized version/customer is :[" + version + " / " + modelCustomized + "]");
+				readyNeedMail.setBnmkind("BIOS");
+				readyNeedMail.setBnmmail(mainUsers + "");
+				readyNeedMail.setBnmmailcc(secondaryUsers + "");
+				// 檢查信件(避免重複)
+				if (notificationMailDao.findAllByCheck(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
+						.size() == 0) {
+					readyNeedMails.add(readyNeedMail);
+				}
+			}
+		});
+
+	}
+
 	// 檢查是否有N+1版本過時
 	public void biosVersionCheck() throws Exception {
 		//
@@ -1977,7 +2038,6 @@ public class ERPSynchronizeService {
 			}
 		});
 		// Step3.登記寄信件
-		// System.out.println(readyNeedMails);
 		notificationMailDao.saveAll(readyNeedMails);
 	}
 

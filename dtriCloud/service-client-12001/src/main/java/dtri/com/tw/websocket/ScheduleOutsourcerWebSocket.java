@@ -319,7 +319,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 						if (somcnotes.size() == 0 && !scnoteNew.equals("")) {
 							tagString.addProperty("somcnote", Fm_T.to_y_M_d(new Date()));
 						} else if (somcnotes.size() > 0 && !scnoteNew.equals("")) {
-							// 如果多筆資料	
+							// 如果多筆資料
 							boolean checkNotSame = true;
 							for (JsonElement somcnote : somcnotes) {
 								String scnoteOld = somcnote.getAsJsonObject().get("content").getAsString()
@@ -400,9 +400,10 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 //					if (!n.getSofdate().equals("") && !n.getSofdate().equals(o.getSofdate())) {
 //						tagString.addProperty("sofdate", Fm_T.to_y_M_d(new Date()));
 //					}
-					if (!n.getSonb().equals("") && !n.getSonb().equals(o.getSonb())) {
-						tagString.addProperty("all", Fm_T.to_y_M_d(new Date()));
-					}
+					// 所有
+//					if (!n.getSonb().equals("") && !n.getSonb().equals(o.getSonb())) {
+//						tagString.addProperty("all", Fm_T.to_y_M_d(new Date()));
+//					}
 
 					// UnLocked
 					// 修改後解鎖?

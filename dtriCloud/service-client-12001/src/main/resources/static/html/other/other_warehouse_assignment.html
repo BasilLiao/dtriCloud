@@ -435,9 +435,9 @@
 							check1 = false;
 						}
 						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', withFixed+"px");
+						exTheadth.css('left', withFixed + "px");
 						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', withFixed+"px");
+						exTbodytd.css('left', withFixed + "px");
 						withFixed += resultDetailThead[k].width;
 						fix3 += 1;
 					}
@@ -1271,6 +1271,9 @@
 									$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
 									break;
 								}
+							}
+							if (k == "waspalready" && entity[k] == "未打印") {
+								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
 							}
 						});
 					}
