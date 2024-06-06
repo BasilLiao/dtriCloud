@@ -74,8 +74,7 @@ public class ERPAutoCheckService {
 		// 是否在檢測下一層(單據->倉別->物料)
 		boolean wTFsCheck = true;// 單據自動(true->繼續/false->停止)
 		boolean wCsCheck = true;// 倉別自動
-
-		// boolean wMsCheck = true;// 物料自動
+		boolean wMsCheck = true;// 物料自動
 		// 測試用
 //		if ((o.getBilclass() + "-" + o.getBilsn()).equals("A121-231117002")) {
 //			System.out.println("A541-240419004-0001");
@@ -96,7 +95,7 @@ public class ERPAutoCheckService {
 			 * wTFs.get(o.getBilclass()).getWtfsepncheck());
 			 */
 			// +自動添加
-			if (wTFs.get(o.getBilclass()).getWtfaiqty()) {
+			if (wTFs.get(o.getBilclass()).getWtfaiqty() && o.getBilfuser().equals("")) {
 				String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 				String wAsKey = wcKey + "_" + o.getBilpnumber();
 				wAsKey = wAsKey.replaceAll(" ", "");
@@ -110,18 +109,19 @@ public class ERPAutoCheckService {
 					wAsSave.put(wAsKey, o.getBilpnqty());
 				}
 				wTFsCheck = false;
-			}
-			// 單據管理人(攔截)->沒有勾起來 自動Pass
-			if (!wTFs.get(o.getBilclass()).getWtfmrcheck() && o.getBilcuser().equals("")) {
-				o.setBilcuser("System(Type_Pass)");
-			}
-			// 儲位負責人(攔截)->沒有勾起來 自動Pass
-			if (!wTFs.get(o.getBilclass()).getWtfsepncheck() && o.getBilfuser().equals("")) {
-				o.setBilfuser("System(Type_Pass)");
-			}
-			// 都沒勾
-			if (!wTFs.get(o.getBilclass()).getWtfmrcheck() && !wTFs.get(o.getBilclass()).getWtfsepncheck()) {
-				//wTFsCheck = false;
+			} else {
+				// 單據管理人(攔截)->沒有勾起來 自動Pass
+				if (!wTFs.get(o.getBilclass()).getWtfmrcheck() && o.getBilcuser().equals("")) {
+					o.setBilcuser("System(Type_Pass)");
+				}
+				// 儲位負責人(攔截)->沒有勾起來 自動Pass
+				if (!wTFs.get(o.getBilclass()).getWtfsepncheck() && o.getBilfuser().equals("")) {
+					o.setBilfuser("System(Type_Pass)");
+				}
+				// 都沒勾
+				if (!wTFs.get(o.getBilclass()).getWtfmrcheck() && !wTFs.get(o.getBilclass()).getWtfsepncheck()) {
+					// wTFsCheck = false;
+				}
 			}
 		}
 
@@ -138,7 +138,7 @@ public class ERPAutoCheckService {
 
 			// 此倉儲+自動添加
 			if (wCs.containsKey(wcKey)) {
-				if (wCs.get(wcKey).getWcaiqty()) {
+				if (wCs.get(wcKey).getWcaiqty() && o.getBilfuser().equals("")) {
 					o.setBilcuser("System(Config_Auto)");
 					o.setBilfuser("System(Config_Auto)");
 					o.setBilpngqty(o.getBilpnqty());// 數量
@@ -160,7 +160,7 @@ public class ERPAutoCheckService {
 					}
 					// 都沒勾
 					if (!wCs.get(wcKey).getWcmrcheck() && !wCs.get(wcKey).getWcsepncheck()) {
-						//wCsCheck = false;
+						// wCsCheck = false;
 					}
 				}
 			}
@@ -171,7 +171,7 @@ public class ERPAutoCheckService {
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
-			if (wMs.get(o.getBilpnumber()).getWmaiqty()) {
+			if (wMs.get(o.getBilpnumber()).getWmaiqty() && o.getBilfuser().equals("")) {
 				o.setBilcuser("System(Material_Auto)");
 				o.setBilfuser("System(Material_Auto)");
 				o.setBilpngqty(o.getBilpnqty());// 數量
@@ -181,6 +181,7 @@ public class ERPAutoCheckService {
 				} else {
 					wAsSave.put(wAsKey, o.getBilpnqty());
 				}
+				wMsCheck = false;
 			} else {
 				// 物料管理人(攔截)->沒有勾起來 自動Pass
 				if (!wMs.get(o.getBilpnumber()).getWmmrcheck() && o.getBilcuser().equals("")) {
@@ -190,10 +191,14 @@ public class ERPAutoCheckService {
 				if (!wMs.get(o.getBilpnumber()).getWmsepncheck() && o.getBilfuser().equals("")) {
 					o.setBilfuser("System(Material_Pass)");
 				}
+				// 都沒勾
+				if (!wMs.get(o.getBilpnumber()).getWmsepncheck() && !wMs.get(o.getBilpnumber()).getWmmrcheck()) {
+					// wCsCheck = false;
+				}
 			}
 		}
-		// 自動化 物料異動紀錄
-		if (o.getBilfuser().contains("System")) {
+		// 自動化 物料異動紀錄( 有系統名+有進去其中自動化標記)
+		if (o.getBilfuser().contains("System") && (!wCsCheck || !wTFsCheck || !wMsCheck)) {
 			// 紀錄更新
 			String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBilpnumber();
@@ -225,7 +230,7 @@ public class ERPAutoCheckService {
 		// 是否在檢測下一層(單據->倉別->物料)
 		boolean wTFsCheck = true;// 單據自動(true->繼續/false->停止)
 		boolean wCsCheck = true;// 倉別自動
-		// boolean wMsCheck = true;// 物料自動
+		boolean wMsCheck = true;// 物料自動
 		// 測試用
 //		if ((o.getBslclass() + "-" + o.getBslsn()).equals("A541-240418031")) {
 //			System.out.println("A541-240418031"+o.getBslpnumber());
@@ -250,7 +255,7 @@ public class ERPAutoCheckService {
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
-			if (wTFs.get(o.getBslclass()).getWtfaiqty()) {
+			if (wTFs.get(o.getBslclass()).getWtfaiqty() && o.getBslfuser().equals("")) {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
 				if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
@@ -288,7 +293,7 @@ public class ERPAutoCheckService {
 				}
 				// 都沒勾起[單據管理人(攔截)/欄位管理人(攔截)]
 				if (!wTFs.get(o.getBslclass()).getWtfmrcheck() && !wTFs.get(o.getBslclass()).getWtfsepncheck()) {
-					//wTFsCheck = false;// 停止
+					// wTFsCheck = false;// 停止
 				}
 			}
 		}
@@ -301,7 +306,7 @@ public class ERPAutoCheckService {
 			// 取得倉別
 			if (wCs.containsKey(wcKey)) {
 				// 自動減少?
-				if (wCs.get(wcKey).getWcaiqty()) {
+				if (wCs.get(wcKey).getWcaiqty() && o.getBslfuser().equals("")) {
 					// 檢查數量是否-充足?
 					boolean checkQty = false;
 					if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
@@ -337,7 +342,7 @@ public class ERPAutoCheckService {
 						o.setBslfuser("System(Config_Pass)");
 					}
 					if (!wCs.get(wcKey).getWcmrcheck() && !wCs.get(wcKey).getWcsepncheck()) {
-						//wCsCheck = false;
+						// wCsCheck = false;
 					}
 				}
 			}
@@ -350,10 +355,10 @@ public class ERPAutoCheckService {
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
 			wAsKey = wAsKey.replaceAll(" ", "");
 			// 測試
-			if (o.getBslpnumber().equals("25-120-030391")) {
-				System.out.println("序號:" + o.getBslsn() + "-" + o.getBslnb() + "/" + o.getBslpnumber());
-			}
-			if (wMs.get(o.getBslpnumber()).getWmaiqty()) {
+//			if (o.getBslpnumber().equals("25-120-030391")) {
+//				System.out.println("序號:" + o.getBslsn() + "-" + o.getBslnb() + "/" + o.getBslpnumber());
+//			}
+			if (wMs.get(o.getBslpnumber()).getWmaiqty() && o.getBslcuser().equals("")) {
 				// 檢查數量是否-充足?
 				boolean checkQty = false;
 				if (wAs.containsKey(wAsKey) && wAsSave.containsKey(wAsKey)) {
@@ -378,6 +383,7 @@ public class ERPAutoCheckService {
 						wAsSave.put(wAsKey, -o.getBslpnqty());
 					}
 				}
+				wMsCheck = false;
 			} else {
 				// 物料管理人(攔截)->沒有勾起來 自動Pass
 				if (!wMs.get(o.getBslpnumber()).getWmmrcheck() && o.getBslcuser().equals("")) {
@@ -387,10 +393,13 @@ public class ERPAutoCheckService {
 				if (!wMs.get(o.getBslpnumber()).getWmsepncheck() && o.getBslfuser().equals("")) {
 					o.setBslfuser("System(Material_Pass)");
 				}
+				if (!wCs.get(wcKey).getWcmrcheck() && !wCs.get(wcKey).getWcsepncheck()) {
+					// wMsCheck = false;
+				}
 			}
 		}
 		// 自動化 物料異動紀錄
-		if (o.getBslfuser().contains("System")) {
+		if (o.getBslfuser().contains("System") && (!wCsCheck || !wTFsCheck || !wMsCheck)) {
 			// 紀錄更新
 			String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 			String wAsKey = wcKey + "_" + o.getBslpnumber();
