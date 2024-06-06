@@ -678,7 +678,7 @@
 						//console.log(entityDetailJsons);
 						//Step1.查詢細節內容-格式
 						$(".valTbodyTrD").remove();
-
+						$('#search_dcr_open tbody td').removeClass('bg-warning');
 						for (var k in other.data.marks) {
 							for (var d = 0; d < entityDetailJsons.length; d++) {
 								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
@@ -1218,6 +1218,7 @@
 				$('.exTbodyTh input').attr("disabled", "disabled");
 				$('.exTbodyTh input').attr("title", "IKey_GKey");
 				$('.exTbodyTh input').prop("checked", false);
+				$('#search_cr_open tbody td').removeClass('bg-warning');
 				//版面預設
 				if ($('#search_dcr_open').hasClass('show')) {
 					$('#search_dcr .btn-outline-white').trigger('click');
