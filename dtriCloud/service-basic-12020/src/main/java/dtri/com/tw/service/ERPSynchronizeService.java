@@ -325,7 +325,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
@@ -455,7 +455,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().contains("System")) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
@@ -498,7 +498,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().contains("System")) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
@@ -614,7 +614,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
@@ -702,7 +702,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
@@ -803,7 +803,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
@@ -838,7 +838,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
@@ -952,7 +952,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
@@ -987,7 +987,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
@@ -1134,7 +1134,7 @@ public class ERPSynchronizeService {
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 自動恢復(入)
 					if (o.getBilfuser().contains("System")) {
-						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
 					// 資料轉換
 					o = erpToCloudService.incomingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
@@ -1173,7 +1173,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
@@ -1307,7 +1307,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
@@ -1346,7 +1346,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
@@ -1467,7 +1467,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
@@ -1503,7 +1503,7 @@ public class ERPSynchronizeService {
 
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
@@ -1611,7 +1611,7 @@ public class ERPSynchronizeService {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(領)
 						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs);
+							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 						}
 						// 資料轉換
 						o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);

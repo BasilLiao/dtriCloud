@@ -28,7 +28,7 @@ public class ERPAutoCheckService {
 	// 入料類-自動化(歸還)
 	public BasicIncomingList incomingAutoRe(BasicIncomingList o, //
 			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
-			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
+			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs, Map<String, WarehouseArea> wAs) {
 
 		// 取得Key
 		String wcKey = o.getBiltowho().split("_")[0].replace("[", "").replace("]", "");
@@ -42,13 +42,33 @@ public class ERPAutoCheckService {
 			int s = -o.getBilpngqty();
 			wAsSave.put(wAsKey, s);
 		}
+		o.setBilfuser("");
+		o.setBilcuser("");
+
+		// 紀錄更新
+		wAsKey = wAsKey.replaceAll(" ", "");
+		Integer wAsQty = wAsSave.get(wAsKey) != null ? wAsSave.get(wAsKey) : 0;
+		WarehouseArea area = wAs.get(wAsKey);
+		WarehouseHistory history = new WarehouseHistory();
+		history.setWhtype("入料(System(Re_Auto))");
+		history.setWhwmslocation(o.getBiltowho());
+		history.setWhcontent(//
+				o.getBilclass() + "-" + o.getBilsn() + "-" + //
+						o.getBilnb() + "*" + o.getBilpnqty());
+		history.setWhwmpnb(o.getBilpnumber());
+		history.setWhfuser("System(Re_Auto)");
+		history.setWheqty(area != null ? area.getWaerptqty() : 0);
+		history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+		history.setWhcheckin(o.getBilcheckin() == 0 ? "未核單" : "已核單");
+		historyDao.save(history);
+
 		return o;
 	}
 
 	// 領料類-自動化(歸還)
 	public BasicShippingList shippingAutoRe(BasicShippingList o, //
 			Map<String, Integer> wAsSave, Map<String, WarehouseTypeFilter> wTFs, //
-			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs) {
+			Map<String, WarehouseConfig> wCs, Map<String, WarehouseMaterial> wMs, Map<String, WarehouseArea> wAs) {
 		String wcKey = o.getBslfromwho().split("_")[0].replace("[", "").replace("]", "");
 		String wAsKey = wcKey + "_" + o.getBslpnumber();
 		wAsKey = wAsKey.replaceAll(" ", "");
@@ -62,6 +82,23 @@ public class ERPAutoCheckService {
 		}
 		o.setBslfuser("");
 		o.setBslcuser("");
+
+		// 紀錄更新
+		wAsKey = wAsKey.replaceAll(" ", "");
+		Integer wAsQty = wAsSave.get(wAsKey) != null ? wAsSave.get(wAsKey) : 0;
+		WarehouseArea area = wAs.get(wAsKey);
+		WarehouseHistory history = new WarehouseHistory();
+		history.setWhtype("領料(System(Re_Auto))");
+		history.setWhwmslocation(o.getBslfromwho());
+		history.setWhcontent(//
+				o.getBslclass() + "-" + o.getBslsn() + "-" + //
+						o.getBslnb() + "*" + o.getBslpnqty());
+		history.setWhwmpnb(o.getBslpnumber());
+		history.setWhfuser("System(Re_Auto)");
+		history.setWheqty(area != null ? area.getWaerptqty() : 0);
+		history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+		history.setWhcheckin(o.getBslcheckin() == 0 ? "未核單" : "已核單");
+		historyDao.save(history);
 		return o;
 	}
 
