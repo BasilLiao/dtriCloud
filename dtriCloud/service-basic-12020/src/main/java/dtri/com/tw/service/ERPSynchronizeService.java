@@ -365,7 +365,15 @@ public class ERPSynchronizeService {
 
 		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 自動更新清單
+
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ A541 廠內領料單/ A542 補料單/(A543 超領單)/ A551 委外領料單/ A561 廠內退料單/ A571/
@@ -552,7 +560,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 自動更新清單
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============A581 生產入庫單 ============
@@ -634,7 +649,14 @@ public class ERPSynchronizeService {
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ A591 委外進貨單 ============
@@ -716,7 +738,14 @@ public class ERPSynchronizeService {
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ A131 庫存借出單/ A141 庫存借入單 ============
@@ -857,7 +886,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ 借出歸還A151/借入歸還單A161 ============
@@ -999,7 +1035,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ A111 費用領料單/ A112 費用退料單/A115/ A119 料號調整單/ A121 倉庫調撥單 ============
@@ -1190,7 +1233,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ 組合單/A421 ============
@@ -1344,7 +1394,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ OK 拆解單/A431 ============
@@ -1500,7 +1557,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ 銷貨單 A231/A232
@@ -1586,7 +1650,14 @@ public class ERPSynchronizeService {
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave);
-		wAsSave = new HashMap<>();// 清除結算
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
 	}
 
 	// ============ 物料+儲位同步 ============
