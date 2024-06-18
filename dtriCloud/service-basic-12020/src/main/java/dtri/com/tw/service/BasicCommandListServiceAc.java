@@ -348,15 +348,21 @@ public class BasicCommandListServiceAc {
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
 			cellName = cellName.replace("bcl", "bcl_");
-			cellName = cellName.replace("bcl_class", "bcl_class");
-			cellName = cellName.replace("bcl_e", "bcl_e_");
-			cellName = cellName.replace("bcl_from", "bcl_from_");
-			cellName = cellName.replace("bcl_fdate", "bcl_f_date");
-			cellName = cellName.replace("bcl_pn", "bcl_pn_");
-			cellName = cellName.replace("bcl_pn_a", "bcl_pn_a_");
-			cellName = cellName.replace("bcl_pname", "bcl_p_name");
+
+			cellName = cellName.replace("bcl_cuser", "bcl_c_user");
+			cellName = cellName.replace("bcl_fuser", "bcl_f_user");
 			cellName = cellName.replace("bcl_pnumber", "bcl_p_number");
-			cellName = cellName.replace("bcl_to", "bcl_to_");
+			cellName = cellName.replace("bcl_pname", "bcl_p_name");
+			cellName = cellName.replace("bcl_pspecification", "bcl_p_specification");
+			cellName = cellName.replace("bcl_pnqty", "bcl_pn_qty");
+			cellName = cellName.replace("bcl_tocommand", "bcl_to_command");
+			cellName = cellName.replace("bcl_fromcommand", "bcl_from_command");
+			cellName = cellName.replace("bcl_towho", "bcl_to_who");
+			cellName = cellName.replace("bcl_fromwho", "bcl_from_who");
+			cellName = cellName.replace("bcl_edate", "bcl_e_date");
+			cellName = cellName.replace("bcl_fdate", "bcl_f_date");
+			cellName = cellName.replace("bcl_sdate", "bcl_s_date");
+
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
 			String valueType = x.getAsString().split("<_>")[3];

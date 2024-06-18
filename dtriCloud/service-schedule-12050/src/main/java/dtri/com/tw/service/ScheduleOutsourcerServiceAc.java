@@ -201,7 +201,7 @@ public class ScheduleOutsourcerServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("soid_");
 
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_somcdates_somcdatee");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
 
