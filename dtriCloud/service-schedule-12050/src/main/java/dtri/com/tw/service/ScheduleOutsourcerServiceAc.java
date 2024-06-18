@@ -166,7 +166,15 @@ public class ScheduleOutsourcerServiceAc {
 			ScheduleOutsourcer searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					ScheduleOutsourcer.class);
 			searchData.setSysstatus(searchData.getSysstatus() == null ? 0 : searchData.getSysstatus());
-
+			// 時間查閱
+			if (!searchData.getSomcdates().equals("") && searchData.getSomcdates() != null) {
+				Date somcdates = new Date(Long.parseLong(searchData.getSomcdates()));
+				searchData.setSomcdates(Fm_T.to_yMd_Hms(somcdates));
+			}
+			if (!searchData.getSomcdatee().equals("") && searchData.getSomcdatee() != null) {
+				Date somcdatee = new Date(Long.parseLong(searchData.getSomcdatee()));
+				searchData.setSomcdatee(Fm_T.to_yMd_Hms(somcdatee));
+			}
 			ArrayList<ScheduleOutsourcer> entitys = outsourcerDao.findAllBySearch(searchData.getSonb(),
 					searchData.getSopnb(), searchData.getSopname(), searchData.getSopspecifications(),
 					searchData.getSostatus(), searchData.getSofname(), searchData.getSouname(),
@@ -193,7 +201,7 @@ public class ScheduleOutsourcerServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("soid_");
 
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_somcdates_somcdatee");
 		return packageBean;
 	}
 
@@ -237,14 +245,14 @@ public class ScheduleOutsourcerServiceAc {
 					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSompnote().replaceAll("\n", "");
 					noteOlds = JsonParser.parseString(o.getSompnote()).getAsJsonArray();
-					JsonElement noteOld = noteOlds.get(noteOlds.size()-1).getAsJsonObject();
+					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
 					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
 					if (contentOld.equals(contentNew)) {
 						checkNotSame = false;
 						break;
 					}
-					
+
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
@@ -280,7 +288,7 @@ public class ScheduleOutsourcerServiceAc {
 						checkNotSame = false;
 						break;
 					}
-					
+
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));

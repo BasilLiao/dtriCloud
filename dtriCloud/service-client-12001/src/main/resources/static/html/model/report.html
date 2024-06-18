@@ -206,6 +206,12 @@
 							</div>
 						</div>
 					</div>
+					<div class="col-12 p-1">
+						<div class="progress p-0">
+							<div id="report_pro" class="progress-bar progress-bar-striped bg-success" role="progressbar"
+								style="width: 0%">0%...Wait...</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -438,6 +444,9 @@
 					$('.rcRe').remove();
 					$('#rcCellName').text('').attr('title', '');
 					$('#rcValueText').text('');
+					//進度條
+					$('#report_pro').text("0%...Wait...");
+					$('#report_pro').css("width", "0%");
 				});
 				//清除特定
 				$(document).off("click", "#rcQueryList .bi-x-lg");
@@ -456,6 +465,9 @@
 				//傳送條件
 				$(document).off("click", "#rcSend");
 				$(document).on("click", "#rcSend", function () {
+					//進度條
+					$('#report_pro').text("0%...Wait...");
+					$('#report_pro').css("width", "0%");
 					//console.log( $(this).val());
 					report.methods.reportSend();
 				});
@@ -559,6 +571,9 @@
 			},
 			//==========================傳送資料==========================
 			reportSend() {
+				//進度條
+				$('#report_pro').text("25%...Search...");
+				$('#report_pro').css("width", "25%");
 				var data = {};
 				var req_data = {};
 				var entityJson = [];
@@ -589,6 +604,10 @@
 				}
 			},
 			reportReLoad() {
+				//進度條
+				$('#report_pro').text("50%...Loadiing...");
+				$('#report_pro').css("width", "50%");
+
 				//資料處理
 				$('.rcRe').remove();
 				var entityJsons = report.data.entityJsons;
@@ -629,6 +648,9 @@
 					});
 					$('#reportValueList').before(reportValueList);
 				}
+				//進度條
+				$('#report_pro').text("100%...OK(" + entityJsons.length + ")...");
+				$('#report_pro').css("width", "100%");
 			},
 			destroy() {
 				//銷毀
