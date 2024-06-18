@@ -167,11 +167,11 @@ public class ScheduleOutsourcerServiceAc {
 					ScheduleOutsourcer.class);
 			searchData.setSysstatus(searchData.getSysstatus() == null ? 0 : searchData.getSysstatus());
 			// 時間查閱
-			if (!searchData.getSomcdates().equals("") && searchData.getSomcdates() != null) {
+			if (searchData.getSomcdates() != null && !searchData.getSomcdates().equals("")) {
 				Date somcdates = new Date(Long.parseLong(searchData.getSomcdates()));
 				searchData.setSomcdates(Fm_T.to_yMd_Hms(somcdates));
 			}
-			if (!searchData.getSomcdatee().equals("") && searchData.getSomcdatee() != null) {
+			if (searchData.getSomcdatee() != null && !searchData.getSomcdatee().equals("")) {
 				Date somcdatee = new Date(Long.parseLong(searchData.getSomcdatee()));
 				searchData.setSomcdatee(Fm_T.to_yMd_Hms(somcdatee));
 			}
