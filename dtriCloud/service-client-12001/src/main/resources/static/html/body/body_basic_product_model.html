@@ -84,7 +84,7 @@ body_index={
 			//$("#body_basic_product_model #search_title").addClass("disabled");
 			//$("#body_basic_product_model #modify_title").addClass("disabled");
 			//$("#body_basic_product_model #report_title").addClass("disabled");
-			//$("#body_basic_product_model #print_title").addClass("disabled");
+			$("#body_basic_product_model #print_title").addClass("disabled");
 			//$("#body_basic_product_model #compare_title").addClass("disabled");
 			$("#body_basic_product_model #other_title").addClass("disabled");
             //模板-預設分頁 active
@@ -104,7 +104,7 @@ body_index={
             	modify.methods.create();
             });
             //列印-模板
-            $("#body_basic_product_model #print_tab").load("./html/print/print_basic_product_model.html", function(){
+            $("#body_basic_product_model #print_tab").load("./html/model/print.html", function(){
             	print.methods.create();
             });
             //報告-模板

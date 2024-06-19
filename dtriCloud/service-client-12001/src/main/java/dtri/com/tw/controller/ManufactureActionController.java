@@ -26,7 +26,8 @@ public class ManufactureActionController extends AbstractController {
 	ManufactureServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/manufacture_action.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/manufacture_action.basil" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -37,7 +38,7 @@ public class ManufactureActionController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]", loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -69,7 +70,8 @@ public class ManufactureActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/manufacture_action.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/manufacture_action.basil.AR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -80,7 +82,7 @@ public class ManufactureActionController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]", loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -112,7 +114,8 @@ public class ManufactureActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/manufacture_action.basil.ARD" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/manufacture_action.basil.ARD" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String searchD(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -123,7 +126,7 @@ public class ManufactureActionController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]", loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -155,7 +158,8 @@ public class ManufactureActionController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/manufacture_action.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/manufacture_action.basil.ARR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -205,7 +209,7 @@ public class ManufactureActionController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]", loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);

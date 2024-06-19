@@ -99,7 +99,7 @@ public class IndexController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]", loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
