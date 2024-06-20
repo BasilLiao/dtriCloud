@@ -716,6 +716,10 @@
 											if (s == 'waspngqty' && entity['waspngqty'] != entity['waspnqty']) {
 												exTbodyTr.find('.' + s).addClass('bg-warning');
 											}
+											//集結?
+											if (s == 'wasfucheckin' && !entity['wasfucheckin']) {
+												exTbodyTr.find('.' + s).addClass('bg-warning');
+											}
 										}
 									});
 									//marks標記?	->帶入[mark]
@@ -1273,9 +1277,18 @@
 									break;
 								}
 							}
+							//打印
 							if (k == "waspalready" && entity[k] == "未打印") {
 								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
 							}
+							//完成?
+							if (k == "wasschedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
+								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
+							}
+							if (k == "wascischedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
+								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
+							}
+
 						});
 					}
 				}

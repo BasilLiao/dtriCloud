@@ -245,7 +245,8 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			for (ScheduleOutsourcer n : arrayList) {
 				if (!mapOutsourcerTag.containsKey(n.getSoid())) {
 					JsonObject tagString = new JsonObject();
-					tagString.addProperty("all", Fm_T.to_y_M_d(new Date()));
+					// tagString.addProperty("all", Fm_T.to_y_M_d(new Date()));//--新資料取消顯示標記
+					tagString.addProperty("all", "");
 					// 生管
 					tagString.addProperty("sofodate", "");
 					tagString.addProperty("sofokdate", "");
