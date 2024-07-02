@@ -32,8 +32,9 @@ import jakarta.persistence.Table;
  *      wmimg : 圖片<br>
  *      wmadqty :自動減少<br>
  *      wmaiqty :自動增加<br>
- *      wmmrcheck  :攔截<br>
-		wmsepncheck  :攔截?<br>
+ *      wmmrcheck :攔截<br>
+ *      wmsepncheck :攔截?<br>
+ *      wm_description:商品描述?<br>
  */
 
 @Entity
@@ -63,6 +64,7 @@ public class WarehouseMaterial {
 		this.wmaiqty = false;
 		this.wmmrcheck = true;
 		this.wmsepncheck = true;
+		this.wmdescription = "";
 	}
 
 	// 共用型
@@ -115,6 +117,9 @@ public class WarehouseMaterial {
 	private Boolean wmmrcheck;
 	@Column(name = "wm_se_pn_check", nullable = true, columnDefinition = "boolean default true")
 	private Boolean wmsepncheck;
+
+	@Column(name = "wm_description", nullable = false, columnDefinition = "text default ''")
+	private String wmdescription;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -282,6 +287,14 @@ public class WarehouseMaterial {
 
 	public void setWmsepncheck(Boolean wmsepncheck) {
 		this.wmsepncheck = wmsepncheck;
+	}
+
+	public String getWmdescription() {
+		return wmdescription;
+	}
+
+	public void setWmdescription(String wmdescription) {
+		this.wmdescription = wmdescription;
 	}
 
 }

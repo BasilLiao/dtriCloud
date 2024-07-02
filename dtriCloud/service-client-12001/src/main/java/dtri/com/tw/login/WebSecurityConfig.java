@@ -47,6 +47,7 @@ public class WebSecurityConfig {
 	private static final String system_lan = "/ajax/system_language_cell.basil";
 	private static final String own_use = "/ajax/own_user.basil";
 	// ERP同步
+	private static final String basic_bom = "/ajax/basic_bom_ingredients.basil";
 	private static final String basic_com = "/ajax/basic_command_list.basil";
 	private static final String basic_shi = "/ajax/basic_shipping_list.basil";
 	private static final String basic_inc = "/ajax/basic_incoming_list.basil";
@@ -153,6 +154,15 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, basic_not + ".AU").hasAuthority(actionRole(basic_not, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, basic_not + ".AD").hasAuthority(actionRole(basic_not, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, basic_not + ".DD").hasAuthority(actionRole(basic_not, "DD"))// (標記移除)
+
+				// ----請求-basic_bom_ingredients-(訪問) ----
+				.requestMatchers(HttpMethod.POST, basic_bom).hasAuthority(actionRole(basic_bom, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, basic_bom + ".AR").hasAuthority(actionRole(basic_bom, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, basic_bom + ".ARR").hasAuthority(actionRole(basic_bom, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, basic_bom + ".AC").hasAuthority(actionRole(basic_bom, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, basic_bom + ".AU").hasAuthority(actionRole(basic_bom, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, basic_bom + ".AD").hasAuthority(actionRole(basic_bom, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, basic_bom + ".DD").hasAuthority(actionRole(basic_bom, "DD"))// (標記移除)
 
 				// ----請求-basic_command_list-(訪問) ----
 				.requestMatchers(HttpMethod.POST, basic_com).hasAuthority(actionRole(basic_com, ""))// (轉跳)

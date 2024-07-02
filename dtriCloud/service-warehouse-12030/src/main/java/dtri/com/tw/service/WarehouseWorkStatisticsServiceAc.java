@@ -66,7 +66,7 @@ public class WarehouseWorkStatisticsServiceAc {
 			// Step3-1.取得資料(一般/細節)
 			Date ssyscdate = Fm_T.toDateTime(Fm_T.to_y_M_d(new Date()) + " 00:00:00");
 			Date esyscdate = Fm_T.toDateTime(Fm_T.to_y_M_d(new Date()) + " 23:59:59");
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, null, null, ssyscdate,
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(null, null, null, "(User)", ssyscdate,
 					esyscdate, pageable);
 			ArrayList<WarehouseWorkStatisticsFront> wwsfEntitys = new ArrayList<WarehouseWorkStatisticsFront>();
 			TreeMap<String, JsonObject> entityMap = new TreeMap<String, JsonObject>();// 時間||{人名:次數}
@@ -162,7 +162,7 @@ public class WarehouseWorkStatisticsServiceAc {
 			WarehouseWorkStatisticsFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					WarehouseWorkStatisticsFront.class);
 
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWwsnames(), null, null, null,
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWwsnames(), null, null, "(User)",
 					searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
 			ArrayList<WarehouseWorkStatisticsFront> wwsfEntitys = new ArrayList<WarehouseWorkStatisticsFront>();
 			TreeMap<String, JsonObject> entityMap = new TreeMap<String, JsonObject>();// 時間||{人名:次數}

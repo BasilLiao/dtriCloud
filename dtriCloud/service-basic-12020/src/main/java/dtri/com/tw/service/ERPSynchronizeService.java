@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
 
+import dtri.com.tw.mssql.dao.BommdDao;
 import dtri.com.tw.mssql.dao.BomtdDao;
 import dtri.com.tw.mssql.dao.BomtfDao;
 import dtri.com.tw.mssql.dao.CopthDao;
@@ -33,6 +34,7 @@ import dtri.com.tw.mssql.dao.MocteDao;
 import dtri.com.tw.mssql.dao.MoctfDao;
 import dtri.com.tw.mssql.dao.MocthDao;
 import dtri.com.tw.mssql.dao.PurthDao;
+import dtri.com.tw.mssql.entity.Bommd;
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Copth;
@@ -47,6 +49,7 @@ import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
 import dtri.com.tw.mssql.entity.Mocth;
 import dtri.com.tw.mssql.entity.Purth;
+import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
@@ -60,6 +63,7 @@ import dtri.com.tw.pgsql.dao.WarehouseConfigDao;
 import dtri.com.tw.pgsql.dao.WarehouseKeeperDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
+import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
@@ -82,6 +86,8 @@ import jakarta.annotation.Resource;
 @Service
 public class ERPSynchronizeService {
 
+	@Autowired
+	BommdDao bommdDao;
 	@Autowired
 	BomtdDao bomtdDao;
 	@Autowired
@@ -138,6 +144,8 @@ public class ERPSynchronizeService {
 	BasicNotificationMailDao notificationMailDao;
 	@Autowired
 	ScheduleOutsourcerDao scheduleOutsourcerDao;
+	@Autowired
+	BasicBomIngredientsDao basicBomIngredientsDao;
 
 	@Autowired
 	ERPToCloudService erpToCloudService;
@@ -1734,6 +1742,7 @@ public class ERPSynchronizeService {
 					o.setWmpnb(ov.getMb001());// 物料號
 					o.setWmname(ov.getMb002());// 物料名稱
 					o.setWmspecification(ov.getMb003());// 物料規格
+					o.setWmdescription(ov.getMb009());// 物料敘述
 					o.setChecksum(checkSum);
 					saveLists.add(o);
 				}
@@ -1748,6 +1757,7 @@ public class ERPSynchronizeService {
 				n.setWmpnb(v.getMb001());// 物料號
 				n.setWmname(v.getMb002());// 物料名稱
 				n.setWmspecification(v.getMb003());// 物料規格
+				n.setWmdescription(v.getMb009());// 物料敘述
 				saveLists.add(n);
 			}
 		});
@@ -2183,6 +2193,59 @@ public class ERPSynchronizeService {
 		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
 		sendTo.setSendAllData(sendAllData.toString());
 		sendTo.run();
+	}
+
+	// ============ 同步BOM() ============
+	public void erpSynchronizeBomIngredients() throws Exception {
+		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
+		ArrayList<BasicBomIngredients> boms = basicBomIngredientsDao.findAllByBomList(null, null, null, null, null);
+		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
+		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
+		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
+		bommds = bommdDao.findAllByBommdFirst();
+//		if (boms.size() > 0) {
+//			bommds = bommdDao.findAllByBommd();
+//		} else {
+//		}
+		// 檢查資料&更正
+		for (Bommd bommd : bommds) {
+			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
+			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
+			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
+			bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
+			bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
+			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
+			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
+		}
+		// 轉換資料
+		boms.forEach(o -> {
+			if (erpBommds.containsKey(o.getBbisnnb())) {
+				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
+				String sum = erpBommds.get(o.getBbisnnb()).toString();
+				if (!sum.equals(o.getChecksum())) {
+					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+					bomNews.add(o);
+				}
+			} else {
+				// 沒比對到?已經移除?
+				bomRemoves.add(o);
+			}
+		});
+		// 新增
+		erpBommds.forEach((k, n) -> {
+			if (n.isNewone()) {
+				BasicBomIngredients o = new BasicBomIngredients();
+				String sum = n.toString();
+				erpToCloudService.bomIngredients(o, n, wMs, sum);
+				bomNews.add(o);
+			}
+		});
+		// 存入資料
+		basicBomIngredientsDao.saveAll(bomNews);
+		basicBomIngredientsDao.deleteAll(bomRemoves);
+
+		System.out.println("---");
 	}
 
 	// 而外執行

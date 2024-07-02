@@ -116,4 +116,23 @@ public interface BasicServiceFeign {
 	@RequestMapping(value = { "/basicCommandList/setDetele" }, method = RequestMethod.POST)
 	PackageBean setCommandListDetele(@RequestBody String jsonPackageBean);
 
+	// ================================同步:BOM組成================================
+	@RequestMapping(value = { "/basicBomIngredients/getSearch" }, method = RequestMethod.POST)
+	PackageBean getBomIngredientsSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicBomIngredients/getReport" }, method = RequestMethod.POST)
+	PackageBean getBomIngredientsReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicBomIngredients/setModify" }, method = RequestMethod.POST)
+	PackageBean setBomIngredientsModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicBomIngredients/setAdd" }, method = RequestMethod.POST)
+	PackageBean setBomIngredientsAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicBomIngredients/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setBomIngredientsInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/basicBomIngredients/setDetele" }, method = RequestMethod.POST)
+	PackageBean setBomIngredientsDetele(@RequestBody String jsonPackageBean);
+
 }

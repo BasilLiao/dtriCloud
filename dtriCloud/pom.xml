@@ -73,5 +73,6 @@
 		<module>service-manufacture-12040</module>
 		<module>service-schedule-12050</module>
 		<module>service-bios-12060</module>
+		<module>service-product-12070</module>
 	</modules>
 </project>

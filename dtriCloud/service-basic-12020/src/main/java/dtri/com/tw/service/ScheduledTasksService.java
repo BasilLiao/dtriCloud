@@ -76,6 +76,8 @@ public class ScheduledTasksService {
 				synchronizeService.erpSynchronizeCopth();
 				synchronizeService.erpSynchronizePurth();
 				synchronizeService.erpSynchronizeWtypeFilter();
+				// BOM結構同步
+				synchronizeService.erpSynchronizeBomIngredients();
 				// 移除多於資料
 				synchronizeService.remove120DayData();
 

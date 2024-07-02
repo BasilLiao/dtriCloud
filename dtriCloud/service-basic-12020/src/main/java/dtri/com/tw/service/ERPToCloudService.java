@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.mssql.entity.Bommd;
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Copth;
@@ -23,12 +24,14 @@ import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
 import dtri.com.tw.mssql.entity.Mocth;
 import dtri.com.tw.mssql.entity.Purth;
+import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
+import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.shared.Fm_T;
 
@@ -1202,6 +1205,32 @@ public class ERPToCloudService {
 		}
 
 		o.setSosum(checkSum);// 檢查/更新相同?資料串比對
+		return o;
+	}
+
+	// ERP BOM 轉換
+	public BasicBomIngredients bomIngredients(BasicBomIngredients o, Bommd bommd, Map<String, WarehouseMaterial> wMs,
+			String sum) {
+
+		// 主
+		o.setBbisn(bommd.getMd001());
+		o.setBbinb(bommd.getMd002());
+		o.setBbisnnb(bommd.getMd001() + "-" + bommd.getMd002());
+		o.setBbiname(bommd.getMb002());
+		o.setBbispecification(bommd.getMb003());
+		o.setBbidescription(bommd.getMb009());
+		// 子
+		o.setBbiiqty(bommd.getMd006());
+		o.setBbiisn(bommd.getMd003());
+		o.setBbiiname(bommd.getCmb002());
+		o.setBbiispecification(bommd.getCmb003());
+		o.setBbiidescription(bommd.getCmb009());
+		o.setBbiiprocess(bommd.getMd009());
+
+		o.setBbiiserp(
+				bommd.getMdcdate() + "_" + bommd.getMdcuser() + "_" + bommd.getMdmdate() + "_" + bommd.getMdmuser());
+		o.setChecksum(sum);
+
 		return o;
 	}
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 紀錄檔級別從低到高分為TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果設定為WARN，則低於WARN的資訊都不會輸出 -->
+<!-- scan:當此屬性設定為true時，組態檔如果發生改變，將會被重新載入，預設值為true -->
+<!-- scanPeriod:設定監測組態檔是否有修改的時間間隔，如果沒有給出時間單位，預設單位是毫秒。當scan為true時，此屬性生效。預設的時間間隔為1分鐘。 -->
+<!-- debug:當此屬性設定為true時，將列印出logback內部紀錄檔資訊，實時檢視logback執行狀態。預設值為false。 -->
+<configuration scan="true" scanPeriod="1 seconds"
+	debug="false">
+	<!-- name的值是變數的名稱，value的值時變數定義的值。通過定義的值會被插入到logger上下文中。定義變數後，可以使「${}」來使用變數。 -->
+	<property name="Log_Folder"
+		value="E:/apache-tomcat-DTRCloud/DTRCloud_server/DTRCloud_log" />
+	<property name="Log_Folder_Archived"
+		value="E:/apache-tomcat-DTRCloud/DTRCloud_server/DTRCloud_log/archived" />
+	<property name="Log_File" value="product-logger" />
+	<property name="console_log_pattern"
+		value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n" />
+	<property name="charset_s" value="UTF-8" />
+	<!--輸出到控制檯 -->
+	<appender name="Console"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<encoder>
+			<pattern>${console_log_pattern}</pattern>
+			<charset>${charset_s}</charset>
+		</encoder>
+	</appender>
+	<!-- 配置載入位置 -->
+	<appender name="RollingFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${Log_Folder}/${Log_File}.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+		</encoder>
+		<!-- 自動打包 -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily and when the file reaches 10 MegaBytes -->
+			<fileNamePattern>${Log_Folder_Archived}/${Log_File}-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<maxHistory>60</maxHistory>
+			<totalSizeCap>200GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>20MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<!-- LOG everything at INFO level -->
+	<root level="info">
+		<appender-ref ref="RollingFile" />
+		<appender-ref ref="Console" />
+	</root>
+
+	<!-- LOG "com.baeldung*" at TRACE level -->
+	<logger name="com.baeldung" level="trace" additivity="false">
+		<appender-ref ref="RollingFile" />
+		<appender-ref ref="Console" />
+	</logger>
+
+</configuration>

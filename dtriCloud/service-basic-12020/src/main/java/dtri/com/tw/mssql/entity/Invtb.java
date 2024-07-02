@@ -30,6 +30,8 @@ public class Invtb implements Cloneable {
 	private String mb002;// 品名
 	@Column(name = "MB003")
 	private String mb003;// 規格
+	@Column(name = "MB009")
+	private String mb009;// 描述
 
 	@Column(name = "MC002")
 	private String mc002;// 倉別代號
@@ -184,9 +186,18 @@ public class Invtb implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "Invtb [mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mc002=" + mc002 + ", cmc002=" + cmc002 + ", mc003=" + mc003
-				+ ", mc007=" + mc007 + ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040
-				+ ", ma002=" + ma002 + "]";
+		return "Invtb [mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb009=" + mb009 + ", mc002="
+				+ mc002 + ", cmc002=" + cmc002 + ", mc003=" + mc003 + ", mc007=" + mc007 + ", mb017=" + mb017
+				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", ma002=" + ma002
+				+ "]";
+	}
+
+	public String getMb009() {
+		return mb009;
+	}
+
+	public void setMb009(String mb009) {
+		this.mb009 = mb009;
 	}
 
 }

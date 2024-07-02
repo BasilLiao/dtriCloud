@@ -15,6 +15,7 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格
+			+ "	INVMB.MB009, "// --商品描述
 			+ "	INVMC.MC002, "// --倉別代號
 			+ "	CMSMC.MC002 AS CMC002, "// --倉別名稱
 			+ "	INVMC.MC003, "// --儲位位置
@@ -36,9 +37,9 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
-			//+ "WHERE "//
-			//+ "	INVMC.MC007 is not null "//
-			//+ "	AND (INVMC.MC007 >=1 OR INVMC.MC007 =0) "//
+			// + "WHERE "//
+			// + " INVMC.MC007 is not null "//
+			// + " AND (INVMC.MC007 >=1 OR INVMC.MC007 =0) "//
 			+ "ORDER BY " //
 			+ "	INVMB.MB001 ASC,"//
 			+ "	INVMC.MC002 ASC,"//
