@@ -276,6 +276,10 @@ INSERT INTO public.system_language_cell (sl_id, sl_class, sl_cm_def_val, sl_cm_f
 INSERT INTO public.system_language_cell (sl_id, sl_class, sl_cm_def_val, sl_cm_fixed, sl_cm_must, sl_cm_placeholder, sl_cm_select, sl_cm_show, sl_cm_type, sl_c_show, sl_c_width, sl_language, sl_sp_control, sl_target, sys_c_date, sys_c_user, sys_header, sys_m_date, sys_m_user, sys_note, sys_o_date, sys_o_user, sys_sort, sys_status) VALUES (96, 2, '', 1, 0, '', '[]', 1, 'text', 1, 100, '{"zh-TW":"修改用戶","zh-CN":"修改用户","en-US":"Modified user","vi-VN":"sửa đổi người dùng"}', 'SystemUser', 'sysmuser', '2023-08-08 13:49:37.257', 'system', false, '2023-08-09 15:44:10.66', 'admin', '', '2023-07-26 18:01:44.008', 'system', 998, 0);
 SELECT setval('public.system_language_cell_seq', 189, true);
 
+----bom_item_specifications
+DROP sequence IF EXISTS BOM_ITEM_SPECIFICATIONS_G_SEQ CASCADE;
+create sequence BOM_ITEM_SPECIFICATIONS_G_SEQ start with 1 increment by 1;
+
 
 --=====================================================================================
 --=====================================單據&物料資料====================================

@@ -1095,6 +1095,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysmuser(packageBean.getUserAccount());
 									t.setBslfuser("");
 									t.setBslpngqty(0);
+									t.setBslfucheckin(false);
 								}
 							}
 							break;

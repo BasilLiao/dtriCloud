@@ -137,7 +137,7 @@ public class BomKeeper {
 	@Column(name = "bk_type", nullable = false, columnDefinition = "int default 0")
 	private Integer bktype;
 	@Column(name = "bk_type_n", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bktypen;
+	private Integer bktypen;
 	@Column(name = "bk_su_acc", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bksuacc;
 	@Column(name = "bk_su_id", nullable = false)
@@ -247,11 +247,11 @@ public class BomKeeper {
 		this.bktype = bktype;
 	}
 
-	public String getBktypen() {
+	public Integer getBktypen() {
 		return bktypen;
 	}
 
-	public void setBktypen(String bktypen) {
+	public void setBktypen(Integer bktypen) {
 		this.bktypen = bktypen;
 	}
 

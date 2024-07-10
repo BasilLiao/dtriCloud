@@ -10,7 +10,7 @@
 		value="E:/apache-tomcat-DTRCloud/DTRCloud_server/DTRCloud_log" />
 	<property name="Log_Folder_Archived"
 		value="E:/apache-tomcat-DTRCloud/DTRCloud_server/DTRCloud_log/archived" />
-	<property name="Log_File" value="product-logger" />
+	<property name="Log_File" value="bom-logger" />
 	<property name="console_log_pattern"
 		value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n" />
 	<property name="charset_s" value="UTF-8" />

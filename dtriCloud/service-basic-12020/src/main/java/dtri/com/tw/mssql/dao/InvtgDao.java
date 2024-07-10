@@ -52,7 +52,7 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	INVTG.TG022!='V'"//
 			+ "	AND INVTG.TG001 is not null"//
 			+ "	AND INVTG.TG009 > 0 "// 數量大於0
-			+ " AND ((INVTG.TG001='A131' AND INVTG.TG022='Y') OR INVTG.TG001='A141') "//
+			+ " AND ((INVTG.TG001='A131' AND INVTF.TF028='3') OR INVTG.TG001='A141') "//
 			+ "	AND (INVTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
 			+ "	OR INVTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//

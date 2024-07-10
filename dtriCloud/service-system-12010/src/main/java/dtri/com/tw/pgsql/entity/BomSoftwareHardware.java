@@ -25,13 +25,17 @@ import jakarta.persistence.Table;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- *      ---負責人設置---<br>
- *      bk_id : 主key <br>
- *      bk_nb : BOM號-規則<br>
- *      bk_model : BOM型號-規則<br>
- *      bk_type : 建立負責人類型 (2.主要:可以查.刪.改) (3.協助:查.改)(1.遮蔽:則無法呈現資料)<br>
- *      bk_su_acc : 負責人帳號<br>
- *      bk_su_id : 負責人ID<br>
+ *      ---軟硬體版本---<br>
+ *      bsh_id = null;<br>
+ *      bsh_nb = "";BOM號<br>
+ *      bsh_model = "";型號<br>
+ *      bsh_c_name = "";客戶名稱<br>
+ *      bsh_h_ecn = "";硬體-ECN版本<br>
+ *      bsh_s_ec = "";韌體-EC版本<br>
+ *      bsh_h_nvram = "";硬體-NVRAM版本<br>
+ *      bsh_h_mb = "";硬體-主機板本<br>
+ *      bsh_s_bios = "";韌體-BIOS<br>
+ *      bsh_s_os = "";軟體-作業系統<br>
  * 
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
@@ -72,11 +76,11 @@ import jakarta.persistence.Table;
  **/
 
 @Entity
-@Table(name = "bom_keeper")
+@Table(name = "bom_software_hardware")
 @EntityListeners(AuditingEntityListener.class)
-public class BomKeeper {
+public class BomSoftwareHardware {
 
-	public BomKeeper() {
+	public BomSoftwareHardware() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -89,15 +93,19 @@ public class BomKeeper {
 		this.sysstatus = 0;
 		this.syssort = 0;
 		this.sysnote = "";
-		// 主體型
 
-		this.bkid = null;
-		this.bknb = null;
-		this.bkmodel = null;
-		this.bktype = null;
-		this.bktypen = null;
-		this.bksuacc = null;
-		this.bksuid = null;
+		// 主體型
+		this.bshid = null;
+		this.bshnb = "";
+		this.bshmodel = "";
+		this.bshcname = "";
+		this.bshhecn = "";
+		this.bshsec = "";
+		this.bshhnvram = "";
+		this.bshhmb = "";
+		this.bshsbios = "";
+		this.bshsos = "";
+
 	}
 
 	// 共用型
@@ -122,26 +130,35 @@ public class BomKeeper {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
+	@Column(name = "sys_note1", nullable = false, columnDefinition = "text default ''")
+	private String sysnote1;
+	@Column(name = "sys_note2", nullable = false, columnDefinition = "text default ''")
+	private String sysnote2;
 
 	// 主體型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_keeper_seq")
-	@SequenceGenerator(name = "bom_keeper_seq", sequenceName = "bom_keeper_seq", allocationSize = 1)
-	@Column(name = "bk_id")
-	private Long bkid;
-
-	@Column(name = "bk_nb", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bknb;
-	@Column(name = "bk_model", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bkmodel;
-	@Column(name = "bk_type", nullable = false, columnDefinition = "int default 0")
-	private Integer bktype;
-	@Column(name = "bk_type_n", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bktypen;
-	@Column(name = "bk_su_acc", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bksuacc;
-	@Column(name = "bk_su_id", nullable = false)
-	private Long bksuid;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_software_hardware_seq")
+	@SequenceGenerator(name = "bom_software_hardware_seq", sequenceName = "bom_software_hardware_seq", allocationSize = 1)
+	@Column(name = "bsh_id")
+	private Long bshid;
+	@Column(name = "bsh_nb", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshnb;
+	@Column(name = "bsh_model", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshmodel;
+	@Column(name = "bsh_c_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshcname;
+	@Column(name = "bsh_h_ecn", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshhecn;
+	@Column(name = "bsh_s_ec", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshsec;
+	@Column(name = "bsh_h_nvram", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshhnvram;
+	@Column(name = "bsh_h_mb", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshhmb;
+	@Column(name = "bsh_s_bios", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshsbios;
+	@Column(name = "bsh_s_os", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshsos;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -223,59 +240,100 @@ public class BomKeeper {
 		this.sysnote = sysnote;
 	}
 
-	public Long getBkid() {
-		return bkid;
+	public String getSysnote1() {
+		return sysnote1;
 	}
 
-	public void setBkid(Long bkid) {
-		this.bkid = bkid;
+	public void setSysnote1(String sysnote1) {
+		this.sysnote1 = sysnote1;
 	}
 
-	public String getBkmodel() {
-		return bkmodel;
+	public String getSysnote2() {
+		return sysnote2;
 	}
 
-	public void setBkmodel(String bkmodel) {
-		this.bkmodel = bkmodel;
+	public void setSysnote2(String sysnote2) {
+		this.sysnote2 = sysnote2;
 	}
 
-	public Integer getBktype() {
-		return bktype;
+	public Long getBshid() {
+		return bshid;
 	}
 
-	public void setBktype(Integer bktype) {
-		this.bktype = bktype;
+	public void setBshid(Long bshid) {
+		this.bshid = bshid;
 	}
 
-	public String getBktypen() {
-		return bktypen;
+	public String getBshnb() {
+		return bshnb;
 	}
 
-	public void setBktypen(String bktypen) {
-		this.bktypen = bktypen;
+	public void setBshnb(String bshnb) {
+		this.bshnb = bshnb;
 	}
 
-	public String getBksuacc() {
-		return bksuacc;
+	public String getBshmodel() {
+		return bshmodel;
 	}
 
-	public void setBksuacc(String bksuacc) {
-		this.bksuacc = bksuacc;
+	public void setBshmodel(String bshmodel) {
+		this.bshmodel = bshmodel;
 	}
 
-	public Long getBksuid() {
-		return bksuid;
+	public String getBshcname() {
+		return bshcname;
 	}
 
-	public void setBksuid(Long bksuid) {
-		this.bksuid = bksuid;
+	public void setBshcname(String bshcname) {
+		this.bshcname = bshcname;
 	}
 
-	public String getBknb() {
-		return bknb;
+	public String getBshhecn() {
+		return bshhecn;
 	}
 
-	public void setBknb(String bksn) {
-		this.bknb = bksn;
+	public void setBshhecn(String bshhecn) {
+		this.bshhecn = bshhecn;
 	}
+
+	public String getBshsec() {
+		return bshsec;
+	}
+
+	public void setBshsec(String bshsec) {
+		this.bshsec = bshsec;
+	}
+
+	public String getBshhnvram() {
+		return bshhnvram;
+	}
+
+	public void setBshhnvram(String bshhnvram) {
+		this.bshhnvram = bshhnvram;
+	}
+
+	public String getBshhmb() {
+		return bshhmb;
+	}
+
+	public void setBshhmb(String bshhmb) {
+		this.bshhmb = bshhmb;
+	}
+
+	public String getBshsbios() {
+		return bshsbios;
+	}
+
+	public void setBshsbios(String bshsbios) {
+		this.bshsbios = bshsbios;
+	}
+
+	public String getBshsos() {
+		return bshsos;
+	}
+
+	public void setBshsos(String bshsos) {
+		this.bshsos = bshsos;
+	}
+
 }

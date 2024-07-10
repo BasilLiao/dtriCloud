@@ -471,7 +471,7 @@ public class ERPSynchronizeService {
 						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 						saveInLists.add(o);
 					} else if (!o.getBilfuser().equals("") && !o.getBilfuser().contains("✪") && //
-							(!o.getBilpnqty().equals(m.getTe005()) || !o.getBilpnumber().equals(m.getMb001()))) {
+							(!o.getBilpnqty().equals(m.getTb005()) || !o.getBilpnumber().equals(m.getMb001()))) {
 						// 標記二次修正(數量不同+料號不同)
 						o.setBilfuser("✪ " + o.getBilfuser());
 					}
@@ -488,8 +488,10 @@ public class ERPSynchronizeService {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			oKey = oKey.replaceAll("\\s", "");
-//			if (oKey.indexOf("A542-240529007") >= 0) {
+//			if (oKey.indexOf("A541-240703007") >= 0) {
 //				System.out.println(oKey);
+//				//50-122-210010
+//				
 //			}
 			// 比對同一筆資料?->修正
 			if (erpShMaps.containsKey(oKey)) {
@@ -515,7 +517,7 @@ public class ERPSynchronizeService {
 						saveShLists.add(o);
 
 					} else if (!o.getBslfuser().equals("") && !o.getBslfuser().contains("✪") && //
-							(!o.getBslpnqty().equals(m.getTe005()) || !o.getBslpnumber().equals(m.getMb001()))) {
+							(!o.getBslpnqty().equals(m.getTb004()) || !o.getBslpnumber().equals(m.getMb001()))) {
 						// 標記二次修正(數量不同+料號不同)
 						o.setBslfuser("✪ " + o.getBslfuser());
 					}
@@ -547,8 +549,10 @@ public class ERPSynchronizeService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-//			if(key.indexOf("A541-231122019")>=0) {
+//			if (key.indexOf("A541-240703007") >= 0 && v.getMb001().equals("50-122-210010")) {
 //				System.out.println(key);
+//				//50-122-210010
+//				
 //			}
 			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTe019().equals("N")) {
 				BasicShippingList n = new BasicShippingList();
@@ -877,7 +881,7 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTg022().equals("N")) {
+			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTg022().equals("Y")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換

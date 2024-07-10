@@ -52,7 +52,7 @@ public class ERPToCloudService {
 		o.setBclnb(m.getBslnb());// 序列號
 		o.setBclcheckin(1);// 0=未核單 1=已核單
 		o.setBclacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
-		o.setBclmodel(m.getMa003());// 機型
+		o.setBclmodel(m.getMa003() == null ? "" : m.getMa003());// 機型
 		o.setBclcustomer(m.getTa050());// --訂單生產加工包裝資訊(客戶資訊)
 		// 單身
 		o.setBclpnumber(m.getMb001());// 物料號品號

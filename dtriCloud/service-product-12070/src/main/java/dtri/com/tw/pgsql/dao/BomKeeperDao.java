@@ -16,15 +16,19 @@ public interface BomKeeperDao extends JpaRepository<BomKeeper, Long> {
 	// 查詢全部
 	ArrayList<BomKeeper> findAll();
 
-	// 查詢ID
-	ArrayList<BomKeeper> findAllBySuid(Long id);
-
 	// 查詢全部含-頁數
 	@Query("SELECT c FROM BomKeeper c "//
 			+ "WHERE (:bksuacc is null or c.bksuacc LIKE %:bksuacc% ) and "//
 			+ "(:bknb is null or c.bknb LIKE %:bknb% ) and "//
 			+ "(:bkmodel is null or c.bkmodel LIKE %:bkmodel% ) ") // (4)不過濾
-	ArrayList<BomKeeper> findAllByBomKeeper(String bksuacc, String bknb, String bkmodel, Pageable pageable);
+	ArrayList<BomKeeper> findAllBySearch(String bksuacc, String bknb, String bkmodel, Pageable pageable);
+
+	// 檢查
+	@Query("SELECT c FROM BomKeeper c "//
+			+ "WHERE (:bksuid  is null or c.bksuid  =:bksuid  ) and "//
+			+ "(:bknb is null or c.bknb = :bknb ) and "//
+			+ "(:bkmodel is null or c.bkmodel =:bkmodel ) ") // (4)不過濾
+	ArrayList<BomKeeper> findAllByCheck(Long bksuid, String bknb, String bkmodel);
 
 	// 多筆查詢範例
 //	@Query(" SELECT i.suname FROM BomKeeper i WHERE "//

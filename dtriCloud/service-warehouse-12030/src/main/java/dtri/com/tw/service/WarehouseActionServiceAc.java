@@ -103,7 +103,7 @@ public class WarehouseActionServiceAc {
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<WarehouseActionFront> entitys = new ArrayList<WarehouseActionFront>();
 		ArrayList<WarehouseActionDetailFront> entityDetails = new ArrayList<WarehouseActionDetailFront>();
-		Map<String, String> entityChecks = new HashMap<>();
+		Map<String, Integer> entityChecks = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -177,7 +177,7 @@ public class WarehouseActionServiceAc {
 				// header
 				if (entityChecks.size() < 50) {
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -208,6 +208,7 @@ public class WarehouseActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
 				}
@@ -257,7 +258,7 @@ public class WarehouseActionServiceAc {
 				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -288,8 +289,15 @@ public class WarehouseActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
+				}
+			});
+			// 顯示數量
+			entitys.forEach(enh -> {
+				if (entityChecks.containsKey(enh.getGid())) {
+					enh.setWasclassname(enh.getWasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
 				}
 			});
 
@@ -431,7 +439,7 @@ public class WarehouseActionServiceAc {
 				if (entityChecks.size() < 50) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -462,6 +470,7 @@ public class WarehouseActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
 				}
@@ -510,7 +519,7 @@ public class WarehouseActionServiceAc {
 				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -541,8 +550,15 @@ public class WarehouseActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
+				}
+			});
+			// 顯示數量
+			entitys.forEach(enh -> {
+				if (entityChecks.containsKey(enh.getGid())) {
+					enh.setWasclassname(enh.getWasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
 				}
 			});
 
