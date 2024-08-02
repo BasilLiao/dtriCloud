@@ -414,8 +414,8 @@
 				//Step2.查詢結果標題(細節)-資料
 				check1 = true;
 				if (JSON.stringify(resultDetailThead) == '{}') {
-					$('#btn_detail').addClass('disabled');
-					$('#search_dcr').addClass('d-none');
+					$('#search_c #btn_detail').addClass('disabled');
+					$('#search_c #search_dcr').addClass('d-none');
 				}
 				Object.keys(resultDetailThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultDetailThead[k]);
@@ -461,14 +461,14 @@
 
 				//Step3.查詢內容-格式
 				for (var b = 1; b <= 20; b++) {
-					var exTbodyTr = $('.exTbodyTr').clone();
+					var exTbodyTr = $('#search_cr .exTbodyTr').clone();
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyTr_' + b);
 					exTbodyTr.find('input').attr("alt", "row_" + b);
-					$('.exTbodyTr').before(exTbodyTr);
+					$('#search_cr .exTbodyTr').before(exTbodyTr);
 				}
-				$('.exTbodyTr').addClass('d-none');
+				$('#search_cr .exTbodyTr').addClass('d-none');
 
 				//Step4.查詢條件
 				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
@@ -482,7 +482,7 @@
 					}
 					if (searchSet['type'] != 'select') {
 						//一般文字
-						searchTextEx = $('.searchTextEx').clone();
+						searchTextEx = $('#search_c_item .searchTextEx').clone();
 						searchTextEx.removeClass("searchTextEx");
 						searchTextEx.removeClass("col-md-1");
 						searchTextEx.removeClass("d-none");
@@ -554,8 +554,6 @@
 							break;
 					}
 				}
-				//時間格式
-				search.methods.datetimepickerDate();
 				//Step5.帶入資料
 				search.methods.searchReLoad();
 
@@ -668,9 +666,9 @@
 					var marks = search.data.marks;
 					var markDetails = search.data.markDetails;
 					//觸發?
-					$('#search_cr i').trigger('click');
-					if (!$('#search_dcr_open').hasClass('show')) {
-						$('#search_dcr i').trigger('click');
+					$('#search_c #search_cr i').trigger('click');
+					if (!$('#search_c #search_dcr_open').hasClass('show')) {
+						$('#search_c #search_dcr i').trigger('click');
 					}
 					//有標記?
 					if (marks != null && search.data.searchPageSet.entityDetailJsons != null) {
@@ -686,7 +684,7 @@
 							for (var d = 0; d < entityDetailJsons.length; d++) {
 								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
 									//=======格式=======
-									var exTbodyTr = $('.exDetailTbodyTr').clone();
+									var exTbodyTr = $('#search_c .exDetailTbodyTr').clone();
 									exTbodyTr.removeClass('exDetailTbodyTr');
 									exTbodyTr.removeClass('d-none');
 									exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
@@ -721,14 +719,14 @@
 									if (search.data.markDetails[iKey + "_" + gKey] != null) {
 										exTbodyTr.find('input').prop("checked", true);
 									}
-									$('.exDetailTbodyTr').before(exTbodyTr);
+									$('#search_c .exDetailTbodyTr').before(exTbodyTr);
 								} else {
 									continue;
 								}
 
 							}
 						}
-						$('.exDetailTbodyTr').addClass('d-none');
+						$('#search_c .exDetailTbodyTr').addClass('d-none');
 					}
 				});
 				//監聽-建立
@@ -767,7 +765,7 @@
 					console.log("btn_markCancel");
 					search.data.marks = [];
 					search.data.markDetails = [];
-					$('.exTbodyTh input').prop("checked", false);
+					$('#search_c .exTbodyTh input').prop("checked", false);
 
 				});
 				//監聽-打印
@@ -865,7 +863,8 @@
 			},
 			datetimepickerDate() {
 				//日期時間格式
-				$('#search_c .datetimepicker_date').datetimepicker({
+				//$('.datetimepicker').remove();
+				$('#search_c_item .datetimepicker_date').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -879,7 +878,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c .datetimepicker_time').datetimepicker({
+				$('#search_c_item .datetimepicker_time').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,
@@ -1044,9 +1043,9 @@
 				console.log("searchReLoad_Start:" + new Date());
 				//還原
 				$('.valTbodytd').text("");
-				$('.exTbodyTh input').attr("disabled", "disabled");
-				$('.exTbodyTh input').attr("title", "IKey_GKey");
-				$('.exTbodyTh input').prop("checked", false);
+				$('#search_c .exTbodyTh input').attr("disabled", "disabled");
+				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
+				$('#search_c .exTbodyTh input').prop("checked", false);
 				//版面預設
 				if ($('#search_dcr_open').hasClass('show')) {
 					$('#search_dcr .btn-outline-white').trigger('click');

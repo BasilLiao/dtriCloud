@@ -2,16 +2,9 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -38,7 +31,6 @@ import jakarta.persistence.Table;
  *      this.bisgname = "";群組名稱<br>
  *      this.bisgsplit = "";正規畫切割 <br>
  *      this.bisgcondition = "";條件清單(like/not like/=/!=) <br>
- *      this.bisgffield = "";指定欄位
  * 
  *      this.bisproduct = false;指定顯示單元 產品<br>
  *      this.bisaccessories = false;指定顯示單元 配件<br>
@@ -86,11 +78,9 @@ import jakarta.persistence.Table;
  **/
 
 @Entity
-@Table(name = "bom_item_specifications")
-@EntityListeners(AuditingEntityListener.class)
-public class BomItemSpecifications {
+public class BomItemSpecificationsDetailFront {
 
-	public BomItemSpecifications() {
+	public BomItemSpecificationsDetailFront() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -117,7 +107,6 @@ public class BomItemSpecifications {
 		this.bisgname = "";
 		this.bisgsplit = "";
 		this.bisgcondition = "";
-		this.setBisgffield("");
 
 		this.bisproduct = false;
 		this.bisaccessories = false;
@@ -129,73 +118,69 @@ public class BomItemSpecifications {
 	}
 
 	// 共用型
-	@Column(name = "sys_c_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	@Transient
 	private Date syscdate;
-	@Column(name = "sys_c_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
+	@Transient
 	private String syscuser;
-	@Column(name = "sys_m_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	@Transient
 	private Date sysmdate;
-	@Column(name = "sys_m_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
+	@Transient
 	private String sysmuser;
-	@Column(name = "sys_o_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	@Transient
 	private Date sysodate;
-	@Column(name = "sys_o_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
+	@Transient
 	private String sysouser;
 
-	@Column(name = "sys_header", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean sysheader;
-	@Column(name = "sys_status", nullable = false, columnDefinition = "int default 0")
+	@Transient
 	private Integer sysstatus;
-	@Column(name = "sys_sort", nullable = false, columnDefinition = "int default 0")
+	@Transient
 	private Integer syssort;
-	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
+	@Transient
 	private String sysnote;
 
 	// 主體型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_item_specifications_seq")
-	@SequenceGenerator(name = "bom_item_specifications_seq", sequenceName = "bom_item_specifications_seq", allocationSize = 1)
-	@Column(name = "bis_id")
 	private Long bisid;
-	@Column(name = "bis_g_id")
+	@Transient
 	private Long bisgid;
-	@Column(name = "bis_nb", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bisnb;
 
-	@Column(name = "bis_name", nullable = false, columnDefinition = "varchar(250) default ''")
+	@Transient
 	private String bisname;
-	@Column(name = "bis_specifications", nullable = false, columnDefinition = "text default ''")
+	@Transient
 	private String bisspecifications;
-	@Column(name = "bis_description", nullable = false, columnDefinition = "text default ''")
+	@Transient
 	private String bisdescription;
-	@Column(name = "bis_s_descripion", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bissdescripion;
 
-	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(150) default ''")
-	private String bisgfname;
-	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bisfname;
-	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bisgname;
-	@Column(name = "bis_g_split", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Transient
 	private String bisgsplit;
-	@Column(name = "bis_g_condition", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bisgcondition;
-
-	@Column(name = "bis_g_f_field", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Transient
 	private String bisgffield;
+	@Transient
+	private String bisgfname;
 
-	@Column(name = "bis_product", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bisproduct;
-	@Column(name = "bis_accessories", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bisaccessories;
-	@Column(name = "bis_sf_product", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bissfproduct;
-	@Column(name = "bis_development", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bisdevelopment;
-	@Column(name = "bis_pcb", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bispcb;
-	@Column(name = "bis_i_auto", nullable = false, columnDefinition = "boolean default false")
+	@Transient
 	private Boolean bisiauto;
 
 	public Date getSyscdate() {
@@ -414,20 +399,20 @@ public class BomItemSpecifications {
 		this.bisiauto = bisiauto;
 	}
 
-	public String getBisgfname() {
-		return bisgfname;
-	}
-
-	public void setBisgfname(String bisgfname) {
-		this.bisgfname = bisgfname;
-	}
-
 	public String getBisgffield() {
 		return bisgffield;
 	}
 
 	public void setBisgffield(String bisgffield) {
 		this.bisgffield = bisgffield;
+	}
+
+	public String getBisgfname() {
+		return bisgfname;
+	}
+
+	public void setBisgfname(String bisgfname) {
+		this.bisgfname = bisgfname;
 	}
 
 }

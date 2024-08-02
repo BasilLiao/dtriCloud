@@ -881,7 +881,7 @@ public class ERPSynchronizeService {
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTg022().equals("Y")) {
+			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTf028().equals("1")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換

@@ -10,7 +10,7 @@
 	}
 </style>
 
-<div class="text-center text-ms col-md pt-4 mt-4" id="body_bom_item_specifications">
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_bom_product_management">
 	<div class="p-1">
 		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -98,52 +98,52 @@
 		methods: {
 			create() {
 				//Step1.初始化
-				console.log("body_bom_item_specifications.html(created)");
+				console.log("body_bom_product_management.html(created)");
 				//模板-鎖定-不需要的分頁 disabled
-				//$("#body_bom_item_specifications #home_title").addClass("disabled");
-				//$("#body_bom_item_specifications #search_title").addClass("disabled");
-				//$("#body_bom_item_specifications #modify_title").addClass("disabled");
-				//$("#body_bom_item_specifications #report_title").addClass("disabled");
-				$("#body_bom_item_specifications #print_title").addClass("disabled");
-				//$("#body_bom_item_specifications #compare_title").addClass("disabled");
-				//$("#body_bom_item_specifications #other_title").addClass("disabled");
+				//$("#body_bom_product_management #home_title").addClass("disabled");
+				//$("#body_bom_product_management #search_title").addClass("disabled");
+				//$("#body_bom_product_management #modify_title").addClass("disabled");
+				//$("#body_bom_product_management #report_title").addClass("disabled");
+				$("#body_bom_product_management #print_title").addClass("disabled");
+				//$("#body_bom_product_management #compare_title").addClass("disabled");
+				//$("#body_bom_product_management #other_title").addClass("disabled");
 				//模板-預設分頁 active
-				$("#body_bom_item_specifications #other_title").addClass("active");
-				$("#body_bom_item_specifications #other_tab").addClass("show");
-				$("#body_bom_item_specifications #other_tab").addClass("active");
+				$("#body_bom_product_management #other_title").addClass("active");
+				$("#body_bom_product_management #other_tab").addClass("show");
+				$("#body_bom_product_management #other_tab").addClass("active");
 
 				//Step2.模板
-				$("#body_bom_item_specifications #home_tab").load("./html/model/home.html", function () { });
+				$("#body_bom_product_management #home_tab").load("./html/model/home.html", function () { });
 				//查詢-模板
-				$("#body_bom_item_specifications #search_tab").load("./html/model/search.html", function () {
+				$("#body_bom_product_management #search_tab").load("./html/model/search.html", function () {
 					search.methods.create();
 					main.methods.reWindowsSize();
 				});
 				//編輯-模板
-				$("#body_bom_item_specifications #modify_tab").load("./html/model/modify.html", function () {
+				$("#body_bom_product_management #modify_tab").load("./html/model/modify.html", function () {
 					modify.methods.create();
 				});
 				//列印-模板
-				//$("#body_bom_item_specifications #print_tab").load("./html/model/print.html", function () {
+				//$("#body_bom_product_management #print_tab").load("./html/model/print.html", function () {
 				//	print.methods.create();
 				//});
 				//報告-模板
-				$("#body_bom_item_specifications #report_tab").load("./html/model/report.html", function () {
+				$("#body_bom_product_management #report_tab").load("./html/model/report.html", function () {
 					report.methods.create();
 				});
 				//比對-模板
-				$("#body_bom_item_specifications #compare_tab").load("./html/model/compare.html", function () {
+				$("#body_bom_product_management #compare_tab").load("./html/model/compare.html", function () {
 					compare.methods.create();
 				});
 				//其他-模板
-				$("#body_bom_item_specifications #other_tab").load("./html/other/other_bom_item_specifications.html", function () {
+				$("#body_bom_product_management #other_tab").load("./html/other/other_bom_product_management.html", function () {
 					other.methods.create();
 				});
 			},
 
 			destroy() {
 				//銷毀
-				console.log("body_bom_item_specifications.html(destroy)");
+				console.log("body_bom_product_management.html(destroy)");
 			},
 		},
 	};

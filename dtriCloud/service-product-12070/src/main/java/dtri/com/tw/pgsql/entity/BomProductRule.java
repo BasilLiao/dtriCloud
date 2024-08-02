@@ -28,6 +28,13 @@ import jakarta.persistence.Table;
  *      ---負責人設置---<br>
  *      bpm_id : 主key <br>
  * 
+ *      bprtype = 0;<br>
+ *      bprtypename = "";<br>
+ *      bprbisid = "";<br>
+ *      bprbisname = "";<br>
+ *      bprbpsnv = "";<br>
+ *      bprname = "";<br>
+ * 
  * 
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
@@ -68,11 +75,11 @@ import jakarta.persistence.Table;
  **/
 
 @Entity
-@Table(name = "bom_product_management")
+@Table(name = "bom_product_rule")
 @EntityListeners(AuditingEntityListener.class)
-public class BomProductManagement {
+public class BomProductRule {
 
-	public BomProductManagement() {
+	public BomProductRule() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -87,14 +94,13 @@ public class BomProductManagement {
 		this.sysnote = "";
 		// 主體型
 
-		this.bpmid = null;
-		this.bpmnb = "";
-		this.bpmmodel = "";
-		this.bpmtype = 0;
-		this.bpmtypename = "";
-		this.bpmbisid = "";
-		this.bpmbisname = "";
-		this.bpmbpsnv = "";
+		this.bprid = null;
+		this.bprtype = 0;
+		this.bprtypename = "";
+		this.bprbisid = "";
+		this.bprbisname = "";
+		this.bprbpsnv = "";
+		this.bprname = "";
 	}
 
 	// 共用型
@@ -122,26 +128,23 @@ public class BomProductManagement {
 
 	// 主體型
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_product_management_seq")
-	@SequenceGenerator(name = "bom_product_management_seq", sequenceName = "bom_product_management_seq", allocationSize = 1)
-	@Column(name = "bpm_id")
-	private Long bpmid;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_product_rule_seq")
+	@SequenceGenerator(name = "bom_product_rule_seq", sequenceName = "bom_product_rule_seq", allocationSize = 1)
+	@Column(name = "bpr_id")
+	private Long bprid;
 
-	@Column(name = "bpm_nb", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bpmnb;
-	@Column(name = "bpm_model", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bpmmodel;
-	@Column(name = "bpm_type", nullable = false, columnDefinition = "int default 0")
-	private Integer bpmtype;
-	@Column(name = "bpm_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bpmtypename;
-	@Column(name = "bpm_bis_id", nullable = false, columnDefinition = "text default ''")
-	private String bpmbisid;
-	@Column(name = "bpm_bis_name", nullable = false, columnDefinition = "text default ''")
-	private String bpmbisname;
-	@Column(name = "bpm_bps_nv", nullable = false, columnDefinition = "text default ''")
-	private String bpmbpsnv;
-	
+	@Column(name = "bpr_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String bprname;
+	@Column(name = "bpr_type", nullable = false, columnDefinition = "int default 0")
+	private Integer bprtype;
+	@Column(name = "bpr_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bprtypename;
+	@Column(name = "bpr_bis_id", nullable = false, columnDefinition = "text default ''")
+	private String bprbisid;
+	@Column(name = "bpr_bis_name", nullable = false, columnDefinition = "text default ''")
+	private String bprbisname;
+	@Column(name = "bpr_bps_nv", nullable = false, columnDefinition = "text default ''")
+	private String bprbpsnv;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -223,68 +226,60 @@ public class BomProductManagement {
 		this.sysnote = sysnote;
 	}
 
-	public Long getBpmid() {
-		return bpmid;
+	public Long getBprid() {
+		return bprid;
 	}
 
-	public void setBpmid(Long bpmid) {
-		this.bpmid = bpmid;
+	public void setBprid(Long bprid) {
+		this.bprid = bprid;
 	}
 
-	public String getBpmnb() {
-		return bpmnb;
+	public String getBprname() {
+		return bprname;
 	}
 
-	public void setBpmnb(String bpmnb) {
-		this.bpmnb = bpmnb;
+	public void setBprname(String bprname) {
+		this.bprname = bprname;
 	}
 
-	public String getBpmmodel() {
-		return bpmmodel;
+	public Integer getBprtype() {
+		return bprtype;
 	}
 
-	public void setBpmmodel(String bpmmodel) {
-		this.bpmmodel = bpmmodel;
+	public void setBprtype(Integer bprtype) {
+		this.bprtype = bprtype;
 	}
 
-	public Integer getBpmtype() {
-		return bpmtype;
+	public String getBprtypename() {
+		return bprtypename;
 	}
 
-	public void setBpmtype(Integer bpmtype) {
-		this.bpmtype = bpmtype;
+	public void setBprtypename(String bprtypename) {
+		this.bprtypename = bprtypename;
 	}
 
-	public String getBpmtypename() {
-		return bpmtypename;
+	public String getBprbisid() {
+		return bprbisid;
 	}
 
-	public void setBpmtypename(String bpmtypename) {
-		this.bpmtypename = bpmtypename;
+	public void setBprbisid(String bprbisid) {
+		this.bprbisid = bprbisid;
 	}
 
-	public String getBpmbisid() {
-		return bpmbisid;
+	public String getBprbisname() {
+		return bprbisname;
 	}
 
-	public void setBpmbisid(String bpmbisid) {
-		this.bpmbisid = bpmbisid;
+	public void setBprbisname(String bprbisname) {
+		this.bprbisname = bprbisname;
 	}
 
-	public String getBpmbisname() {
-		return bpmbisname;
+	public String getBprbpsnv() {
+		return bprbpsnv;
 	}
 
-	public void setBpmbisname(String bpmbisname) {
-		this.bpmbisname = bpmbisname;
-	}
-
-	public String getBpmbpsnv() {
-		return bpmbpsnv;
-	}
-
-	public void setBpmbpsnv(String bpmbpsnv) {
-		this.bpmbpsnv = bpmbpsnv;
+	public void setBprbpsnv(String bprbpsnv) {
+		this.bprbpsnv = bprbpsnv;
 	}
 
 }

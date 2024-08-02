@@ -53,6 +53,7 @@ public class WebSecurityConfig {
 	private static final String basic_inc = "/ajax/basic_incoming_list.basil";
 	private static final String basic_pdm = "/ajax/basic_product_model.basil";
 	// BOM產品
+	private static final String bom_bpm = "/ajax/bom_product_management.basil";
 	private static final String bom_bps = "/ajax/bom_parameter_settings.basil";
 	private static final String bom_bsh = "/ajax/bom_software_hardware.basil";
 	private static final String bom_kee = "/ajax/bom_keeper.basil";
@@ -209,12 +210,22 @@ public class WebSecurityConfig {
 				// ----請求-bom_parameter_settings-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bom_bps).hasAuthority(actionRole(bom_bps, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bom_bps + ".AR").hasAuthority(actionRole(bom_bps, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_bps + ".ART").hasAuthority(actionRole(bom_bps, "AR"))// (測試查詢)
 				.requestMatchers(HttpMethod.POST, bom_bps + ".ARR").hasAuthority(actionRole(bom_bps, "AR"))// (報告查詢)
 				.requestMatchers(HttpMethod.POST, bom_bps + ".AC").hasAuthority(actionRole(bom_bps, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, bom_bps + ".AU").hasAuthority(actionRole(bom_bps, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bom_bps + ".AD").hasAuthority(actionRole(bom_bps, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bom_bps + ".DD").hasAuthority(actionRole(bom_bps, "DD"))// (標記移除)
-
+				// ----請求-bom_product_management-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bom_bpm).hasAuthority(actionRole(bom_bpm, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bom_bpm + ".AR").hasAuthority(actionRole(bom_bpm, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_bpm + ".ART").hasAuthority(actionRole(bom_bpm, "AR"))// (測試查詢)
+				.requestMatchers(HttpMethod.POST, bom_bpm + ".ARR").hasAuthority(actionRole(bom_bpm, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bom_bpm + ".AC").hasAuthority(actionRole(bom_bpm, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bom_bpm + ".AU").hasAuthority(actionRole(bom_bpm, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bom_bpm + ".AD").hasAuthority(actionRole(bom_bpm, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bom_bpm + ".DD").hasAuthority(actionRole(bom_bpm, "DD"))// (標記移除)
+				
 				// ----請求-bom_software_hardware-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bom_bsh).hasAuthority(actionRole(bom_bsh, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bom_bsh + ".AR").hasAuthority(actionRole(bom_bsh, "AR"))// (查詢)

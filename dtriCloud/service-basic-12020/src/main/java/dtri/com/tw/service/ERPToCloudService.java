@@ -494,7 +494,7 @@ public class ERPToCloudService {
 			Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
-		if (m.getTg022().equals("Y")) {
+		if (m.getTf028().equals("3")) {
 			sysstatus = 1;
 //			if (o.getBslpngqty().equals(0)) {
 //				o.setBslpngqty(m.getTg009());// 已領庫量

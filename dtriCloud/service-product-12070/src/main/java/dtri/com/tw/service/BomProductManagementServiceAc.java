@@ -40,7 +40,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class BomItemSpecificationsServiceAc {
+public class BomProductManagementServiceAc {
 
 	@Autowired
 	private PackageService packageService;

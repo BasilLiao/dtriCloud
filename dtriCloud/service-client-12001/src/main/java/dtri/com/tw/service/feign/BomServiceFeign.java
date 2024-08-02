@@ -55,6 +55,50 @@ public interface BomServiceFeign {
 	@RequestMapping(value = { "/bomParameterSettings/setDetele" }, method = RequestMethod.POST)
 	PackageBean setParameterSettingsDetele(@RequestBody String jsonPackageBean);
 
+	// ================================產品:物料規格項目================================
+	@RequestMapping(value = { "/bomItemSpecifications/getSearch" }, method = RequestMethod.POST)
+	PackageBean getItemSpecificationsSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/getSearchTest" }, method = RequestMethod.POST)
+	PackageBean getItemSpecificationsSearchTest(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/getReport" }, method = RequestMethod.POST)
+	PackageBean getItemSpecificationsReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/setModify" }, method = RequestMethod.POST)
+	PackageBean setItemSpecificationsModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/setAdd" }, method = RequestMethod.POST)
+	PackageBean setItemSpecificationsAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setItemSpecificationsInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomItemSpecifications/setDetele" }, method = RequestMethod.POST)
+	PackageBean setItemSpecificationsDetele(@RequestBody String jsonPackageBean);
+
+	// ================================產品:BOM產品管理================================
+	@RequestMapping(value = { "/bomProductManagement/getSearch" }, method = RequestMethod.POST)
+	PackageBean getProductManagementSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/getSearchTest" }, method = RequestMethod.POST)
+	PackageBean getProductManagementSearchTest(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/getReport" }, method = RequestMethod.POST)
+	PackageBean getProductManagementReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/setModify" }, method = RequestMethod.POST)
+	PackageBean setProductManagementModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/setAdd" }, method = RequestMethod.POST)
+	PackageBean setProductManagementAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setProductManagementInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductManagement/setDetele" }, method = RequestMethod.POST)
+	PackageBean setProductManagementDetele(@RequestBody String jsonPackageBean);
+
 	// ================================產品:負責人配置================================
 	@RequestMapping(value = { "/bomKeeper/getSearch" }, method = RequestMethod.POST)
 	PackageBean getKeeperSearch(@RequestBody String jsonPackageBean);

@@ -1,0 +1,1606 @@
+<style>
+	/*Table 寬度滾動*/
+	#other_c .table-responsive {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	/*Table 自動隱藏*/
+	#other_c .table-responsive th,
+	#other_c .table-responsive td {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	/*Table 表格固定*/
+	#other_c .fixedC1 {
+		left: 0px;
+		position: sticky;
+	}
+
+	#other_c .fixedCt {
+		position: sticky;
+		top: 0px;
+		z-index: 5;
+	}
+
+	/*Table 每隔表格內_框線*/
+	#other_c .table-bordered td,
+	#other_c .table-bordered th {
+		border: 1px solid #1b76fd;
+		padding: 2px;
+	}
+
+	/*Table 表格外框線*/
+	#other_c #other_cr table {
+		max-height: calc(100vh - 420px);
+		min-height: 200px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
+
+	/*Table 表格外框線*/
+	#other_c #other_dcr table {
+		max-height: calc(100vh - 420px);
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
+
+	/*Table 表格內 背景色*/
+	#other_c .table-white {
+		--bs-table-bg: #fff;
+	}
+
+	/*覆寫換色*/
+	.table-hover>tbody>tr:hover>* {
+		--bs-table-accent-bg: #0d6efd40;
+		color: var(--bs-table-hover-color);
+	}
+
+	/*標題色彩*/
+	#other_c .title_color {
+		background-color: #cfe2ff;
+	}
+
+	/*標題色彩*/
+	#other_dcr .testItem .title_color {
+		background-color: #ffc10747;
+	}
+
+	/*標題色彩*/
+	#other_dcr .groupItem .title_color {
+		background-color: #19875450;
+		;
+	}
+
+	/*禁止使用*/
+	.dontUse {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+
+	/*直立式呈現邊字*/
+	#other_c .wlr {
+		writing-mode: vertical-lr;
+		width: 20px;
+	}
+
+	/*checkbox_24*/
+	#other_c .checkbox_24 {
+		width: 24px;
+		height: 24px;
+	}
+
+	#other_c .checkbox_20 {
+		width: 20px;
+		height: 20px;
+	}
+
+	#other_c .checkbox_16 {
+		width: 16px;
+		height: 16px;
+	}
+
+	/*橘色*/
+	.bg-orange {
+		background-color: var(--bs-orange) !important;
+	}
+</style>
+<div id="other_c" class="row p-0 m-0">
+	<!-- 查詢面板 -->
+	<div id="other_c_item" class="col-12 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div class="row m-0 collapse show" id="other_c_item_open">
+			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
+			<div id="otherItemItem" class="col border border-primary  row m-0 p-0 shadow-sm">
+				<div class="col-6 otherTextEx col-md-1 p-1 d-none">
+					<div class=" border border-secondary rounded">
+						<div class="otherTitle title_color fw-bolder rounded-top">Search1</div>
+						<div class="p-1">
+							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="oex_id"
+								name="oex_name" placeholder="Ex:123" autofocus>
+						</div>
+					</div>
+				</div>
+				<div class="col-6 otherSelectEx col-md-1 p-1 d-none">
+					<div class=" border border-secondary rounded">
+						<div class="otherTitle title_color fw-bolder rounded-top">Search2</div>
+						<div class="p-1">
+							<select class="col-12 m-0 p-1 border border-dark form-select" id="oex_id2" name="oex_name2">
+								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 控制面板 -->
+	<div id="other_c_controller" class="col-12 p-1 ">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div id="other_c_controller_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+				<!--狀態選擇-->
+				<div class="col-6 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Status</div>
+						<div class="row m-0">
+							<button id="btn_i_detail" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary re_status">
+								<b>Item<br>detail()
+								</b>
+							</button>
+							<button id="btn_i_add" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success re_status">
+								<b>Item<br>add(AC)
+								</b>
+							</button>
+							<button id="btn_i_modify" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning re_status">
+								<b>Item<br>modify(AU)
+								</b>
+							</button>
+							<button id="btn_i_remove" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger re_status">
+								<b>Item<br>remove(DD)
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!--條件執行-->
+				<div class="col-6 col-lg-4 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Action</div>
+						<div class="row m-0">
+							<button id="btn_w_listAdd" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Conditions<br>List add()
+								</b>
+							</button>
+							<button id="btn_w_test" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Conditions<br>Test(AR)
+								</b>
+							</button>
+							<button id="btn_w_clear" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Conditions<br>All Clear()
+								</b>
+							</button>
+							<button id="btn_w_save" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Conditions<br>Save(AC/AU/DD)
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-3 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Search</div>
+						<div class="row m-0">
+							<div class="lh-1 col p-1 m-1 border border-primary rounded">
+								<input id="btn_other_send_auto" alt="" title="" type="checkbox"
+									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
+									style="font-size: 12px;">Auto(30s)</b>
+							</div>
+							<button id="btn_send" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Query<br>(AR)
+								</b>
+							</button>
+							<button id="btn_clearAll" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Clear<br>all()
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 料BOM-查詢結果 -->
+	<div id="other_ce" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_ce_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			From ERP BOM list
+		</div>
+		<div id="other_ce_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
+			<table
+				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary fixedCt">
+					<tr>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button id="ce_exthClearAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>C</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr class="exTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
+							<div>
+								<input name="other_ce_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</th>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- 規則BOM-查詢結果 -->
+	<div id="other_cd" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_cd_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM rules list
+		</div>
+		<div id="other_cd_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Result </b>
+			<table
+				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary fixedCt">
+					<tr>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button id="cd_exthClearAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>C</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr class="exTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
+							<div>
+								<input name="other_cd_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</th>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+	<!-- 查詢結果 -->
+	<div id="other_cr" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-orange text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM format list
+		</div>
+		<div id="other_cr_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-orange text-white"> Result </b>
+			<table
+				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary fixedCt">
+					<tr>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button id="cr_exthClearAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>C</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr class="exTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
+							<div>
+								<input name="other_cr_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</th>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- 查詢-細節結果 -->
+	<div id="other_dcr" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-danger text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM detailed format
+		</div>
+		<div id="other_dcr_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr  bg-danger text-white"> Modify detail </b>
+			<!--項目規則-->
+			<div class="col row m-0 p-0" style="width: 95%;">
+				<!--測試條件-->
+				<div class="col-12 row m-0 p-0 border border-primary testItem">
+					<!--狀態-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Status(狀)</div>
+							<div id="other_c_state" class="p-1 m-0 text-secondary h3" title="None">
+								None
+							</div>
+						</div>
+					</div>
+					<!--條件接續?-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">A/R(接續?)</div>
+							<div class="p-1 m-0">
+								<select id="other_w_continue" class="col-12 m-0 p-1 border border-dark form-select"
+									name="other_w_continue">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value="<AND>">AND(和)</option>
+									<option value="<OR>">OR(或)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!--欄位選擇-->
+					<div class="col-6 col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Test field(測試欄位)</div>
+							<div class="p-1 m-0">
+								<select id="other_w_item" class="col-12 m-0 p-1 border border-dark form-select"
+									name="other_w_item">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value="wmpnb">Materiel(料號)</option>
+									<option value="wmname">Name(料名)</option>
+									<option value="wmspecification">Specifications(規格)</option>
+									<option value="wmdescription">Description(描述)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!--條件選擇-->
+					<div class="col-6 col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Conditions(測試條件)</div>
+							<div class="p-1 m-0">
+								<select id="other_w_option" class="col-12 m-0 p-1 border border-dark form-select"
+									name="other_w_option">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value="AllSame">All same(完全相同)</option>
+									<option value="NotSame">Not same(完全不同)</option>
+									<option disabled>───────────────</option>
+									<option value="Like">Like %....%(有包含)</option>
+									<option value="LikeS">Like ...%(有包含開頭)</option>
+									<option value="LikeE">Like %...(有包含結尾)</option>
+									<option disabled>───────────────</option>
+									<option value="NotLike">Not Like %..%(不包含)</option>
+									<option value="NotLikeS">Not Like ...%(不包含開頭)</option>
+									<option value="NotLikeE">Not Like %...(不包含結尾)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!--條件值-->
+					<div class="col-6 col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Value(測試值)</div>
+							<div class="p-1 m-0">
+								<input id="other_w_val" class="col-12 m-0 p-1 border border-dark form-control"
+									type="text" name="where_val" placeholder="Ex:123">
+							</div>
+						</div>
+					</div>
+
+
+					<!--條件清單?-->
+					<div class="col-6 col-lg-4 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Where list(條件清單)</div>
+							<div id="other_w_list" class="p-0 m-0 row" style="line-height: 1;">
+								<div id="other_w_list_ex" class="col-12 p-1 m-0 row border border-secondary d-none"
+									title="xxx">
+									<i alt="row_x" title=""
+										class="btn btn-outline-danger p-0 bi bi-dash-square other_w_one"
+										style="width: 24px; height: 24px;"></i>
+									<div class="col p-1">XXX = XXX AND</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--群組規則-->
+				<div class="col-12 row m-0 p-0 border border-primary groupItem">
+					<!--自動導入-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Import(導入)</div>
+							<div class="row p-1 m-0">
+								<div class="col-12 p-1">Auto:<input id="other_bisiauto" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+							</div>
+						</div>
+					</div>
+					<!--項目組-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Group(項組)</div>
+							<div class="p-1 m-0">
+								<input id="other_bisgname" class="col-12 m-0 p-1 border border-dark form-control"
+									type=text name="other_bisgname" placeholder="Ex:CPU">
+							</div>
+						</div>
+					</div>
+					<!--群組名稱-->
+					<div class="col-6 col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Field name(欄位名稱)</div>
+							<div class="p-1 m-0">
+								<input id="other_bisgfname" class="col-12 m-0 p-1 border border-dark form-control"
+									type=text name="other_bisgfname" placeholder="Ex:廠商 代數 型號(最多5個 以空格區分)">
+							</div>
+						</div>
+					</div>
+					<!--正規化?-->
+					<div class="col-6 col-lg-2 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Normalization(正規導入)</div>
+							<div class="p-1 m-0">
+								<select id="other_bisgffield" class="col-12 m-0 p-1 border border-dark form-select"
+									name="other_bisgffield">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value="bisnb">Materiel(料號)</option>
+									<option value="bisname">Name(料名)</option>
+									<option value="bisspecifications">Specifications(規格)</option>
+									<option value="bisdescription">Description(描述)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!--切割?-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Cutting(切)</div>
+							<div class="p-1 m-0">
+								<select class="col-12 m-0 p-1 border border-dark form-select" id="other_bisgsplit"
+									name="other_bisgsplit">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value=" ">space( 空格)</option>
+									<option value="_">underline(_底線)</option>
+									<option value=",">comma(,逗號)</option>
+									<option value="/">slash(/斜線)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!--排序-->
+					<div class="col-6 col-lg-1 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Sort(排序)</div>
+							<div class="p-1 m-0">
+								<input class="col-12 m-0 p-1 border border-dark form-control" type="number"
+									id="other_syssort" name="other_syssort" placeholder="Ex:1">
+							</div>
+						</div>
+					</div>
+					<!--指定單元-->
+					<div class="col-6 col-lg-4 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Choose rules(開放單元)</div>
+							<div class="row p-1 m-0">
+								<div class="col-2 p-1">開發:<input id="other_bisdevelopment" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">板階:<input id="other_bispcb" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">半品:<input id="other_bissfproduct" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">成品:<input id="other_bisproduct" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">配件:<input id="other_bisaccessories" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--項目清單-->
+				<table
+					class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+					<thead class="table-success fixedCt">
+						<tr>
+							<th class="fixedC1" style="min-width: 80px;">
+								<div>
+									<i alt="row_x" title="IKey_GKey"
+										class="btn btn-outline-success p-0 bi bi-plus-square"
+										style="width: 24px; height: 24px;"></i>
+								</div>
+							</th>
+							<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+						</tr>
+					</thead>
+					<tbody class="table-white">
+						<tr class="exDetailTbodyTr">
+							<th class="fixedC1 exTbodyTh" style="max-width: 80px;">
+								<div>
+									<i alt="row_x" title="IKey_GKey"
+										class="btn btn-outline-danger p-0 bi bi-dash-square "
+										style="width: 24px; height: 24px;"></i>
+									<i alt="row_x" title="IKey_GKey" class="btn btn-outline-primary p-0 bi bi-stickies"
+										style="width: 24px; height: 24px;"></i>
+								</div>
+							</th>
+							<td class="exTbodytd d-none" style="max-width: 100px">
+								<input class="col-12 m-0 p-1 border border-dark form-control" disabled="disabled">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- 規則BOM物料細節-查詢結果 -->
+	<div id="other_cdrs" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#other_cdrs_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM detailed material condition list
+		</div>
+		<div id="other_cdrs_open" class="row m-0 collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Result </b>
+			<table
+				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
+				<thead class="table-primary fixedCt">
+					<tr>
+						<th class="fixedC1" style="min-width: 40px;">
+							<div>
+								<button id="cd_exthClearAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+									<b>C</b>
+								</button>
+							</div>
+						</th>
+						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
+					</tr>
+				</thead>
+				<tbody class="table-white">
+					<tr class="exTbodyTr">
+						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
+							<div>
+								<input name="other_cdrs_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+							</div>
+						</th>
+						<td class="exTbodytd d-none" style="max-width: 100px"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	//宣告
+	//console.log("other.html(init)");
+	other = {
+		//資料
+		data: {
+			marks: {},//有選取的IKeyGKey
+			markDetails: {},//有選取的IKeyGKey
+			entityFormatJson: {},//查詢格式
+			btn_other_send_auto: "",//自動傳送
+			//換頁設置
+			otherItemPageSet: {
+				total: 200,//批次數量(1-1000)
+				batch: 0,//第幾批次(1-1000)
+				pageNew: 1,//單前頁碼(1-50)
+				pageSize: 200,//每頁數量(1-20)
+				entityJsons: [],//資料
+				entityDetailJsons: [],//細節資料
+				entityIKey: "",//ID
+				entityGKey: "",//GID
+				entityDateTime: "",//是時間格式的欄位 
+			},
+			otherItemSet: {},
+		},
+		//方法
+		methods: {
+			create() {
+				//==========================第一次載入==========================
+				//Step0.初始化
+				console.log("other.html(created)");
+				//查詢格式
+				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
+				//查詢項目 
+				var otherSetJson = JSON.parse(main.resq_data['searchSet']);
+				//console.log(otherItemSetJson);
+				//資料內容
+				other.data.otherItemPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+				other.data.otherItemPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				other.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+				other.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
+				other.data.entityDateTime = main.resq_data['entityDateTime'];
+				other.data.otherSet = otherSetJson['searchSet'];
+
+				//按鈕權限?
+				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				var ps = Array.from(p);
+
+				if (ps[10] != 1) {//查詢(AR)10
+					$("#btn_send").addClass("disabled");
+					$("#btn_w_test").addClass("disabled");
+				} if (ps[9] != 1) {//修改(AU)9
+					$("#btn_i_modify").addClass("disabled");
+				} if (ps[8] != 1) {//新增(AC)8
+					$("#btn_i_add").addClass("disabled");
+				} if (ps[6] != 1) {//移除(DD)6
+					$("#btn_i_remove").addClass("disabled");
+				} if (ps[6] != 1 && ps[8] != 1 && ps[9] != 1) {//存入資料內容
+					$("#btn_w_save").addClass("disabled");
+				}
+
+				//Step1.查詢結果標題-排序
+				var resultThead = otherSetJson['resultThead'];
+				var resultDetailThead = otherSetJson['resultDetailThead'];
+				resultThead = main.methods.orderedSort(resultThead);
+				resultDetailThead = main.methods.orderedSort(resultDetailThead);
+				//console.log(resultThead);
+				//Step2.查詢結果標題-資料
+				var check1 = true;
+				Object.keys(resultThead).forEach(function (k) {
+					//console.log(k + ' - ' + resultThead[k]);
+					//複製格式
+					var exTheadth = $('#other_cr_open .exTheadth').clone();
+					var exTbodytd = $('#other_cr_open .exTbodytd').clone();
+					exTheadth.removeClass('exTheadth');
+					exTheadth.removeClass('d-none')
+					exTheadth.addClass('titTheadth');
+					//
+					exTbodytd.removeClass('exTbodytd');
+					exTbodytd.removeClass('d-none')
+					exTbodytd.addClass('valTbodytd');
+					exTbodytd.addClass(resultThead[k].cellName);
+					//固定第一格式
+					if (check1 && resultThead[k].show == 1) {
+						check1 = false;
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', "40px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', "40px");
+					}
+
+
+					//如果有翻譯
+					if (resultThead[k].cellLanguage != '') {
+						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
+						exTheadth.css('minWidth', resultThead[k].width + "px");
+						exTbodytd.css('maxWidth', resultThead[k].width + "px");
+					} else {
+						exTheadth.text(resultThead[k].cellName);
+						exTheadth.css('minWidth', resultThead[k].width + "px");
+						exTbodytd.css('maxWidth', resultThead[k].width + "px");
+					}
+					//如果隱藏
+					if (resultThead[k].show == 0) {
+						exTheadth.addClass('d-none');
+						exTbodytd.addClass('d-none');
+					}
+					//添加
+					$('#other_cr_open .exTheadth').before(exTheadth);
+					$('#other_cr_open .exTbodytd').before(exTbodytd);
+				});
+
+				//Step2.查詢結果標題(細節)-資料
+				check1 = true;
+				var withFixed = 80;
+				var fix3 = 1;//固定3格
+				if (JSON.stringify(resultDetailThead) == '{}') {
+					$('#other_c #btn_detail').addClass('disabled');
+					$('#other_c #other_dcr').addClass('d-none');
+				}
+				Object.keys(resultDetailThead).forEach(function (k) {
+					//console.log(k + ' - ' + resultDetailThead[k]);
+					//複製格式
+					var exTheadth = $('#other_dcr_open .exTheadth').clone();
+					var exTbodytd = $('#other_dcr_open .exTbodytd').clone();
+					exTheadth.removeClass('exTheadth');
+					exTheadth.removeClass('d-none')
+					exTheadth.addClass('titTheadth');
+					//
+					exTbodytd.removeClass('exTbodytd');
+					exTbodytd.removeClass('d-none')
+					exTbodytd.addClass('valTbodytd');
+					exTbodytd.addClass(resultDetailThead[k].cellName);
+					exTbodytd.attr('title', resultDetailThead[k].cellName);
+					//固定第一格式
+					if (check1 && resultDetailThead[k].show == 1) {
+						if (fix3 == 3) {
+							check1 = false;
+						}
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', withFixed + "px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', withFixed + "px");
+						withFixed += resultDetailThead[k].width;
+						fix3 += 1;
+					}
+
+					//如果有翻譯
+					if (resultDetailThead[k].cellLanguage != '') {
+						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						exTheadth.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
+						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
+						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
+					} else {
+						exTheadth.text(resultDetailThead[k].cellName);
+						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
+						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
+					}
+					//如果隱藏
+					if (resultDetailThead[k].show == 0) {
+						exTheadth.addClass('d-none');
+						exTbodytd.addClass('d-none');
+					}
+					//添加
+					$('#other_dcr_open .exTheadth').before(exTheadth);
+					$('#other_dcr_open .exTbodytd').before(exTbodytd);
+				});
+				//隱藏
+				$('#other_dcr_open .exDetailTbodyTr').addClass("d-none");
+
+				//Step3.查詢內容-格式
+				for (var b = 1; b <= other.data.otherItemPageSet.pageSize; b++) {
+					var exTbodyTr = $('#other_cr .exTbodyTr').clone();
+					exTbodyTr.removeClass('exTbodyTr');
+					exTbodyTr.removeClass('d-none');
+					exTbodyTr.addClass('valTbodyTr_' + b);
+					exTbodyTr.find('input').attr("alt", "row_" + b);
+					$('#other_cr .exTbodyTr').before(exTbodyTr);
+				}
+				$('#other_cr .exTbodyTr').addClass('d-none');
+				//Step4.查詢條件
+				for (var t = 0; t < otherSetJson['searchSet'].length; t++) {
+					var otherItemSet = otherSetJson['searchSet'][t];
+					var otherTextEx = "";
+					var otherSelectEx = "";
+					var selectEx = "";
+					//不顯示
+					if (!otherItemSet['show']) {
+						continue;
+					}
+					if (otherItemSet['type'] != 'select') {
+						//一般文字
+						otherTextEx = $('#other_c_item .otherTextEx').clone();
+						otherTextEx.removeClass("otherTextEx");
+						otherTextEx.removeClass("col-md-1");
+						otherTextEx.removeClass("d-none");
+
+						otherTextEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
+						otherTextEx.find('input').attr("id", "other_s_" + otherItemSet['searchName']);
+						otherTextEx.find('input').attr("name", "other_s_" + otherItemSet['searchName']);
+						otherTextEx.find('input').attr("placeholder", otherItemSet['placeholder']);
+						otherTextEx.find('input').addClass("searchVal");
+						Object.keys(resultThead).forEach(function (k) {
+							//如果有翻譯
+							if (k.indexOf(otherItemSet['searchName']) >= 0) {
+								if (resultThead[k].cellLanguage != '') {
+									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									otherTextEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
+								} else {
+									otherTextEx.find('.otherTitle').text(otherItemSet['searchName']);
+								}
+							}
+						});
+					} else {
+						//選擇選單
+						otherSelectEx = $('#other_c_item .otherSelectEx').clone();
+						otherSelectEx.removeClass("otherSelectEx");
+						otherSelectEx.removeClass("col-md-1");
+						otherSelectEx.removeClass("d-none");
+						otherSelectEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
+						otherSelectEx.find('select').attr("id", "other_" + otherItemSet['searchName']);
+						otherSelectEx.find('select').attr("name", "other_" + otherItemSet['searchName']);
+						otherSelectEx.find('select').addClass("searchVal");
+						//查詢欄位
+						Object.keys(resultThead).forEach(function (k) {
+							//如果有翻譯
+							if (k.indexOf(otherItemSet['searchName']) >= 0) {
+								if (resultThead[k].cellLanguage != '') {
+									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									otherSelectEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
+								} else {
+									otherSelectEx.find('.otherTitle').text(otherItemSet['searchName']);
+								}
+							}
+						});
+						//選項
+						for (var s = 0; s < otherItemSet['select'].length; s++) {
+							var key = otherItemSet['select'][s].split("_")[0];
+							var val = otherItemSet['select'][s].split("_")[1];
+							selectEx = otherSelectEx.find('.selectEx').clone();
+							selectEx.removeClass("selectEx");
+							selectEx.removeAttr("selected");
+							selectEx.text(key);
+							selectEx.val(val);
+							selectEx.appendTo(otherSelectEx.find('select'));
+						}
+					}
+					switch (otherItemSet['type']) {
+						case "select":
+							otherSelectEx.appendTo('#otherItemItem');
+							break;
+						case "text":
+							otherTextEx.appendTo('#otherItemItem');
+							break;
+						case "time":
+							otherTextEx.find('input').addClass('datetimepicker_time');
+							otherTextEx.appendTo('#otherItemItem');
+							break;
+						case "datetime":
+							otherTextEx.find('input').addClass('datetimepicker_date');
+							otherTextEx.appendTo('#otherItemItem');
+							break;
+					}
+				}
+				//時間格式
+				other.methods.datetimepickerDate();
+				//Step5.帶入資料
+				other.methods.otherReLoad();
+				/*
+				//==========================監聽==========================
+				//點及按鈕類
+				$(document).off("click", "#other_c button");
+				$(document).on("click", "#other_c button", function (event) {
+					console.log($(event.currentTarget).attr("id"));
+					var target = $(event.currentTarget);
+					const selectedRadio = $('input[name="other_cr_c_detail"]:checked');
+
+					//初始化-狀態
+					if (target.hasClass("re_status")) {
+						$("#other_c #other_c_state").removeClass("text-danger");
+						$("#other_c #other_c_state").removeClass("text-success");
+						$("#other_c #other_c_state").removeClass("text-warning");
+						$("#other_c #other_c_state").removeClass("text-secondary");
+						$("#other_c #other_dcr_open").removeClass("dontUse");
+						$("#other_c #other_c_state").text("None").attr("title", "None");
+						//清除
+						$("#other_c #btn_w_clear").trigger("click");
+						//觸發?
+						$('#other_cr i').trigger('click');
+						if (!$('#other_dcr_open').hasClass('show')) {
+							$('#other_dcr .text-start i ').trigger('click');
+						}
+					}
+					//執行
+					switch (target.attr("id")) {
+						//監聽-狀態改變
+						case "btn_i_detail":
+							//細節
+							if ($(selectedRadio).length !== 0) {//有選擇
+								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								$("#other_c #other_c_state").addClass("text-secondary");
+								$("#other_c #other_c_state").text("None").attr("title", "None_" + bisgid);
+								$("#other_c #other_dcr_open").addClass("dontUse");
+								other.methods.selectLoad(selectedRadio);
+							}
+							break;
+						case "btn_i_add":
+							//新增
+							//if ($(selectedRadio).length === 0) {//有選擇
+							var bisgid = 0;
+							$("#other_c #other_c_state").addClass("text-success");
+							$("#other_c #other_c_state").text("Add").attr("title", "Add_" + bisgid);
+							other.methods.selectLoad(selectedRadio);
+							//}
+							break;
+						case "btn_i_modify":
+							//修改
+							if ($(selectedRadio).length !== 0) {//有選擇
+								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								$("#other_c #other_c_state").addClass("text-warning");
+								$("#other_c #other_c_state").text("Modify").attr("title", "Modify_" + bisgid);
+								other.methods.selectLoad(selectedRadio);
+							}
+							break;
+						case "btn_i_remove":
+							//移除
+							if ($(selectedRadio).length !== 0) {//有選擇
+								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								$("#other_c #other_c_state").addClass("text-danger");
+								$("#other_c #other_c_state").text("Remove").attr("title", "Remove_" + bisgid);
+								$("#other_c #other_dcr_open").addClass("dontUse");
+								other.methods.selectLoad(selectedRadio);
+							}
+							break;
+						case "btn_w_listAdd":
+							//條件測試
+							var wc = $("#other_w_continue");
+							var wi = $("#other_w_item");
+							var wo = $("#other_w_option");
+							var wv = $("#other_w_val");
+							//檢查是否有直->
+							if (wi.val() != "" && wo.val() != "" && wv.val() != "") {
+								//檢查
+								if ($("#other_w_list div").length > 2 && wc.val() === "") {
+									//單位為空白
+									return null;
+								} else if ($("#other_w_list div").length === 2 && wc.val() !== "") {
+									//單位為空白
+									return null;
+								}
+								//取得參數
+								var wi_text = $("#other_w_item option:selected").text();
+								var wo_text = $("#other_w_option option:selected").text();
+								var wv_text = wv.val();
+								var wc_text = "";
+								if (wc.val() != "") {
+									wc_text = $("#other_w_continue option:selected").text();
+								}
+								//切割->
+								let show_list = wc_text + " " + wi_text + " " + wo_text + " '" + wv_text + "' ";
+								let hid_list = wc.val() + "<_>" + wi.val() + "<_>" + wo.val() + "<_>" + wv.val();
+								var wlistEx = $("#other_w_list_ex").clone();
+								wlistEx.removeClass("d-none");
+								wlistEx.removeAttr("id");
+								wlistEx.addClass("other_where");
+								wlistEx.find("div").html(show_list);
+								wlistEx.attr("title", hid_list);
+								$('#other_w_list_ex').before(wlistEx);
+								//單位為空白
+								wi.val("");
+								wo.val("");
+								wv.val("");
+								wc.val("");
+							} else {
+								//快速執行
+								$("#other_c #btn_w_test").trigger("click");
+							}
+							break;
+						case "btn_w_test":
+							//條件測試執行
+							other.methods.confirmSend("btn_w_test");
+							break;
+						case "btn_w_clear":
+							//清除條件內容
+							$("#other_dcr .groupItem input").val("");
+							$("#other_dcr .testItem input").val("");
+							$("#other_dcr .groupItem select").val("");
+							$("#other_dcr .testItem select").val("");
+							$("#other_dcr .groupItem input").prop('checked', false);
+							//條件
+							$("#other_dcr .other_where").remove();
+							//內容
+							$("#other_dcr .valTbodyTrD").remove();
+
+							break;
+						case "cr_exthClearAll":
+							//清除選取
+							//取消選取
+							selectedRadio.prop('checked', false);
+
+							break;
+						case "btn_w_save":
+							//存入資料(other_c_state=[Remove/Modify/Add])
+							var ocs = $("#other_c_state").attr("title").split("_")[0];
+							switch (ocs) {
+								case "Add":
+									other.methods.confirmSend("Add");
+									break;
+								case "Modify":
+									other.methods.confirmSend("Modify");
+									break;
+								case "Remove":
+									other.methods.confirmSend("Remove");
+									break;
+							}
+							break;
+						case "btn_send":
+							//傳送查詢資料
+							other.methods.confirmSend("Search");
+							break;
+					}
+				});
+				//移除觸發-條件
+				$(document).off("click", "#other_c .other_w_one");
+				$(document).on("click", "#other_c .other_w_one", function (event) {
+					var target = $(event.currentTarget);
+					if (target.hasClass("other_w_one")) {
+						console.log($(event.currentTarget).attr("class"));
+						target.parent().remove();
+					}
+				});
+				//客製化項目
+				$(document).off("click", "#other_dcr table i");
+				$(document).on("click", "#other_dcr table i", function (event) {
+					var target = $(event.currentTarget);
+					//複製
+					if (target.hasClass("bi-stickies")) {
+						console.log($(event.currentTarget).attr("class"));
+						var d = $('#other_dcr_open .valTbodyTrD').length;
+						var exTbodyTr = $(event.currentTarget).parent().parent().parent().clone();
+						exTbodyTr.removeClass('exDetailTbodyTr');
+						exTbodyTr.removeClass('d-none');
+						exTbodyTr.removeAttr("class");
+						exTbodyTr.addClass('valTbodyDetailTr_');
+						exTbodyTr.addClass('valTbodyTrD');
+						exTbodyTr.find('input').attr("alt", "row_");
+
+						exTbodyTr.find('.bi-dash-square').removeClass("d-none");
+						exTbodyTr.find('.bi-stickies').removeClass("d-none");
+						exTbodyTr.find('.bisfname input').attr("placeholder", 'Ex:CPU,I5,5990');
+						exTbodyTr.find('.bisfname input').removeAttr("disabled");
+						exTbodyTr.find('.bisid input').val("");
+						exTbodyTr.find('.bisnb input').val("customize");
+						exTbodyTr.find('.bisname input').val("customize");
+						exTbodyTr.find('.bisspecifications input').val("customize");
+						exTbodyTr.find('.bisdescription input').val("customize");
+
+						$('#other_c #other_dcr_open .exDetailTbodyTr').before(exTbodyTr);
+					}
+					//移除
+					if (target.hasClass("bi-dash-square")) {
+						console.log($(event.currentTarget).attr("class"));
+						$(event.currentTarget).parent().parent().parent().remove();
+					}
+					//新增
+					if (target.hasClass("bi-plus-square")) {
+						console.log($(event.currentTarget).attr("class"));
+						var d = $('#other_dcr_open .valTbodyTrD').length;
+						var exTbodyTr = $('#other_c #other_dcr_open .exDetailTbodyTr').clone();
+						exTbodyTr.removeClass('exDetailTbodyTr');
+						exTbodyTr.removeClass('d-none');
+						exTbodyTr.addClass('valTbodyDetailTr_');
+						exTbodyTr.addClass('valTbodyTrD');
+						exTbodyTr.find('input').attr("alt", "row_");
+
+						exTbodyTr.find('.bisfname input').attr("placeholder", 'Ex:CPU,I5,5990');
+						exTbodyTr.find('.bissdescripion input').removeAttr("disabled");
+						exTbodyTr.find('.bisfname input').removeAttr("disabled");
+						exTbodyTr.find('.bisid input').val("");
+						exTbodyTr.find('.bisnb input').val("customize");
+						exTbodyTr.find('.bisname input').val("customize");
+						exTbodyTr.find('.bisspecifications input').val("customize");
+						exTbodyTr.find('.bisdescription input').val("customize");
+						$('#other_dcr_open .exDetailTbodyTr').before(exTbodyTr);
+					}
+				});
+				//輸入Enter-條件
+				$(document).off("keyup", "#other_c input");
+				$(document).on("keyup", "#other_c input", function (e) {
+					var target = $(e.currentTarget);
+					if (e.key === 'Enter' || e.keyCode === 13) {
+						console.log($(e.currentTarget).attr("id"));
+						//點擊新增
+						if (target.attr("id") === "other_w_val") {
+							$("#other_c #btn_w_listAdd").trigger("click");
+						}
+						if (target.hasClass("searchVal")) {
+							$("#other_c #btn_send").trigger("click");
+						}
+					}
+				});
+				*/
+			},
+			//==========================選取資料==========================
+			selectLoad(selectedRadio) {
+				if (selectedRadio.length === 1) {
+					//帶入資料(選取的資料)
+					console.log($(selectedRadio).parent().parent().parent());
+					var se = $(selectedRadio).parent().parent().parent();
+					var bisid = se.find('input').attr('title').split('_')[0];
+					var bisgid = se.find('input').attr('title').split('_')[1];
+
+					var bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;
+					$('#other_dcr #other_bisiauto').prop('checked', bisiauto);//自動導入
+					$('#other_dcr #other_bisgname').val($(se).find('.bisgname').text());//群組名稱
+					$('#other_dcr #other_bisgfname').val($(se).find('.bisgfname').text());//項目名稱
+					$('#other_dcr #other_bisgffield').val($(se).find('.bisgffield').text());//指定正規化
+					$('#other_dcr #other_bisgsplit').val($(se).find('.bisgsplit').text());//指定分割切割
+					$('#other_dcr #other_syssort').val($(se).find('.syssort').text());//排序
+
+					var bisproduct = $(se).find('.bisproduct').text() === "true" ? true : false;
+					var bisaccessories = $(se).find('.bisaccessories').text() === "true" ? true : false;
+					var bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
+					var bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
+					var bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
+					$('#other_dcr #other_bisproduct').prop('checked', bisproduct);//產品
+					$('#other_dcr #other_bisaccessories').prop('checked', bisaccessories);//配件
+					$('#other_dcr #other_bissfproduct').prop('checked', bissfproduct);//半成品
+					$('#other_dcr #other_bisdevelopment').prop('checked', bisdevelopment);//開發品
+					$('#other_dcr #other_bispcb').prop('checked', bispcb);//PCBA
+					//==========條件==========
+					var bisgcondition = $(se).find('.bisgcondition').text();
+					// 使用正則表達式匹配並保留分隔符
+					let regex = /(<AND>|<OR>)/g;
+					let modifiedString = bisgcondition.replace(regex, '<@@>$1'); // 在分隔符前添加空格
+					// 按照空格進行切割
+					let result = modifiedString.split('<@@>');
+					console.log(result);
+					result.forEach((segment, index) => {
+						let parts = segment.split('<_>');
+						//開頭
+						$("#other_w_item").val(parts[1]);
+						$("#other_w_option").val(parts[2]);
+						$("#other_w_val").val(parts[3]);
+						if (parts[0] !== "") {
+							//接續
+							$("#other_w_continue").val(parts[0]);
+						}
+						$("#other_c #btn_w_listAdd").trigger("click");
+					});
+					//帶入細節				
+					main.resq_data['entityDetailJson'] = [];
+					var entityDetailJson = [];
+					other.data.otherItemPageSet.entityDetailJsons.forEach((x) => {
+						if ((x['bisgid'] + "") === bisgid) {
+							entityDetailJson.push(x);
+						}
+					});
+					main.resq_data['entityDetailJson'] = JSON.stringify(entityDetailJson);
+					other.methods.otherDetailReturn();
+					//$("#other_c #btn_w_test").trigger("click");
+
+					//取消選取
+					//selectedRadio.prop('checked', false);
+				}
+			},
+
+			datetimepickerDate() {
+				//日期時間格式
+				$(".datetimepicker").remove();
+				$('#other_c .datetimepicker_date').datetimepicker({
+					format: 'yyyy-mm-dd hh:ii:00',
+					pickerPosition: 'bottom-right',
+					//minView:1,
+					// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
+					minuteStep: 30,
+					autoclose: true,
+					endDate: '+1d',
+					datesDisabled: '+1d',
+					todayBtn: true,
+					bootcssVer: 5,
+					//......可以同上項目代碼自定義設置
+				});
+				//時間格式
+				$('#other_c .datetimepicker_time').datetimepicker({
+					format: 'hh:ii',
+					startView: 1,
+					minuteStep: 30,
+					pickDate: false,
+					autoclose: true,
+					timeFormat: 'hh:mm',
+				});
+			},
+			//==========================傳送資料==========================
+			confirmSend(kindId) {
+				var entityIKey = other.data.entityIKey;
+				var entityGKey = other.data.entityGKey;
+				var entityDateTime = other.data.entityDateTime;
+
+				//傳送資料
+				var data = {};
+				var req_data = {};
+				var entityJsons = other.data.entityFormatJson;
+				var entityDetailJsons = [];
+
+				switch (kindId) {
+					case "btn_w_test":
+						//查詢
+						if ($("#other_c .other_where").length > 0) {
+							$("#other_c .other_where").each(function (index) {
+								console.log(index + " : " + $(this).attr("title"));
+								if ($(this).attr("title") != "") {
+									entityDetailJsons.push($(this).attr("title"));
+								}
+							});
+							req_data['type'] = "POST";
+							req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.ART";
+							data['callBackValue'] = $("#other_c_state").attr("title");
+							data['callBackFunction'] = "other_detail_search";
+						}
+						break;
+					case "Add":
+						if ($("#other_dcr_open .valTbodyTrD").length > 0) {
+							$("#other_dcr_open .valTbodyTrD").each(function (index) {
+								console.log(index + " : " + $(this).attr("class"));
+								entityFormatJson = {};
+								//每一格資料
+								$(this).find('.valTbodytd').each(function (ix) {
+									var val = $(this).find("input").val();
+									//可能是時間格式
+									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
+										val = new Date(val).getTime();
+									}
+									//="checkbox"?
+									if ($(this).attr("type") == 'checkbox') {
+										val = $(this).is(':checked');
+									}
+									//=file?
+									if ($(this).attr("type") == 'file') {
+										val = $(this.parentElement).find("img").attr("src");
+									}
+									entityFormatJson[$(this).attr("title")] = val;
+								});
+								//而外抓取(群主)
+								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
+								entityFormatJson["bisgfname"] = $("#other_bisgfname").val();//項目名稱
+								entityFormatJson["bisgname"] = $("#other_bisgname").val();//群組名稱
+								entityFormatJson["bisgffield"] = $("#other_bisgffield").val();//指定正規化
+								entityFormatJson["bisgsplit"] = $("#other_bisgsplit").val();//指定分割切割
+								entityFormatJson["syssort"] = $("#other_syssort").val();//指定排序
+								entityFormatJson["bisproduct"] = $("#other_bisproduct").is(':checked');//產品
+								entityFormatJson["bisaccessories"] = $("#other_bisaccessories").is(':checked');//配件
+								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
+								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
+								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								//條件
+								var bisgcondition = "";
+								$('#other_w_list .other_where').each(function (t) {
+									bisgcondition += $(this).attr('title');
+								});
+								entityFormatJson["bisgcondition"] = bisgcondition;
+								entityDetailJsons.push(entityFormatJson);
+							});
+							//傳送對象
+							req_data['type'] = "POST";
+							req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AC";
+							data['callBackFunction'] = "other_modify";
+						}
+						break;
+					case "Modify":
+						if ($("#other_dcr_open .valTbodyTrD").length > 0) {
+							$("#other_dcr_open .valTbodyTrD").each(function (index) {
+								console.log(index + " : " + $(this).attr("class"));
+								entityFormatJson = {};
+								//每一格資料
+								$(this).find('.valTbodytd').each(function (ix) {
+									var val = $(this).find("input").val();
+									//可能是時間格式
+									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
+										val = new Date(val).getTime();
+									}
+									//="checkbox"?
+									if ($(this).attr("type") == 'checkbox') {
+										val = $(this).is(':checked');
+									}
+									//=file?
+									if ($(this).attr("type") == 'file') {
+										val = $(this.parentElement).find("img").attr("src");
+									}
+									//特殊格式化
+									if ($(this).attr("title") === "bisfname") {
+										val = $(this).find("input").val().split(",");
+										val = JSON.stringify(val);
+									}
+									entityFormatJson[$(this).attr("title")] = val;
+								});
+								//而外抓取(群主)
+								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
+								entityFormatJson["bisgfname"] = $("#other_bisgfname").val();//項目名稱
+								entityFormatJson["bisgname"] = $("#other_bisgname").val();//群組名稱
+								entityFormatJson["bisgffield"] = $("#other_bisgffield").val();//指定正規化
+								entityFormatJson["bisgsplit"] = $("#other_bisgsplit").val();//指定分割切割
+								entityFormatJson["syssort"] = $("#other_syssort").val();//指定排序
+								entityFormatJson["bisproduct"] = $("#other_bisproduct").is(':checked');//產品
+								entityFormatJson["bisaccessories"] = $("#other_bisaccessories").is(':checked');//配件
+								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
+								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
+								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								//條件
+								var bisgcondition = "";
+								$('#other_w_list .other_where').each(function (t) {
+									bisgcondition += $(this).attr('title');
+								});
+								entityFormatJson["bisgcondition"] = bisgcondition;
+								entityDetailJsons.push(entityFormatJson);
+							});
+							//傳送對象
+							req_data['type'] = "PUT";
+							req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AU";
+							data['callBackFunction'] = "other_modify";
+						}
+						break;
+					case "Remove":
+						if ($("#other_dcr_open .valTbodyTrD").length > 0) {
+							$("#other_dcr_open .valTbodyTrD").each(function (index) {
+								console.log(index + " : " + $(this).attr("class"));
+								entityFormatJson = {};
+								//每一格資料
+								$(this).find('.valTbodytd').each(function (ix) {
+									var val = $(this).find("input").val();
+									//可能是時間格式
+									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
+										val = new Date(val).getTime();
+									}
+									//="checkbox"?
+									if ($(this).attr("type") == 'checkbox') {
+										val = $(this).is(':checked');
+									}
+									//=file?
+									if ($(this).attr("type") == 'file') {
+										val = $(this.parentElement).find("img").attr("src");
+									}
+									//特殊格式化
+									if ($(this).attr("title") === "bisfname") {
+										val = $(this).find("input").val().split(",");
+										val = JSON.stringify(val);
+									}
+									entityFormatJson[$(this).attr("title")] = val;
+								});
+								//而外抓取(群主)
+								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
+								entityFormatJson["bisgfname"] = $("#other_bisgfname").val();//項目名稱
+								entityFormatJson["bisgname"] = $("#other_bisgname").val();//群組名稱
+								entityFormatJson["bisgffield"] = $("#other_bisgffield").val();//指定正規化
+								entityFormatJson["bisgsplit"] = $("#other_bisgsplit").val();//指定分割切割
+								entityFormatJson["syssort"] = $("#other_syssort").val();//指定排序
+								entityFormatJson["bisproduct"] = $("#other_bisproduct").is(':checked');//產品
+								entityFormatJson["bisaccessories"] = $("#other_bisaccessories").is(':checked');//配件
+								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
+								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
+								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								//條件
+								var bisgcondition = "";
+								$('#other_w_list .other_where').each(function (t) {
+									bisgcondition += $(this).attr('title');
+								});
+								entityFormatJson["bisgcondition"] = bisgcondition;
+								entityDetailJsons.push(entityFormatJson);
+							});
+
+							//傳送對象
+							req_data['type'] = "DELETE";
+							req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.DD";
+							data['callBackFunction'] = "other_modify";
+						}
+						break;
+					case "Search":
+						//傳送對象
+						//查詢
+						$("#otherItemItem .searchVal").each(function (index) {
+							console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
+							if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = new Date($(this).val()).getTime();
+							} else {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = $(this).val() == "" ? null : $(this).val();
+							}
+						});
+						req_data['type'] = "POST";
+						req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AR";
+						data['callBackFunction'] = "other_search";
+						break;
+
+				}
+				console.log(entityJsons);
+				console.log(entityDetailJsons);
+				//包裝
+				data['entityJson'] = JSON.stringify(entityJsons);
+				data['entityReportJson'] = JSON.stringify(entityDetailJsons);
+				data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
+				req_data['data'] = data;
+
+
+				main.methods.ajaxSend(req_data, true);
+				return false;
+			},
+
+			//修改後回傳
+			otherModifyReturn() {
+				other.methods.confirmSend("Search");
+			},
+			//測試資料回傳
+			otherDetailReturn() {
+				console.log("otherDetailReturn()");
+				//帶回資料
+				var entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				//基本格式
+				var entityIKey = other.data.entityIKey;
+				var entityGKey = other.data.entityGKey;
+				var entityDateTime = other.data.entityDateTime;
+				//Step0.取得基本分割...等等條件
+				var owg = $('#other_bisgfname').val();
+				var owf = $('#other_bisgffield').val();
+				var ows = $('#other_bisgsplit').val();
+				//console.log(entityDetailJsons);
+				//Step1.查詢細節內容-格式
+				$("#other_dcr_open .valTbodyTrD").remove();
+				$('#other_dcr_open tbody td').removeClass('bg-warning');
+				for (var d = 0; d < entityDetailJsons.length; d++) {
+					//=======格式=======
+					var exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
+					exTbodyTr.removeClass('exDetailTbodyTr');
+					exTbodyTr.removeClass('d-none');
+					exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
+					exTbodyTr.addClass('valTbodyTrD');
+					exTbodyTr.find('input').attr("alt", "row_" + (d + 1));
+					//=======資料=======
+					var entity = entityDetailJsons[d];//
+					var iKey = "", gKey = "";
+					var valTrNb = d + 1;
+					var owgs = owg.split(" ").length > 5 ? 5 : owg.split(" ").length;//切割數量
+					Object.keys(entity).forEach(function (s) {
+						//是否IKEY?
+						if (entityIKey == s) {iKey = entity[s];}
+						//是否GKEY?
+						if (entityGKey == s) {gKey = entity[s];}
+						exTbodyTr.find('.bi-dash-square').removeAttr("disabled");
+						exTbodyTr.find('.bi-dash-square').attr("title", iKey + "_" + gKey);
+						exTbodyTr.find('.bi-stickies').attr("title", iKey + "_" + gKey);
+
+						//是否時間格式?
+						if (entityDateTime.indexOf(s) >= 0) {
+							var dF = new Date(entity[s]);
+							var dateF = dF.getFullYear() + "-";
+							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+							dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+							dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+							exTbodyTr.find('.' + s + " input").val(dateF);
+						} else {
+							//正規化
+							if ('bisfname' === s && owf != "") {
+								var bisfname = entity[owf].split(ows);
+								var bisfnameOk = [];
+								bisfname.forEach(function (i) {
+									if (owgs > 0) {
+										bisfnameOk.push(i.replaceAll(/[\n\r\t]/g, ''));
+									}
+									owgs--;
+								});
+								//customize 除外
+								if (exTbodyTr.find('.bisnb input').val() !== 'customize') {
+									exTbodyTr.find('.' + s + " input").val(bisfnameOk);
+								} else {
+									//開放修正
+									exTbodyTr.find('.' + s + " input").attr("placeholder", 'Ex:CPU,I5,5990');
+									exTbodyTr.find('.' + s + " input").removeAttr("disabled");
+									exTbodyTr.find('.' + s + " input").val(JSON.parse(entity[s]));
+								}
+							} else {
+								//一般資烙
+								exTbodyTr.find('.' + s + " input").val(entity[s]);
+								if ('bissdescripion' === s) {
+									//開放修正
+									exTbodyTr.find('.' + s + " input").removeAttr("disabled");
+								}
+							}
+						}
+					});
+					$('#other_c #other_dcr_open .exDetailTbodyTr').before(exTbodyTr);
+				}
+				$('#other_c #other_dcr_open .exDetailTbodyTr').addClass('d-none');
+			},
+			//==========================資料載入==========================
+			otherReLoad() {
+				//還原
+				$('#other_cr_open .valTbodytd').text("");
+				$('#other_dcr_open .valTbodytd input').val("");
+				$('#other_c .exTbodyTh input').attr("disabled", "disabled");
+				$('#other_c .exTbodyTh input').attr("title", "IKey_GKey");
+				$('#other_c .exTbodyTh input').prop("checked", false);
+				$('#other_cr_open tbody td').removeClass('bg-warning');
+				//版面預設
+				if ($('#other_dcr_open').hasClass('show')) {
+					$('#other_dcr .btn-outline-white').trigger('click');
+				}
+				if (!$('#other_cr_open').hasClass('show')) {
+					$('#other_cr .btn-outline-white').trigger('click');
+				}
+
+				//Step5.帶入資料
+				var marks = other.data.marks;
+				var entityJsons = other.data.otherItemPageSet.entityJsons;
+				var entityIKey = other.data.entityIKey;
+				var entityGKey = other.data.entityGKey;
+				var entityDateTime = other.data.entityDateTime;
+				var pageSize = other.data.otherItemPageSet.pageSize;//每頁數量(1-20)
+				var pageNew = other.data.otherItemPageSet.pageNew - 1;//單前頁碼(1-50)
+				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				for (var x = 0; x < pageSize; x++) {
+					//筆數還夠
+					if (pageSN + x < entityJsons.length) {
+						var entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						var iKey = "";
+						var gKey = "";
+						Object.keys(entity).forEach(function (k) {
+							//欄位計數
+							var valTrNb = x + 1;
+							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+							//是否IKEY?
+							if (entityIKey == k) {iKey = entity[k];}
+							//是否GKEY?
+							if (entityGKey == k) {gKey = entity[k];}
+							//是否時間格式?
+							if (entityDateTime.indexOf(k) >= 0) {
+								var dF = new Date(entity[k]);
+								var dateF = dF.getFullYear() + "-";
+								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+								$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+							} else {
+								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+							}
+							//marks標記?
+							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+						});
+					}
+				}
+			},
+			//==========================回傳接收==========================
+			otherReturn() {
+				//查詢回傳
+				console.log("otherItemReturn");
+				//Step4.分頁歸位
+				if (main.resq_data['entityJson'].length > 0) {
+					var otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					other.data.otherItemPageSet.total = otherItemPageSet['total'];
+					other.data.otherItemPageSet.batch = otherItemPageSet['batch'];
+					other.data.otherItemPageSet.pageNew = 1; //單前頁碼(1-50)
+					other.data.marks = {};//有選取的IKeyGKey
+					other.data.markDetails = {};//有選取的IKeyGKey
+					//Step5.帶入資料
+					if (main.resq_data['entityJson'] != "") {
+						other.data.otherItemPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+						other.methods.otherReLoad();
+					}
+					if (main.resq_data['entityDetailJson'] != "") {
+						other.data.otherItemPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+					}
+				}
+			},
+			//==========================初始化==========================
+			destroy() {
+				//銷毀
+				$(document).off("click", "#other_c button");
+				$(document).off("click", "#other_c .other_w_one");
+				$(document).off("click", "#other_dcr table i");
+				$(document).off("keyup", "#other_c input");
+				console.log("other.html(destroy)");
+			},
+		},
+	};
+</script>

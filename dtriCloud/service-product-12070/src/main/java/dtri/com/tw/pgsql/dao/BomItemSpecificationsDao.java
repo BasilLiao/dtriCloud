@@ -15,17 +15,25 @@ public interface BomItemSpecificationsDao extends JpaRepository<BomItemSpecifica
 
 	// 查詢全部含-頁數
 	@Query("SELECT c FROM BomItemSpecifications c "//
-			+ "WHERE (:bisgname is null or c.bisgname LIKE %:bisgname% ) and "//
-			+ "(:bisname is null or c.bisname LIKE %:bisname% ) and "//
-			+ "(:bisnb is null or c.bisnb LIKE %:bisnb% ) ") //
-	ArrayList<BomItemSpecifications> findAllBySearch(String bisgname, String bisname, String bisnb, Pageable pageable);
+			+ "WHERE (:bisgname is null or c.bisgname LIKE %:bisgname% ) and "// 正規化群組-名稱
+			+ "(:bisfname is null or c.bisfname LIKE %:bisfname% ) and "// 正規化-名稱
+			+ "(:bisnb is null or c.bisnb LIKE %:bisnb% ) ") // 物料號
+	ArrayList<BomItemSpecifications> findAllBySearch(String bisgname, String bisfname, String bisnb, Pageable pageable);
 
 	// 檢查
 	@Query("SELECT c FROM BomItemSpecifications c "//
 			+ "WHERE (:bisgname is null or c.bisgname =:bisgname ) and "//
-			+ "(:bisname is null or c.bisname = :bisname ) and "//
+			+ "(:bisfname is null or c.bisfname = :bisfname ) and "//
 			+ "(:bisnb is null or c.bisnb =:bisnb ) ") //
-	ArrayList<BomItemSpecifications> findAllByCheck(String bisgname, String bisname, String bisnb);
+	ArrayList<BomItemSpecifications> findAllByCheck(String bisgname, String bisfname, String bisnb);
+
+	// 檢查-指定條件
+	@Query("SELECT c FROM BomItemSpecifications c "//
+			+ "WHERE (:bisgcondition is null or c.bisgcondition =:bisgcondition ) ") //
+	ArrayList<BomItemSpecifications> findAllByBisGConditionCheck(String bisgcondition);
+
+	// 找GID
+	ArrayList<BomItemSpecifications> findAllByBisgid(Long bisgcondition);
 
 	// 取得G_ID
 	@Query(value = "SELECT NEXTVAL('bom_item_specifications_g_seq')", nativeQuery = true)

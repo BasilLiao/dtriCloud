@@ -1,28 +1,31 @@
 <style>
-/*單元名稱_文字_調製整*/
-#nav_functional_unit {
-	line-height: 24px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-/*Menu_位置_調製整*/
-.menu_css {
-	margin-top: -1px;
-}
+	/*單元名稱_文字_調製整*/
+	#nav_functional_unit {
+		line-height: 24px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/*Menu_位置_調製整*/
+	.menu_css {
+		margin-top: -1px;
+	}
 </style>
 <div id="nav_index" class="fixed-top text-primary">
 	<!-- 固定選單 -->
 	<div class="col-12 p-0 bg-light border border-primary rounded-bottom row m-0 p-1 shadow-sm">
 		<div class="col-1 p-0">
-			<button class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse" aria-controls="nav_functional_menu" data-bs-target="#nav_functional_menu">
+			<button class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse"
+				aria-controls="nav_functional_menu" data-bs-target="#nav_functional_menu">
 				<i class="bi bi-menu-down"></i> <b class="d-none d-lg-inline">Menu</b>
 			</button>
 		</div>
 		<div class="col-10 p-0 row m-0">
 			<div id="nav_functional_unit" class="col-3 p-1 m-0 h4 fw-bold text-center">Home</div>
 			<div class="col-9 p-1 pt-0 pb-0 m-0 fw-bold">
-				<div id="nav_message_color" class="alert alert-primary p-1 m-0 d-flex justify-content-between" role="alert">
+				<div id="nav_message_color" class="alert alert-primary p-1 m-0 d-flex justify-content-between"
+					role="alert">
 					<div id="nav_message_info_def" class="">[Code]Message :</div>
 					<div id="nav_message_info" class="d-none">[Code]Message :</div>
 					<button id="nav_message_close" type="button" class="btn-close" aria-label="Close"></button>
@@ -30,7 +33,8 @@
 			</div>
 		</div>
 		<div class="col-1 p-0">
-			<button id="nav_user" class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse" aria-controls="nav_user_menu" data-bs-target="#nav_user_menu">
+			<button id="nav_user" class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse"
+				aria-controls="nav_user_menu" data-bs-target="#nav_user_menu">
 				<i class="bi bi-person-circle"></i> <b class="d-none d-lg-inline">User</b>
 			</button>
 		</div>
@@ -38,9 +42,11 @@
 	<!-- 動態選單 -->
 	<div class="col-12 p-1 pt-0">
 		<!-- Menu -->
-		<div class="menu_css collapse float-start col-5 col-md-4 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0" id="nav_functional_menu">
+		<div class="menu_css collapse float-start col-5 col-md-4 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0"
+			id="nav_functional_menu">
 			<div class="row m-0 p-0">
-				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 60vh;">
+				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
+					style="max-height:60vh;">
 					<div id="menu_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
@@ -52,7 +58,8 @@
 
 				</div>
 				<!-- Menu-item -->
-				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto" style="max-height: 60vh;">
+				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
+					style="max-height:60vh;">
 					<div id="menu_i_ex" class="pt-2 d-none">
 						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div class="sptype_0 d-none ">
@@ -68,7 +75,8 @@
 			</div>
 		</div>
 		<!-- User -->
-		<div class="menu_css collapse float-end col-4 col-md-3 col-lg-1 border border-primary rounded-bottom bg-white shadow" id="nav_user_menu">
+		<div class="menu_css collapse float-end col-4 col-md-3 col-lg-1 border border-primary rounded-bottom bg-white shadow"
+			id="nav_user_menu">
 			<div class="p-1 row text-center fw-bold fw-normal h6 m-0 text-primary">
 				<div class="col-12 p-0">
 					<div class="pb-2">
@@ -134,179 +142,179 @@
 </div>
 
 <script type="text/javascript">
-//宣告
-nav_alert = {
-	data:{
-		alertTimeout:""
-		
-	},
-	//方法
-	methods:{
-		alertshow(color,ms){
-			$("#nav_message_info").removeClass("d-none");
-			$("#nav_message_info_def").addClass("d-none");
-			$("#nav_message_info").text("[Code]Message : "+ms);
-			$("#nav_message_color").removeClass("alert-primary");
-			$("#nav_message_color").removeClass("alert-success");
-			$("#nav_message_color").removeClass("alert-warning");
-			$("#nav_message_color").removeClass("alert-danger");
-			clearTimeout(nav_alert.data.alertTimeout);
-			switch(color){
-			case "success":
-				$("#nav_message_color").addClass("alert-success");
-				break;
-			case "warning":
-				$("#nav_message_color").addClass("alert-warning");
-				break;
-			case "danger":
-				$("#nav_message_color").addClass("alert-danger");
-				break;
-			}
-			//自動還原
-			nav_alert.data.alertTimeout = setTimeout(function() { 
-				$("#nav_message_info_def").removeClass("d-none");
-				$("#nav_message_info").addClass("d-none");
-				$("#nav_message_info").text("[Code]Message : ");
-				//color
-				$("#nav_message_color").addClass("alert-primary");
-				$("#nav_message_color").removeClass("alert-success");
-				$("#nav_message_color").removeClass("alert-warning");
-				$("#nav_message_color").removeClass("alert-danger");
-			}, 7000);
-		},
-		create(){
-			//初始化
-			console.log("nav_index.html(create)");
-			//建立監聽(關閉異常)
-			$(document).off("click", "#nav_message_close");
-			$(document).on("click", "#nav_message_close", function(event) {
-				$("#nav_message_info_def").removeClass("d-none");
-				$("#nav_message_info").addClass("d-none");
-				$("#nav_message_info").text("[Code]Message : ");
-				//color
-				$("#nav_message_color").addClass("alert-primary");
-				$("#nav_message_color").removeClass("alert-success");
-				$("#nav_message_color").removeClass("alert-warning");
-				$("#nav_message_color").removeClass("alert-danger");
-			});
-		}
-	}		
-}
+	//宣告
+	nav_alert = {
+		data: {
+			alertTimeout: ""
 
-nav_index = {
-	//資料
-	date:{
-		menuJson:{},
-		menuUnitJson:{},
-	},	
-	//方法
-	methods:{
-		create(){
-			//初始化
-			console.log("nav_index.html(create)");
-			//var nav_index = nav_index;
-			var entityJson = JSON.parse(main.resq_data.entityJson);
-			var systemgroups = entityJson.systemgroups;
-			//console.log(entityJson);
-			$("#menu_login_name").text(entityJson.suname);
-			$("#menu_login_name").attr("alt",entityJson.suaccount);
-			$("#menu_login_language").text(entityJson.sulanguage);
-			$("#menu_login_datetime").text(new Date());
-			//例遍->每項目->自動排序
-			for (var systemgroup of systemgroups) {
-				var systemPermission = systemgroup['systemPermission'];
-				nav_index.date.menuJson[systemPermission['syssort']] = systemPermission;
-				
-			}
-			//例遍->群組功能
-			//console.log(nav_index.date.menuJson);
-			var menuJson = nav_index.date.menuJson;
-			for (var key in menuJson) {
-				//群組開頭->則添加
-				if(menuJson[key].sysheader){
-					var menu_ex = $($("#menu_ex").clone());
-					menu_ex.attr("id","spgid_"+menuJson[key].spgid);
-					menu_ex.removeClass("d-none");
-					menu_ex.addClass("menu_list_open");
-					menu_ex.find(".menu_l_name").text(menuJson[key].spgname);
-					//如果語系有效
-					if(menuJson[key].language!=null && menuJson[key].language!=""){
-						var language = JSON.parse(menuJson[key].language);
-						//如果翻譯不為空
-						if(language[$('#menu_login_language').text()]!=""){
-							menu_ex.find(".menu_l_name").text(language[$('#menu_login_language').text()]);
-						}
-					}
-					menu_ex.appendTo( "#menu_list");
+		},
+		//方法
+		methods: {
+			alertshow(color, ms) {
+				$("#nav_message_info").removeClass("d-none");
+				$("#nav_message_info_def").addClass("d-none");
+				$("#nav_message_info").text("[Code]Message : " + ms);
+				$("#nav_message_color").removeClass("alert-primary");
+				$("#nav_message_color").removeClass("alert-success");
+				$("#nav_message_color").removeClass("alert-warning");
+				$("#nav_message_color").removeClass("alert-danger");
+				clearTimeout(nav_alert.data.alertTimeout);
+				switch (color) {
+					case "success":
+						$("#nav_message_color").addClass("alert-success");
+						break;
+					case "warning":
+						$("#nav_message_color").addClass("alert-warning");
+						break;
+					case "danger":
+						$("#nav_message_color").addClass("alert-danger");
+						break;
 				}
-				//放入轉跳頁面
-				nav_index.date.menuUnitJson[menuJson[key].spid] = menuJson[key].spcontrol+"<_>"+menuJson[key].sppermission;
+				//自動還原
+				nav_alert.data.alertTimeout = setTimeout(function () {
+					$("#nav_message_info_def").removeClass("d-none");
+					$("#nav_message_info").addClass("d-none");
+					$("#nav_message_info").text("[Code]Message : ");
+					//color
+					$("#nav_message_color").addClass("alert-primary");
+					$("#nav_message_color").removeClass("alert-success");
+					$("#nav_message_color").removeClass("alert-warning");
+					$("#nav_message_color").removeClass("alert-danger");
+				}, 7000);
+			},
+			create() {
+				//初始化
+				console.log("nav_index.html(create)");
+				//建立監聽(關閉異常)
+				$(document).off("click", "#nav_message_close");
+				$(document).on("click", "#nav_message_close", function (event) {
+					$("#nav_message_info_def").removeClass("d-none");
+					$("#nav_message_info").addClass("d-none");
+					$("#nav_message_info").text("[Code]Message : ");
+					//color
+					$("#nav_message_color").addClass("alert-primary");
+					$("#nav_message_color").removeClass("alert-success");
+					$("#nav_message_color").removeClass("alert-warning");
+					$("#nav_message_color").removeClass("alert-danger");
+				});
 			}
-			//建立監聽(開啟細項)
-			$(document).off("mouseenter", "#menu_list .menu_list_open");
-			$(document).on("mouseenter", "#menu_list .menu_list_open", function (event) {
-				//console.log(event.currentTarget.id);
-				//清除-上次細項資料
-				$(".menu_list_item").remove();
+		}
+	}
+
+	nav_index = {
+		//資料
+		date: {
+			menuJson: {},
+			menuUnitJson: {},
+		},
+		//方法
+		methods: {
+			create() {
+				//初始化
+				console.log("nav_index.html(create)");
+				//var nav_index = nav_index;
+				var entityJson = JSON.parse(main.resq_data.entityJson);
+				var systemgroups = entityJson.systemgroups;
+				//console.log(entityJson);
+				$("#menu_login_name").text(entityJson.suname);
+				$("#menu_login_name").attr("alt", entityJson.suaccount);
+				$("#menu_login_language").text(entityJson.sulanguage);
+				$("#menu_login_datetime").text(new Date());
+				//例遍->每項目->自動排序
+				for (var systemgroup of systemgroups) {
+					var systemPermission = systemgroup['systemPermission'];
+					nav_index.date.menuJson[systemPermission['syssort']] = systemPermission;
+
+				}
+				//例遍->群組功能
+				//console.log(nav_index.date.menuJson);
+				var menuJson = nav_index.date.menuJson;
 				for (var key in menuJson) {
-					var spgid = Number(event.currentTarget.id.replace("spgid_",""));
-					if(spgid == menuJson[key].spgid && (!menuJson[key].sysheader)){
-						var menu_i_ex = $($("#menu_i_ex").clone());
-						//是否為一般類別
-						if(menuJson[key].sptype==0){
-							menu_i_ex.find(".sptype_0").removeClass("d-none");
-						}else{
-							menu_i_ex.find(".sptype_1").removeClass("d-none");
-							menu_i_ex.find(".btn-outline-primary").addClass("btn-outline-danger");
-							menu_i_ex.find(".btn-outline-primary").removeClass("btn-outline-primary");
-						}
-						menu_i_ex.attr("id","spid_"+menuJson[key].spid);
-						menu_i_ex.removeClass("d-none");
-						menu_i_ex.addClass("menu_list_item");
-						menu_i_ex.find(".menu_i_name").text(menuJson[key].spname);
+					//群組開頭->則添加
+					if (menuJson[key].sysheader) {
+						var menu_ex = $($("#menu_ex").clone());
+						menu_ex.attr("id", "spgid_" + menuJson[key].spgid);
+						menu_ex.removeClass("d-none");
+						menu_ex.addClass("menu_list_open");
+						menu_ex.find(".menu_l_name").text(menuJson[key].spgname);
 						//如果語系有效
-						if(menuJson[key].language!=null && menuJson[key].language!=""){
+						if (menuJson[key].language != null && menuJson[key].language != "") {
 							var language = JSON.parse(menuJson[key].language);
 							//如果翻譯不為空
-							if(language[$('#menu_login_language').text()]!=""){
-								menu_i_ex.find(".menu_i_name").text(language[$('#menu_login_language').text()]);							
+							if (language[$('#menu_login_language').text()] != "") {
+								menu_ex.find(".menu_l_name").text(language[$('#menu_login_language').text()]);
 							}
 						}
-						menu_i_ex.appendTo("#menu_item");
+						menu_ex.appendTo("#menu_list");
 					}
+					//放入轉跳頁面
+					nav_index.date.menuUnitJson[menuJson[key].spid] = menuJson[key].spcontrol + "<_>" + menuJson[key].sppermission;
 				}
-				
-			});
-			//建立監聽(轉跳單元)
-			$(document).off("click", "#menu_item .menu_list_item");
-			$(document).on("click", "#menu_item .menu_list_item", function(event) {
-				//轉跳對象
-				var spid = event.currentTarget.id.replace("spid_","");
-				var url = nav_index.date.menuUnitJson[spid].split("<_>")[0];
-				var sppermission = nav_index.date.menuUnitJson[spid].split("<_>")[1];
-				var req_data = {};
-				var data = {};
-				data['htmlBody'] = ("body_"+url).replace("basil","html");
-				data['htmlBodyUnitName'] =  $('#'+event.currentTarget.id).find('.menu_i_name').text();
-				//關閉選單
-				$('#nav_functional_menu').removeClass("show");
-				$('#nav_user_menu').removeClass("show");
-				$('#nav_functional_unit').attr("alt",spid+"<_>"+url+"<_>"+sppermission);
-				
-				//準備轉跳
-				req_data.url = url;
-				req_data.type = "POST";
-				req_data.data = data;
-				main.methods.ajaxSend(req_data,true);
-			});
-			//console.log(nav_index.date.menuUnitJson);
+				//建立監聽(開啟細項)
+				$(document).off("mouseenter", "#menu_list .menu_list_open");
+				$(document).on("mouseenter", "#menu_list .menu_list_open", function (event) {
+					//console.log(event.currentTarget.id);
+					//清除-上次細項資料
+					$(".menu_list_item").remove();
+					for (var key in menuJson) {
+						var spgid = Number(event.currentTarget.id.replace("spgid_", ""));
+						if (spgid == menuJson[key].spgid && (!menuJson[key].sysheader)) {
+							var menu_i_ex = $($("#menu_i_ex").clone());
+							//是否為一般類別
+							if (menuJson[key].sptype == 0) {
+								menu_i_ex.find(".sptype_0").removeClass("d-none");
+							} else {
+								menu_i_ex.find(".sptype_1").removeClass("d-none");
+								menu_i_ex.find(".btn-outline-primary").addClass("btn-outline-danger");
+								menu_i_ex.find(".btn-outline-primary").removeClass("btn-outline-primary");
+							}
+							menu_i_ex.attr("id", "spid_" + menuJson[key].spid);
+							menu_i_ex.removeClass("d-none");
+							menu_i_ex.addClass("menu_list_item");
+							menu_i_ex.find(".menu_i_name").text(menuJson[key].spname);
+							//如果語系有效
+							if (menuJson[key].language != null && menuJson[key].language != "") {
+								var language = JSON.parse(menuJson[key].language);
+								//如果翻譯不為空
+								if (language[$('#menu_login_language').text()] != "") {
+									menu_i_ex.find(".menu_i_name").text(language[$('#menu_login_language').text()]);
+								}
+							}
+							menu_i_ex.appendTo("#menu_item");
+						}
+					}
+
+				});
+				//建立監聽(轉跳單元)
+				$(document).off("click", "#menu_item .menu_list_item");
+				$(document).on("click", "#menu_item .menu_list_item", function (event) {
+					//轉跳對象
+					var spid = event.currentTarget.id.replace("spid_", "");
+					var url = nav_index.date.menuUnitJson[spid].split("<_>")[0];
+					var sppermission = nav_index.date.menuUnitJson[spid].split("<_>")[1];
+					var req_data = {};
+					var data = {};
+					data['htmlBody'] = ("body_" + url).replace("basil", "html");
+					data['htmlBodyUnitName'] = $('#' + event.currentTarget.id).find('.menu_i_name').text();
+					//關閉選單
+					$('#nav_functional_menu').removeClass("show");
+					$('#nav_user_menu').removeClass("show");
+					$('#nav_functional_unit').attr("alt", spid + "<_>" + url + "<_>" + sppermission);
+
+					//準備轉跳
+					req_data.url = url;
+					req_data.type = "POST";
+					req_data.data = data;
+					main.methods.ajaxSend(req_data, true);
+				});
+				//console.log(nav_index.date.menuUnitJson);
+			},
+			destroy() {
+				//銷毀
+				console.log("nav_index.html(destroy)");
+				$(document).off("mouseenter", "#menu_list .menu_list_open");
+				$(document).off("click", "#menu_item .menu_list_item");
+			},
 		},
-		destroy() {
-			//銷毀
-			 console.log("nav_index.html(destroy)");
-			 $(document).off("mouseenter", "#menu_list .menu_list_open");
-			 $(document).off("click", "#menu_item .menu_list_item");
-		},
-	},	
-};
+	};
 </script>
