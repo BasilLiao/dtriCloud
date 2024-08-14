@@ -59,17 +59,17 @@ public class BomItemSpecificationsServiceAc {
 		// ========================分頁設置========================
 		// Step1.批次分頁
 		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		//int total = pageSetJson.get("total").getAsInt();
-		//int batch = pageSetJson.get("batch").getAsInt();
+		int total = pageSetJson.get("total").getAsInt();
+		int batch = pageSetJson.get("batch").getAsInt();
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "bisgid"));// 群組
 		orders.add(new Order(Direction.ASC, "syssort"));// 排序
+		orders.add(new Order(Direction.ASC, "bisgid"));// 群組
 		orders.add(new Order(Direction.ASC, "bisfname"));// 正規化名稱
 
 		// 一般模式
-		PageRequest pageable = PageRequest.of(0, 10000, Sort.by(orders));
+		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
@@ -431,6 +431,7 @@ public class BomItemSpecificationsServiceAc {
 				//
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysodate(new Date());
+				entityDataOld.setSyssort(x.getSyssort());
 				saveDatasUpdate.add(entityDataOld);
 			} else {
 				// 沒比對到->移除

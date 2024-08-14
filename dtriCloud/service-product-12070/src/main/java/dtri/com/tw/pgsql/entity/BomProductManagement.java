@@ -92,9 +92,8 @@ public class BomProductManagement {
 		this.bpmmodel = "";
 		this.bpmtype = 0;
 		this.bpmtypename = "";
-		this.bpmbisid = "";
-		this.bpmbisname = "";
 		this.bpmbpsnv = "";
+		this.bpmbisitem = "";
 	}
 
 	// 共用型
@@ -135,13 +134,10 @@ public class BomProductManagement {
 	private Integer bpmtype;
 	@Column(name = "bpm_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bpmtypename;
-	@Column(name = "bpm_bis_id", nullable = false, columnDefinition = "text default ''")
-	private String bpmbisid;
-	@Column(name = "bpm_bis_name", nullable = false, columnDefinition = "text default ''")
-	private String bpmbisname;
+	@Column(name = "bpm_bis_item", nullable = false, columnDefinition = "text default ''")
+	private String bpmbisitem;
 	@Column(name = "bpm_bps_nv", nullable = false, columnDefinition = "text default ''")
 	private String bpmbpsnv;
-	
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -263,28 +259,20 @@ public class BomProductManagement {
 		this.bpmtypename = bpmtypename;
 	}
 
-	public String getBpmbisid() {
-		return bpmbisid;
-	}
-
-	public void setBpmbisid(String bpmbisid) {
-		this.bpmbisid = bpmbisid;
-	}
-
-	public String getBpmbisname() {
-		return bpmbisname;
-	}
-
-	public void setBpmbisname(String bpmbisname) {
-		this.bpmbisname = bpmbisname;
-	}
-
 	public String getBpmbpsnv() {
 		return bpmbpsnv;
 	}
 
 	public void setBpmbpsnv(String bpmbpsnv) {
 		this.bpmbpsnv = bpmbpsnv;
+	}
+
+	public String getBpmbisitem() {
+		return bpmbisitem;
+	}
+
+	public void setBpmbisitem(String bpmbisitem) {
+		this.bpmbisitem = bpmbisitem;
 	}
 
 }

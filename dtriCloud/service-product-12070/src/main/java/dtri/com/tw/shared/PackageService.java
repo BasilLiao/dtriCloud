@@ -26,7 +26,7 @@ public class PackageService {
 
 	// 寬度
 	public enum SearchWidth {
-		col_lg_1, col_lg_2, col_lg_3, col_lg_4, col_lg_5
+		col_lg_1, col_lg_2, col_lg_3, col_lg_4, col_lg_5, col_lg_6
 	}
 
 	// Stirng to JSON(一般轉換)

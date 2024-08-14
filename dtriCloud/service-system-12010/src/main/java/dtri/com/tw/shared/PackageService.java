@@ -26,7 +26,7 @@ public class PackageService {
 
 	// 寬度
 	public enum SearchWidth {
-		col_lg_1, col_lg_2, col_lg_3, col_lg_4, col_lg_5
+		col_lg_1, col_lg_2, col_lg_3, col_lg_4, col_lg_5, col_lg_6
 	}
 
 	// Stirng to JSON(一般轉換)
@@ -52,7 +52,8 @@ public class PackageService {
 	}
 
 	// JSON to Bean(單一包裝)
-	public <T> T jsonToBean(String packageJson, Class<T> valueType) throws JsonMappingException, JsonProcessingException {
+	public <T> T jsonToBean(String packageJson, Class<T> valueType)
+			throws JsonMappingException, JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		T packageBean = objectMapper.readValue(packageJson, valueType);
 		return packageBean;
@@ -84,8 +85,8 @@ public class PackageService {
 	 * @param show      顯示 查詢用?(true)修改用?(如果查詢用不到:false)
 	 * 
 	 **/
-	public JsonArray searchSet(JsonArray arr, JsonArray selectArr, String name, String placeholder, Boolean show, SearchType type,
-			SearchWidth width) {
+	public JsonArray searchSet(JsonArray arr, JsonArray selectArr, String name, String placeholder, Boolean show,
+			SearchType type, SearchWidth width) {
 		JsonObject Json = new JsonObject();// 查詢設定項目
 		Json.addProperty("searchName", name);
 		Json.addProperty("type", type + "");// text/select/datetime/datetime_local
@@ -100,7 +101,8 @@ public class PackageService {
 	}
 
 	// 一般回傳資料(欄位)
-	public JsonObject resultSet(Field[] fields, ArrayList<String> exception, Map<String, SystemLanguageCell> mapLanguages) {
+	public JsonObject resultSet(Field[] fields, ArrayList<String> exception,
+			Map<String, SystemLanguageCell> mapLanguages) {
 		JsonObject returnArr = new JsonObject();
 		String sort_cellName = "";
 		String fieldName = "";

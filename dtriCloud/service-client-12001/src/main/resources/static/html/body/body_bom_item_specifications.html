@@ -100,12 +100,12 @@
 				//Step1.初始化
 				console.log("body_bom_item_specifications.html(created)");
 				//模板-鎖定-不需要的分頁 disabled
-				//$("#body_bom_item_specifications #home_title").addClass("disabled");
-				//$("#body_bom_item_specifications #search_title").addClass("disabled");
-				//$("#body_bom_item_specifications #modify_title").addClass("disabled");
+				$("#body_bom_item_specifications #home_title").addClass("disabled");
+				$("#body_bom_item_specifications #search_title").addClass("disabled");
+				$("#body_bom_item_specifications #modify_title").addClass("disabled");
 				//$("#body_bom_item_specifications #report_title").addClass("disabled");
 				$("#body_bom_item_specifications #print_title").addClass("disabled");
-				//$("#body_bom_item_specifications #compare_title").addClass("disabled");
+				$("#body_bom_item_specifications #compare_title").addClass("disabled");
 				//$("#body_bom_item_specifications #other_title").addClass("disabled");
 				//模板-預設分頁 active
 				$("#body_bom_item_specifications #other_title").addClass("active");
@@ -115,14 +115,14 @@
 				//Step2.模板
 				$("#body_bom_item_specifications #home_tab").load("./html/model/home.html", function () { });
 				//查詢-模板
-				$("#body_bom_item_specifications #search_tab").load("./html/model/search.html", function () {
-					search.methods.create();
-					main.methods.reWindowsSize();
-				});
+				//$("#body_bom_item_specifications #search_tab").load("./html/model/search.html", function () {
+				//	search.methods.create();
+				//	main.methods.reWindowsSize();
+				//});
 				//編輯-模板
-				$("#body_bom_item_specifications #modify_tab").load("./html/model/modify.html", function () {
-					modify.methods.create();
-				});
+				//$("#body_bom_item_specifications #modify_tab").load("./html/model/modify.html", function () {
+				//	modify.methods.create();
+				//});
 				//列印-模板
 				//$("#body_bom_item_specifications #print_tab").load("./html/model/print.html", function () {
 				//	print.methods.create();
@@ -132,9 +132,9 @@
 					report.methods.create();
 				});
 				//比對-模板
-				$("#body_bom_item_specifications #compare_tab").load("./html/model/compare.html", function () {
-					compare.methods.create();
-				});
+				//$("#body_bom_item_specifications #compare_tab").load("./html/model/compare.html", function () {
+				//	compare.methods.create();
+				//});
 				//其他-模板
 				$("#body_bom_item_specifications #other_tab").load("./html/other/other_bom_item_specifications.html", function () {
 					other.methods.create();

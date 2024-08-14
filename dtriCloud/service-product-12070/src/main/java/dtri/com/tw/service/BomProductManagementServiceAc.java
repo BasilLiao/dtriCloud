@@ -4,8 +4,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +26,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
+import dtri.com.tw.pgsql.dao.BomProductManagementDao;
+import dtri.com.tw.pgsql.dao.BomProductRuleDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
-import dtri.com.tw.pgsql.entity.BomItemSpecificationsDetailFront;
+import dtri.com.tw.pgsql.entity.BomProductManagement;
+import dtri.com.tw.pgsql.entity.BomProductManagementDetailFront;
+import dtri.com.tw.pgsql.entity.BomProductRule;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -52,6 +62,15 @@ public class BomProductManagementServiceAc {
 	private BomItemSpecificationsDao specificationsDao;
 
 	@Autowired
+	private BomProductManagementDao managementDao;
+
+	@Autowired
+	private BomProductRuleDao productRuleDao;
+
+	@Autowired
+	private BasicBomIngredientsDao ingredientsDao;
+
+	@Autowired
 	private EntityManager em;
 
 	/** 取得資料 */
@@ -59,88 +78,210 @@ public class BomProductManagementServiceAc {
 		// ========================分頁設置========================
 		// Step1.批次分頁
 		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		//int total = pageSetJson.get("total").getAsInt();
-		//int batch = pageSetJson.get("batch").getAsInt();
+		int total = pageSetJson.get("total").getAsInt();
+		int batch = pageSetJson.get("batch").getAsInt();
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "bisgid"));// 群組
-		orders.add(new Order(Direction.ASC, "syssort"));// 排序
-		orders.add(new Order(Direction.ASC, "bisfname"));// 正規化名稱
+		orders.add(new Order(Direction.ASC, "bpmid"));// 群組
 
 		// 一般模式
-		PageRequest pageable = PageRequest.of(0, 10000, Sort.by(orders));
+		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BomItemSpecifications> entitys = specificationsDao.findAllBySearch(null, null, null, pageable);
-			ArrayList<BomItemSpecifications> entityGroups = new ArrayList<BomItemSpecifications>();
-			Map<String, BomItemSpecifications> mapGroups = new HashMap<String, BomItemSpecifications>();
+			ArrayList<BomProductManagement> entitys = managementDao.findAllBySearch(null, null, null, pageable);
+			ArrayList<BomProductManagementDetailFront> entityDetails = new ArrayList<BomProductManagementDetailFront>();
 
 			// Step3-2.資料區分(一般/細節)
-
-			// 類別(一般模式)
+			// 類別(一般模式)->群組拆開
 			entitys.forEach(e -> {
-				if (!mapGroups.containsKey(e.getBisgname())) {
-					// 群組資料
-					mapGroups.put(e.getBisgname(), e);
-					entityGroups.add(e);
+				// 取得細節
+				if (!e.getBpmbisitem().equals("")) {
+					JsonArray dJsons = (JsonArray) JsonParser.parseString(e.getBpmbisitem());
+					dJsons.forEach(dJs -> {
+						BomProductManagementDetailFront detailFront = new BomProductManagementDetailFront();
+						JsonObject dJ = dJs.getAsJsonObject();
+						detailFront.setBpmid(e.getBpmid());// ID
+						detailFront.setBisgid(dJ.get("bisid").getAsLong());
+						detailFront.setBisgid(dJ.get("bisgid").getAsLong());
+						detailFront.setBisqty(dJ.get("bisqty").getAsInt());
+						detailFront.setBisgname(dJ.get("bisgname").getAsString());
+						detailFront.setBisgfname(dJ.get("bisgfname").getAsString());
+						detailFront.setBisfname(dJ.get("bisfname").getAsString());
+						detailFront.setBissdescripion(dJ.get("bissdescripion").getAsString());
+						entityDetails.add(detailFront);
+					});
 				}
 			});
 
-			String entityJson = packageService.beanToJson(entityGroups);
-			String entityDetailJson = packageService.beanToJson(entitys);
+			// 其他資料格式(同步-BOM成品組成/BOM產品規則/BOM可選擇性項目)
+			List<Order> ordersBBI = new ArrayList<>();
+			ordersBBI.add(new Order(Direction.ASC, "bbisn"));//
+			List<Order> ordersBPR = new ArrayList<>();
+			ordersBPR.add(new Order(Direction.ASC, "bprname"));//
+			List<Order> ordersBIS = new ArrayList<>();
+			ordersBIS.add(new Order(Direction.ASC, "syssort"));//
+			ordersBIS.add(new Order(Direction.ASC, "bisgname"));//
+			ordersBIS.add(new Order(Direction.ASC, "bisfname"));//
+
+			// 其他模式
+			PageRequest pageableBIS = PageRequest.of(0, 20000, Sort.by(ordersBIS));
+			ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null,
+					pageableBIS);
+			//
+			PageRequest pageableBPR = PageRequest.of(0, 200, Sort.by(ordersBPR));
+			ArrayList<BomProductRule> entityBPR = productRuleDao.findAllBySearch(null, null, pageableBPR);
+			//
+			PageRequest pageableBBI = PageRequest.of(0, 30000, Sort.by(ordersBBI));
+			ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch("90-", null, null, null, null,
+					pageableBBI);
+			Set<BasicBomIngredients> entityBBISet = new HashSet<>(entityBBI);
+			Iterator<BasicBomIngredients> iterator = (Iterator<BasicBomIngredients>) entityBBISet.iterator();
+			// 資料整理(BBI-限制200筆)
+			Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
+			while (iterator.hasNext() && entityBBIMap.size() <= 100) {
+				ArrayList<BasicBomIngredients> ingredients = new ArrayList<BasicBomIngredients>();
+				BasicBomIngredients bbi = iterator.next();
+				if (entityBBIMap.containsKey(bbi.getBbisn())) {
+					ingredients = entityBBIMap.get(bbi.getBbisn());
+					ingredients.add(bbi);
+					entityBBIMap.put(bbi.getBbisn(), ingredients);
+				} else {
+					ingredients.add(bbi);
+					entityBBIMap.put(bbi.getBbisn(), ingredients);
+				}
+			}
+			ArrayList<BasicBomIngredients> entityBBIh = new ArrayList<BasicBomIngredients>();
+			ArrayList<BasicBomIngredients> entityBBId = new ArrayList<BasicBomIngredients>();
+			entityBBIMap.forEach((k, v) -> {
+				v.forEach(d -> {
+					entityBBId.add(d);// d
+				});
+				BasicBomIngredients h = new BasicBomIngredients();
+				h.setBbiname(v.get(0).getBbiname());
+				h.setBbispecification(v.get(0).getBbispecification());
+				h.setBbidescription(v.get(0).getBbidescription());
+				h.setBbisn(v.get(0).getBbisn());
+				entityBBIh.add(h);// h
+			});
+
+			String entityJsonBBI = packageService.beanToJson(entityBBIh);
+			String entityDetailJsonBBI = packageService.beanToJson(entityBBId);
+			String entityJsonBPR = packageService.beanToJson(entityBPR);
+			String entityJsonBIS = packageService.beanToJson(entityBIS);
+			JsonObject other = new JsonObject();
+			other.add("BBI", packageService.StringToAJson(entityJsonBBI));
+			other.add("DetailBBI", packageService.StringToAJson(entityDetailJsonBBI));
+			other.add("BPR", packageService.StringToAJson(entityJsonBPR));
+			other.add("BIS", packageService.StringToAJson(entityJsonBIS));
+			//
+			String entityJson = packageService.beanToJson(entitys);
+			String entityDetailJson = packageService.beanToJson(entityDetails);
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson(entityDetailJson);
+			packageBean.setOtherSet(other.toString());
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
 			// Step3-3. 取得翻譯(一般/細節)
-			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
-			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
+			Map<String, SystemLanguageCell> mapLanguagesBPM = new HashMap<>();// 規格BOM(BOM產品管理)
+			Map<String, SystemLanguageCell> mapLanguagesDetailBPM = new HashMap<>();// 規格BOM 細節(BOM產品管理)
+			// 而外資料
+			Map<String, SystemLanguageCell> mapLanguagesBBI = new HashMap<>();// From ERP BOM list(同步-BOM成品組成)
+			Map<String, SystemLanguageCell> mapLanguagesBPR = new HashMap<>();// Cloud BOM rules list(BOM產品規則)
+			Map<String, SystemLanguageCell> mapLanguagesBIS = new HashMap<>();// Cloud BOM detailed material(BOM物料項目規範)
+
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BomItemSpecifications",
+			ArrayList<SystemLanguageCell> languagesBPM = languageDao.findAllByLanguageCellSame("BomProductManagement",
 					null, 2);
-			languages.forEach(x -> {
-				mapLanguages.put(x.getSltarget(), x);
+			languagesBPM.forEach(x -> {
+				mapLanguagesBPM.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao
-					.findAllByLanguageCellSame("BomItemSpecificationsDetailFront", null, 2);
-			languagesDetail.forEach(x -> {
-				mapLanguagesDetail.put(x.getSltarget(), x);
+			ArrayList<SystemLanguageCell> languagesDetailBPM = languageDao
+					.findAllByLanguageCellSame("BomProductManagementDetailFront", null, 2);
+			languagesDetailBPM.forEach(x -> {
+				mapLanguagesDetailBPM.put(x.getSltarget(), x);
 			});
 
+			// 同步-BOM成品組成
+			ArrayList<SystemLanguageCell> languagesBBI = languageDao.findAllByLanguageCellSame("BasicBomIngredients",
+					null, 2);
+			languagesBBI.forEach(x -> {
+				mapLanguagesBBI.put(x.getSltarget(), x);
+			});
+			// BOM產品規則
+			ArrayList<SystemLanguageCell> languagesBPR = languageDao.findAllByLanguageCellSame("BomProductRule", null,
+					2);
+			languagesBPR.forEach(x -> {
+				mapLanguagesBPR.put(x.getSltarget(), x);
+			});
+			// BOM物料項目規範
+			ArrayList<SystemLanguageCell> languagesBIS = languageDao
+					.findAllByLanguageCellSame("BomItemSpecificationsDetailFront", null, 2);
+			languagesBIS.forEach(x -> {
+				mapLanguagesBIS.put(x.getSltarget(), x);
+			});
 			// 動態->覆蓋寫入->修改UI選項
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
-			JsonArray searchJsons = new JsonArray();// 查詢設定
-			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
-			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
+			JsonArray searchJsonsBPM = new JsonArray();// 查詢設定(BOM產品管理)
+			JsonArray searchJsonsBBI = new JsonArray();// 查詢設定(同步-BOM成品組成)
+			JsonArray searchJsonsBPR = new JsonArray();// 查詢設定(BOM產品規則)
+			//
+			JsonObject resultDataTJsonsBPM = new JsonObject();// 回傳欄位-一般名稱
+			JsonObject resultDetailTJsonsBPM = new JsonObject();// 回傳欄位-細節名稱
+			// 而外資料
+			JsonObject resultDataTJsonsBBI = new JsonObject();// 回傳欄位-(同步-BOM成品組成)
+			JsonObject resultDataTJsonsBPR = new JsonObject();// 回傳欄位-(BOM產品規則)
+			JsonObject resultDataTJsonsBIS = new JsonObject();// 回傳欄位-(BOM物料項目規範)
+
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = BomItemSpecifications.class.getDeclaredFields();
-			Field[] fieldsDetail = BomItemSpecificationsDetailFront.class.getDeclaredFields();
+			Field[] fields = BomProductManagement.class.getDeclaredFields();
+			Field[] fieldsDetail = BomProductManagementDetailFront.class.getDeclaredFields();
+			// 而外資料
+			Field[] fieldsBBI = BasicBomIngredients.class.getDeclaredFields();
+			Field[] fieldsBPR = BomProductRule.class.getDeclaredFields();
+			Field[] fieldsBIS = BomItemSpecifications.class.getDeclaredFields();
+
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			// exceptionCell.add("systemgroups");
 
 			// 欄位翻譯(一般)
-			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
-
+			resultDataTJsonsBPM = packageService.resultSet(fields, exceptionCell, mapLanguagesBPM);
 			// 欄位翻譯(細節)
-			resultDetailTJsons = packageService.resultSet(fieldsDetail, exceptionCell, mapLanguagesDetail);
+			resultDetailTJsonsBPM = packageService.resultSet(fieldsDetail, exceptionCell, mapLanguagesDetailBPM);
+			// 而外資料
+			resultDataTJsonsBBI = packageService.resultSet(fieldsBBI, exceptionCell, mapLanguagesBBI);
+			resultDataTJsonsBPR = packageService.resultSet(fieldsBPR, exceptionCell, mapLanguagesBPR);
+			resultDataTJsonsBIS = packageService.resultSet(fieldsBIS, exceptionCell, mapLanguagesBIS);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bisgname", "Ex:項目組名稱?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-
+			// ERP 料BOM
+			searchJsonsBBI = packageService.searchSet(searchJsonsBBI, null, "bbisn", "Ex:90BOM號(物料)?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
+			// Cloud rules
+			searchJsonsBPR = packageService.searchSet(searchJsonsBPR, null, "bprname", "Ex:規則名稱?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
+			// BOM規格
+			searchJsonsBPM = packageService.searchSet(searchJsonsBPM, null, "bpmnb", "Ex:90BOM號(規格)?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
 			// 查詢包裝/欄位名稱(一般/細節)
-			searchSetJsonAll.add("searchSet", searchJsons);
-			searchSetJsonAll.add("resultThead", resultDataTJsons);
-			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
+			searchSetJsonAll.add("searchSet", searchJsonsBPM);
+			searchSetJsonAll.add("searchSetBBI", searchJsonsBBI);
+			searchSetJsonAll.add("searchSetBPR", searchJsonsBPR);
+			// Result欄位
+			searchSetJsonAll.add("resultThead", resultDataTJsonsBPM);
+			searchSetJsonAll.add("resultDetailThead", resultDetailTJsonsBPM);
+			searchSetJsonAll.add("resultTheadBIS", resultDataTJsonsBIS);
+			searchSetJsonAll.add("resultTheadBPR", resultDataTJsonsBPR);
+			searchSetJsonAll.add("resultTheadBBI", resultDataTJsonsBBI);
+
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)

@@ -60,6 +60,7 @@ public class WarehouseSynchronizeDetailFront {
 		this.wsstqty = 0;// : (實際)此區域物料數量<br>
 		this.wsspnoqty = 0;// 超領量
 		this.wsspnerpqty = 0;//
+		this.wsstofromwho = "";
 	}
 
 	// 共用型
@@ -115,6 +116,9 @@ public class WarehouseSynchronizeDetailFront {
 	private Integer wsspnoqty;// : 超(領/取)數量<br>
 	@Transient
 	private Integer wsspnerpqty;// : 領退料(帳務)數量<br>
+
+	@Transient
+	private String wsstofromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -314,6 +318,14 @@ public class WarehouseSynchronizeDetailFront {
 
 	public void setGid(String gid) {
 		this.gid = gid;
+	}
+
+	public String getWsstofromwho() {
+		return wsstofromwho;
+	}
+
+	public void setWsstofromwho(String wsstofromwho) {
+		this.wsstofromwho = wsstofromwho;
 	}
 
 }

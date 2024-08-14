@@ -22,7 +22,7 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 
 	// 查詢用
 	@Query("SELECT c FROM BasicBomIngredients c WHERE "//
-			+ "(:bbisn is null or c.bbisn LIKE %:bbisn%) and "//
+			+ "(:bbisn is null or c.bbisn LIKE :bbisn%) and "//
 			+ "(:bbiname is null or c.bbiname LIKE %:bbiname%) and "//
 			+ "(:bbiisn is null or c.bbiisn LIKE %:bbiisn%) and "//
 			+ "(:bbiiname is null or c.bbiiname LIKE %:bbiiname%) and "//

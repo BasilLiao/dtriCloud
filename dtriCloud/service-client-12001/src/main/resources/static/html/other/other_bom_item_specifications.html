@@ -506,7 +506,7 @@
 			btn_other_send_auto: "",//自動傳送
 			//換頁設置
 			otherItemPageSet: {
-				total: 200,//批次數量(1-1000)
+				total: 10000,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
 				pageSize: 200,//每頁數量(1-20)
@@ -1287,7 +1287,13 @@
 				}
 				console.log(entityJsons);
 				console.log(entityDetailJsons);
+				//換頁
+				var searchPageSet = {};
+				searchPageSet['total'] = other.data.otherItemPageSet.total;//批次數量
+				searchPageSet['batch'] = other.data.otherItemPageSet.batch;//第幾批次
+				data['searchPageSet'] = JSON.stringify(searchPageSet);
 				//包裝
+
 				data['entityJson'] = JSON.stringify(entityJsons);
 				data['entityReportJson'] = JSON.stringify(entityDetailJsons);
 				data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
@@ -1450,9 +1456,9 @@
 				console.log("otherItemReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
-					other.data.otherItemPageSet.total = otherItemPageSet['total'];
-					other.data.otherItemPageSet.batch = otherItemPageSet['batch'];
+					//var otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					//other.data.otherItemPageSet.total = otherItemPageSet['total'];
+					//other.data.otherItemPageSet.batch = otherItemPageSet['batch'];
 					other.data.otherItemPageSet.pageNew = 1; //單前頁碼(1-50)
 					other.data.marks = {};//有選取的IKeyGKey
 					other.data.markDetails = {};//有選取的IKeyGKey

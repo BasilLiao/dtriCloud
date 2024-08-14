@@ -34,16 +34,9 @@
 	}
 
 	/*Table 表格外框線*/
-	#other_c #other_cr table {
+	#other_c table {
 		max-height: calc(100vh - 420px);
 		min-height: 200px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
-
-	/*Table 表格外框線*/
-	#other_c #other_dcr table {
-		max-height: calc(100vh - 420px);
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
@@ -53,26 +46,25 @@
 		--bs-table-bg: #fff;
 	}
 
-	/*覆寫換色*/
+	/*Table 滑鼠-覆寫換色*/
 	.table-hover>tbody>tr:hover>* {
 		--bs-table-accent-bg: #0d6efd40;
 		color: var(--bs-table-hover-color);
 	}
 
 	/*標題色彩*/
-	#other_c .title_color {
+	.bg_def {
 		background-color: #cfe2ff;
 	}
 
 	/*標題色彩*/
-	#other_dcr .testItem .title_color {
-		background-color: #ffc10747;
+	.bg-yellow {
+		background-color: var(--bs-yellow);
 	}
 
 	/*標題色彩*/
-	#other_dcr .groupItem .title_color {
-		background-color: #19875450;
-		;
+	.bg-orange {
+		background-color: var(--bs-orange);
 	}
 
 	/*禁止使用*/
@@ -102,11 +94,6 @@
 		width: 16px;
 		height: 16px;
 	}
-
-	/*橘色*/
-	.bg-orange {
-		background-color: var(--bs-orange) !important;
-	}
 </style>
 <div id="other_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
@@ -120,7 +107,7 @@
 			<div id="otherItemItem" class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 otherTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
-						<div class="otherTitle title_color fw-bolder rounded-top">Search1</div>
+						<div class="otherTitle  fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
 							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="oex_id"
 								name="oex_name" placeholder="Ex:123" autofocus>
@@ -129,13 +116,22 @@
 				</div>
 				<div class="col-6 otherSelectEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
-						<div class="otherTitle title_color fw-bolder rounded-top">Search2</div>
+						<div class="otherTitle  fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
 							<select class="col-12 m-0 p-1 border border-dark form-select" id="oex_id2" name="oex_name2">
 								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
 							</select>
 						</div>
 					</div>
+				</div>
+				<!--BBI(料BOM)-->
+				<div id="BBI" class="col-4 p-0">
+				</div>
+				<!--BPR(BOM規則)-->
+				<div id="BPR" class="col-4 p-0">
+				</div>
+				<!--BPM(BOM規格)-->
+				<div id="BPM" class="col-4 p-0">
 				</div>
 			</div>
 		</div>
@@ -149,65 +145,83 @@
 		<div id="other_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<!--狀態選擇-->
-				<div class="col-6 col-lg-3 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Status</div>
+				<!--BBI(同步-BOM成品組成)-->
+				<div class="col-6 col-lg-2 p-1">
+					<div class="border border-secondary rounded">
+						<div class="bg-info fw-bolder rounded-top">ERP BOM</div>
 						<div class="row m-0">
-							<button id="btn_i_detail" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary re_status">
-								<b>Item<br>detail()
+							<button id="btn_bbi_rules" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>ERP BOM<br>to Rules
+								</b>
+							</button>
+							<button id="btn_bbi_format" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>ERP BOM<br>to Format
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!--BPR(BOM產品規則)-->
+				<div class="col-6 col-lg-4 p-1">
+					<div class="border border-secondary rounded">
+						<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
+						<div class="row m-0">
+							<button id="btn_bpr_add" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success re_status">
+								<b>Rules<br>added(AC)
+								</b>
+							</button>
+							<button id="btn_bpr_modify" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning re_status">
+								<b>Rules<br>modify(AU)
+								</b>
+							</button>
+							<button id="btn_bpr_delete" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger re_status">
+								<b>Rules<br>delete(DD)
+								</b>
+							</button>
+							<button id="btn_bpr_format" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Rules<br>generate
+								</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!--BPM(BOM產品管理)-->
+				<div class="col-6 col-lg-4 p-1">
+					<div class="border border-secondary rounded">
+						<div class="bg-orange fw-bolder rounded-top">Format BOM</div>
+						<div class="row m-0">
+							<button id="btn_i_add" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success re_status">
+								<b>Format<br>added(AC)
 								</b>
 							</button>
 							<button id="btn_i_add" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success re_status">
-								<b>Item<br>add(AC)
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning re_status">
+								<b>Format<br>modify(AU)
 								</b>
 							</button>
-							<button id="btn_i_modify" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning re_status">
-								<b>Item<br>modify(AU)
-								</b>
-							</button>
-							<button id="btn_i_remove" type="button"
+							<button id="btn_i_add" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger re_status">
-								<b>Item<br>remove(DD)
+								<b>Format<br>delete(DD)
 								</b>
 							</button>
-						</div>
-					</div>
-				</div>
-				<!--條件執行-->
-				<div class="col-6 col-lg-4 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Action</div>
-						<div class="row m-0">
-							<button id="btn_w_listAdd" type="button"
+							<button id="btn_i_detail" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Conditions<br>List add()
-								</b>
-							</button>
-							<button id="btn_w_test" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Conditions<br>Test(AR)
-								</b>
-							</button>
-							<button id="btn_w_clear" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Conditions<br>All Clear()
-								</b>
-							</button>
-							<button id="btn_w_save" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Conditions<br>Save(AC/AU/DD)
+								<b>Export<br>Excel
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-3 p-1">
+				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Search</div>
+						<div class="bg_def fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_other_send_auto" alt="" title="" type="checkbox"
@@ -230,15 +244,14 @@
 			</div>
 		</div>
 	</div>
-
 	<!-- 料BOM-查詢結果 -->
-	<div id="other_ce" class="col-12 m-0 p-1">
+	<div id="other_BBI" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_ce_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				data-bs-target="#other_BBI_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			From ERP BOM list
 		</div>
-		<div id="other_ce_open" class="row m-0 collapse show">
+		<div id="other_BBI_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -246,9 +259,9 @@
 					<tr>
 						<th class="fixedC1" style="min-width: 40px;">
 							<div>
-								<button id="ce_exthClearAll" type="button"
+								<button id="other_BBI_exthClearAll" type="button"
 									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
-									<b>C</b>
+									<b>M</b>
 								</button>
 							</div>
 						</th>
@@ -259,8 +272,8 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_ce_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
-									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input name="other_BBI_checkbox" disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -270,13 +283,13 @@
 		</div>
 	</div>
 	<!-- 規則BOM-查詢結果 -->
-	<div id="other_cd" class="col-12 m-0 p-1">
+	<div id="other_BPR" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_cd_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			Cloud BOM rules list
+				data-bs-target="#other_BPR_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM Rules list
 		</div>
-		<div id="other_cd_open" class="row m-0 collapse show">
+		<div id="other_BPR_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Result </b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -297,7 +310,7 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_cd_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+								<input name="other_BPR_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
 									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -307,16 +320,14 @@
 			</table>
 		</div>
 	</div>
-
-
 	<!-- 查詢結果 -->
-	<div id="other_cr" class="col-12 m-0 p-1">
+	<div id="other_BPM" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-orange text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			Cloud BOM format list
+				data-bs-target="#other_BPM_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			Cloud BOM Format list
 		</div>
-		<div id="other_cr_open" class="row m-0 collapse show">
+		<div id="other_BPM_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-orange text-white"> Result </b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -337,7 +348,7 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_cr_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+								<input name="other_BPM_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
 									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -348,13 +359,13 @@
 		</div>
 	</div>
 	<!-- 查詢-細節結果 -->
-	<div id="other_dcr" class="col-12 m-0 p-1">
+	<div id="other_Detail_BPM" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-danger text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				data-bs-target="#other_Detail_BPM_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			Cloud BOM detailed format
 		</div>
-		<div id="other_dcr_open" class="row m-0 collapse show">
+		<div id="other_Detail_BPM_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr  bg-danger text-white"> Modify detail </b>
 			<!--項目規則-->
 			<div class="col row m-0 p-0" style="width: 95%;">
@@ -579,13 +590,13 @@
 		</div>
 	</div>
 	<!-- 規則BOM物料細節-查詢結果 -->
-	<div id="other_cdrs" class="col-12 m-0 p-1">
+	<div id="other_BIS" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_cdrs_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				data-bs-target="#other_BIS_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			Cloud BOM detailed material condition list
 		</div>
-		<div id="other_cdrs_open" class="row m-0 collapse show">
+		<div id="other_BIS_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Result </b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -606,7 +617,7 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_cdrs_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
+								<input name="other_BIS_Val" disabled="disabled" alt="row_x" title="IKey_GKey"
 									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -634,37 +645,37 @@
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
 				pageSize: 200,//每頁數量(1-20)
-				entityJsons: [],//資料
-				entityDetailJsons: [],//細節資料
 				entityIKey: "",//ID
 				entityGKey: "",//GID
 				entityDateTime: "",//是時間格式的欄位 
+				entity: [],//資料
+				entityDetailJsons: [],//細節資料
+				entityOther: {},//其他資料
 			},
 			otherItemSet: {},
 		},
 		//方法
 		methods: {
 			create() {
-				//==========================第一次載入==========================
-				//Step0.初始化
+				//===============================Step0.初始化===============================
 				console.log("other.html(created)");
 				//查詢格式
 				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var otherSetJson = JSON.parse(main.resq_data['searchSet']);
+				let otherSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(otherItemSetJson);
 				//資料內容
-				other.data.otherItemPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
-				other.data.otherItemPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				other.data.otherItemPageSet.entity = JSON.parse(main.resq_data['entityJson']);
+				other.data.otherItemPageSet.entityDetail = JSON.parse(main.resq_data['entityDetailJson']);
+				other.data.otherItemPageSet.entityOther = JSON.parse(main.resq_data['otherSet']);
+
 				other.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
 				other.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 				other.data.entityDateTime = main.resq_data['entityDateTime'];
 				other.data.otherSet = otherSetJson['searchSet'];
-
-				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
-
+				//===============================Step1.按鈕權限?===============================
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
 					$("#btn_w_test").addClass("disabled");
@@ -677,222 +688,280 @@
 				} if (ps[6] != 1 && ps[8] != 1 && ps[9] != 1) {//存入資料內容
 					$("#btn_w_save").addClass("disabled");
 				}
+				//===============================Step2.查詢結果標題-排序===============================
 
-				//Step1.查詢結果標題-排序
-				var resultThead = otherSetJson['resultThead'];
-				var resultDetailThead = otherSetJson['resultDetailThead'];
-				resultThead = main.methods.orderedSort(resultThead);
+				let resultTheadBPM = otherSetJson['resultThead'];
+				resultTheadBPM = main.methods.orderedSort(resultTheadBPM);
+				let resultDetailThead = otherSetJson['resultDetailThead'];
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
+				//而外標題
+				let resultTheadBIS = otherSetJson['resultTheadBIS'];
+				resultTheadBIS = main.methods.orderedSort(resultTheadBIS);
+				let resultTheadBPR = otherSetJson['resultTheadBPR'];
+				resultTheadBPR = main.methods.orderedSort(resultTheadBPR);
+				let resultTheadBBI = otherSetJson['resultTheadBBI'];
+				resultTheadBBI = main.methods.orderedSort(resultTheadBBI);
 				//console.log(resultThead);
-				//Step2.查詢結果標題-資料
-				var check1 = true;
-				Object.keys(resultThead).forEach(function (k) {
-					//console.log(k + ' - ' + resultThead[k]);
-					//複製格式
-					var exTheadth = $('#other_cr_open .exTheadth').clone();
-					var exTbodytd = $('#other_cr_open .exTbodytd').clone();
-					exTheadth.removeClass('exTheadth');
-					exTheadth.removeClass('d-none')
-					exTheadth.addClass('titTheadth');
-					//
-					exTbodytd.removeClass('exTbodytd');
-					exTbodytd.removeClass('d-none')
-					exTbodytd.addClass('valTbodytd');
-					exTbodytd.addClass(resultThead[k].cellName);
-					//固定第一格式
-					if (check1 && resultThead[k].show == 1) {
-						check1 = false;
-						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', "40px");
-						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', "40px");
-					}
 
-
-					//如果有翻譯
-					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-						exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
-						exTheadth.css('minWidth', resultThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultThead[k].width + "px");
-					} else {
-						exTheadth.text(resultThead[k].cellName);
-						exTheadth.css('minWidth', resultThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultThead[k].width + "px");
+				//===============================Step3.查詢結果標題-資料===============================
+				const codeFunctionResult = (toWho, vals) => {
+					//5張表格->預設第一張表格
+					let resultThead = resultTheadBPM;
+					let toWhoId = "BPM";
+					let pageSize = other.data.otherItemPageSet.pageSize;
+					if (toWho === "Detail_BPM") {//BOM規格細節
+						resultThead = resultDetailThead;//翻譯
+						toWhoId = "Detail_BPM";
 					}
-					//如果隱藏
-					if (resultThead[k].show == 0) {
-						exTheadth.addClass('d-none');
-						exTbodytd.addClass('d-none');
+					else if (toWho === "BIS") {
+						resultThead = resultTheadBIS;
+						toWhoId = "BIS";
+					} else if (toWho === "BPR") {
+						resultThead = resultTheadBPR;
+						toWhoId = "BPR";
+					} else if (toWho === "BBI") {
+						resultThead = resultTheadBBI;
+						toWhoId = "BBI";
+						pageSize = 100;
 					}
-					//添加
-					$('#other_cr_open .exTheadth').before(exTheadth);
-					$('#other_cr_open .exTbodytd').before(exTbodytd);
-				});
-
-				//Step2.查詢結果標題(細節)-資料
-				check1 = true;
-				var withFixed = 80;
-				var fix3 = 1;//固定3格
-				if (JSON.stringify(resultDetailThead) == '{}') {
-					$('#other_c #btn_detail').addClass('disabled');
-					$('#other_c #other_dcr').addClass('d-none');
-				}
-				Object.keys(resultDetailThead).forEach(function (k) {
-					//console.log(k + ' - ' + resultDetailThead[k]);
-					//複製格式
-					var exTheadth = $('#other_dcr_open .exTheadth').clone();
-					var exTbodytd = $('#other_dcr_open .exTbodytd').clone();
-					exTheadth.removeClass('exTheadth');
-					exTheadth.removeClass('d-none')
-					exTheadth.addClass('titTheadth');
-					//
-					exTbodytd.removeClass('exTbodytd');
-					exTbodytd.removeClass('d-none')
-					exTbodytd.addClass('valTbodytd');
-					exTbodytd.addClass(resultDetailThead[k].cellName);
-					exTbodytd.attr('title', resultDetailThead[k].cellName);
-					//固定第一格式
-					if (check1 && resultDetailThead[k].show == 1) {
-						if (fix3 == 3) {
+					//查詢結果標題-排序
+					let check1 = true;
+					Object.keys(resultThead).forEach(function (k) {
+						//console.log(k + ' - ' + resultThead[k]);
+						//複製格式
+						let exTheadth = $('#other_' + toWhoId + '_open .exTheadth').clone();
+						let exTbodytd = $('#other_' + toWhoId + '_open .exTbodytd').clone();
+						exTheadth.removeClass('exTheadth');
+						exTheadth.removeClass('d-none')
+						exTheadth.addClass('titTheadth');
+						//
+						exTbodytd.removeClass('exTbodytd');
+						exTbodytd.removeClass('d-none')
+						exTbodytd.addClass('valTbodytd');
+						exTbodytd.addClass(resultThead[k].cellName);
+						//固定第一格式
+						if (check1 && resultThead[k].show == 1) {
 							check1 = false;
+							exTheadth.addClass('fixedC1');
+							exTheadth.css('left', "40px");
+							exTbodytd.addClass('fixedC1');
+							exTbodytd.css('left', "40px");
 						}
-						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', withFixed + "px");
-						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', withFixed + "px");
-						withFixed += resultDetailThead[k].width;
-						fix3 += 1;
+						//如果有翻譯
+						if (resultThead[k].cellLanguage != '') {
+							let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+							exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
+							exTheadth.css('minWidth', resultThead[k].width + "px");
+							exTbodytd.css('maxWidth', resultThead[k].width + "px");
+						} else {
+							exTheadth.text(resultThead[k].cellName);
+							exTheadth.css('minWidth', resultThead[k].width + "px");
+							exTbodytd.css('maxWidth', resultThead[k].width + "px");
+						}
+						//如果隱藏
+						if (resultThead[k].show == 0) {
+							exTheadth.addClass('d-none');
+							exTbodytd.addClass('d-none');
+						}
+						//添加
+						$('#other_' + toWhoId + '_open .exTheadth').before(exTheadth);
+						$('#other_' + toWhoId + '_open .exTbodytd').before(exTbodytd);
+					});
+					//資料欄位
+					let exTbodyTr = $('#other_' + toWhoId + '_open .exTbodyTr').clone();
+					exTbodyTr.removeClass("exTbodyTr");
+					for (let p = 1; p <= pageSize; p++) {
+						let inTbodyTr = exTbodyTr.clone();
+						inTbodyTr.addClass("valTbodyTr_" + p);
+						$('#other_' + toWhoId + '_open .exTbodyTr').before(inTbodyTr);
 					}
+					$('#other_' + toWhoId + '_open .exTbodyTr').addClass("d-none");
+				};
+				//===============================Step4.查詢條件===============================
+				const codeFunctionSearch = (toWho, vals) => {
+					//會有三種查詢
+					let rThead = "resultThead";//翻譯
+					let toWhoId = " #BPM";//BOM規格
+					let toWhoJson = "searchSet";
+					let titleCo = "bg-orange";
+					if (toWho === "BBI") {//BOM料號
+						rThead = "resultTheadBBI";//翻譯
+						toWhoId = " #BBI";
+						toWhoJson = "searchSetBBI";
+						titleCo = "bg-info";
+					} else if (toWho === "BPR") {//BOM規則
+						rThead = "resultTheadBPR";//翻譯
+						toWhoId = " #BPR";
+						toWhoJson = "searchSetBPR";
+						titleCo = "bg-yellow";
+					}
+					let resultThead = otherSetJson[rThead];
+					resultThead = main.methods.orderedSort(resultThead);
 
-					//如果有翻譯
-					if (resultDetailThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
-						exTheadth.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
-						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
-					} else {
-						exTheadth.text(resultDetailThead[k].cellName);
-						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
+					for (let t = 0; t < otherSetJson[toWhoJson].length; t++) {
+						let otherItemSet = otherSetJson[toWhoJson][t];
+						let otherTextEx = "";
+						let otherSelectEx = "";
+						let selectEx = "";
+						//不顯示
+						if (!otherItemSet['show']) {
+							continue;
+						}
+						if (otherItemSet['type'] != 'select') {
+							//一般文字
+							otherTextEx = $('#other_c_item .otherTextEx').clone();
+							otherTextEx.removeClass("otherTextEx");
+							otherTextEx.removeClass("col-md-1");
+							otherTextEx.removeClass("d-none");
+
+							otherTextEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
+							otherTextEx.find('input').attr("id", "other_s_" + otherItemSet['searchName']);
+							otherTextEx.find('input').attr("name", "other_s_" + otherItemSet['searchName']);
+							otherTextEx.find('input').attr("placeholder", otherItemSet['placeholder']);
+							otherTextEx.find('input').addClass("searchVal");
+							otherTextEx.find('.otherTitle').addClass(titleCo);
+							Object.keys(resultThead).forEach(function (k) {
+								//如果有翻譯
+								if (k.indexOf(otherItemSet['searchName']) >= 0) {
+									if (resultThead[k].cellLanguage != '') {
+										let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+										otherTextEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
+									} else {
+										
+										otherTextEx.find('.otherTitle').text(otherItemSet['searchName']);
+									}
+								}
+							});
+						} else {
+							//選擇選單
+							otherSelectEx = $('#other_c_item .otherSelectEx').clone();
+							otherSelectEx.removeClass("otherSelectEx");
+							otherSelectEx.removeClass("col-md-1");
+							otherSelectEx.removeClass("d-none");
+							otherSelectEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
+							otherSelectEx.find('select').attr("id", "other_" + otherItemSet['searchName']);
+							otherSelectEx.find('select').attr("name", "other_" + otherItemSet['searchName']);
+							otherSelectEx.find('select').addClass("searchVal");
+							otherSelectEx.find('.otherTitle').addClass(titleCo);
+							//查詢欄位
+							Object.keys(resultThead).forEach(function (k) {
+								//如果有翻譯
+								if (k.indexOf(otherItemSet['searchName']) >= 0) {
+									if (resultThead[k].cellLanguage != '') {
+										let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+										otherSelectEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
+									} else {
+										otherSelectEx.find('.otherTitle').text(otherItemSet['searchName']);
+									}
+								}
+							});
+							//選項
+							for (let s = 0; s < otherItemSet['select'].length; s++) {
+								let key = otherItemSet['select'][s].split("_")[0];
+								let val = otherItemSet['select'][s].split("_")[1];
+								selectEx = otherSelectEx.find('.selectEx').clone();
+								selectEx.removeClass("selectEx");
+								selectEx.removeAttr("selected");
+								selectEx.text(key);
+								selectEx.val(val);
+								selectEx.appendTo(otherSelectEx.find('select'));
+							}
+						}
+						switch (otherItemSet['type']) {
+							case "select":
+								otherSelectEx.appendTo('#otherItemItem' + toWhoId);
+								break;
+							case "text":
+								otherTextEx.appendTo('#otherItemItem' + toWhoId);
+								break;
+							case "time":
+								otherTextEx.find('input').addClass('datetimepicker_time');
+								otherTextEx.appendTo('#otherItemItem' + toWhoId);
+								break;
+							case "datetime":
+								otherTextEx.find('input').addClass('datetimepicker_date');
+								otherTextEx.appendTo('#otherItemItem' + toWhoId);
+								break;
+						}
 					}
-					//如果隱藏
-					if (resultDetailThead[k].show == 0) {
-						exTheadth.addClass('d-none');
-						exTbodytd.addClass('d-none');
-					}
-					//添加
-					$('#other_dcr_open .exTheadth').before(exTheadth);
-					$('#other_dcr_open .exTbodytd').before(exTbodytd);
+				};
+
+				// 1-1.異步執行-結果欄位
+				// 創建多個 syncEvent 的 Promise(每個都會回傳)
+				const promisesResult = [
+					other.methods.syncEvent(codeFunctionResult, "BPM", ""),
+					other.methods.syncEvent(codeFunctionResult, "Detail_BPM", ""),
+					other.methods.syncEvent(codeFunctionResult, "BBI", ""),
+					other.methods.syncEvent(codeFunctionResult, "BPR", ""),
+					other.methods.syncEvent(codeFunctionResult, "BIS", ""),
+				];
+				//1-2 等待所有的 promisesResult 完成
+				Promise.all(promisesResult)
+					.then((results) => {
+						console.log("所有事件都已成功完成(Result):", results);
+						// 在這裡添加所有事件完成後要執行的代碼
+						//===============================Step5.帶入資料===============================
+						//BBI
+						const codeFunctionResultData = other.methods.otherReLoad;
+						const promisesResultData = [
+							other.methods.syncEvent(codeFunctionResultData, "BBI", ""),
+						]
+					})
+					.catch((error) => {
+						console.error("其中一個或多個事件失敗(Result):", error);
+					});
+
+				//2-1.異步執行-查詢欄位
+				const promisesSearch = [
+					other.methods.syncEvent(codeFunctionSearch, "BPM", ""),
+					other.methods.syncEvent(codeFunctionSearch, "BBI", ""),
+					other.methods.syncEvent(codeFunctionSearch, "BPR", ""),
+				];
+				//1-1 && 2-1.異步執行-套用間格式
+				Promise.all([Promise.all(promisesResult), Promise.all(promisesSearch)])
+					.then(([resultResults, searchResults]) => {
+						console.log("所有 promisesResult 都已完成:", resultResults);
+						console.log("所有 promisesSearch 都已完成:", searchResults);
+						// 在這裡添加所有 Promise 都完成後要執行的代碼-時間格式
+						other.methods.datetimepickerDate();
+					})
+					.catch((error) => {
+						console.error("其中一個或多個 Promise 失敗:", error);
+					});
+
+				//異步執行範例
+				/*
+				let sync = new Promise((resolve, reject) => {
+					//*可自訂呼叫方法 event()
+					//event(eventNave);
+					//*傳遞成功
+					//resolve("OK:" + eventNave);
+					//*超時?
+					//const timer = setTimeout(() => {
+					//	reject("操作超時:" + eventNave);
+					//}, 3000);
 				});
-				//隱藏
-				$('#other_dcr_open .exDetailTbodyTr').addClass("d-none");
+				//事後接續動作(then(成功)/catch(異常)/finally(都會進去))
+				sync.then((data) => {
+					//* "資料獲取成功" ->可接續做的事情
+					console.log(data); 
+				}).catch((error) => {
+					//* "資料獲取失敗" ->可接續做的事情
+					console.log(error);
+				});
+				*/
 
-				//Step3.查詢內容-格式
-				for (var b = 1; b <= other.data.otherItemPageSet.pageSize; b++) {
-					var exTbodyTr = $('#other_cr .exTbodyTr').clone();
-					exTbodyTr.removeClass('exTbodyTr');
-					exTbodyTr.removeClass('d-none');
-					exTbodyTr.addClass('valTbodyTr_' + b);
-					exTbodyTr.find('input').attr("alt", "row_" + b);
-					$('#other_cr .exTbodyTr').before(exTbodyTr);
-				}
-				$('#other_cr .exTbodyTr').addClass('d-none');
-				//Step4.查詢條件
-				for (var t = 0; t < otherSetJson['searchSet'].length; t++) {
-					var otherItemSet = otherSetJson['searchSet'][t];
-					var otherTextEx = "";
-					var otherSelectEx = "";
-					var selectEx = "";
-					//不顯示
-					if (!otherItemSet['show']) {
-						continue;
-					}
-					if (otherItemSet['type'] != 'select') {
-						//一般文字
-						otherTextEx = $('#other_c_item .otherTextEx').clone();
-						otherTextEx.removeClass("otherTextEx");
-						otherTextEx.removeClass("col-md-1");
-						otherTextEx.removeClass("d-none");
 
-						otherTextEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
-						otherTextEx.find('input').attr("id", "other_s_" + otherItemSet['searchName']);
-						otherTextEx.find('input').attr("name", "other_s_" + otherItemSet['searchName']);
-						otherTextEx.find('input').attr("placeholder", otherItemSet['placeholder']);
-						otherTextEx.find('input').addClass("searchVal");
-						Object.keys(resultThead).forEach(function (k) {
-							//如果有翻譯
-							if (k.indexOf(otherItemSet['searchName']) >= 0) {
-								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-									otherTextEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
-								} else {
-									otherTextEx.find('.otherTitle').text(otherItemSet['searchName']);
-								}
-							}
-						});
-					} else {
-						//選擇選單
-						otherSelectEx = $('#other_c_item .otherSelectEx').clone();
-						otherSelectEx.removeClass("otherSelectEx");
-						otherSelectEx.removeClass("col-md-1");
-						otherSelectEx.removeClass("d-none");
-						otherSelectEx.addClass(otherItemSet['width'].replaceAll("_", "-"));
-						otherSelectEx.find('select').attr("id", "other_" + otherItemSet['searchName']);
-						otherSelectEx.find('select').attr("name", "other_" + otherItemSet['searchName']);
-						otherSelectEx.find('select').addClass("searchVal");
-						//查詢欄位
-						Object.keys(resultThead).forEach(function (k) {
-							//如果有翻譯
-							if (k.indexOf(otherItemSet['searchName']) >= 0) {
-								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-									otherSelectEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
-								} else {
-									otherSelectEx.find('.otherTitle').text(otherItemSet['searchName']);
-								}
-							}
-						});
-						//選項
-						for (var s = 0; s < otherItemSet['select'].length; s++) {
-							var key = otherItemSet['select'][s].split("_")[0];
-							var val = otherItemSet['select'][s].split("_")[1];
-							selectEx = otherSelectEx.find('.selectEx').clone();
-							selectEx.removeClass("selectEx");
-							selectEx.removeAttr("selected");
-							selectEx.text(key);
-							selectEx.val(val);
-							selectEx.appendTo(otherSelectEx.find('select'));
-						}
-					}
-					switch (otherItemSet['type']) {
-						case "select":
-							otherSelectEx.appendTo('#otherItemItem');
-							break;
-						case "text":
-							otherTextEx.appendTo('#otherItemItem');
-							break;
-						case "time":
-							otherTextEx.find('input').addClass('datetimepicker_time');
-							otherTextEx.appendTo('#otherItemItem');
-							break;
-						case "datetime":
-							otherTextEx.find('input').addClass('datetimepicker_date');
-							otherTextEx.appendTo('#otherItemItem');
-							break;
-					}
-				}
-				//時間格式
-				other.methods.datetimepickerDate();
-				//Step5.帶入資料
-				other.methods.otherReLoad();
+
+
+
 				/*
 				//==========================監聽==========================
 				//點及按鈕類
 				$(document).off("click", "#other_c button");
 				$(document).on("click", "#other_c button", function (event) {
 					console.log($(event.currentTarget).attr("id"));
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					const selectedRadio = $('input[name="other_cr_c_detail"]:checked');
 
 					//初始化-狀態
@@ -917,7 +986,7 @@
 						case "btn_i_detail":
 							//細節
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-secondary");
 								$("#other_c #other_c_state").text("None").attr("title", "None_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
@@ -927,7 +996,7 @@
 						case "btn_i_add":
 							//新增
 							//if ($(selectedRadio).length === 0) {//有選擇
-							var bisgid = 0;
+							let bisgid = 0;
 							$("#other_c #other_c_state").addClass("text-success");
 							$("#other_c #other_c_state").text("Add").attr("title", "Add_" + bisgid);
 							other.methods.selectLoad(selectedRadio);
@@ -936,7 +1005,7 @@
 						case "btn_i_modify":
 							//修改
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-warning");
 								$("#other_c #other_c_state").text("Modify").attr("title", "Modify_" + bisgid);
 								other.methods.selectLoad(selectedRadio);
@@ -945,7 +1014,7 @@
 						case "btn_i_remove":
 							//移除
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-danger");
 								$("#other_c #other_c_state").text("Remove").attr("title", "Remove_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
@@ -954,10 +1023,10 @@
 							break;
 						case "btn_w_listAdd":
 							//條件測試
-							var wc = $("#other_w_continue");
-							var wi = $("#other_w_item");
-							var wo = $("#other_w_option");
-							var wv = $("#other_w_val");
+							let wc = $("#other_w_continue");
+							let wi = $("#other_w_item");
+							let wo = $("#other_w_option");
+							let wv = $("#other_w_val");
 							//檢查是否有直->
 							if (wi.val() != "" && wo.val() != "" && wv.val() != "") {
 								//檢查
@@ -969,17 +1038,17 @@
 									return null;
 								}
 								//取得參數
-								var wi_text = $("#other_w_item option:selected").text();
-								var wo_text = $("#other_w_option option:selected").text();
-								var wv_text = wv.val();
-								var wc_text = "";
+								let wi_text = $("#other_w_item option:selected").text();
+								let wo_text = $("#other_w_option option:selected").text();
+								let wv_text = wv.val();
+								let wc_text = "";
 								if (wc.val() != "") {
 									wc_text = $("#other_w_continue option:selected").text();
 								}
 								//切割->
 								let show_list = wc_text + " " + wi_text + " " + wo_text + " '" + wv_text + "' ";
 								let hid_list = wc.val() + "<_>" + wi.val() + "<_>" + wo.val() + "<_>" + wv.val();
-								var wlistEx = $("#other_w_list_ex").clone();
+								let wlistEx = $("#other_w_list_ex").clone();
 								wlistEx.removeClass("d-none");
 								wlistEx.removeAttr("id");
 								wlistEx.addClass("other_where");
@@ -1021,7 +1090,7 @@
 							break;
 						case "btn_w_save":
 							//存入資料(other_c_state=[Remove/Modify/Add])
-							var ocs = $("#other_c_state").attr("title").split("_")[0];
+							let ocs = $("#other_c_state").attr("title").split("_")[0];
 							switch (ocs) {
 								case "Add":
 									other.methods.confirmSend("Add");
@@ -1043,7 +1112,7 @@
 				//移除觸發-條件
 				$(document).off("click", "#other_c .other_w_one");
 				$(document).on("click", "#other_c .other_w_one", function (event) {
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					if (target.hasClass("other_w_one")) {
 						console.log($(event.currentTarget).attr("class"));
 						target.parent().remove();
@@ -1052,12 +1121,12 @@
 				//客製化項目
 				$(document).off("click", "#other_dcr table i");
 				$(document).on("click", "#other_dcr table i", function (event) {
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					//複製
 					if (target.hasClass("bi-stickies")) {
 						console.log($(event.currentTarget).attr("class"));
-						var d = $('#other_dcr_open .valTbodyTrD').length;
-						var exTbodyTr = $(event.currentTarget).parent().parent().parent().clone();
+						let d = $('#other_dcr_open .valTbodyTrD').length;
+						let exTbodyTr = $(event.currentTarget).parent().parent().parent().clone();
 						exTbodyTr.removeClass('exDetailTbodyTr');
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.removeAttr("class");
@@ -1085,8 +1154,8 @@
 					//新增
 					if (target.hasClass("bi-plus-square")) {
 						console.log($(event.currentTarget).attr("class"));
-						var d = $('#other_dcr_open .valTbodyTrD').length;
-						var exTbodyTr = $('#other_c #other_dcr_open .exDetailTbodyTr').clone();
+						let d = $('#other_dcr_open .valTbodyTrD').length;
+						let exTbodyTr = $('#other_c #other_dcr_open .exDetailTbodyTr').clone();
 						exTbodyTr.removeClass('exDetailTbodyTr');
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.addClass('valTbodyDetailTr_');
@@ -1107,7 +1176,7 @@
 				//輸入Enter-條件
 				$(document).off("keyup", "#other_c input");
 				$(document).on("keyup", "#other_c input", function (e) {
-					var target = $(e.currentTarget);
+					let target = $(e.currentTarget);
 					if (e.key === 'Enter' || e.keyCode === 13) {
 						console.log($(e.currentTarget).attr("id"));
 						//點擊新增
@@ -1121,16 +1190,37 @@
 				});
 				*/
 			},
+			//==========================多程序執行==========================
+			//syncEvent(執行的方法/判斷類型/特定資料傳入)
+			syncEvent(event, eventName, eventVal) {
+				//異步執行: sync or async codes
+				let sync = new Promise((resolve, reject) => {
+					event(eventName, eventVal);
+					resolve("OK:" + eventName);
+					//
+					const timer = setTimeout(() => {
+						reject("操作超時:" + eventName);
+					}, 3000);
+				});
+				//事後接續動作(then(成功)/catch(異常)/finally(都會進去))
+				sync.then((data) => {
+					console.log(data); // "資料獲取成功"
+				}).catch((error) => {
+					console.log(event);
+					console.log(error); // "資料獲取失敗"
+				});
+				return sync;
+			},
 			//==========================選取資料==========================
 			selectLoad(selectedRadio) {
 				if (selectedRadio.length === 1) {
 					//帶入資料(選取的資料)
 					console.log($(selectedRadio).parent().parent().parent());
-					var se = $(selectedRadio).parent().parent().parent();
-					var bisid = se.find('input').attr('title').split('_')[0];
-					var bisgid = se.find('input').attr('title').split('_')[1];
+					let se = $(selectedRadio).parent().parent().parent();
+					let bisid = se.find('input').attr('title').split('_')[0];
+					let bisgid = se.find('input').attr('title').split('_')[1];
 
-					var bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;
+					let bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;
 					$('#other_dcr #other_bisiauto').prop('checked', bisiauto);//自動導入
 					$('#other_dcr #other_bisgname').val($(se).find('.bisgname').text());//群組名稱
 					$('#other_dcr #other_bisgfname').val($(se).find('.bisgfname').text());//項目名稱
@@ -1138,18 +1228,18 @@
 					$('#other_dcr #other_bisgsplit').val($(se).find('.bisgsplit').text());//指定分割切割
 					$('#other_dcr #other_syssort').val($(se).find('.syssort').text());//排序
 
-					var bisproduct = $(se).find('.bisproduct').text() === "true" ? true : false;
-					var bisaccessories = $(se).find('.bisaccessories').text() === "true" ? true : false;
-					var bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
-					var bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
-					var bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
+					let bisproduct = $(se).find('.bisproduct').text() === "true" ? true : false;
+					let bisaccessories = $(se).find('.bisaccessories').text() === "true" ? true : false;
+					let bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
+					let bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
+					let bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
 					$('#other_dcr #other_bisproduct').prop('checked', bisproduct);//產品
 					$('#other_dcr #other_bisaccessories').prop('checked', bisaccessories);//配件
 					$('#other_dcr #other_bissfproduct').prop('checked', bissfproduct);//半成品
 					$('#other_dcr #other_bisdevelopment').prop('checked', bisdevelopment);//開發品
 					$('#other_dcr #other_bispcb').prop('checked', bispcb);//PCBA
 					//==========條件==========
-					var bisgcondition = $(se).find('.bisgcondition').text();
+					let bisgcondition = $(se).find('.bisgcondition').text();
 					// 使用正則表達式匹配並保留分隔符
 					let regex = /(<AND>|<OR>)/g;
 					let modifiedString = bisgcondition.replace(regex, '<@@>$1'); // 在分隔符前添加空格
@@ -1170,7 +1260,7 @@
 					});
 					//帶入細節				
 					main.resq_data['entityDetailJson'] = [];
-					var entityDetailJson = [];
+					let entityDetailJson = [];
 					other.data.otherItemPageSet.entityDetailJsons.forEach((x) => {
 						if ((x['bisgid'] + "") === bisgid) {
 							entityDetailJson.push(x);
@@ -1213,15 +1303,15 @@
 			},
 			//==========================傳送資料==========================
 			confirmSend(kindId) {
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
 
 				//傳送資料
-				var data = {};
-				var req_data = {};
-				var entityJsons = other.data.entityFormatJson;
-				var entityDetailJsons = [];
+				let data = {};
+				let req_data = {};
+				let entityJsons = other.data.entityFormatJson;
+				let entityDetailJsons = [];
 
 				switch (kindId) {
 					case "btn_w_test":
@@ -1246,7 +1336,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1274,7 +1364,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1294,7 +1384,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1327,7 +1417,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1347,7 +1437,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1380,7 +1470,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1432,32 +1522,32 @@
 			otherDetailReturn() {
 				console.log("otherDetailReturn()");
 				//帶回資料
-				var entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				let entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 				//基本格式
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
 				//Step0.取得基本分割...等等條件
-				var owg = $('#other_bisgfname').val();
-				var owf = $('#other_bisgffield').val();
-				var ows = $('#other_bisgsplit').val();
+				let owg = $('#other_bisgfname').val();
+				let owf = $('#other_bisgffield').val();
+				let ows = $('#other_bisgsplit').val();
 				//console.log(entityDetailJsons);
 				//Step1.查詢細節內容-格式
 				$("#other_dcr_open .valTbodyTrD").remove();
 				$('#other_dcr_open tbody td').removeClass('bg-warning');
-				for (var d = 0; d < entityDetailJsons.length; d++) {
+				for (let d = 0; d < entityDetailJsons.length; d++) {
 					//=======格式=======
-					var exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
+					let exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
 					exTbodyTr.removeClass('exDetailTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
 					exTbodyTr.addClass('valTbodyTrD');
 					exTbodyTr.find('input').attr("alt", "row_" + (d + 1));
 					//=======資料=======
-					var entity = entityDetailJsons[d];//
-					var iKey = "", gKey = "";
-					var valTrNb = d + 1;
-					var owgs = owg.split(" ").length > 5 ? 5 : owg.split(" ").length;//切割數量
+					let entity = entityDetailJsons[d];//
+					let iKey = "", gKey = "";
+					let valTrNb = d + 1;
+					let owgs = owg.split(" ").length > 5 ? 5 : owg.split(" ").length;//切割數量
 					Object.keys(entity).forEach(function (s) {
 						//是否IKEY?
 						if (entityIKey == s) {iKey = entity[s];}
@@ -1469,8 +1559,8 @@
 
 						//是否時間格式?
 						if (entityDateTime.indexOf(s) >= 0) {
-							var dF = new Date(entity[s]);
-							var dateF = dF.getFullYear() + "-";
+							let dF = new Date(entity[s]);
+							let dateF = dF.getFullYear() + "-";
 							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -1480,8 +1570,8 @@
 						} else {
 							//正規化
 							if ('bisfname' === s && owf != "") {
-								var bisfname = entity[owf].split(ows);
-								var bisfnameOk = [];
+								let bisfname = entity[owf].split(ows);
+								let bisfnameOk = [];
 								bisfname.forEach(function (i) {
 									if (owgs > 0) {
 										bisfnameOk.push(i.replaceAll(/[\n\r\t]/g, ''));
@@ -1512,60 +1602,65 @@
 				$('#other_c #other_dcr_open .exDetailTbodyTr').addClass('d-none');
 			},
 			//==========================資料載入==========================
-			otherReLoad() {
-				//還原
-				$('#other_cr_open .valTbodytd').text("");
-				$('#other_dcr_open .valTbodytd input').val("");
-				$('#other_c .exTbodyTh input').attr("disabled", "disabled");
-				$('#other_c .exTbodyTh input').attr("title", "IKey_GKey");
-				$('#other_c .exTbodyTh input').prop("checked", false);
-				$('#other_cr_open tbody td').removeClass('bg-warning');
-				//版面預設
-				if ($('#other_dcr_open').hasClass('show')) {
-					$('#other_dcr .btn-outline-white').trigger('click');
-				}
-				if (!$('#other_cr_open').hasClass('show')) {
-					$('#other_cr .btn-outline-white').trigger('click');
-				}
-
+			otherReLoad(toWho, vals) {
 				//Step5.帶入資料
-				var marks = other.data.marks;
-				var entityJsons = other.data.otherItemPageSet.entityJsons;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var pageSize = other.data.otherItemPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = other.data.otherItemPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
-				for (var x = 0; x < pageSize; x++) {
+				let marks = other.data.marks;
+				let entityJsons = other.data.otherItemPageSet.entityJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.otherItemPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.otherItemPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				let toWhoId = "";
+				//判斷來源
+				console.log("otherReLoad:" + toWho + ":" + vals);
+
+				if (toWho === 'BBI') {
+					entityJsons = other.data.otherItemPageSet.entityOther['BBI'];
+					toWhoId = "BBI";
+				}
+				//還原-值
+				$('#other_' + toWhoId + '_open .valTbodytd').text("");
+				$('#other_' + toWhoId + '_open .valTbodytd input').val("");
+				//勾選?
+				$('#other_' + toWhoId + '_open .exTbodyTh input').attr("disabled", "disabled");
+				$('#other_' + toWhoId + '_open .exTbodyTh input').attr("title", "IKey_GKey");
+				$('#other_' + toWhoId + '_open .exTbodyTh input').prop("checked", false);
+
+				//版面預設
+				if (!$('#other_' + toWhoId + '_open').hasClass('show')) {
+					$('#other_' + toWhoId + ' .btn-outline-white').trigger('click');
+				}
+				for (let x = 0; x < pageSize; x++) {
 					//筆數還夠
 					if (pageSN + x < entityJsons.length) {
-						var entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
-						var iKey = "";
-						var gKey = "";
+						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						let iKey = "";
+						let gKey = "";
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
-							var valTrNb = x + 1;
-							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+							let valTrNb = x + 1;
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
 							//是否GKEY?
 							if (entityGKey == k) {gKey = entity[k];}
 							//是否時間格式?
 							if (entityDateTime.indexOf(k) >= 0) {
-								var dF = new Date(entity[k]);
-								var dateF = dF.getFullYear() + "-";
+								let dF = new Date(entity[k]);
+								let dateF = dF.getFullYear() + "-";
 								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+								$('#other_' + toWhoId + ' .valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
 							} else {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+								$('#other_' + toWhoId + ' .valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
 							}
 							//marks標記?
-							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							$('#other_' + toWhoId + ' .valTbodyTr_' + valTrNb + ' input').removeAttr("disabled");
+							$('#other_' + toWhoId + ' .valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
 						});
 					}
 				}
@@ -1576,7 +1671,7 @@
 				console.log("otherItemReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					other.data.otherItemPageSet.total = otherItemPageSet['total'];
 					other.data.otherItemPageSet.batch = otherItemPageSet['batch'];
 					other.data.otherItemPageSet.pageNew = 1; //單前頁碼(1-50)

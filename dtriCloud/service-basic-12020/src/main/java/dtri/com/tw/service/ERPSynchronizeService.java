@@ -1691,6 +1691,7 @@ public class ERPSynchronizeService {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s", ""));
 			m.setMb003(m.getMb003().replaceAll("\\s", ""));
+			m.setMb009(m.getMb009().replaceAll("[\\n\\t]", ""));
 			m.setNewone(true);
 			// ERP 倉別異常Null
 			if (m.getMc002() == null) {
@@ -1746,7 +1747,7 @@ public class ERPSynchronizeService {
 					o.setWmpnb(ov.getMb001());// 物料號
 					o.setWmname(ov.getMb002());// 物料名稱
 					o.setWmspecification(ov.getMb003());// 物料規格
-					o.setWmdescription(ov.getMb009());// 物料敘述
+					o.setWmdescription(ov.getMb009().replaceAll("[\\n\\t]", ""));// 物料敘述
 					o.setChecksum(checkSum);
 					saveLists.add(o);
 				}
@@ -1761,7 +1762,7 @@ public class ERPSynchronizeService {
 				n.setWmpnb(v.getMb001());// 物料號
 				n.setWmname(v.getMb002());// 物料名稱
 				n.setWmspecification(v.getMb003());// 物料規格
-				n.setWmdescription(v.getMb009());// 物料敘述
+				n.setWmdescription(v.getMb009().replaceAll("[\\n\\t]", ""));// 物料敘述
 				saveLists.add(n);
 			}
 		});
@@ -1864,7 +1865,7 @@ public class ERPSynchronizeService {
 					n.setWaslocation(checkloc ? v.getMc003() : "FF-FF-FF-FF");// 物料位置
 					n.setWaaname(v.getCmc002() == null ? "" : v.getCmc002());// 倉庫名稱
 					n.setWaerptqty(v.getMc007());// 倉儲數量
-					n.setWatqty(v.getMc007());// (實際)倉儲數量
+					n.setWatqty(n.getWaslocation().equals("FF-FF-FF-FF") ? 0 : v.getMc007());// (實際)倉儲數量[如果是FF-FF-FF-FF// 則實際庫存0]
 					saveItems.add(n);
 				}
 			}
@@ -2252,7 +2253,7 @@ public class ERPSynchronizeService {
 		System.out.println("---");
 	}
 
-	// 而外執行
+	// 而外執行(外包生管同步)
 	public class OutsourcerSynchronizeCell implements Runnable {
 		private String sendAllData;
 

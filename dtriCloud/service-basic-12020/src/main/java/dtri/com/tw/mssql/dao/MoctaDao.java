@@ -69,7 +69,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	 (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3' OR MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
 			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
 			+ "	 AND (MOCTB.TB018 = 'Y' OR MOCTB.TB018 = 'N') "// --核單碼
-			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
+			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-90, 112) "//
 			+ "	 OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " ORDER BY "//
 			+ "	 MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號

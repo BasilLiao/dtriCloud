@@ -97,9 +97,7 @@ public class BomProductRule {
 		this.bprid = null;
 		this.bprtype = 0;
 		this.bprtypename = "";
-		this.bprbisid = "";
-		this.bprbisname = "";
-		this.bprbpsnv = "";
+		this.bprbisitem = "";
 		this.bprname = "";
 	}
 
@@ -139,12 +137,8 @@ public class BomProductRule {
 	private Integer bprtype;
 	@Column(name = "bpr_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bprtypename;
-	@Column(name = "bpr_bis_id", nullable = false, columnDefinition = "text default ''")
-	private String bprbisid;
-	@Column(name = "bpr_bis_name", nullable = false, columnDefinition = "text default ''")
-	private String bprbisname;
-	@Column(name = "bpr_bps_nv", nullable = false, columnDefinition = "text default ''")
-	private String bprbpsnv;
+	@Column(name = "bpr_bis_item", nullable = false, columnDefinition = "text default ''")
+	private String bprbisitem;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -258,28 +252,12 @@ public class BomProductRule {
 		this.bprtypename = bprtypename;
 	}
 
-	public String getBprbisid() {
-		return bprbisid;
+	public String getBprbisitem() {
+		return bprbisitem;
 	}
 
-	public void setBprbisid(String bprbisid) {
-		this.bprbisid = bprbisid;
-	}
-
-	public String getBprbisname() {
-		return bprbisname;
-	}
-
-	public void setBprbisname(String bprbisname) {
-		this.bprbisname = bprbisname;
-	}
-
-	public String getBprbpsnv() {
-		return bprbpsnv;
-	}
-
-	public void setBprbpsnv(String bprbpsnv) {
-		this.bprbpsnv = bprbpsnv;
+	public void setBprbisitem(String bprbisitem) {
+		this.bprbisitem = bprbisitem;
 	}
 
 }
