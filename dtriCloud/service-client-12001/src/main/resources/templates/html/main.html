@@ -78,8 +78,8 @@
 			let visibleTime = new Date().getTime();
 			let timeDifference = visibleTime - hiddenTime;
 			console.log('Main-歡迎回來！' + timeDifference);
-			if (timeDifference > 1200000) { // 20 分鐘 = 1200,000 毫秒
-				// 離開超過 15 分鐘時刷新網頁
+			if (timeDifference > 1800000) { // 30 分鐘 = 1800,000 毫秒
+				// 離開超過 30 分鐘時刷新網頁
 				var mainAlertM = nav_alert.methods;
 				mainAlertM.alertshow("warning", "[266]You have been inactive for too long and will be redirected to the 'home' page. [Reload]!!");
 				$("#loading").removeClass("d-none");
@@ -99,7 +99,7 @@
 		let visibleTime = new Date().getTime();
 		let timeDifference = visibleTime - hiddenTime;
 		//console.log('Main-檢查時效！' + timeDifference);
-		if (timeDifference > 1200000) { // 20 分鐘 = 1200,000 毫秒
+		if (timeDifference > 1800000) { // 30 分鐘 = 1800,000 毫秒
 			// 離開超過 15 分鐘時刷新網頁
 			var mainAlertM = nav_alert.methods;
 			mainAlertM.alertshow("warning", "[266]You have been inactive for too long and will be redirected to the 'home' page. [Reload]!!");

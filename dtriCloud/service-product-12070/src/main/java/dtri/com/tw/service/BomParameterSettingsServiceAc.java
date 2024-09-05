@@ -195,8 +195,9 @@ public class BomParameterSettingsServiceAc {
 					try {
 						Gson gson = new Gson();
 						Object o = gson.fromJson(x.getBpsval(), Object.class);
-						System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(o));
-						x.setBpsval(new GsonBuilder().setPrettyPrinting().create().toJson(o));
+						System.out.println(
+								new GsonBuilder().setPrettyPrinting().create().toJson(o).replaceAll("\\s+", ""));
+						x.setBpsval(new GsonBuilder().setPrettyPrinting().create().toJson(o).replaceAll("\\s+", ""));
 					} catch (Exception e) {
 						check = false;
 					}

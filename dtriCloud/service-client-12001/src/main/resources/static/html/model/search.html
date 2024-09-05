@@ -1042,7 +1042,7 @@
 			searchReLoad() {
 				console.log("searchReLoad_Start:" + new Date());
 				//還原
-				$('.valTbodytd').text("");
+				$('#search_c .valTbodytd').text("");
 				$('#search_c .exTbodyTh input').attr("disabled", "disabled");
 				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
 				$('#search_c .exTbodyTh input').prop("checked", false);
@@ -1072,7 +1072,7 @@
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
 							var valTrNb = x + 1;
-							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+							$('#search_c .valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
 							//是否GKEY?
@@ -1086,17 +1086,17 @@
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+								$('#search_c .valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
 							} else {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+								$('#search_c .valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
 							}
 
 							//marks標記?
-							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							$('#search_c .valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
 							//帶入
 							for (var m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-									$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
+									$('#search_c .valTbodyTr_' + valTrNb + ' input').prop("checked", true);
 									break;
 								}
 							}
@@ -1117,9 +1117,9 @@
 					search.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
 					search.data.marks = {};//有選取的IKeyGKey
 					search.data.markDetails = {};//有選取的IKeyGKey
-					$("#numberPage").val(1);
-					$('#btn_pageD').removeClass("disabled");
-					$('#btn_pageU').removeClass("disabled");
+					$("#search_c #numberPage").val(1);
+					$('#search_c #btn_pageD').removeClass("disabled");
+					$('#search_c #btn_pageU').removeClass("disabled");
 					//Step5.帶入資料
 					if (main.resq_data['entityJson'] != "") {
 						search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);

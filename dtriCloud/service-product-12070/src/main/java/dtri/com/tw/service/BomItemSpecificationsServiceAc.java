@@ -113,8 +113,6 @@ public class BomItemSpecificationsServiceAc {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
 
-			// 動態->覆蓋寫入->修改UI選項
-
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
 			JsonArray searchJsons = new JsonArray();// 查詢設定
@@ -229,28 +227,28 @@ public class BomItemSpecificationsServiceAc {
 				sqlQuery.put(cellName + n, value);
 				break;
 			case "Like":
-				nativeQuery += andOR + " (e." + cellName + " LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "%" + value + "%");
+				nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "" + value + "");
 				break;
 			case "LikeS":
-				nativeQuery += andOR + " (e." + cellName + " LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "" + value + "%");
+				nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "^" + value + "");
 				break;
 			case "LikeE":
-				nativeQuery += andOR + " (e." + cellName + " LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "%" + value + "");
+				nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "" + value + "^");
 				break;
 			case "NotLike":
-				nativeQuery += andOR + " (e." + cellName + " NOT LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "%" + value + "%");
+				nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "" + value + "");
 				break;
 			case "NotLikeS":
-				nativeQuery += andOR + " (e." + cellName + " NOT LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "" + value + "%");
+				nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "^" + value + "");
 				break;
 			case "NotLikeE":
-				nativeQuery += andOR + " (e." + cellName + " NOT LIKE :" + cellName + n + ")  ";
-				sqlQuery.put(cellName + n, "%" + value + "");
+				nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+				sqlQuery.put(cellName + n, "" + value + "^");
 				break;
 			}
 			n++;
@@ -428,6 +426,7 @@ public class BomItemSpecificationsServiceAc {
 				entityDataOld.setBisdevelopment(x.getBisdevelopment());
 				entityDataOld.setBispcb(x.getBispcb());
 				entityDataOld.setBisiauto(x.getBisiauto());
+				entityDataOld.setBisdselect(x.getBisdselect());
 				//
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysodate(new Date());

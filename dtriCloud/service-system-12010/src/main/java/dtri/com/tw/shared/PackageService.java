@@ -53,7 +53,7 @@ public class PackageService {
 
 	// JSON to Bean(單一包裝)
 	public <T> T jsonToBean(String packageJson, Class<T> valueType)
-			throws JsonMappingException, JsonProcessingException {
+			throws JsonMappingException, JsonProcessingException, Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		T packageBean = objectMapper.readValue(packageJson, valueType);
 		return packageBean;
@@ -61,14 +61,14 @@ public class PackageService {
 
 	// JSON to Beans(複數包裝)
 	public <T> ArrayList<T> jsonToBean(String packageJson, TypeReference<ArrayList<T>> typeReference)
-			throws JsonMappingException, JsonProcessingException {
+			throws JsonMappingException, JsonProcessingException, Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		ArrayList<T> packageBean = objectMapper.readValue(packageJson, typeReference);
 		return packageBean;
 	}
 
 	// (PackageBean/Object)Bean to JSON
-	public String beanToJson(Object packageBean) throws JsonProcessingException {
+	public String beanToJson(Object packageBean) throws JsonProcessingException, Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		String packageJson = objectMapper.writeValueAsString(packageBean);
 		return packageJson;

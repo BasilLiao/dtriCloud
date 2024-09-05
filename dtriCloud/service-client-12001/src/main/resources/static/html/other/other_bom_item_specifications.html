@@ -424,6 +424,7 @@
 									<option value="_">underline(_底線)</option>
 									<option value=",">comma(,逗號)</option>
 									<option value="/">slash(/斜線)</option>
+									<option value="-">hyphen(-連結)</option>
 								</select>
 							</div>
 						</div>
@@ -452,6 +453,8 @@
 								<div class="col-2 p-1">成品:<input id="other_bisproduct" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark"></div>
 								<div class="col-2 p-1">配件:<input id="other_bisaccessories" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">預設:<input id="other_bisdselect" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark"></div>
 							</div>
 						</div>
@@ -1017,11 +1020,14 @@
 					var bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
 					var bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
 					var bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
+					var bisdselect = $(se).find('.bisdselect').text() === "true" ? true : false;
+
 					$('#other_dcr #other_bisproduct').prop('checked', bisproduct);//產品
 					$('#other_dcr #other_bisaccessories').prop('checked', bisaccessories);//配件
 					$('#other_dcr #other_bissfproduct').prop('checked', bissfproduct);//半成品
 					$('#other_dcr #other_bisdevelopment').prop('checked', bisdevelopment);//開發品
 					$('#other_dcr #other_bispcb').prop('checked', bispcb);//PCBA
+					$('#other_dcr #other_bisdselect').prop('checked', bisdselect);//預設
 					//==========條件==========
 					var bisgcondition = $(se).find('.bisgcondition').text();
 					// 使用正則表達式匹配並保留分隔符
@@ -1133,7 +1139,15 @@
 									if ($(this).attr("type") == 'file') {
 										val = $(this.parentElement).find("img").attr("src");
 									}
-									entityFormatJson[$(this).attr("title")] = val;
+									//特殊格式化
+									if ($(this).attr("title") === "bisfname") {
+										val = $(this).find("input").val().split(",");
+										val = JSON.stringify(val);
+									}
+									//排除
+									if($(this).attr("title") !== "bisqty"){
+										entityFormatJson[$(this).attr("title")] = val;									
+									}
 								});
 								//而外抓取(群主)
 								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
@@ -1147,6 +1161,9 @@
 								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
+								
+
 								//條件
 								var bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
@@ -1186,7 +1203,10 @@
 										val = $(this).find("input").val().split(",");
 										val = JSON.stringify(val);
 									}
-									entityFormatJson[$(this).attr("title")] = val;
+									//排除
+									if($(this).attr("title") !== "bisqty"){
+										entityFormatJson[$(this).attr("title")] = val;									
+									}
 								});
 								//而外抓取(群主)
 								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
@@ -1200,6 +1220,9 @@
 								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
+								
+
 								//條件
 								var bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
@@ -1239,7 +1262,10 @@
 										val = $(this).find("input").val().split(",");
 										val = JSON.stringify(val);
 									}
-									entityFormatJson[$(this).attr("title")] = val;
+									//排除
+									if($(this).attr("title") !== "bisqty"){
+										entityFormatJson[$(this).attr("title")] = val;									
+									}
 								});
 								//而外抓取(群主)
 								entityFormatJson["bisiauto"] = $("#other_bisiauto").is(':checked');//自動導入
@@ -1253,6 +1279,9 @@
 								entityFormatJson["bissfproduct"] = $("#other_bissfproduct").is(':checked');//半成品
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
+								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
+								
+
 								//條件
 								var bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {

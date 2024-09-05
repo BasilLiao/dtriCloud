@@ -21,13 +21,38 @@
 			padding: 3px;
 		}
 
-		/**輸入框*/
+		@keyframes rainbowBorder {
+			0% {
+				border-image: linear-gradient(to bottom right, #b827fc, #2c90fc, #b8fd33, #fec837, #fd1892, #b827fc) 1;
+			}
+
+			20% {
+				border-image: linear-gradient(to bottom right, #2c90fc, #b8fd33, #fec837, #fd1892, #b827fc, #2c90fc) 1;
+			}
+
+			40% {
+				border-image: linear-gradient(to bottom right, #b8fd33, #fec837, #fd1892, #b827fc, #2c90fc, #b8fd33) 1;
+			}
+
+			60% {
+				border-image: linear-gradient(to bottom right, #fec837, #fd1892, #b827fc, #2c90fc, #b8fd33, #fec837) 1;
+			}
+
+			80% {
+				border-image: linear-gradient(to bottom right, #fd1892, #b827fc, #2c90fc, #b8fd33, #fec837, #fd1892) 1;
+			}
+
+			100% {
+				border-image: linear-gradient(to bottom right, #b827fc, #2c90fc, #b8fd33, #fec837, #fd1892, #b827fc) 1;
+			}
+		}
+
+		/*輸入框*/
 		.rainbow-box {
 			border: 2px solid transparent;
-			border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%,
-					#fec837 75%, #fd1892 100%);
-			border-image-slice: 1;
+			border-image: linear-gradient(to bottom right, #b827fc, #2c90fc, #b8fd33, #fec837, #fd1892, #b827fc) 1;
 			border-radius: 10px;
+			animation: rainbowBorder 3s infinite linear;
 		}
 
 		/**標題*/

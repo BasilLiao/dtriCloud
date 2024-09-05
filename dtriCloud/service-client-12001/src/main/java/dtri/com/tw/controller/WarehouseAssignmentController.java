@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.service.feign.BasicServiceFeign;
@@ -66,7 +65,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -110,7 +109,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -154,7 +153,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -225,7 +224,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -268,7 +267,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -311,7 +310,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -354,7 +353,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -397,7 +396,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
@@ -440,7 +439,7 @@ public class WarehouseAssignmentController extends AbstractController {
 		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
 		try {
 			packageJson = packageService.beanToJson(packageBean);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}

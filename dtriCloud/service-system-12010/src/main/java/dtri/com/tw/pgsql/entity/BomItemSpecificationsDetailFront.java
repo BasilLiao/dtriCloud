@@ -114,6 +114,8 @@ public class BomItemSpecificationsDetailFront {
 		this.bisdevelopment = false;
 		this.bispcb = false;
 		this.bisiauto = false;
+		this.setBisdselect(false);
+		this.setBisqty(1);
 
 	}
 
@@ -182,6 +184,10 @@ public class BomItemSpecificationsDetailFront {
 	private Boolean bispcb;
 	@Transient
 	private Boolean bisiauto;
+	@Transient
+	private Boolean bisdselect;
+	@Transient
+	private Integer bisqty;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -413,6 +419,22 @@ public class BomItemSpecificationsDetailFront {
 
 	public void setBisgfname(String bisgfname) {
 		this.bisgfname = bisgfname;
+	}
+
+	public Boolean getBisdselect() {
+		return bisdselect;
+	}
+
+	public void setBisdselect(Boolean bisdselect) {
+		this.bisdselect = bisdselect;
+	}
+
+	public Integer getBisqty() {
+		return bisqty;
+	}
+
+	public void setBisqty(Integer bisqty) {
+		this.bisqty = bisqty;
 	}
 
 }

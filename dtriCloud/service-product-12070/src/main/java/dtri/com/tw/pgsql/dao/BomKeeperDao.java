@@ -20,7 +20,7 @@ public interface BomKeeperDao extends JpaRepository<BomKeeper, Long> {
 	@Query("SELECT c FROM BomKeeper c "//
 			+ "WHERE (:bksuacc is null or c.bksuacc LIKE %:bksuacc% ) and "//
 			+ "(:bknb is null or c.bknb LIKE %:bknb% ) and "//
-			+ "(:bkmodel is null or c.bkmodel LIKE %:bkmodel% ) ") // (4)不過濾
+			+ "(:bkmodel is null or c.bkmodel LIKE %:bkmodel% )") // (4)不過濾
 	ArrayList<BomKeeper> findAllBySearch(String bksuacc, String bknb, String bkmodel, Pageable pageable);
 
 	// 檢查

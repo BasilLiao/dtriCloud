@@ -168,21 +168,21 @@ public class BomItemSpecifications {
 	private String bisspecifications;
 	@Column(name = "bis_description", nullable = false, columnDefinition = "text default ''")
 	private String bisdescription;
-	@Column(name = "bis_s_descripion", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_s_descripion", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bissdescripion;
 
-	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgfname;
-	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(250) default ''")
 	private String bisfname;
-	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgname;
 	@Column(name = "bis_g_split", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bisgsplit;
-	@Column(name = "bis_g_condition", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_condition", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgcondition;
 
-	@Column(name = "bis_g_f_field", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_f_field", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgffield;
 
 	@Column(name = "bis_product", nullable = false, columnDefinition = "boolean default false")
@@ -197,6 +197,10 @@ public class BomItemSpecifications {
 	private Boolean bispcb;
 	@Column(name = "bis_i_auto", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisiauto;
+	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bisdselect;
+	@Column(name = "sys_sort", nullable = false, columnDefinition = "int default 0")
+	
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -428,6 +432,14 @@ public class BomItemSpecifications {
 
 	public void setBisgffield(String bisgffield) {
 		this.bisgffield = bisgffield;
+	}
+
+	public Boolean getBisdselect() {
+		return bisdselect;
+	}
+
+	public void setBisdselect(Boolean bisdselect) {
+		this.bisdselect = bisdselect;
 	}
 
 }

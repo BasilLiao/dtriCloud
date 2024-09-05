@@ -102,11 +102,17 @@ public class BomKeeperServiceAc {
 			JsonArray pListArr = new JsonArray();
 
 			pList = systemUserDao.findAllBySystemUser(null, null, null, 4, null);
-			pList.forEach(t -> {
+			String sgname = "";
+			for (SystemUser t : pList) {
 				if (!t.getSuaccount().equals("admin")) {// 除了admin
-					pListArr.add(t.getSuaccount() + "[" + t.getSuename() + "]" + "_" + t.getSuid());
+					if (!sgname.equals(t.getSystemgroups().iterator().next().getSgname())) {
+						sgname = t.getSystemgroups().iterator().next().getSgname();
+						pListArr.add(" -----" + sgname + "----- " + "_");
+					}
+					pListArr.add(t.getSuaccount() + " (" + t.getSuename() + ")" + "_" + t.getSuid());
 				}
-			});
+			}
+
 			bksuid.setSlcmtype("select");
 			bksuid.setSlcmselect(pListArr.toString());
 			mapLanguages.put("bksuid", bksuid);

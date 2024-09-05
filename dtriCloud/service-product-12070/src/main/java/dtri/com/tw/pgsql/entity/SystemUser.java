@@ -1,15 +1,21 @@
 package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -99,6 +105,7 @@ public class SystemUser {
 		this.suaccount = "";
 		this.suaaccount = "";
 		this.supassword = "";
+		this.systemgroups = new HashSet<>();
 		this.setSulanguage("");
 		// UI
 		this.sugid = null;
@@ -153,7 +160,9 @@ public class SystemUser {
 	@Column(name = "su_language", nullable = false, columnDefinition = "varchar(10) default 'zh-TW'")
 	private String sulanguage;
 
-
+	@ManyToMany(targetEntity = SystemGroup.class, fetch = FetchType.EAGER)
+	@JoinTable(name = "su_sg_list", joinColumns = @JoinColumn(name = "su_id_fk"), inverseJoinColumns = @JoinColumn(name = "sg_id_fk"))
+	private Set<SystemGroup> systemgroups;
 
 	// UI使用(群組ID)
 	@Transient
@@ -247,6 +256,13 @@ public class SystemUser {
 		this.suid = suid;
 	}
 
+	public Set<SystemGroup> getSystemgroups() {
+		return systemgroups;
+	}
+
+	public void setSystemgroups(Set<SystemGroup> systemgroups) {
+		this.systemgroups = systemgroups;
+	}
 
 	public String getSuname() {
 		return suname;
