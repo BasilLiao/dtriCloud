@@ -188,6 +188,9 @@ public class BomItemSpecificationsDetailFront {
 	private Boolean bisdselect;
 	@Transient
 	private Integer bisqty;
+	@Transient
+	private String bisprocess;
+	
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -435,6 +438,14 @@ public class BomItemSpecificationsDetailFront {
 
 	public void setBisqty(Integer bisqty) {
 		this.bisqty = bisqty;
+	}
+
+	public String getBisprocess() {
+		return bisprocess;
+	}
+
+	public void setBisprocess(String bisprocess) {
+		this.bisprocess = bisprocess;
 	}
 
 }

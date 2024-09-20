@@ -66,7 +66,7 @@ public class BomItemSpecificationsServiceAc {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "syssort"));// 排序
 		orders.add(new Order(Direction.ASC, "bisgid"));// 群組
-		orders.add(new Order(Direction.ASC, "bisfname"));// 正規化名稱
+		orders.add(new Order(Direction.ASC, "bisnb"));// 物料號
 
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
@@ -328,6 +328,200 @@ public class BomItemSpecificationsServiceAc {
 		return packageBean;
 	}
 
+	// 自動測試與更新
+	public PackageBean getAutoSearchTestAndUpdate(PackageBean packageBean) {
+		Map<Long, List<BomItemSpecifications>> entitysMap = new HashMap<Long, List<BomItemSpecifications>>();
+		// =======================舊有資料?=======================
+		List<BomItemSpecifications> entitysData = specificationsDao.findAll();
+		// 過濾->只取得GID
+		entitysData.forEach(s -> {
+			if (entitysMap.containsKey(s.getBisgid())) {
+				List<BomItemSpecifications> list = entitysMap.get(s.getBisgid());
+				list.add(s);
+				entitysMap.put(s.getBisgid(), list);
+			} else {
+				List<BomItemSpecifications> list = new ArrayList<BomItemSpecifications>();
+				list.add(s);
+				entitysMap.put(s.getBisgid(), list);
+			}
+		});
+
+		entitysMap.forEach((ks, vs) -> {
+			// =======================查詢語法=======================
+			// 拼湊SQL語法
+			List<WarehouseMaterial> materials = new ArrayList<>();
+			Map<String, String> sqlQuery = new HashMap<>();
+			List<BomItemSpecifications> entityNews = new ArrayList<>();
+			Map<String, BomItemSpecifications> sqlQueryEntitys = new HashMap<>();
+			String nativeQuery = "SELECT e.* FROM warehouse_material e Where ";
+			List<BomItemSpecifications> entitys = vs;
+			// 共用參數
+			Long bisgid = ks;// GID
+			Boolean bisiauto = vs.get(0).getBisiauto();// 自動?
+			Boolean bisdselect = vs.get(0).getBisdselect();// 預設選擇?
+			Boolean bispcb = vs.get(0).getBispcb();
+			Boolean bisproduct = vs.get(0).getBisproduct();
+			Boolean bissfproduct = vs.get(0).getBissfproduct();
+			Boolean bisaccessories = vs.get(0).getBisaccessories();
+			Boolean bisdevelopment = vs.get(0).getBisdevelopment();
+			String bisgfname = vs.get(0).getBisgfname();// 正規畫-群組名稱
+			String bisprocess = vs.get(0).getBisprocess();
+			String bisgname = vs.get(0).getBisgname();
+			String bisgffield = vs.get(0).getBisgffield();
+			String bisgsplit = vs.get(0).getBisgsplit();// 排序
+			Integer syssort = vs.get(0).getSyssort();// 排序
+
+			String bisgcondition = vs.get(0).getBisgcondition().replaceAll("(<AND>|<OR>)", "<@@>$1");
+			String bisgconditions[] = bisgcondition.split("<@@>");// 條件
+			//
+			int n = 1;// 第幾參數
+			for (String x : bisgconditions) {
+				// entity 需要轉換SQL與句 && 欄位
+				String cellName = x.split("<_>")[1];
+				cellName = cellName.replace("wm", "wm_");
+				cellName = cellName.replace("wm_pnb", "wm_p_nb");
+
+				String andOR = x.split("<_>")[0].replaceAll("<", "").replaceAll(">", "");
+				String where = x.split("<_>")[2];
+				String value = x.split("<_>")[3];// 有可能空白
+
+				switch (where) {
+				case "AllSame":
+					nativeQuery += andOR + " (e." + cellName + " = :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, value);
+					break;
+				case "NotSame":
+					nativeQuery += andOR + " (e." + cellName + " != :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, value);
+					break;
+				case "Like":
+					nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "" + value + "");
+					break;
+				case "LikeS":
+					nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "^" + value + "");
+					break;
+				case "LikeE":
+					nativeQuery += andOR + " (e." + cellName + " ~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "" + value + "^");
+					break;
+				case "NotLike":
+					nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "" + value + "");
+					break;
+				case "NotLikeS":
+					nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "^" + value + "");
+					break;
+				case "NotLikeE":
+					nativeQuery += andOR + " (e." + cellName + " !~ :" + cellName + n + ")  ";
+					sqlQuery.put(cellName + n, "" + value + "^");
+					break;
+				}
+				n++;
+			}
+
+			nativeQuery += " order by e.wm_p_nb asc,e.wm_name asc";
+			nativeQuery += " LIMIT 2500 OFFSET 0 ";
+			Query query = em.createNativeQuery(nativeQuery, WarehouseMaterial.class);
+			// =======================查詢參數=======================
+			sqlQuery.forEach((key, valAndType) -> {
+				String val = valAndType;
+				// 文字?
+				query.setParameter(key, val);
+			});
+
+			materials = query.getResultList();
+			// 資料轉換
+			materials.forEach(m -> {
+				BomItemSpecifications itemSp = new BomItemSpecifications();
+				itemSp.setSyscdate(m.getSyscdate());
+				itemSp.setSysmdate(m.getSysmdate());
+				itemSp.setSyscuser(m.getSyscuser());
+				itemSp.setSysmuser(m.getSysmuser());
+				//
+				itemSp.setBisnb(m.getWmpnb());
+				itemSp.setBisname(m.getWmname());
+				itemSp.setBisspecifications(m.getWmspecification());
+				itemSp.setBisdescription(m.getWmdescription());
+				// 舊有資料->新資料內
+				itemSp.setBisid(null);
+				itemSp.setSysstatus(0);
+				itemSp.setBisgid(bisgid);
+				itemSp.setBisiauto(bisiauto);
+				itemSp.setBisdselect(bisdselect);
+				itemSp.setBisgfname(bisgfname);
+				itemSp.setBispcb(bispcb);// PCBA主板
+				itemSp.setBisproduct(bisproduct);// 產品
+				itemSp.setBisaccessories(bisaccessories);//
+				itemSp.setBisdevelopment(bisdevelopment);//
+				itemSp.setBisprocess(bisprocess);//
+				itemSp.setBisgname(bisgname);//
+				itemSp.setBisgffield(bisgffield);//
+				itemSp.setBissfproduct(bissfproduct);//
+				itemSp.setBisgsplit(bisgsplit);
+				// 正規畫名稱轉換
+				if (bisgffield.equals("bisnb")) {
+					itemSp.setBisfname(m.getWmpnb().split(bisgsplit).toString());
+				} else if (bisgffield.equals("bisname")) {
+					itemSp.setBisfname(m.getWmname().split(bisgsplit).toString());
+				} else if (bisgffield.equals("bisspecifications")) {
+					itemSp.setBisfname(m.getWmspecification().split(bisgsplit).toString());
+				} else if (bisgffield.equals("bisdescription")) {
+					itemSp.setBisfname(m.getWmdescription().split(bisgsplit).toString());
+				}
+				itemSp.setSyssort(syssort);
+				sqlQueryEntitys.put(itemSp.getBisnb(), itemSp);// 物料號
+				// entitys.add(itemSp);
+			});
+
+			// 資料比對整理(新舊整合)
+			entitys.forEach(s -> {
+				// 有比對到->更新
+				BomItemSpecifications itemSp = new BomItemSpecifications();
+				if (sqlQueryEntitys.containsKey(s.getBisnb())) {
+					itemSp = sqlQueryEntitys.get(s.getBisnb());
+					s.setBisname(itemSp.getBisname());
+					s.setBisnb(itemSp.getBisnb());
+					s.setBisspecifications(itemSp.getBisspecifications());
+					s.setBisdescription(itemSp.getBisdescription());
+					// 如果有標記自動?
+					if (s.getBisiauto()) {
+						entityNews.add(s);
+					}
+					sqlQueryEntitys.get(s.getBisnb()).setSysstatus(2);// 無效狀態
+				} else {
+					// 沒比對到->移除(除了customize例外)
+					if (s.getBisnb().equals("customize")) {
+						entityNews.add(s);
+					} else {
+						// 如果有標記自動?
+						if (s.getBisiauto()) {
+							specificationsDao.delete(s);
+						}
+					}
+				}
+			});
+
+			// 可能有新的?
+			sqlQueryEntitys.forEach((k, v) -> {
+				if (v.getSysstatus() == 0) {
+					// entityNews.add(v);
+					// 如果有標記自動?
+					if (v.getBisiauto()) {
+						specificationsDao.save(v);
+					}
+				}
+			});
+			// 物料排序->修改更新
+			entityNews.sort((o1, o2) -> o1.getBisnb().compareTo(o2.getBisnb()));
+			specificationsDao.saveAll(entityNews);
+		});
+
+		return packageBean;
+	}
+
 	/** 修改資料 */
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
@@ -481,9 +675,10 @@ public class BomItemSpecificationsServiceAc {
 						entityData.getBisgname() == null || entityData.getBisgname().equals("") || //
 						entityData.getBisgffield() == null || entityData.getBisgffield().equals("") || //
 						entityData.getBisgfname() == null || entityData.getBisgfname().equals("") || //
-						entityData.getBisgsplit() == null || entityData.getBisgsplit().equals("")) {
+						entityData.getBisgsplit() == null || entityData.getBisgsplit().equals("") || //
+						entityData.getSyssort() == null) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
-							new String[] { entityData.getBisnb() });
+							new String[] { "Please check again" });
 				}
 
 			}
@@ -667,4 +862,5 @@ public class BomItemSpecificationsServiceAc {
 
 		return packageBean;
 	}
+
 }

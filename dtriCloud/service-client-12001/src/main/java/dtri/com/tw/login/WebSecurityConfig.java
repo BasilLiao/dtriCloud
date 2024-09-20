@@ -54,6 +54,7 @@ public class WebSecurityConfig {
 	private static final String basic_pdm = "/ajax/basic_product_model.basil";
 	// BOM產品
 	private static final String bom_bpm = "/ajax/bom_product_management.basil";
+	private static final String bom_bpr = "/ajax/bom_product_rule.basil";
 	private static final String bom_bps = "/ajax/bom_parameter_settings.basil";
 	private static final String bom_bsh = "/ajax/bom_software_hardware.basil";
 	private static final String bom_kee = "/ajax/bom_keeper.basil";
@@ -98,7 +99,9 @@ public class WebSecurityConfig {
 
 		// thirdparty && img 資料夾靜態資料可 直接 存取 (預設皆有 訪問權限 資料可[匿名]存取)
 		http.authorizeHttpRequests()
-				.requestMatchers(HttpMethod.GET, "/thirdparty/**", "/img/**", "/login.basil", "/login.html").permitAll()
+				.requestMatchers(HttpMethod.GET, "/thirdparty/**", "/files/**", "/img/**", "/login.basil",
+						"/login.html")
+				.permitAll()
 				// ----請求-index-(訪問)----
 				.requestMatchers(HttpMethod.POST, "/ajax/index.basil").hasAuthority(actionRole("index.basil", ""))
 
@@ -225,7 +228,13 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, bom_bpm + ".AU").hasAuthority(actionRole(bom_bpm, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bom_bpm + ".AD").hasAuthority(actionRole(bom_bpm, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bom_bpm + ".DD").hasAuthority(actionRole(bom_bpm, "DD"))// (標記移除)
-				
+				// ----請求-bom_product_rule-(訪問)->特例府屬bom_product_management ----
+				.requestMatchers(HttpMethod.POST, bom_bpr + ".AR").hasAuthority(actionRole(bom_bpm, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_bpr + ".AC").hasAuthority(actionRole(bom_bpm, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bom_bpr + ".AU").hasAuthority(actionRole(bom_bpm, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bom_bpr + ".AD").hasAuthority(actionRole(bom_bpm, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bom_bpr + ".DD").hasAuthority(actionRole(bom_bpm, "DD"))// (標記移除)
+
 				// ----請求-bom_software_hardware-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bom_bsh).hasAuthority(actionRole(bom_bsh, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bom_bsh + ".AR").hasAuthority(actionRole(bom_bsh, "AR"))// (查詢)

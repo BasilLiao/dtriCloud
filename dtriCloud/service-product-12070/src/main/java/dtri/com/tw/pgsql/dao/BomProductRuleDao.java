@@ -15,9 +15,10 @@ public interface BomProductRuleDao extends JpaRepository<BomProductRule, Long> {
 
 	// 查詢全部含-頁數
 	@Query("SELECT c FROM BomProductRule c "//
-			+ "WHERE (:bprname is null or c.bprname LIKE %:bprname% ) and "// BOM號
-			+ "(:bprtypename is null or c.bprtypename LIKE %:bprtypename% )") // BOM型號
-	ArrayList<BomProductRule> findAllBySearch(String bprname, String bprtypename, Pageable pageable);
+			+ "WHERE (:bprname is null or c.bprname LIKE %:bprname% ) and "// BOM規則名稱
+			+ "(:bprbisitem is null or c.bprbisitem LIKE %:bprbisitem% ) and "// BOM規則內容
+			+ "(:bprmodel is null or c.bprmodel LIKE %:bprmodel% )") // BOM型號
+	ArrayList<BomProductRule> findAllBySearch(String bprname, String bprbisitem, String bprmodel, Pageable pageable);
 
 	// 檢查
 	@Query("SELECT c FROM BomProductRule c "//

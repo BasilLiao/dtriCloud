@@ -102,6 +102,11 @@
 		width: 16px;
 		height: 16px;
 	}
+
+	/*鎖定*/
+	.locked-do {
+		pointer-events: none;
+	}
 </style>
 <div id="other_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
@@ -145,7 +150,7 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<!--狀態選擇-->
-				<div class="col-6 col-lg-3 p-1">
+				<div class="col-6 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Status</div>
 						<div class="row m-0">
@@ -173,7 +178,7 @@
 					</div>
 				</div>
 				<!--條件執行-->
-				<div class="col-6 col-lg-4 p-1">
+				<div class="col-6 col-lg-5 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
@@ -1007,7 +1012,7 @@
 					var bisid = se.find('input').attr('title').split('_')[0];
 					var bisgid = se.find('input').attr('title').split('_')[1];
 
-					var bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;
+					var bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;//自動?
 					$('#other_dcr #other_bisiauto').prop('checked', bisiauto);//自動導入
 					$('#other_dcr #other_bisgname').val($(se).find('.bisgname').text());//群組名稱
 					$('#other_dcr #other_bisgfname').val($(se).find('.bisgfname').text());//項目名稱
@@ -1062,6 +1067,16 @@
 
 					//取消選取
 					//selectedRadio.prop('checked', false);
+					//鎖定
+					if (bisiauto) {
+						$('#other_dcr .testItem').addClass("locked-do");
+						$('#other_dcr .groupItem').find('input, select').not('#other_bisiauto').addClass("locked-do");
+						$('#other_dcr table').find('thead, tbody').addClass("locked-do");
+					} else {
+						$('#other_dcr .testItem').removeClass("locked-do");
+						$('#other_dcr .groupItem').find('input, select').not('#other_bisiauto').removeClass("locked-do");
+						$('#other_dcr table').find('thead, tbody').removeClass("locked-do");
+					}
 				}
 			},
 
@@ -1145,8 +1160,8 @@
 										val = JSON.stringify(val);
 									}
 									//排除
-									if($(this).attr("title") !== "bisqty"){
-										entityFormatJson[$(this).attr("title")] = val;									
+									if ($(this).attr("title") !== "bisqty") {
+										entityFormatJson[$(this).attr("title")] = val;
 									}
 								});
 								//而外抓取(群主)
@@ -1162,7 +1177,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
-								
+
 
 								//條件
 								var bisgcondition = "";
@@ -1204,8 +1219,8 @@
 										val = JSON.stringify(val);
 									}
 									//排除
-									if($(this).attr("title") !== "bisqty"){
-										entityFormatJson[$(this).attr("title")] = val;									
+									if ($(this).attr("title") !== "bisqty") {
+										entityFormatJson[$(this).attr("title")] = val;
 									}
 								});
 								//而外抓取(群主)
@@ -1221,7 +1236,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
-								
+
 
 								//條件
 								var bisgcondition = "";
@@ -1263,8 +1278,8 @@
 										val = JSON.stringify(val);
 									}
 									//排除
-									if($(this).attr("title") !== "bisqty"){
-										entityFormatJson[$(this).attr("title")] = val;									
+									if ($(this).attr("title") !== "bisqty") {
+										entityFormatJson[$(this).attr("title")] = val;
 									}
 								});
 								//而外抓取(群主)
@@ -1280,7 +1295,7 @@
 								entityFormatJson["bisdevelopment"] = $("#other_bisdevelopment").is(':checked');//開發品
 								entityFormatJson["bispcb"] = $("#other_bispcb").is(':checked');//PCBA
 								entityFormatJson["bisdselect"] = $("#other_bisdselect").is(':checked');//預設
-								
+
 
 								//條件
 								var bisgcondition = "";

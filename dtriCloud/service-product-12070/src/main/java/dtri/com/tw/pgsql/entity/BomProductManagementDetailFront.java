@@ -27,6 +27,7 @@ import jakarta.persistence.Transient;
  *      "bisgfname(正規化群組值)":"XX XX XX",<br>
  *      "bisfname(正規化項目值)":"XX,XX,XX",<br>
  *      "bissdescripion(短敘述)":"",<br>
+ *      "bisprocess(製程別)":"",<br>
  *      "where(條件)":[物料號_正負_數量,...],<br>
  * 
  * 
@@ -88,6 +89,7 @@ public class BomProductManagementDetailFront {
 		this.bisfname = "";//
 		this.bissdescripion = "";//
 		this.biswhere = "";//
+		this.setBisprocess("");//
 	}
 
 	// 共用型
@@ -123,7 +125,10 @@ public class BomProductManagementDetailFront {
 	@Transient
 	private String bissdescripion;//
 	@Transient
+	private String bisprocess;//
+	@Transient
 	private String biswhere;//
+	
 
 	public Boolean getSysheader() {
 		return sysheader;
@@ -243,5 +248,13 @@ public class BomProductManagementDetailFront {
 
 	public void setBiswhere(String biswhere) {
 		this.biswhere = biswhere;
+	}
+
+	public String getBisprocess() {
+		return bisprocess;
+	}
+
+	public void setBisprocess(String bisprocess) {
+		this.bisprocess = bisprocess;
 	}
 }

@@ -45,44 +45,56 @@ public class ScheduledTasksService {
 	private String apache_path;
 
 	@Autowired
-	ERPSynchronizeService synchronizeService;
+	SynchronizeERPService synchronizeERPService;
+
+	@Autowired
+	SynchronizeBiosService synchronizeBiosService;
+
+	@Autowired
+	SynchronizeBomService synchronizeBomService;
 
 	@Autowired
 	BasicNotificationMailService mailService;
 
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
-	@Async
 	@Scheduled(fixedDelay = 120000)
-	public void fixDelay_ERPSynchronizeAutoService() {
+	public void fixDelay_SynchronizeERPAutoService() {
 		logger.info("===ERP_fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
 		if (fixDelay_ERPSynchronizeServiceRun) {
 			fixDelay_ERPSynchronizeServiceRun = false;
 			try {
-				synchronizeService.erpSynchronizeInvtb();//
+				// 初始化
+				synchronizeERPService.erpSynchronizeInvtb();//
 				// 事先準備匹配
-				synchronizeService.initERPSynchronizeService();//
+				synchronizeERPService.initERPSynchronizeService();//
 				// 單據
-				synchronizeService.erpSynchronizeInvta();
-				synchronizeService.erpSynchronizeInvtg();
-				synchronizeService.erpSynchronizeInvth();
-				//
-				synchronizeService.erpSynchronizeMocta();
-				synchronizeService.erpSynchronizeMocte();
-				synchronizeService.erpSynchronizeMoctf();
-				synchronizeService.erpSynchronizeMocth();
-				synchronizeService.erpSynchronizeBomtd();
-				synchronizeService.erpSynchronizeBomtf();
-				synchronizeService.erpSynchronizeCopth();
-				synchronizeService.erpSynchronizePurth();
-				synchronizeService.erpSynchronizeWtypeFilter();
-				// BOM結構同步
-				synchronizeService.erpSynchronizeBomIngredients();
-				// 移除多於資料
-				synchronizeService.remove120DayData();
-
+				synchronizeERPService.erpSynchronizeInvta();
+				synchronizeERPService.erpSynchronizeInvtg();
+				synchronizeERPService.erpSynchronizeInvth();
+				synchronizeERPService.erpSynchronizeMocta();
+				synchronizeERPService.erpSynchronizeMocte();
+				synchronizeERPService.erpSynchronizeMoctf();
+				synchronizeERPService.erpSynchronizeMocth();
+				synchronizeERPService.erpSynchronizeBomtd();
+				synchronizeERPService.erpSynchronizeBomtf();
+				synchronizeERPService.erpSynchronizeCopth();
+				synchronizeERPService.erpSynchronizePurth();
+				synchronizeERPService.erpSynchronizeWtypeFilter();
 				// 外包生管排程
-				synchronizeService.erpSynchronizeScheduleOutsourcer();
+				synchronizeERPService.erpSynchronizeScheduleOutsourcer();
+				// 移除多於資料()
+				synchronizeERPService.remove120DayData();
+				// ==================產品BOM==================
+				// BOM機種別
+				synchronizeBomService.erpSynchronizeProductModel();
+				// BOM結構同步
+				synchronizeBomService.erpSynchronizeBomIngredients();
+				// BOM 規則同步
+				synchronizeBomService.autoBISF();
+				// ==================產品BIOS==================
+				// BIOS檢查機種別
+				synchronizeBiosService.erpSynchronizeProductModeltoBios();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -95,24 +107,18 @@ public class ScheduledTasksService {
 
 	// 每日(30)07:30分執行一次
 	// 自動同步(ERP產品抓取for BIOS)
-	@Async
 	@Scheduled(cron = "0 30 07 * * ? ")
 	public void updateEveryday() {
 		try {
-			// 移除多於資料()
-			synchronizeService.remove120DayData();
-			// 機種別
-			synchronizeService.erpSynchronizeProductModel();
-			// 檢查版本
-			synchronizeService.biosVersionCheck();
+			// BIOS檢查版本
+			synchronizeBiosService.versionCheckBios();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 		}
 	}
 
-	// 每日(3分鐘)
-	// 自動同步(Mail Auto 檢查)
+	// 每日(3分鐘)-自動同步(Mail Auto 檢查)
 	@Async
 	@Scheduled(fixedDelay = 180000)
 	public void fixDelay_MailAutoService() {
@@ -224,7 +230,6 @@ public class ScheduledTasksService {
 	}
 
 	// 手動比對單據
-	@Async
 	public synchronized void fixDelay_ERPSynchronizeService() {
 		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
@@ -232,7 +237,7 @@ public class ScheduledTasksService {
 			fixDelay_ERPSynchronizeServiceRun = false;
 			try {
 				// 事先準備匹配
-				synchronizeService.initERPSynchronizeService();//
+				synchronizeERPService.initERPSynchronizeService();//
 				// 單據
 				// ============ A111 費用領料單 / A112 費用退料單 / A119 料號調整單 / A121 倉庫調撥單 ============
 				// synchronizeService.erpSynchronizeInvta();
@@ -243,7 +248,7 @@ public class ScheduledTasksService {
 
 				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 /
 				// A571
-				synchronizeService.erpSynchronizeMocte();
+				synchronizeERPService.erpSynchronizeMocte();
 				// ============A581 生產入庫單 ============
 				// synchronizeService.erpSynchronizeMoctf();
 				// ============ A591 委外進貨單 ============

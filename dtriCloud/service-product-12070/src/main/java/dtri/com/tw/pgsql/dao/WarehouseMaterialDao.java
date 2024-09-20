@@ -16,9 +16,10 @@ public interface WarehouseMaterialDao extends JpaRepository<WarehouseMaterial, L
 	// 查詢用
 	@Query("SELECT c FROM WarehouseMaterial c WHERE "//
 			+ "(:wmpnb is null or c.wmpnb LIKE %:wmpnb%) and "//
-			+ "(:wmname is null or c.wmname LIKE %:wmname%) and "//
+			+ "(:wmname is null or c.wmname Not LIKE %:wmname%) and "//
 			+ "(:wmspecification is null or c.wmspecification LIKE %:wmspecification%) ")
-	ArrayList<WarehouseMaterial> findAllBySearch(String wmpnb, String wmname, String wmspecification, Pageable pageable);
+	ArrayList<WarehouseMaterial> findAllBySearch(String wmpnb, String wmname, String wmspecification,
+			Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM WarehouseMaterial c WHERE "//

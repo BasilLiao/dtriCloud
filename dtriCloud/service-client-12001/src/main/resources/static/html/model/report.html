@@ -485,19 +485,13 @@
 						},
 						widthRatio: .14,//寬度比例
 						plugins: [
-							/*預設格式(注意:會覆蓋效果)
-							Table2Excel.plugins.fontPlugin,
-							Table2Excel.plugins.fillPlugin,
-							Table2Excel.plugins.formPlugin,
-							Table2Excel.plugins.alignmentPlugin,
-							Table2Excel.plugins.hyperlinkPlugin,*/
+							/*預設格式(注意:會覆蓋效果)*/
 							Table2Excel.plugins.autoWidthPlugin,
 							{
 								workbookCreated({workbook, tables}) {
 									//創建時(Excel)
 								}, worksheetCreated({workbook, tables, worksheet, table}) {
 									//創建時(分頁簿)
-									//console.log(tables);
 								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
 									//創建時(每一格欄位)-呼叫
 									console.log(cell);
@@ -528,18 +522,13 @@
 									//完成時-呼叫
 									//worksheet.getRow(1).hidden = true//隱藏第一筆
 									worksheet.getColumn(1).hidden = true;//隱藏第一行
-
-
 								}
 							},
 						]
 					}
-
 					const table2Excel = new Table2Excel('#rcReportExcel', options);//id or class or table
 					table2Excel.export($('#nav_functional_unit').text(), 'xlsx');//檔案名稱+副檔名
-
 				});
-
 
 				//時間格式
 				report.methods.datetimepickerDate();

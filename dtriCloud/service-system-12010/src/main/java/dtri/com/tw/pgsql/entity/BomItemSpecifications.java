@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -118,6 +119,7 @@ public class BomItemSpecifications {
 		this.bisgsplit = "";
 		this.bisgcondition = "";
 		this.setBisgffield("");
+		this.setBisprocess("");
 
 		this.bisproduct = false;
 		this.bisaccessories = false;
@@ -199,7 +201,9 @@ public class BomItemSpecifications {
 	private Boolean bisiauto;
 	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisdselect;
-	
+
+	@Transient
+	private String bisprocess;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -439,6 +443,14 @@ public class BomItemSpecifications {
 
 	public void setBisdselect(Boolean bisdselect) {
 		this.bisdselect = bisdselect;
+	}
+
+	public String getBisprocess() {
+		return bisprocess;
+	}
+
+	public void setBisprocess(String bisprocess) {
+		this.bisprocess = bisprocess;
 	}
 
 }

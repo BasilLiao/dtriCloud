@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -46,6 +47,7 @@ import jakarta.persistence.Table;
  *      this.bisdevelopment = false;指定顯示單元 開發品<br>
  *      this.bispcb = false;指定顯示單元 板階<br>
  *      this.bisiauto = false;自動導入<br>
+ *      this.bisdselect = false;預設選擇<br>
  * 
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
@@ -118,6 +120,7 @@ public class BomItemSpecifications {
 		this.bisgsplit = "";
 		this.bisgcondition = "";
 		this.setBisgffield("");
+		this.setBisprocess("");
 
 		this.bisproduct = false;
 		this.bisaccessories = false;
@@ -199,8 +202,9 @@ public class BomItemSpecifications {
 	private Boolean bisiauto;
 	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisdselect;
-	@Column(name = "sys_sort", nullable = false, columnDefinition = "int default 0")
-	
+
+	@Transient
+	private String bisprocess;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -440,6 +444,14 @@ public class BomItemSpecifications {
 
 	public void setBisdselect(Boolean bisdselect) {
 		this.bisdselect = bisdselect;
+	}
+
+	public String getBisprocess() {
+		return bisprocess;
+	}
+
+	public void setBisprocess(String bisprocess) {
+		this.bisprocess = bisprocess;
 	}
 
 }

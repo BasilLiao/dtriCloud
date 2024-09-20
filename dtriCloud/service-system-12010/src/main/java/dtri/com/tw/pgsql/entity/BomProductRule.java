@@ -98,6 +98,7 @@ public class BomProductRule {
 		this.bprtype = 0;
 		this.bprtypename = "";
 		this.bprbisitem = "";
+		this.setBprbpsnv("[]");
 		this.bprname = "";
 	}
 
@@ -133,12 +134,16 @@ public class BomProductRule {
 
 	@Column(name = "bpr_name", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String bprname;
+	@Column(name = "bpr_model", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	private String bprmodel;
 	@Column(name = "bpr_type", nullable = false, columnDefinition = "int default 0")
 	private Integer bprtype;
 	@Column(name = "bpr_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bprtypename;
 	@Column(name = "bpr_bis_item", nullable = false, columnDefinition = "text default ''")
 	private String bprbisitem;
+	@Column(name = "bpr_bps_nv", nullable = false, columnDefinition = "text default '[]'")
+	private String bprbpsnv;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -258,6 +263,22 @@ public class BomProductRule {
 
 	public void setBprbisitem(String bprbisitem) {
 		this.bprbisitem = bprbisitem;
+	}
+
+	public String getBprmodel() {
+		return bprmodel;
+	}
+
+	public void setBprmodel(String bprmodel) {
+		this.bprmodel = bprmodel;
+	}
+
+	public String getBprbpsnv() {
+		return bprbpsnv;
+	}
+
+	public void setBprbpsnv(String bprbpsnv) {
+		this.bprbpsnv = bprbpsnv;
 	}
 
 }

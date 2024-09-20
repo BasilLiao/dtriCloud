@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * 
  **/
 @Component
-@FeignClient(value = "SERVICE-CLIENT", path = "DTRcloud")
-public interface ClientServiceFeign {
+@FeignClient(value = "SERVICE-BOM", path = "service-bom")
+public interface BomServiceFeign {
 
 	// 觸發
-	@RequestMapping(value = { "/websocket/schedule_outsourcer_service" }, method = RequestMethod.POST)
-	String setOutsourcerSynchronizeCell(@RequestBody String json);
-	
+	@RequestMapping(value = { "/bomItemSpecifications/getAutoSearchTestAndUpdate" }, method = RequestMethod.POST)
+	String autoSearchTestAndUpdate(@RequestBody String json);
+
 }

@@ -17,9 +17,10 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 	@Query("SELECT c FROM BomProductManagement c "//
 			+ "WHERE (:bpmnb is null or c.bpmnb LIKE %:bpmnb% ) and "// BOM號
 			+ "(:bpmmodel is null or c.bpmmodel LIKE %:bpmmodel% ) and "// BOM型號
-			+ "(:bpmtypename is null or c.bpmtypename LIKE %:bpmtypename% ) ") // 產品歸類-名稱
+			+ "(:bpmtypename is null or c.bpmtypename LIKE %:bpmtypename% ) and" // 產品歸類-名稱
+			+ "(:bpmbisitem is null or c.bpmbisitem LIKE %:bpmbisitem% ) ") // 產品規格
 	ArrayList<BomProductManagement> findAllBySearch(String bpmnb, String bpmmodel, String bpmtypename,
-			Pageable pageable);
+			String bpmbisitem, Pageable pageable);
 
 	// 檢查
 	@Query("SELECT c FROM BomProductManagement c "//
@@ -27,7 +28,6 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 			+ "(:bpmmodel is null or c.bpmmodel = :bpmmodel ) and "//
 			+ "(:bpmtypename is null or c.bpmtypename =:bpmtypename ) ") //
 	ArrayList<BomProductManagement> findAllByCheck(String bpmnb, String bpmmodel, String bpmtypename);
-
 
 	// 找
 	ArrayList<BomProductManagement> findAllByBpmid(Long bisgcondition);

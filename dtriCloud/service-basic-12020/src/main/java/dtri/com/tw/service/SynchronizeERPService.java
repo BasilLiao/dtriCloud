@@ -34,11 +34,9 @@ import dtri.com.tw.mssql.dao.MocteDao;
 import dtri.com.tw.mssql.dao.MoctfDao;
 import dtri.com.tw.mssql.dao.MocthDao;
 import dtri.com.tw.mssql.dao.PurthDao;
-import dtri.com.tw.mssql.entity.Bommd;
 import dtri.com.tw.mssql.entity.Bomtd;
 import dtri.com.tw.mssql.entity.Bomtf;
 import dtri.com.tw.mssql.entity.Copth;
-import dtri.com.tw.mssql.entity.Invma;
 import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtb;
 import dtri.com.tw.mssql.entity.Invtg;
@@ -55,22 +53,15 @@ import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BasicProductModelDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
-import dtri.com.tw.pgsql.dao.BiosPrincipalDao;
-import dtri.com.tw.pgsql.dao.BiosVersionDao;
 import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseConfigDao;
 import dtri.com.tw.pgsql.dao.WarehouseKeeperDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
-import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
-import dtri.com.tw.pgsql.entity.BasicNotificationMail;
-import dtri.com.tw.pgsql.entity.BasicProductModel;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
-import dtri.com.tw.pgsql.entity.BiosPrincipal;
-import dtri.com.tw.pgsql.entity.BiosVersion;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseConfig;
@@ -84,7 +75,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Service
-public class ERPSynchronizeService {
+public class SynchronizeERPService {
 
 	@Autowired
 	BommdDao bommdDao;
@@ -136,10 +127,7 @@ public class ERPSynchronizeService {
 	WarehouseKeeperDao keeperDao;
 	@Autowired
 	BasicProductModelDao modelDao;
-	@Autowired
-	BiosVersionDao biosVersionDao;
-	@Autowired
-	BiosPrincipalDao biosPrincipalDao;
+
 	@Autowired
 	BasicNotificationMailDao notificationMailDao;
 	@Autowired
@@ -155,6 +143,8 @@ public class ERPSynchronizeService {
 	ERPAutoRemoveService autoRemoveService;
 	@Autowired
 	PackageService packageService;
+	@Autowired
+	SynchronizeBiosService biosService;
 
 	@Resource
 	ClientServiceFeign serviceFeign;
@@ -283,7 +273,7 @@ public class ERPSynchronizeService {
 		commandListDao.saveAll(commandLists);//
 		commandListDao.deleteAll(removeCommandLists);
 		// 檢查新的致令單BIOS?
-		// biosNewOrderCheck(commandMaps);
+		biosService.biosNewOrderCheck(commandMaps);
 
 	}
 
@@ -1865,7 +1855,8 @@ public class ERPSynchronizeService {
 					n.setWaslocation(checkloc ? v.getMc003() : "FF-FF-FF-FF");// 物料位置
 					n.setWaaname(v.getCmc002() == null ? "" : v.getCmc002());// 倉庫名稱
 					n.setWaerptqty(v.getMc007());// 倉儲數量
-					n.setWatqty(n.getWaslocation().equals("FF-FF-FF-FF") ? 0 : v.getMc007());// (實際)倉儲數量[如果是FF-FF-FF-FF// 則實際庫存0]
+					n.setWatqty(n.getWaslocation().equals("FF-FF-FF-FF") ? 0 : v.getMc007());// (實際)倉儲數量[如果是FF-FF-FF-FF//
+																								// 則實際庫存0]
 					saveItems.add(n);
 				}
 			}
@@ -1931,200 +1922,6 @@ public class ERPSynchronizeService {
 		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD));
 		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD));
 		commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD));
-	}
-
-	// ============ 同步機種別() ============
-	public void erpSynchronizeProductModel() throws Exception {
-		ArrayList<Invma> invmas = invmaDao.findAllByInvma();
-		ArrayList<BasicProductModel> models = modelDao.findAllBySearch(null, null, null);
-		ArrayList<BasicProductModel> newModels = new ArrayList<BasicProductModel>();
-		ArrayList<BiosVersion> biosVers = biosVersionDao.findAllBySearch(null, null, null, null, null, null);
-		ArrayList<BiosVersion> newBiosVers = new ArrayList<BiosVersion>();
-
-		// 轉換
-		Map<String, BasicProductModel> mapBpms = new HashMap<String, BasicProductModel>();
-		models.forEach(y -> {
-			mapBpms.put(y.getBpmname(), y);
-		});
-		Map<String, BiosVersion> mapBvms = new HashMap<String, BiosVersion>();
-		biosVers.forEach(y -> {
-			mapBvms.put(y.getBvmodel(), y);
-		});
-
-		// 比對?->如果有->舊的(false)
-		invmas.forEach(x -> {
-			// Product model
-			if (!mapBpms.containsKey(x.getMa003())) {
-				BasicProductModel newModel = new BasicProductModel();
-				newModel.setBpmid(null);
-				newModel.setBpmname(x.getMa003());
-				newModels.add(newModel);
-			}
-			// Bios
-			if (!mapBvms.containsKey(x.getMa003())) {
-				BiosVersion biosVer = new BiosVersion();
-				biosVer.setBvid(null);
-				biosVer.setBvmodel(x.getMa003());
-				newBiosVers.add(biosVer);
-			}
-		});
-
-		modelDao.saveAll(newModels);
-		biosVersionDao.saveAll(newBiosVers);
-	}
-
-	// 檢查是否有新的製令單
-	public void biosNewOrderCheck(Map<String, BasicCommandList> commandMaps) throws Exception {
-		// Step4. mail BIOS 通知?
-		// bios
-		Map<String, BiosVersion> biosVersionMaps = new HashMap<>();// bios配對?
-		biosVersionDao.findAll().forEach(b -> {
-			// (機種別_客戶)
-			String biosKey = b.getBvmodel() + ")_(" + b.getBvcname();
-			// 新 (製令單 與 BIOS)配對上 && 沒登記過
-			if (commandMaps.containsKey(biosKey) && !biosVersionMaps.containsKey(biosKey)) {
-				biosVersionMaps.put(biosKey, b);
-			}
-		});
-
-		// BOIS->配對人->寄件登記
-		ArrayList<BasicNotificationMail> readyNeedMails = new ArrayList<BasicNotificationMail>();
-		biosVersionMaps.forEach((k, v) -> {
-			// 如果有客戶
-			if (k.split("\\)_\\(").length == 2) {
-				// 機種別
-				String modelName = k.split("\\)_\\(")[0];// 機種別
-				String modelCustomized = k.split("\\)_\\(")[1];// 客戶
-				String version = v.getBvversion();// 目前版本
-
-				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
-				// 寄信件對象
-				ArrayList<String> mainUsers = new ArrayList<String>();
-				ArrayList<String> secondaryUsers = new ArrayList<String>();
-				principals.forEach(u -> {
-					// 主要?次要?+制令單通知
-					if (u.getBpprimary() == 0 && u.getBponotice()) {
-						mainUsers.add(u.getBpsumail());
-					} else if (u.getBpprimary() == 1 && u.getBponotice()) {
-						secondaryUsers.add(u.getBpsumail());
-					}
-				});
-				// 建立信件
-				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
-				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "][" + modelName + "][" + version + "]["
-						+ modelCustomized + "]"//
-						+ "Cloud system BIOS recommended update notification!");
-				readyNeedMail.setBnmcontent("Please check the model :[" + modelName + "] BIOS needs to be updated,\n"//
-						+ "customized version/customer is :[" + version + " / " + modelCustomized + "]");
-				readyNeedMail.setBnmkind("BIOS");
-				readyNeedMail.setBnmmail(mainUsers + "");
-				readyNeedMail.setBnmmailcc(secondaryUsers + "");
-				// 檢查信件(避免重複)
-				if (notificationMailDao.findAllByCheck(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
-						.size() == 0) {
-					readyNeedMails.add(readyNeedMail);
-				}
-			}
-		});
-
-	}
-
-	// 檢查是否有N+1版本過時
-	public void biosVersionCheck() throws Exception {
-		//
-		Map<String, BiosVersion> bversionDef = new HashMap<String, BiosVersion>();
-		Map<String, BiosVersion> bversionCust = new HashMap<String, BiosVersion>();
-		ArrayList<BasicNotificationMail> readyNeedMails = new ArrayList<BasicNotificationMail>();
-
-		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "bvmodel"));// 機種別
-		orders.add(new Order(Direction.DESC, "bvaversion"));// 自動版本BIOS版本
-		PageRequest pageable = PageRequest.of(0, 999999, Sort.by(orders));
-		List<BiosVersion> biosVers = biosVersionDao.findAll(pageable).getContent();
-
-		// Step1. 取得 每個機種別<最大版本>
-		biosVers.forEach(b -> {
-			String key = b.getBvmodel();
-			// 測試用
-//			if (key.equals("DT301CY")) {
-//				System.out.println(key);
-//			}
-
-			// 一般主要
-			if (b.getBvcname().equals("")) {
-				// 如果沒有重複
-				if (!bversionDef.containsKey(key)) {
-					bversionDef.put(key, b);
-				} else {
-					int bDef = bversionDef.get(key).getBvaversion();
-					if (bDef < b.getBvaversion()) {
-						// 如果有重複?&新的比較大?
-						bversionDef.put(key, b);
-					}
-				}
-			} else {
-				// 客製化
-				key += ")_(" + b.getBvcname();
-				// 如果沒有重複
-				if (!bversionCust.containsKey(key)) {
-					bversionCust.put(key, b);
-				} else {
-					int bDef = bversionCust.get(key).getBvaversion();
-					if (bDef < b.getBvaversion()) {
-						// 如果有重複?&新的比較大?
-						bversionCust.put(key, b);
-					}
-				}
-			}
-		});
-		// Step2.檢查那些客製化落後?+匹配對象?
-		bversionCust.forEach((k, v) -> {
-			String modelName = k.split("\\)_\\(")[0];
-			int bvaversionCust = v.getBvaversion();
-			Boolean lockCust = v.getBvclock();
-			// 有比對到機種別 & 版本比較
-			if (bversionDef.containsKey(modelName)) {
-				int bvaversionDef = bversionDef.get(modelName).getBvaversion();
-				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
-				// 相差n+1版本以上+排除鎖定
-				if (bvaversionDef - bvaversionCust >= 2 && principals.size() > 0 && !lockCust) {
-					String versionDefName = bversionDef.get(modelName).getBvversion();
-					String versionCustomizedName = v.getBvversion();
-
-					// 寄信件對象
-					ArrayList<String> mainUsers = new ArrayList<String>();
-					ArrayList<String> secondaryUsers = new ArrayList<String>();
-					principals.forEach(u -> {
-						// 主要?次要?+有勾選 版本檢查通知
-						if (u.getBpprimary() == 0 && u.getBpmnotice()) {
-							mainUsers.add(u.getBpsumail());
-						} else if (u.getBpprimary() == 1 && u.getBpmnotice()) {
-							secondaryUsers.add(u.getBpsumail());
-						}
-					});
-					// 建立信件
-					BasicNotificationMail readyNeedMail = new BasicNotificationMail();
-					readyNeedMail.setBnmtitle(
-							"[" + Fm_T.to_y_M_d(new Date()) + "][" + modelName + "][" + bvaversionCust + "]"//
-									+ "Cloud system BIOS recommended update notification!");
-					readyNeedMail
-							.setBnmcontent("Please check the model :[" + modelName + "] BIOS needs to be updated,\n"//
-									+ "default/customized version is :[" + versionDefName + " / "
-									+ versionCustomizedName + "]");
-					readyNeedMail.setBnmkind("BIOS");
-					readyNeedMail.setBnmmail(mainUsers + "");
-					readyNeedMail.setBnmmailcc(secondaryUsers + "");
-					// 檢查信件(避免重複)
-					if (notificationMailDao
-							.findAllByCheck(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
-							.size() == 0) {
-						readyNeedMails.add(readyNeedMail);
-					}
-				}
-			}
-		});
-		// Step3.登記寄信件
-		notificationMailDao.saveAll(readyNeedMails);
 	}
 
 	// ============ 同步外包生管平台() ============
@@ -2200,58 +1997,80 @@ public class ERPSynchronizeService {
 		sendTo.run();
 	}
 
+	// ============ 同步機種別() ============
+//	public void erpSynchronizeProductModel() throws Exception {
+//		ArrayList<Invma> invmas = invmaDao.findAllByInvma();
+//		ArrayList<BasicProductModel> models = modelDao.findAllBySearch(null, null, null);
+//		ArrayList<BasicProductModel> newModels = new ArrayList<BasicProductModel>();
+//		// 轉換
+//		Map<String, BasicProductModel> mapBpms = new HashMap<String, BasicProductModel>();
+//		models.forEach(y -> {
+//			mapBpms.put(y.getBpmname(), y);
+//		});
+//		// 比對?->如果有->舊的(false)
+//		invmas.forEach(x -> {
+//			// Product model
+//			if (!mapBpms.containsKey(x.getMa003())) {
+//				BasicProductModel newModel = new BasicProductModel();
+//				newModel.setBpmid(null);
+//				newModel.setBpmname(x.getMa003());
+//				newModels.add(newModel);
+//			}
+//		});
+//		modelDao.saveAll(newModels);
+//	}
 	// ============ 同步BOM() ============
-	public void erpSynchronizeBomIngredients() throws Exception {
-		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
-		ArrayList<BasicBomIngredients> boms = basicBomIngredientsDao.findAllByBomList(null, null, null, null, null);
-		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
-		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
-		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
-		bommds = bommdDao.findAllByBommdFirst();
-//		if (boms.size() > 0) {
-//			bommds = bommdDao.findAllByBommd();
-//		} else {
+//	public void erpSynchronizeBomIngredients() throws Exception {
+//		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
+//		ArrayList<BasicBomIngredients> boms = basicBomIngredientsDao.findAllByBomList(null, null, null, null, null);
+//		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
+//		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
+//		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
+//		bommds = bommdDao.findAllByBommdFirst();
+////		if (boms.size() > 0) {
+////			bommds = bommdDao.findAllByBommd();
+////		} else {
+////		}
+//		// 檢查資料&更正
+//		for (Bommd bommd : bommds) {
+//			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
+//			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
+//			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
+//			bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
+//			bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
+//			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
+//			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+//			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
 //		}
-		// 檢查資料&更正
-		for (Bommd bommd : bommds) {
-			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
-			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
-			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
-			bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
-			bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
-			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
-			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
-			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
-		}
-		// 轉換資料
-		boms.forEach(o -> {
-			if (erpBommds.containsKey(o.getBbisnnb())) {
-				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
-				String sum = erpBommds.get(o.getBbisnnb()).toString();
-				if (!sum.equals(o.getChecksum())) {
-					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
-					bomNews.add(o);
-				}
-			} else {
-				// 沒比對到?已經移除?
-				bomRemoves.add(o);
-			}
-		});
-		// 新增
-		erpBommds.forEach((k, n) -> {
-			if (n.isNewone()) {
-				BasicBomIngredients o = new BasicBomIngredients();
-				String sum = n.toString();
-				erpToCloudService.bomIngredients(o, n, wMs, sum);
-				bomNews.add(o);
-			}
-		});
-		// 存入資料
-		basicBomIngredientsDao.saveAll(bomNews);
-		basicBomIngredientsDao.deleteAll(bomRemoves);
-
-		System.out.println("---");
-	}
+//		// 轉換資料
+//		boms.forEach(o -> {
+//			if (erpBommds.containsKey(o.getBbisnnb())) {
+//				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
+//				String sum = erpBommds.get(o.getBbisnnb()).toString();
+//				if (!sum.equals(o.getChecksum())) {
+//					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+//					bomNews.add(o);
+//				}
+//			} else {
+//				// 沒比對到?已經移除?
+//				bomRemoves.add(o);
+//			}
+//		});
+//		// 新增
+//		erpBommds.forEach((k, n) -> {
+//			if (n.isNewone()) {
+//				BasicBomIngredients o = new BasicBomIngredients();
+//				String sum = n.toString();
+//				erpToCloudService.bomIngredients(o, n, wMs, sum);
+//				bomNews.add(o);
+//			}
+//		});
+//		// 存入資料
+//		basicBomIngredientsDao.saveAll(bomNews);
+//		basicBomIngredientsDao.deleteAll(bomRemoves);
+//
+//		System.out.println("---");
+//	}
 
 	// 而外執行(外包生管同步)
 	public class OutsourcerSynchronizeCell implements Runnable {

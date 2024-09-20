@@ -81,9 +81,6 @@ public interface BomServiceFeign {
 	@RequestMapping(value = { "/bomProductManagement/getSearch" }, method = RequestMethod.POST)
 	PackageBean getProductManagementSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/bomProductManagement/getSearchTest" }, method = RequestMethod.POST)
-	PackageBean getProductManagementSearchTest(@RequestBody String jsonPackageBean);
-
 	@RequestMapping(value = { "/bomProductManagement/getReport" }, method = RequestMethod.POST)
 	PackageBean getProductManagementReport(@RequestBody String jsonPackageBean);
 
@@ -98,6 +95,22 @@ public interface BomServiceFeign {
 
 	@RequestMapping(value = { "/bomProductManagement/setDetele" }, method = RequestMethod.POST)
 	PackageBean setProductManagementDetele(@RequestBody String jsonPackageBean);
+
+	// ================================產品:BOM產品規則================================
+	@RequestMapping(value = { "/bomProductRule/getSearch" }, method = RequestMethod.POST)
+	PackageBean getProductRuleSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductRule/setModify" }, method = RequestMethod.POST)
+	PackageBean setProductRuleModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductRule/setAdd" }, method = RequestMethod.POST)
+	PackageBean setProductRuleAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductRule/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setProductRuleInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomProductRule/setDetele" }, method = RequestMethod.POST)
+	PackageBean setProductRuleDetele(@RequestBody String jsonPackageBean);
 
 	// ================================產品:負責人配置================================
 	@RequestMapping(value = { "/bomKeeper/getSearch" }, method = RequestMethod.POST)
