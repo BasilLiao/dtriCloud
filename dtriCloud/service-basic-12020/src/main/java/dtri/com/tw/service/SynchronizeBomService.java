@@ -21,7 +21,6 @@ import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicProductModel;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
-import dtri.com.tw.service.SynchronizeERPService.OutsourcerSynchronizeCell;
 import dtri.com.tw.service.feign.BomServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import jakarta.annotation.Resource;

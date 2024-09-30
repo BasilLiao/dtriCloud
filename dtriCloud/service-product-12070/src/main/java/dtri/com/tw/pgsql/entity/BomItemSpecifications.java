@@ -204,7 +204,7 @@ public class BomItemSpecifications {
 	private Boolean bisdselect;
 
 	@Transient
-	private String bisprocess;
+	private String bisprocess;//物料製成別
 
 	public Date getSyscdate() {
 		return syscdate;

@@ -690,6 +690,7 @@ public class BomItemSpecificationsServiceAc {
 			// 新增
 			x.setBisid(null);
 			x.setBisgid(bisgid);
+			x.setSysstatus(0);
 			x.setSysmdate(new Date());
 			x.setSysmuser(packageBean.getUserAccount());
 			x.setSysodate(new Date());

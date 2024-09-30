@@ -741,6 +741,7 @@ public class BomProductManagementServiceAc {
 	@Transactional
 	public PackageBean setDetele(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
+		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
@@ -748,7 +749,52 @@ public class BomProductManagementServiceAc {
 			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
 					new TypeReference<ArrayList<BomProductManagement>>() {
 					});
+
 			// Step2.資料檢查
+			for (BomProductManagement entityData : entityDatas) {
+				// Step2-3.檢查匹配權限?
+				BomProductManagement checkDataOne = managementDao.getReferenceById(entityData.getBpmid());
+				Boolean throwCheck = true;
+				String info = checkDataOne.getBpmnb() + " / " + checkDataOne.getBpmmodel();
+				for (BomKeeper keeper : bomKeepers) {
+					String bkmodel = keeper.getBkmodel();
+					String bknb = keeper.getBknb();
+					// 2=normal(增改刪)/1=limited(改)/0=disabled(禁用)
+					if (keeper.getBktype() == 0) {
+						// 沒權限?
+						if (!bkmodel.equals("") && (checkDataOne.getBpmmodel().contains(bkmodel)
+								|| entityData.getBpmmodel().contains(bkmodel))) {
+							throwCheck = true;
+							info = bkmodel;
+							break;
+						}
+						if (!bknb.equals("")
+								&& (checkDataOne.getBpmnb().contains(bknb) || entityData.getBpmnb().contains(bknb))) {
+							throwCheck = true;
+							info = bknb;
+							break;
+						}
+					} else if (keeper.getBktype() == 2) {
+						// 有權限?
+						info = bknb + " / " + bkmodel;
+						if (!bkmodel.equals("") && (checkDataOne.getBpmmodel().contains(bkmodel)
+								&& entityData.getBpmmodel().contains(bkmodel))) {
+							// 有權限
+							throwCheck = false;
+						} else if (!bknb.equals("")
+								&& (checkDataOne.getBpmnb().contains(bknb) && entityData.getBpmnb().contains(bknb))) {
+							// 有權限
+							throwCheck = false;
+						}
+					}
+				}
+				// 沒權限?
+				if (throwCheck) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+							new String[] { "This account has no permissions : " + packageBean.getUserAccount() + " : "
+									+ info });
+				}
+			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
