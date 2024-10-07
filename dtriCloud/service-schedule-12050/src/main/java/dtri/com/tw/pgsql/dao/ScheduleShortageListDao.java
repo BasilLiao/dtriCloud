@@ -15,9 +15,10 @@ public interface ScheduleShortageListDao extends JpaRepository<ScheduleShortageL
 			+ "(:sslbslsnnb is null or c.sslbslsnnb LIKE %:sslbslsnnb%) and "//
 			+ "(:sslpnumber is null or c.sslpnumber LIKE %:sslpnumber%) and "//
 			+ "(c.sslfuser != 'ERP_Remove(Auto)') and "//
+			+ "(:sslfromcommand is null or c.sslfromcommand LIKE %:sslfromcommand%) and "//
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<ScheduleShortageList> findAllBySearch(String sslbslsnnb, String sslpnumber, Integer sysstatus,
-			Pageable pageable);
+			String sslfromcommand, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleShortageList c WHERE "//

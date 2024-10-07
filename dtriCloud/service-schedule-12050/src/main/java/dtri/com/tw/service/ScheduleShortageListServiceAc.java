@@ -68,9 +68,8 @@ public class ScheduleShortageListServiceAc {
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
-
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<ScheduleShortageList> entitys = shortageListDao.findAllBySearch(null, null, 0, pageable);
+			ArrayList<ScheduleShortageList> entitys = shortageListDao.findAllBySearch(null, null, 0, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -109,6 +108,9 @@ public class ScheduleShortageListServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "sslbslsnnb", "Ex:單別-單號-單序?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "sslfromcommand", "Ex:致令單號?/成品號?/數量?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sslpnumber", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
@@ -129,7 +131,7 @@ public class ScheduleShortageListServiceAc {
 					ScheduleShortageList.class);
 
 			ArrayList<ScheduleShortageList> entitys = shortageListDao.findAllBySearch(searchData.getSslbslsnnb(),
-					searchData.getSslpnumber(), searchData.getSysstatus(), pageable);
+					searchData.getSslpnumber(), searchData.getSysstatus(), searchData.getSslfromcommand(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
