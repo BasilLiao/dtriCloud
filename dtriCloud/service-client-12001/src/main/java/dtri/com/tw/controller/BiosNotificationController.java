@@ -16,7 +16,7 @@ import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class BiosPrincipalController extends AbstractController {
+public class BiosNotificationController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -25,7 +25,7 @@ public class BiosPrincipalController extends AbstractController {
 	BiosServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil" }, method = {
+	@RequestMapping(value = { "/ajax/bios_notification.basil" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -48,7 +48,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getBiosPrincipalSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBiosNotificationSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -69,7 +69,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.AR" }, method = {
+	@RequestMapping(value = { "/ajax/bios_notification.basil.AR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -92,7 +92,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getBiosPrincipalSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBiosNotificationSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -113,7 +113,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.ARR" }, method = {
+	@RequestMapping(value = { "/ajax/bios_notification.basil.ARR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -136,7 +136,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getBiosPrincipalReport(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBiosNotificationReport(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -157,7 +157,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/bios_notification.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -179,7 +179,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setBiosPrincipalAdd(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBiosNotificationAdd(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -200,7 +200,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/bios_notification.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -222,7 +222,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setBiosPrincipalModify(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBiosNotificationModify(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -243,7 +243,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/bios_notification.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -265,7 +265,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setBiosPrincipalInvalid(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBiosNotificationInvalid(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -286,7 +286,7 @@ public class BiosPrincipalController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bios_principal.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/bios_notification.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -308,7 +308,7 @@ public class BiosPrincipalController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setBiosPrincipalDetele(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBiosNotificationDetele(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報

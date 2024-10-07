@@ -42,23 +42,23 @@ public interface BiosServiceFeign {
 	PackageBean setBiosVersionDetele(@RequestBody String jsonPackageBean);
 
 	// ================================BIOS:主要負責人通知================================
-	@RequestMapping(value = { "/biosPrincipal/getSearch" }, method = RequestMethod.POST)
-	PackageBean getBiosPrincipalSearch(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/getSearch" }, method = RequestMethod.POST)
+	PackageBean getBiosNotificationSearch(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/biosPrincipal/getReport" }, method = RequestMethod.POST)
-	PackageBean getBiosPrincipalReport(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/getReport" }, method = RequestMethod.POST)
+	PackageBean getBiosNotificationReport(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/biosPrincipal/setModify" }, method = RequestMethod.POST)
-	PackageBean setBiosPrincipalModify(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/setModify" }, method = RequestMethod.POST)
+	PackageBean setBiosNotificationModify(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/biosPrincipal/setAdd" }, method = RequestMethod.POST)
-	PackageBean setBiosPrincipalAdd(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/setAdd" }, method = RequestMethod.POST)
+	PackageBean setBiosNotificationAdd(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/biosPrincipal/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setBiosPrincipalInvalid(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setBiosNotificationInvalid(@RequestBody String jsonPackageBean);
 
-	@RequestMapping(value = { "/biosPrincipal/setDetele" }, method = RequestMethod.POST)
-	PackageBean setBiosPrincipalDetele(@RequestBody String jsonPackageBean);
+	@RequestMapping(value = { "/biosNotification/setDetele" }, method = RequestMethod.POST)
+	PackageBean setBiosNotificationDetele(@RequestBody String jsonPackageBean);
 
 	// ================================BIOS:BIOS顧客標記================================
 	@RequestMapping(value = { "/biosCustomerTag/getSearch" }, method = RequestMethod.POST)

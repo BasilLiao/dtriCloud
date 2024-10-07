@@ -29,15 +29,15 @@ import jakarta.persistence.Table;
  *      this.bvmodel = "";機種別<br>
  *      this.bpsuid = 0L;使用者ID<br>
  *      this.bpsuname = "";使用者名稱<br>
- * 		this.bpmnotice = false; 維護客製自動通知<br>
- * 		this.bponotice = false; 製令建立自動通知<br>
+ *      this.bpmnotice = false; 維護客製自動通知<br>
+ *      this.bponotice = false; 製令建立自動通知<br>
  */
 
 @Entity
-@Table(name = "bios_principal")
+@Table(name = "bios_notification")
 @EntityListeners(AuditingEntityListener.class)
-public class BiosPrincipal {
-	public BiosPrincipal() {
+public class BiosNotification {
+	public BiosNotification() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -51,14 +51,14 @@ public class BiosPrincipal {
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
 		// bios負責人通知
-		this.bpid = 0L;
-		this.bpbvmodel = "";
-		this.bpsuid = 0L;
-		this.bpsuname = "";
-		this.bpsumail = "";
-		this.bpprimary = 0;
-		this.bpmnotice = false;
-		this.bponotice = false;
+		this.bnid = 0L;
+		this.bnbvmodel = "";
+		this.bnsuid = 0L;
+		this.bnsuname = "";
+		this.bnsumail = "";
+		this.bnprimary = 0;
+		this.bnmnotice = false;
+		this.bnonotice = false;
 
 	}
 
@@ -87,25 +87,25 @@ public class BiosPrincipal {
 
 	// 負責人通知-清單
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bios_principal_seq")
-	@SequenceGenerator(name = "bios_principal_seq", sequenceName = "bios_principal_seq", allocationSize = 1)
-	@Column(name = "bp_id")
-	private Long bpid;
-	@Column(name = "bp_bv_model", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bpbvmodel;
-	@Column(name = "bp_su_id", nullable = false)
-	private Long bpsuid;
-	@Column(name = "bp_su_name", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bpsuname;
-	@Column(name = "bp_su_mail", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bpsumail;
-	@Column(name = "bp_primary", nullable = false, columnDefinition = "int default 0")
-	private Integer bpprimary;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bios_notification_seq")
+	@SequenceGenerator(name = "bios_notification_seq", sequenceName = "bios_notification_seq", allocationSize = 1)
+	@Column(name = "bn_id")
+	private Long bnid;
+	@Column(name = "bn_bv_model", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnbvmodel;
+	@Column(name = "bn_su_id", nullable = false)
+	private Long bnsuid;
+	@Column(name = "bn_su_name", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnsuname;
+	@Column(name = "bn_su_mail", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnsumail;
+	@Column(name = "bn_primary", nullable = false, columnDefinition = "int default 0")
+	private Integer bnprimary;
 
-	@Column(name = "bp_m_notice", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bpmnotice;
-	@Column(name = "bp_o_notice", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bponotice;
+	@Column(name = "bn_m_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnmnotice;
+	@Column(name = "bn_o_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnonotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -187,68 +187,68 @@ public class BiosPrincipal {
 		this.sysnote = sysnote;
 	}
 
-	public Long getBpid() {
-		return bpid;
+	public Long getBnid() {
+		return bnid;
 	}
 
-	public void setBpid(Long bpid) {
-		this.bpid = bpid;
+	public void setBnid(Long bnid) {
+		this.bnid = bnid;
 	}
 
-	public String getBpbvmodel() {
-		return bpbvmodel;
+	public String getBnbvmodel() {
+		return bnbvmodel;
 	}
 
-	public void setBpbvmodel(String bpbvmodel) {
-		this.bpbvmodel = bpbvmodel;
+	public void setBnbvmodel(String bnbvmodel) {
+		this.bnbvmodel = bnbvmodel;
 	}
 
-	public Long getBpsuid() {
-		return bpsuid;
+	public Long getBnsuid() {
+		return bnsuid;
 	}
 
-	public void setBpsuid(Long bpsuid) {
-		this.bpsuid = bpsuid;
+	public void setBnsuid(Long bnsuid) {
+		this.bnsuid = bnsuid;
 	}
 
-	public String getBpsuname() {
-		return bpsuname;
+	public String getBnsuname() {
+		return bnsuname;
 	}
 
-	public void setBpsuname(String bpsuname) {
-		this.bpsuname = bpsuname;
+	public void setBnsuname(String bnsuname) {
+		this.bnsuname = bnsuname;
 	}
 
-	public Integer getBpprimary() {
-		return bpprimary;
+	public String getBnsumail() {
+		return bnsumail;
 	}
 
-	public void setBpprimary(Integer bpprimary) {
-		this.bpprimary = bpprimary;
+	public void setBnsumail(String bnsumail) {
+		this.bnsumail = bnsumail;
 	}
 
-	public String getBpsumail() {
-		return bpsumail;
+	public Integer getBnprimary() {
+		return bnprimary;
 	}
 
-	public void setBpsumail(String bpsumail) {
-		this.bpsumail = bpsumail;
+	public void setBnprimary(Integer bnprimary) {
+		this.bnprimary = bnprimary;
 	}
 
-	public Boolean getBpmnotice() {
-		return bpmnotice;
+	public Boolean getBnmnotice() {
+		return bnmnotice;
 	}
 
-	public void setBpmnotice(Boolean bpmnotice) {
-		this.bpmnotice = bpmnotice;
+	public void setBnmnotice(Boolean bnmnotice) {
+		this.bnmnotice = bnmnotice;
 	}
 
-	public Boolean getBponotice() {
-		return bponotice;
+	public Boolean getBnonotice() {
+		return bnonotice;
 	}
 
-	public void setBponotice(Boolean bponotice) {
-		this.bponotice = bponotice;
+	public void setBnonotice(Boolean bnonotice) {
+		this.bnonotice = bnonotice;
 	}
 
 }

@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.BiosPrincipalServiceAc;
+import dtri.com.tw.service.BiosNotificationServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class BiosPrincipalControllerAc extends AbstractControllerAc {
+public class BiosNotificationControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private BiosPrincipalServiceAc serviceAc;
+	private BiosNotificationServiceAc serviceAc;
 
-	@RequestMapping(value = { "/biosPrincipal/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -57,7 +57,7 @@ public class BiosPrincipalControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/biosPrincipal/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -92,7 +92,7 @@ public class BiosPrincipalControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/biosPrincipal/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -126,7 +126,7 @@ public class BiosPrincipalControllerAc extends AbstractControllerAc {
 		}
 		return packageBean;
 	}
-	@RequestMapping(value = { "/biosPrincipal/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -161,7 +161,7 @@ public class BiosPrincipalControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/biosPrincipal/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -197,7 +197,7 @@ public class BiosPrincipalControllerAc extends AbstractControllerAc {
 	}
 
 
-	@RequestMapping(value = { "/biosPrincipal/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/biosNotification/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {

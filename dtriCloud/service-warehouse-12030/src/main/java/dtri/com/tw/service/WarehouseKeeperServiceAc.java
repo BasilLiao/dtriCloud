@@ -102,11 +102,21 @@ public class WarehouseKeeperServiceAc {
 			SystemLanguageCell wksuid = mapLanguages.get("wksuid");
 			List<SystemUser> pList = new ArrayList<>();
 			JsonArray pListArr = new JsonArray();
-			pList = systemUserDao.findAll();
+			pList = systemUserDao.findAllBySystemUser(null, null, null, 4, null);
+			String sgname = "";
+			for (SystemUser u : pList) {
+				if (!u.getSystemgroups().iterator().next().getSgname().equals(sgname)) {
+					sgname = u.getSystemgroups().iterator().next().getSgname();
+					pListArr.add("======" + sgname + "======_");
+				}
+				pListArr.add(u.getSuname() + "(" + u.getSuaccount() + ")_" + u.getSuid());
+			}
+			/*
 			pList.forEach(t -> {
 				System.out.println(t.getSuaccount() + "_" + t.getSuid());
 				pListArr.add(t.getSuaccount() + "_" + t.getSuid());
 			});
+			*/
 			wksuid.setSlcmtype("select");
 			wksuid.setSlcmselect(pListArr.toString());
 			mapLanguages.put("wksuid", wksuid);
@@ -150,7 +160,8 @@ public class WarehouseKeeperServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseKeeper searchData = packageService.jsonToBean(packageBean.getEntityJson(), WarehouseKeeper.class);
 
-			ArrayList<WarehouseKeeper> entitys = keeperDao.findAllBySearch(searchData.getWksuaccount(), searchData.getWkwaslocation(), pageable);
+			ArrayList<WarehouseKeeper> entitys = keeperDao.findAllBySearch(searchData.getWksuaccount(),
+					searchData.getWkwaslocation(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -183,8 +194,9 @@ public class WarehouseKeeperServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseKeeper>>() {
+					});
 
 			// Step2.資料檢查
 //			for (WarehouseKeeper entityData : entityDatas) {
@@ -240,8 +252,9 @@ public class WarehouseKeeperServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseKeeper>>() {
+					});
 
 			// Step2.資料檢查
 //			for (WarehouseKeeper entityData : entityDatas) {
@@ -291,8 +304,9 @@ public class WarehouseKeeperServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseKeeper>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -322,8 +336,9 @@ public class WarehouseKeeperServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<WarehouseKeeper>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<WarehouseKeeper>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================

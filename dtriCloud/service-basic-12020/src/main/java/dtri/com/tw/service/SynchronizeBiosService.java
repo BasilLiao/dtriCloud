@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BasicProductModelDao;
-import dtri.com.tw.pgsql.dao.BiosPrincipalDao;
+import dtri.com.tw.pgsql.dao.BiosNotificationDao;
 import dtri.com.tw.pgsql.dao.BiosVersionDao;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import dtri.com.tw.pgsql.entity.BasicProductModel;
-import dtri.com.tw.pgsql.entity.BiosPrincipal;
+import dtri.com.tw.pgsql.entity.BiosNotification;
 import dtri.com.tw.pgsql.entity.BiosVersion;
 import dtri.com.tw.shared.Fm_T;
 
@@ -33,7 +33,7 @@ public class SynchronizeBiosService {
 	@Autowired
 	BiosVersionDao biosVersionDao;
 	@Autowired
-	BiosPrincipalDao biosPrincipalDao;
+	BiosNotificationDao biosPrincipalDao;
 	@Autowired
 	BasicNotificationMailDao notificationMailDao;
 
@@ -61,16 +61,16 @@ public class SynchronizeBiosService {
 				String modelCustomized = k.split("\\)_\\(")[1];// 客戶
 				String version = v.getBvversion();// 目前版本
 
-				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
+				ArrayList<BiosNotification> principals = biosPrincipalDao.findAllBySearch(modelName);
 				// 寄信件對象
 				ArrayList<String> mainUsers = new ArrayList<String>();
 				ArrayList<String> secondaryUsers = new ArrayList<String>();
 				principals.forEach(u -> {
 					// 主要?次要?+制令單通知
-					if (u.getBpprimary() == 0 && u.getBponotice()) {
-						mainUsers.add(u.getBpsumail());
-					} else if (u.getBpprimary() == 1 && u.getBponotice()) {
-						secondaryUsers.add(u.getBpsumail());
+					if (u.getBnprimary() == 0 && u.getBnonotice()) {
+						mainUsers.add(u.getBnsumail());
+					} else if (u.getBnprimary() == 1 && u.getBnonotice()) {
+						secondaryUsers.add(u.getBnsumail());
 					}
 				});
 				// 建立信件
@@ -149,7 +149,7 @@ public class SynchronizeBiosService {
 			// 有比對到機種別 & 版本比較
 			if (bversionDef.containsKey(modelName)) {
 				int bvaversionDef = bversionDef.get(modelName).getBvaversion();
-				ArrayList<BiosPrincipal> principals = biosPrincipalDao.findAllBySearch(modelName);
+				ArrayList<BiosNotification> principals = biosPrincipalDao.findAllBySearch(modelName);
 				// 相差n+1版本以上+排除鎖定
 				if (bvaversionDef - bvaversionCust >= 2 && principals.size() > 0 && !lockCust) {
 					String versionDefName = bversionDef.get(modelName).getBvversion();
@@ -160,10 +160,10 @@ public class SynchronizeBiosService {
 					ArrayList<String> secondaryUsers = new ArrayList<String>();
 					principals.forEach(u -> {
 						// 主要?次要?+有勾選 版本檢查通知
-						if (u.getBpprimary() == 0 && u.getBpmnotice()) {
-							mainUsers.add(u.getBpsumail());
-						} else if (u.getBpprimary() == 1 && u.getBpmnotice()) {
-							secondaryUsers.add(u.getBpsumail());
+						if (u.getBnprimary() == 0 && u.getBnmnotice()) {
+							mainUsers.add(u.getBnsumail());
+						} else if (u.getBnprimary() == 1 && u.getBnmnotice()) {
+							secondaryUsers.add(u.getBnsumail());
 						}
 					});
 					// 建立信件

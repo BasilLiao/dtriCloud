@@ -78,7 +78,7 @@ public class WebSecurityConfig {
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
 	// BIOS
-	private static final String bios_pri = "/ajax/bios_principal.basil";
+	private static final String bios_not = "/ajax/bios_notification.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
 	private static final String bios_lif = "/ajax/bios_life_cycle.basil";
 	private static final String bios_cus = "/ajax/bios_customer_tag.basil";
@@ -365,14 +365,14 @@ public class WebSecurityConfig {
 				.hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
 
 				// BIOS版本控管
-				// ----請求-bios_principal-(訪問) ----
-				.requestMatchers(HttpMethod.POST, bios_pri).hasAuthority(actionRole(bios_pri, ""))// (轉跳)
-				.requestMatchers(HttpMethod.POST, bios_pri + ".AR").hasAuthority(actionRole(bios_pri, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.POST, bios_pri + ".ARR").hasAuthority(actionRole(bios_pri, "AR"))// (報告查詢)
-				.requestMatchers(HttpMethod.POST, bios_pri + ".AC").hasAuthority(actionRole(bios_pri, "AC"))// (新增)
-				.requestMatchers(HttpMethod.PUT, bios_pri + ".AU").hasAuthority(actionRole(bios_pri, "AU"))// (修改)
-				.requestMatchers(HttpMethod.DELETE, bios_pri + ".AD").hasAuthority(actionRole(bios_pri, "AD"))// (移除)
-				.requestMatchers(HttpMethod.DELETE, bios_pri + ".DD").hasAuthority(actionRole(bios_pri, "DD"))// (標記移除)
+				// ----請求-bios_notification-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bios_not).hasAuthority(actionRole(bios_not, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bios_not + ".AR").hasAuthority(actionRole(bios_not, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bios_not + ".ARR").hasAuthority(actionRole(bios_not, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bios_not + ".AC").hasAuthority(actionRole(bios_not, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bios_not + ".AU").hasAuthority(actionRole(bios_not, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bios_not + ".AD").hasAuthority(actionRole(bios_not, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bios_not + ".DD").hasAuthority(actionRole(bios_not, "DD"))// (標記移除)
 
 				// ----請求-bios_version-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bios_ver).hasAuthority(actionRole(bios_ver, ""))// (轉跳)

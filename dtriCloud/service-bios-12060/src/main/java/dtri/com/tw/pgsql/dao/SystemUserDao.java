@@ -21,13 +21,15 @@ public interface SystemUserDao extends JpaRepository<SystemUser, Long> {
 	ArrayList<SystemUser> findAllBySuid(Long id);
 
 	// 查詢全部含-頁數
-	@Query("SELECT c FROM SystemUser c "//
+	@Query("SELECT c FROM SystemUser c JOIN c.systemgroups g "//
 			+ "WHERE (:suname is null or c.suname LIKE %:suname% ) and "//
 			+ "(:suaccount is null or c.suaccount LIKE %:suaccount% ) and "//
 			+ "(:suposition is null or c.suposition LIKE %:suposition% ) and "//
 			+ "(:admin is not null or c.sysstatus != 3 ) and "//
-			+ "(:sysstatus is null or c.sysstatus = :sysstatus )  ") // (4)不過濾
-	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, String admin, Integer sysstatus, Pageable pageable);
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus )  " // (4)不過濾
+			+ " ORDER BY g.sgname ASC, c.suaccount ASC") //
+	ArrayList<SystemUser> findAllBySystemUser(String suname, String suaccount, String suposition, String admin,
+			Integer sysstatus, Pageable pageable);
 
 	@Query("SELECT c FROM SystemUser c WHERE "//
 			+ "(:suaccount is null or c.suaccount =:suaccount) and"//

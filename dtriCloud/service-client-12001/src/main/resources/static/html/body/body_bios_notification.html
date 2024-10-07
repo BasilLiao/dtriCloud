@@ -10,7 +10,7 @@
 }
 </style>
 
-<div class="text-center text-ms col-md pt-4 mt-4" id="body_bios_principal">
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_bios_notification">
 	<div class="p-1">
 		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -78,52 +78,52 @@ body_index={
 	methods:{
 		create(){
 			//Step1.初始化
-			console.log("body_bios_principal.html(created)");
+			console.log("body_bios_notification.html(created)");
 			//模板-鎖定-不需要的分頁 disabled 
-			//$("#body_bios_principal #home_title").addClass("disabled");
-			//$("#body_bios_principal #search_title").addClass("disabled");
-			//$("#body_bios_principal #modify_title").addClass("disabled");
-			//$("#body_bios_principal #report_title").addClass("disabled");
-			$("#body_bios_principal #print_title").addClass("disabled");
-			//$("#body_bios_principal #compare_title").addClass("disabled");
-			$("#body_bios_principal #other_title").addClass("disabled");
+			//$("#body_bios_notification #home_title").addClass("disabled");
+			//$("#body_bios_notification #search_title").addClass("disabled");
+			//$("#body_bios_notification #modify_title").addClass("disabled");
+			//$("#body_bios_notification #report_title").addClass("disabled");
+			$("#body_bios_notification #print_title").addClass("disabled");
+			//$("#body_bios_notification #compare_title").addClass("disabled");
+			$("#body_bios_notification #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_bios_principal #search_title").addClass("active");
-            $("#body_bios_principal #search_tab").addClass("show");
-            $("#body_bios_principal #search_tab").addClass("active");
+            $("#body_bios_notification #search_title").addClass("active");
+            $("#body_bios_notification #search_tab").addClass("show");
+            $("#body_bios_notification #search_tab").addClass("active");
             
           	//Step2.模板
-            $("#body_bios_principal #home_tab").load("./html/model/home.html", function(){});
+            $("#body_bios_notification #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_bios_principal #search_tab").load("./html/model/search.html", function(){
+            $("#body_bios_notification #search_tab").load("./html/model/search.html", function(){
             	search.methods.create();
             	main.methods.reWindowsSize();
             });
             //編輯-模板
-            $("#body_bios_principal #modify_tab").load("./html/model/modify.html", function(){
+            $("#body_bios_notification #modify_tab").load("./html/model/modify.html", function(){
             	modify.methods.create();
             });
             //列印-模板
-            //$("#body_bios_principal #print_tab").load("./html/model/print.html", function(){
+            //$("#body_bios_notification #print_tab").load("./html/model/print.html", function(){
             //	print.methods.create();
             //});
             //報告-模板
-            $("#body_bios_principal #report_tab").load("./html/model/report.html", function(){
+            $("#body_bios_notification #report_tab").load("./html/model/report.html", function(){
             	report.methods.create();
             });
             //比對-模板
-            $("#body_bios_principal #compare_tab").load("./html/model/compare.html", function(){
+            $("#body_bios_notification #compare_tab").load("./html/model/compare.html", function(){
             	compare.methods.create();
             });
             //其他-模板
-            //$("#body_bios_principal #other_tab").load("./html/other/other.html", function(){
+            //$("#body_bios_notification #other_tab").load("./html/other/other.html", function(){
             //	
             //});
 		},
 		
 		destroy() {
 			//銷毀
-			 console.log("body_bios_principal.html(destroy)");
+			 console.log("body_bios_notification.html(destroy)");
 		},
 	},	
 };
