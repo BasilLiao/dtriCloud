@@ -27,6 +27,9 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleShortageList/setInvalid" }, method = RequestMethod.POST)
 	PackageBean setShortageListInvalid(@RequestBody String jsonPackageBean);
 
+	@RequestMapping(value = { "/scheduleShortageList/setModify" }, method = RequestMethod.POST)
+	PackageBean setShortageListModify(@RequestBody String jsonPackageBean);
+
 	// ================================通用-外包商排程================================
 	@RequestMapping(value = { "/scheduleOutsourcer/getSearch" }, method = RequestMethod.POST)
 	PackageBean getScheduleOutsourcerSearch(@RequestBody String jsonPackageBean);
@@ -42,5 +45,24 @@ public interface ScheduleServiceFeign {
 
 	@RequestMapping(value = { "/scheduleOutsourcer/setModifyMp" }, method = RequestMethod.PUT)
 	PackageBean setScheduleOutsourcerModifyMp(@RequestBody String jsonPackageBean);// 製造
+
+	// ================================缺料通知:主要負責人通知================================
+	@RequestMapping(value = { "/scheduleShortageNotification/getSearch" }, method = RequestMethod.POST)
+	PackageBean getScheduleShortageNotificationSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleShortageNotification/getReport" }, method = RequestMethod.POST)
+	PackageBean getScheduleShortageNotificationReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setModify" }, method = RequestMethod.POST)
+	PackageBean setScheduleShortageNotificationModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setAdd" }, method = RequestMethod.POST)
+	PackageBean setScheduleShortageNotificationAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setScheduleShortageNotificationInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setDetele" }, method = RequestMethod.POST)
+	PackageBean setScheduleShortageNotificationDetele(@RequestBody String jsonPackageBean);
 
 }

@@ -22,10 +22,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dtri.com.tw.pgsql.dao.ScheduleShortageListDao;
+import dtri.com.tw.pgsql.dao.ScheduleShortageNotificationDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
-import dtri.com.tw.pgsql.entity.ScheduleShortageList;
+import dtri.com.tw.pgsql.dao.SystemUserDao;
+import dtri.com.tw.pgsql.entity.ScheduleShortageNotification;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.SystemUser;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
@@ -38,7 +40,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class ScheduleShortageListServiceAc {
+public class ScheduleShortageNotificationServiceAc {
 
 	@Autowired
 	private PackageService packageService;
@@ -47,7 +49,10 @@ public class ScheduleShortageListServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
-	private ScheduleShortageListDao shortageListDao;
+	private ScheduleShortageNotificationDao notificationDao;
+
+	@Autowired
+	private SystemUserDao userDao;
 
 	@Autowired
 	private EntityManager em;
@@ -62,14 +67,17 @@ public class ScheduleShortageListServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "sslbslsnnb"));// 倉庫別
+		orders.add(new Order(Direction.ASC, "ssnsuname"));// 關聯帳號名稱
+		orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
+
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
+
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<ScheduleShortageList> entitys = shortageListDao.findAllBySearch(null, null, 0, null, pageable);
+			ArrayList<ScheduleShortageNotification> entitys = notificationDao.findAllBySearch(null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -83,12 +91,26 @@ public class ScheduleShortageListServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleShortageList",
-					null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao
+					.findAllByLanguageCellSame("ScheduleShortageNotification", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 動態->覆蓋寫入->修改UI選項
+			SystemLanguageCell bnsuid = mapLanguages.get("ssnsuid");
+			JsonArray bnListArr = new JsonArray();
+			ArrayList<SystemUser> users = userDao.findAllBySystemUser(null, null, null, null, null, null);
+			String sgname = "";
+			for (SystemUser u : users) {
+				if (!u.getSystemgroups().iterator().next().getSgname().equals(sgname)) {
+					sgname = u.getSystemgroups().iterator().next().getSgname();
+					bnListArr.add("======" + sgname + "======_");
+				}
+				bnListArr.add(u.getSuname() + "(" + u.getSuaccount() + ")_" + u.getSuid());
+			}
+			bnsuid.setSlcmtype("select");
+			bnsuid.setSlcmselect(bnListArr.toString());
+			mapLanguages.put("ssnsuid", bnsuid);
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
@@ -96,7 +118,7 @@ public class ScheduleShortageListServiceAc {
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
-			Field[] fields = ScheduleShortageList.class.getDeclaredFields();
+			Field[] fields = ScheduleShortageNotification.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			// exceptionCell.add("material");
@@ -104,19 +126,15 @@ public class ScheduleShortageListServiceAc {
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sslbslsnnb", "Ex:單別-單號-單序?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "ssnsslerpcuser", "Ex:ERP建單人?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sslfromcommand", "Ex:致令單號?/成品號?/數量?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sslpnumber", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "ssnsuname", "Ex:負責人?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
-			selectStatusArr.add("未補單_0");
-			selectStatusArr.add("已補單_1");
+			selectStatusArr.add("正常_0");
+			selectStatusArr.add("暫停使用_2");
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
@@ -127,11 +145,11 @@ public class ScheduleShortageListServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			ScheduleShortageList searchData = packageService.jsonToBean(packageBean.getEntityJson(),
-					ScheduleShortageList.class);
+			ScheduleShortageNotification searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					ScheduleShortageNotification.class);
 
-			ArrayList<ScheduleShortageList> entitys = shortageListDao.findAllBySearch(searchData.getSslbslsnnb(),
-					searchData.getSslpnumber(), searchData.getSysstatus(), searchData.getSslfromcommand(), pageable);
+			ArrayList<ScheduleShortageNotification> entitys = notificationDao.findAllBySearch(searchData.getSsnnb(),
+					searchData.getSsnsslerpcuser(), searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -148,11 +166,117 @@ public class ScheduleShortageListServiceAc {
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式
-		String entityFormatJson = packageService.beanToJson(new ScheduleShortageList());
+		String entityFormatJson = packageService.beanToJson(new ScheduleShortageNotification());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("sslid_");
+		packageBean.setEntityIKeyGKey("ssnid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		return packageBean;
+	}
+
+	/** 修改資料 */
+	@Transactional
+	public PackageBean setModify(PackageBean packageBean) throws Exception {
+		// =======================資料準備 =======================
+		ArrayList<ScheduleShortageNotification> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleShortageNotification>>() {
+					});
+
+			// Step2.資料檢查
+			for (ScheduleShortageNotification entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+				ArrayList<ScheduleShortageNotification> checkDatas = notificationDao
+						.findAllByCheck(entityData.getSsnsuid(), null, null);
+				for (ScheduleShortageNotification checkData : checkDatas) {
+					if (checkData.getSsnnb().equals(entityData.getSsnnb())
+							&& checkData.getSsnid().compareTo(entityData.getSsnid()) != 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSsnsuname() });
+					}
+				}
+			}
+		}
+		// =======================資料整理=======================
+		// Step3.一般資料->寫入
+		ArrayList<ScheduleShortageNotification> saveDatas = new ArrayList<>();
+		entityDatas.forEach(x -> {
+			// 排除 沒有ID
+			if (x.getSsnid() != null) {
+				ScheduleShortageNotification entityDataOld = notificationDao.findById(x.getSsnid()).get();
+
+				entityDataOld.setSysmdate(new Date());
+				entityDataOld.setSysmuser(packageBean.getUserAccount());
+				entityDataOld.setSysnote(x.getSysnote());
+				entityDataOld.setSysstatus(x.getSysstatus());
+				entityDataOld.setSyssort(x.getSyssort());
+				// 修改
+				entityDataOld.setSsnsslerpcuser(x.getSsnsslerpcuser());
+				SystemUser user = userDao.findById(x.getSsnsuid()).get();
+				entityDataOld.setSsnsuid(user.getSuid());
+				entityDataOld.setSsnsuname(user.getSuname());
+				entityDataOld.setSsnsumail(user.getSuemail());
+				entityDataOld.setSsnsnotice(x.getSsnsnotice());// 缺料通知
+				saveDatas.add(entityDataOld);
+			}
+		});
+		// =======================資料儲存=======================
+		// 資料Data
+		notificationDao.saveAll(saveDatas);
+		return packageBean;
+	}
+
+	/** 新增資料 */
+	// @Transactional
+	public PackageBean setAdd(PackageBean packageBean) throws Exception {
+		// =======================資料準備=======================
+		ArrayList<ScheduleShortageNotification> entityDatas = new ArrayList<>();
+		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleShortageNotification>>() {
+					});
+
+			// Step2.資料檢查
+			for (ScheduleShortageNotification entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+				ArrayList<ScheduleShortageNotification> checkDatas = notificationDao
+						.findAllByCheck(entityData.getSsnsuid(), null, null);
+				for (ScheduleShortageNotification checkData : checkDatas) {
+					if (checkData.getSsnnb().equals(entityData.getSsnnb())
+							&& checkData.getSsnid().compareTo(entityData.getSsnid()) != 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSsnsuname() });
+					}
+				}
+			}
+		}
+		// =======================資料整理=======================
+		// 資料Data
+		ArrayList<ScheduleShortageNotification> saveDatas = new ArrayList<>();
+		entityDatas.forEach(x -> {
+
+			x.setSysmdate(new Date());
+			x.setSysmuser(packageBean.getUserAccount());
+			x.setSysodate(new Date());
+			x.setSysouser(packageBean.getUserAccount());
+			x.setSyscdate(new Date());
+			x.setSyscuser(packageBean.getUserAccount());
+			x.setSsnid(null);
+
+			SystemUser user = userDao.findById(x.getSsnsuid()).get();
+			x.setSsnsuname(user.getSuname());
+			x.setSsnsumail(user.getSuemail());
+
+			saveDatas.add(x);
+		});
+		// =======================資料儲存=======================
+		// 資料Detail
+		notificationDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
@@ -160,22 +284,22 @@ public class ScheduleShortageListServiceAc {
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<ScheduleShortageList> entityDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageNotification> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-					new TypeReference<ArrayList<ScheduleShortageList>>() {
+					new TypeReference<ArrayList<ScheduleShortageNotification>>() {
 					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<ScheduleShortageList> saveDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageNotification> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getSslid() != null) {
-				ScheduleShortageList entityDataOld = shortageListDao.findById(x.getSslid()).get();
+			if (x.getSsnid() != null) {
+				ScheduleShortageNotification entityDataOld = notificationDao.findById(x.getSsnid()).get();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);
@@ -184,52 +308,40 @@ public class ScheduleShortageListServiceAc {
 		});
 		// =======================資料儲存=======================
 		// 資料Data
-		shortageListDao.saveAll(saveDatas);
+		notificationDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
-	/** 修改資料 */
+	/** 移除資料 */
 	@Transactional
-	public PackageBean setModify(PackageBean packageBean) throws Exception {
+	public PackageBean setDetele(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
-		ArrayList<ScheduleShortageList> entityDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageNotification> entityDatas = new ArrayList<>();
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-					new TypeReference<ArrayList<ScheduleShortageList>>() {
+					new TypeReference<ArrayList<ScheduleShortageNotification>>() {
 					});
 
 			// Step2.資料檢查
-			for (ScheduleShortageList entityData : entityDatas) {
-				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<ScheduleShortageList> checkDatas = shortageListDao.findAllByCheck(null, null, null);
-				for (ScheduleShortageList checkData : checkDatas) {
-					if (checkData.getSslbslsnnb().equals(entityData.getSslbslsnnb())
-							&& checkData.getSslid().compareTo(entityData.getSslid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getSslbslsnnb() });
-					}
-				}
-			}
 		}
+
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
-		ArrayList<ScheduleShortageList> saveDatas = new ArrayList<>();
+		ArrayList<ScheduleShortageNotification> saveDatas = new ArrayList<>();
+		// 一般-移除內容
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
-			if (x.getSslid() != null) {
-				ScheduleShortageList entityDataOld = shortageListDao.getReferenceById(x.getSslid());
-				entityDataOld.setSysmdate(new Date());
-				entityDataOld.setSysmuser(packageBean.getUserAccount());
-				entityDataOld.setSysstatus(x.getSysstatus());
-				// 修改
+			if (x.getSsnid() != null) {
+				ScheduleShortageNotification entityDataOld = notificationDao.findById(x.getSsnid()).get();
 				saveDatas.add(entityDataOld);
 			}
 		});
+
 		// =======================資料儲存=======================
 		// 資料Data
-		shortageListDao.saveAll(saveDatas);
+		notificationDao.deleteAll(saveDatas);
 		return packageBean;
 	}
 
@@ -239,11 +351,11 @@ public class ScheduleShortageListServiceAc {
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		String entityReport = packageBean.getEntityReportJson();
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<ScheduleShortageList> entitys = new ArrayList<>();
+		List<ScheduleShortageNotification> entitys = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		// =======================查詢語法=======================
 		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM schedule_shortage_list e Where ";
+		String nativeQuery = "SELECT e.* FROM schedule_shortage_notification e Where ";
 		for (JsonElement x : reportAry) {
 			// entity 需要轉換SQL與句 && 欄位
 			String cellName = x.getAsString().split("<_>")[0];
@@ -251,14 +363,14 @@ public class ScheduleShortageListServiceAc {
 			cellName = cellName.replace("sys_m", "sys_m_");
 			cellName = cellName.replace("sys_c", "sys_c_");
 			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("ssl", "ssl_");
-			cellName = cellName.replace("ssl_bslsnnb", "ssl_bsl_sn_nb");
-			cellName = cellName.replace("ssl_pnumber", "ssl_p_number");
-			cellName = cellName.replace("ssl_pname", "ssl_p_name");
-			cellName = cellName.replace("ssl_pnqty", "ssl_pn_qty");
-			cellName = cellName.replace("ssl_pngqty", "ssl_pn_g_qty");
-			cellName = cellName.replace("ssl_pnlqty", "ssl_pn_l_qty");
-			cellName = cellName.replace("ssl_fuser", "ssl_f_user");
+			cellName = cellName.replace("ssn", "ssn_");
+			cellName = cellName.replace("ssn_sslerpcuser", "ssn_ssl_erp_c_user");
+
+			cellName = cellName.replace("ssn_suid", "ssn_su_id");
+			cellName = cellName.replace("ssn_suname", "ssn_su_name");
+
+			cellName = cellName.replace("ssn_sumail", "ssn_su_mail");
+			cellName = cellName.replace("ssn_snotice", "ssn_s_notice");
 
 			String where = x.getAsString().split("<_>")[1];
 			String value = x.getAsString().split("<_>")[2];// 有可能空白
@@ -293,9 +405,9 @@ public class ScheduleShortageListServiceAc {
 		}
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.ssl_bsl_sn_nb asc";
+		nativeQuery += " order by e.ssn_su_name asc, e.ssn_ssl_erp_c_user asc";
 		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, ScheduleShortageList.class);
+		Query query = em.createNativeQuery(nativeQuery, ScheduleShortageNotification.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {
 			String val = valAndType.split("<_>")[0];
@@ -323,4 +435,5 @@ public class ScheduleShortageListServiceAc {
 
 		return packageBean;
 	}
+
 }

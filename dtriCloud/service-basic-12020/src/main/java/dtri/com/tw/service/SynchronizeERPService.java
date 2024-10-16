@@ -17,8 +17,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonObject;
-
 import dtri.com.tw.mssql.dao.BommdDao;
 import dtri.com.tw.mssql.dao.BomtdDao;
 import dtri.com.tw.mssql.dao.BomtfDao;
@@ -42,7 +40,6 @@ import dtri.com.tw.mssql.entity.Invtb;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
 import dtri.com.tw.mssql.entity.Mocta;
-import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
 import dtri.com.tw.mssql.entity.Mocth;
@@ -53,7 +50,6 @@ import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BasicProductModelDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
-import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseConfigDao;
 import dtri.com.tw.pgsql.dao.WarehouseKeeperDao;
@@ -62,16 +58,13 @@ import dtri.com.tw.pgsql.dao.WarehouseTypeFilterDao;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
-import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseConfig;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.service.feign.ClientServiceFeign;
-import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.Fm_T;
-import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Service
@@ -130,8 +123,7 @@ public class SynchronizeERPService {
 
 	@Autowired
 	BasicNotificationMailDao notificationMailDao;
-	@Autowired
-	ScheduleOutsourcerDao scheduleOutsourcerDao;
+
 	@Autowired
 	BasicBomIngredientsDao basicBomIngredientsDao;
 
@@ -141,8 +133,6 @@ public class SynchronizeERPService {
 	ERPAutoCheckService erpAutoCheckService;
 	@Autowired
 	ERPAutoRemoveService autoRemoveService;
-	@Autowired
-	PackageService packageService;
 	@Autowired
 	SynchronizeBiosService biosService;
 
@@ -1924,78 +1914,78 @@ public class SynchronizeERPService {
 		commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD));
 	}
 
-	// ============ 同步外包生管平台() ============
-	public void erpSynchronizeScheduleOutsourcer() throws Exception {
-		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta(null, "Y");// 目前ERP有的資料
-		Map<String, MoctaScheduleOutsourcer> erpMapOutsourcers = new HashMap<String, MoctaScheduleOutsourcer>();// ERP整理後資料
-		ArrayList<ScheduleOutsourcer> scheduleOutsourcers = scheduleOutsourcerDao.findAllByNotFinish(null);// 尚未結束的
-		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
-		// 資料整理
-		for (MoctaScheduleOutsourcer one : erpOutsourcers) {
-			// 避免時間-問題
-			if (one.getTa009() != null && !one.getTa009().equals(""))
-				one.setNewone(true);
-			erpMapOutsourcers.put(one.getTa001_ta002(), one);
-//			//測試用
-//			if(one.getTa001_ta002().equals("A512-240311001")) {
-//				System.out.println(one.getTa001_ta002());
+//	// ============ 同步外包生管平台() ============
+//	public void erpSynchronizeScheduleOutsourcer() throws Exception {
+//		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta(null, "Y");// 目前ERP有的資料
+//		Map<String, MoctaScheduleOutsourcer> erpMapOutsourcers = new HashMap<String, MoctaScheduleOutsourcer>();// ERP整理後資料
+//		ArrayList<ScheduleOutsourcer> scheduleOutsourcers = scheduleOutsourcerDao.findAllByNotFinish(null);// 尚未結束的
+//		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
+//		// 資料整理
+//		for (MoctaScheduleOutsourcer one : erpOutsourcers) {
+//			// 避免時間-問題
+//			if (one.getTa009() != null && !one.getTa009().equals(""))
+//				one.setNewone(true);
+//			erpMapOutsourcers.put(one.getTa001_ta002(), one);
+////			//測試用
+////			if(one.getTa001_ta002().equals("A512-240311001")) {
+////				System.out.println(one.getTa001_ta002());
+////			}
+//		}
+//
+//		// 比對資料?
+//		scheduleOutsourcers.forEach(o -> {
+////			//測試用
+////			if(o.getSonb().equals("A512-240311001")) {
+////				System.out.println(o.getSonb());
+////			}
+//			// 有抓取到同樣單據
+//			if (erpMapOutsourcers.containsKey(o.getSonb())) {
+//				erpMapOutsourcers.get(o.getSonb()).setNewone(false);
+//				// sum不同->更新
+//				String sum = erpMapOutsourcers.get(o.getSonb()).toString();
+//				if (!sum.equals(o.getSosum())) {
+//					erpToCloudService.scheduleOutsourcerOne(o, erpMapOutsourcers.get(o.getSonb()), sum);
+//					newScheduleOutsourcers.add(o);
+//				}
+//			} else {
+//				ArrayList<MoctaScheduleOutsourcer> erpOutsourcersEnd = erpOutsourcerDao.findAllByMocta(o.getSonb(),
+//						null);
+//				if (erpOutsourcersEnd.size() == 1) {
+//					// 更新最後一次?
+//					o = erpToCloudService.scheduleOutsourcerOne(o, erpOutsourcersEnd.get(0),
+//							erpOutsourcersEnd.get(0).toString());
+//				}
+//				// 沒比對到?移除?完成?
+//				o.setSysstatus(2);
+//				newScheduleOutsourcers.add(o);
 //			}
-		}
-
-		// 比對資料?
-		scheduleOutsourcers.forEach(o -> {
-//			//測試用
-//			if(o.getSonb().equals("A512-240311001")) {
-//				System.out.println(o.getSonb());
+//		});
+//		// 新增?
+//		erpMapOutsourcers.forEach((k, n) -> {
+//			ArrayList<ScheduleOutsourcer> OldEndOne = scheduleOutsourcerDao.findAllByFinish(k, null);
+//			if (n.isNewone()) {
+//				ScheduleOutsourcer outsourcer = new ScheduleOutsourcer();
+//				// 檢查是否有舊資料?
+//				if (OldEndOne.size() > 0) {
+//					outsourcer = OldEndOne.get(0);
+//					outsourcer.setSysstatus(0);// 開啟
+//				}
+//				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
+//				newScheduleOutsourcers.add(outsourcer);
 //			}
-			// 有抓取到同樣單據
-			if (erpMapOutsourcers.containsKey(o.getSonb())) {
-				erpMapOutsourcers.get(o.getSonb()).setNewone(false);
-				// sum不同->更新
-				String sum = erpMapOutsourcers.get(o.getSonb()).toString();
-				if (!sum.equals(o.getSosum())) {
-					erpToCloudService.scheduleOutsourcerOne(o, erpMapOutsourcers.get(o.getSonb()), sum);
-					newScheduleOutsourcers.add(o);
-				}
-			} else {
-				ArrayList<MoctaScheduleOutsourcer> erpOutsourcersEnd = erpOutsourcerDao.findAllByMocta(o.getSonb(),
-						null);
-				if (erpOutsourcersEnd.size() == 1) {
-					// 更新最後一次?
-					o = erpToCloudService.scheduleOutsourcerOne(o, erpOutsourcersEnd.get(0),
-							erpOutsourcersEnd.get(0).toString());
-				}
-				// 沒比對到?移除?完成?
-				o.setSysstatus(2);
-				newScheduleOutsourcers.add(o);
-			}
-		});
-		// 新增?
-		erpMapOutsourcers.forEach((k, n) -> {
-			ArrayList<ScheduleOutsourcer> OldEndOne = scheduleOutsourcerDao.findAllByFinish(k, null);
-			if (n.isNewone()) {
-				ScheduleOutsourcer outsourcer = new ScheduleOutsourcer();
-				// 檢查是否有舊資料?
-				if (OldEndOne.size() > 0) {
-					outsourcer = OldEndOne.get(0);
-					outsourcer.setSysstatus(0);// 開啟
-				}
-				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
-				newScheduleOutsourcers.add(outsourcer);
-			}
-		});
-
-		// 更新資料+建立新資料
-		scheduleOutsourcerDao.saveAll(newScheduleOutsourcers);
-		String update = packageService.beanToJson(newScheduleOutsourcers);
-		JsonObject sendAllData = new JsonObject();
-		sendAllData.addProperty("update", update);
-		sendAllData.addProperty("action", "sendAllData");
-		// 測試 通知Client->Websocket(sendAllUsers)
-		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
-		sendTo.setSendAllData(sendAllData.toString());
-		sendTo.run();
-	}
+//		});
+//
+//		// 更新資料+建立新資料
+//		scheduleOutsourcerDao.saveAll(newScheduleOutsourcers);
+//		String update = packageService.beanToJson(newScheduleOutsourcers);
+//		JsonObject sendAllData = new JsonObject();
+//		sendAllData.addProperty("update", update);
+//		sendAllData.addProperty("action", "sendAllData");
+//		// 測試 通知Client->Websocket(sendAllUsers)
+//		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
+//		sendTo.setSendAllData(sendAllData.toString());
+//		sendTo.run();
+//	}
 
 	// ============ 同步機種別() ============
 //	public void erpSynchronizeProductModel() throws Exception {
@@ -2073,25 +2063,25 @@ public class SynchronizeERPService {
 //	}
 
 	// 而外執行(外包生管同步)
-	public class OutsourcerSynchronizeCell implements Runnable {
-		private String sendAllData;
-
-		@Override
-		public void run() {
-			try {
-				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
-			} catch (Exception e) {
-				logger.warn(CloudExceptionService.eStktToSg(e));
-			}
-		}
-
-		public String getSendAllData() {
-			return sendAllData;
-		}
-
-		public void setSendAllData(String sendAllData) {
-			this.sendAllData = sendAllData;
-		}
-
-	}
+//	public class OutsourcerSynchronizeCell implements Runnable {
+//		private String sendAllData;
+//
+//		@Override
+//		public void run() {
+//			try {
+//				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+//			} catch (Exception e) {
+//				logger.warn(CloudExceptionService.eStktToSg(e));
+//			}
+//		}
+//
+//		public String getSendAllData() {
+//			return sendAllData;
+//		}
+//
+//		public void setSendAllData(String sendAllData) {
+//			this.sendAllData = sendAllData;
+//		}
+//
+//	}
 }

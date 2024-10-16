@@ -54,6 +54,9 @@ public class ScheduledTasksService {
 	SynchronizeBomService synchronizeBomService;
 
 	@Autowired
+	SynchronizeScheduledService synchronizeScheduledService;
+
+	@Autowired
 	BasicNotificationMailService mailService;
 
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
@@ -64,6 +67,7 @@ public class ScheduledTasksService {
 		if (fixDelay_ERPSynchronizeServiceRun) {
 			fixDelay_ERPSynchronizeServiceRun = false;
 			try {
+				System.out.println(new Date());
 				// 初始化
 				synchronizeERPService.erpSynchronizeInvtb();//
 				// 事先準備匹配
@@ -81,10 +85,13 @@ public class ScheduledTasksService {
 				synchronizeERPService.erpSynchronizeCopth();
 				synchronizeERPService.erpSynchronizePurth();
 				synchronizeERPService.erpSynchronizeWtypeFilter();
-				// 外包生管排程
-				synchronizeERPService.erpSynchronizeScheduleOutsourcer();
 				// 移除多於資料()
 				synchronizeERPService.remove120DayData();
+				// ==================生管機制==================
+				// 外包生管排程
+				synchronizeScheduledService.erpSynchronizeScheduleOutsourcer();
+				//
+				synchronizeScheduledService.scheduleShortageNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
@@ -102,6 +109,7 @@ public class ScheduledTasksService {
 				fixDelay_ERPSynchronizeServiceRun = true;
 			}
 			fixDelay_ERPSynchronizeServiceRun = true;
+			System.out.println(new Date());
 		}
 	}
 

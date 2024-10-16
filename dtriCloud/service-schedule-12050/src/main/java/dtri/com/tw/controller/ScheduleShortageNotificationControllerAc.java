@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.ScheduleShortageListServiceAc;
+import dtri.com.tw.service.ScheduleShortageNotificationServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class ScheduleShortageListControllerAc extends AbstractControllerAc {
+public class ScheduleShortageNotificationControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private ScheduleShortageListServiceAc serviceAc;
+	private ScheduleShortageNotificationServiceAc serviceAc;
 
-	@RequestMapping(value = { "/scheduleShortageList/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/scheduleShortageNotification/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -57,7 +57,7 @@ public class ScheduleShortageListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/scheduleShortageList/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/scheduleShortageNotification/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -91,7 +91,42 @@ public class ScheduleShortageListControllerAc extends AbstractControllerAc {
 		}
 		return packageBean;
 	}
-	@RequestMapping(value = { "/scheduleShortageList/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	PackageBean setInvalid(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+		// Step0.資料準備
+		PackageBean packageBean = new PackageBean();
+
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
+			packageBean = serviceAc.setInvalid(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
+		} catch (JsonProcessingException e) {
+			// StepX-1. 已知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+		} catch (CloudExceptionService e) {
+			// StepX-2. 已知-故障回報
+			e.printStackTrace();
+			loggerInf(e.toString(), packageBean.getUserAccount());
+		} catch (Exception e) {
+			// StepX-3. 未知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+		return packageBean;
+	}
+	@RequestMapping(value = { "/scheduleShortageNotification/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -126,8 +161,8 @@ public class ScheduleShortageListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/scheduleShortageList/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	PackageBean setInvalid(@RequestBody String jsonObject) {
+	@RequestMapping(value = { "/scheduleShortageNotification/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -141,7 +176,43 @@ public class ScheduleShortageListControllerAc extends AbstractControllerAc {
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
 			// Step2.執行=>服務
 			loggerInf(funName + "[Start]", packageBean.getUserAccount());
-			packageBean = serviceAc.setInvalid(packageBean);
+			packageBean = serviceAc.setAdd(packageBean);
+			loggerInf(funName + "[End]", packageBean.getUserAccount());
+		} catch (JsonProcessingException e) {
+			// StepX-1. 已知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+		} catch (CloudExceptionService e) {
+			// StepX-2. 已知-故障回報
+			e.printStackTrace();
+			loggerInf(e.toString(), packageBean.getUserAccount());
+		} catch (Exception e) {
+			// StepX-3. 未知-故障回報
+			e.printStackTrace();
+			loggerWarn(eStktToSg(e), packageBean.getUserAccount());
+			packageBean.setInfo(CloudExceptionService.W0000_en_US);
+			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
+		}
+		return packageBean;
+	}
+
+
+	@RequestMapping(value = { "/scheduleShortageNotification/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	PackageBean setDetele(@RequestBody String jsonObject) {
+		// 顯示方法
+		String funName = new Object() {
+		}.getClass().getEnclosingMethod().getName();
+		sysFunction(funName);
+		// Step0.資料準備
+		PackageBean packageBean = new PackageBean();
+
+		try {
+			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
+			JsonObject packageObject = packageService.StringToJson(jsonObject);
+			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
+			// Step2.執行=>服務
+			loggerInf(funName + "[Start]", packageBean.getUserAccount());
+			packageBean = serviceAc.setDetele(packageBean);
 			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {
 			// StepX-1. 已知-故障回報

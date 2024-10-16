@@ -2,8 +2,9 @@ package dtri.com.tw.service;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class BasicNotificationMailService {
 	BasicNotificationMailDao notificationMailDao;
 	@Autowired
 	private JavaMailSender mailSender;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	// 寄信
 	public boolean sendEmail(String[] toUser, String[] toCcUser, String subject, String bodyHtml) {
@@ -29,22 +31,28 @@ public class BasicNotificationMailService {
 //			message.setSubject(subject);
 //			message.setText(bodyHtml);
 //			mailSender.send(message);
+			if (toUser.length > 0) {
+				// 創建 MimeMessage 物件
+				MimeMessage message = mailSender.createMimeMessage();
+				// 使用 MimeMessageHelper 來設置消息內容和屬性
+				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+				// 設置收件人、主題、以及內容
+				helper.setTo(toUser);
+				if (toCcUser.length > 0 && !toCcUser[0].equals("")) {
+					helper.setCc(toCcUser);
+				}
+				helper.setSubject(subject);
+				// 設置 HTML 格式的內容
+				helper.setText(bodyHtml, true);
 
-			// 創建 MimeMessage 物件
-			MimeMessage message = mailSender.createMimeMessage();
-			// 使用 MimeMessageHelper 來設置消息內容和屬性
-			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-			// 設置收件人、主題、以及內容
-			helper.setTo(toUser);
-			helper.setCc(toCcUser);
-			helper.setSubject(subject);
-			// 設置 HTML 格式的內容
-			helper.setText(bodyHtml, true);
+				// 發送郵件
+				mailSender.send(message);
 
-			// 發送郵件
-			mailSender.send(message);
+			}
 
 		} catch (Exception e) {
+			System.out.println(e);
+			logger.error(e.toString());
 			sendOK = false;
 		}
 		return sendOK;
