@@ -90,7 +90,7 @@ public class SynchronizeBomService {
 
 		bommds = bommdDao.findAllByBommdFirst();
 		// 檢查資料&更正
-		for (Bommd bommd : bommds) {
+		bommds.forEach(bommd -> {
 			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
 			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
 			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
@@ -99,7 +99,9 @@ public class SynchronizeBomService {
 			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
 			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
 			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
-		}
+		});
+		// 資料回收
+		bommds = null;
 		// 轉換資料
 		boms.forEach(o -> {
 			if (erpBommds.containsKey(o.getBbisnnb())) {
@@ -114,6 +116,8 @@ public class SynchronizeBomService {
 				bomRemoves.add(o);
 			}
 		});
+		// 資料回收
+		boms = null;
 		// 新增
 		erpBommds.forEach((k, n) -> {
 			if (n.isNewone()) {

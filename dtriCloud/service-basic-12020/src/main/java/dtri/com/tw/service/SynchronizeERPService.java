@@ -1661,8 +1661,8 @@ public class SynchronizeERPService {
 		Map<String, Invtb> erpListMaps = new HashMap<>();
 		Map<String, Invtb> erpItemMaps = new HashMap<>();
 		Map<String, String> erpConfigMaps = new HashMap<>();// A1000+原物料倉
-		String checkSame = "";
-		for (Invtb m : erpEntitys) {
+
+		erpEntitys.forEach(m -> {
 			// 測試用
 //			if(m.getMb001().replaceAll("\\s", "").equals("81-105-38210G") && m.getMb017().equals("A0041")) {
 //				System.out.println(m.getMb001());
@@ -1684,18 +1684,14 @@ public class SynchronizeERPService {
 			}
 
 			// list(物料清單)-物料
-			if (!checkSame.equals(m.getMb001())) {
-				checkSame = m.getMb001();
+			if (!erpListMaps.containsKey(m.getMb001())) {
 				erpListMaps.put(m.getMb001(), m);
 			}
 
 			// item(區域清單)-物料儲位
-			String nKey = m.getMc002() + "_" + m.getMb001();
-			nKey = nKey.replaceAll("\\s", "");
+			String nKey = (m.getMc002() + "_" + m.getMb001()).replaceAll("\\s", "");
 			try {
-				Invtb cloneM;
-				cloneM = (Invtb) m.clone();
-				erpItemMaps.put(nKey, cloneM);
+				erpItemMaps.put(nKey, (Invtb) m.clone());
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
@@ -1704,7 +1700,9 @@ public class SynchronizeERPService {
 			if (m.getMc002() != null && !m.getMc002().equals("")) {
 				erpConfigMaps.put(m.getMc002(), m.getCmc002());
 			}
-		}
+		});
+		// 資料回收
+		erpEntitys = null;
 
 		// Step1. 取得[Cloud] 有效 物料+區域+倉儲設定
 		List<WarehouseMaterial> listOlds = materialDao.findAll();
@@ -1747,6 +1745,8 @@ public class SynchronizeERPService {
 			}
 		});
 		materialDao.saveAll(saveLists);
+		// 資料回收
+		listOlds = null;
 
 		// Step4-1. [物料位置] 資料整理轉換
 		Map<String, WarehouseArea> areaSameMap = new HashMap<>();
@@ -1822,6 +1822,8 @@ public class SynchronizeERPService {
 			}
 			areaSameMap.put(areaOld.getWaaliasawmpnb(), areaOld);
 		});
+		// 資料回收
+		areaOlds = null;
 
 		// Step4-2. [物料位置] 全新資料?
 		erpItemMaps.forEach((key, v) -> {
@@ -1856,10 +1858,6 @@ public class SynchronizeERPService {
 		shippingListDao.saveAll(shippingLists);
 		// Step5 儲位設定 全新資料?
 		erpSynchronizeWconfig(erpConfigMaps, configOlds);
-
-		// Step6 去除掉數量為0的儲位
-		// List<WarehouseArea> areaRemove = areaDao.findAllByWaerptqty(0);
-		// areaDao.deleteAll(areaRemove);
 	}
 
 	// ============ 儲位過濾設定 ============

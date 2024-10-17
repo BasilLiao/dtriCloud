@@ -169,6 +169,7 @@ public class SynchronizeScheduledService {
 		orders.add(new Order(Direction.ASC, "sslbslsnnb"));// 單別_單號_單序
 		PageRequest pageable = PageRequest.of(0, 9999, Sort.by(orders));
 		ArrayList<ScheduleShortageList> shortageLists = shortageListDao.findAllBySearch(null, null, 0, null, pageable);
+		ArrayList<ScheduleShortageList> shortageListSaves = new ArrayList<ScheduleShortageList>();
 		// 分類<工單,缺料清單>
 		Map<String, ArrayList<ScheduleShortageList>> shortageListGroups = new HashMap<String, ArrayList<ScheduleShortageList>>();
 		shortageLists.forEach(r -> {
@@ -212,8 +213,8 @@ public class SynchronizeScheduledService {
 				}
 			});
 
-			// 建立信件->寄信對象必須要大於1位
-			if (mainUsers.size() > 0) {
+			// 建立信件->寄信對象必須要大於1位&& 且不是空的
+			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
 				readyNeedMail.setBnmkind("Production");
 				readyNeedMail.setBnmmail(mainUsers + "");
@@ -249,6 +250,7 @@ public class SynchronizeScheduledService {
 							+ "<td>" + ssl.getSysnote() + "</td>"//
 							+ "<td>" + ssl.getSslerpcuser() + "</td>"//
 							+ "</tr>";
+					shortageListSaves.add(ssl);
 				}
 				bnmcontent += "</tbody></table>";
 				readyNeedMail.setBnmcontent(bnmcontent);
@@ -260,9 +262,9 @@ public class SynchronizeScheduledService {
 		});
 		notificationMailDao.saveAll(readyNeedMails);
 		// Step4. 修正資料
-		shortageLists.forEach(e -> {
+		shortageListSaves.forEach(e -> {
 			e.setSysstatus(1);
 		});
-		shortageListDao.saveAll(shortageLists);
+		shortageListDao.saveAll(shortageListSaves);
 	}
 }
