@@ -59,6 +59,7 @@ public class ScheduleShortageNotification {
 		this.ssnsumail = "";
 		this.ssnprimary = 0;
 		this.ssnsnotice = false;
+		this.ssnonotice = false;
 	}
 
 	// 共用型
@@ -106,6 +107,8 @@ public class ScheduleShortageNotification {
 
 	@Column(name = "ssn_s_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssnsnotice;
+	@Column(name = "ssn_o_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean ssnonotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -249,5 +252,13 @@ public class ScheduleShortageNotification {
 
 	public void setSsnsnotice(Boolean ssnsnotice) {
 		this.ssnsnotice = ssnsnotice;
+	}
+
+	public Boolean getSsnonotice() {
+		return ssnonotice;
+	}
+
+	public void setSsnonotice(Boolean ssnonotice) {
+		this.ssnonotice = ssnonotice;
 	}
 }

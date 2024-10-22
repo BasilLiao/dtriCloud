@@ -40,7 +40,7 @@ public abstract class AbstractController {
 	public void sysFunction(String sysFunction) {
 		this.sysFunction = sysFunction;
 		logger.info("===>>> controller : [" + sysClass + "][" + sysFunction + "] Check");
-		System.out.println("===>>> controller : [" + sysClass + "][" + sysFunction + "] Check");
+		//System.out.println("===>>> controller : [" + sysClass + "][" + sysFunction + "] Check");
 	}
 
 	// 一般提示Log

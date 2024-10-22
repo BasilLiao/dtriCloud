@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 
 @Service
 public class BasicNotificationMailService {
@@ -22,7 +23,8 @@ public class BasicNotificationMailService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	// 寄信
-	public boolean sendEmail(String[] toUser, String[] toCcUser, String subject, String bodyHtml) {
+	public boolean sendEmail(String[] toUser, String[] toCcUser, String subject, String bodyHtml, String bnmattname,
+			byte[] bnmattcontent) {
 		boolean sendOK = true;
 		try {
 			// 簡單版mail
@@ -44,10 +46,15 @@ public class BasicNotificationMailService {
 				helper.setSubject(subject);
 				// 設置 HTML 格式的內容
 				helper.setText(bodyHtml, true);
+				// 附件?
+				if (bnmattcontent != null && !bnmattname.equals("") && bnmattname != null) {
+					// 使用 ByteArrayDataSource 將 byte[] 包裝成資料來源
+					ByteArrayDataSource dataSource = new ByteArrayDataSource(bnmattcontent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+					helper.addAttachment(bnmattname, dataSource);
 
+				}
 				// 發送郵件
 				mailSender.send(message);
-
 			}
 
 		} catch (Exception e) {
@@ -66,8 +73,10 @@ public class BasicNotificationMailService {
 		mails.forEach(m -> {
 			String[] toUsers = m.getBnmmail().replace("[", "").replace("]", "").replaceAll(" ", "").split(",");
 			String[] toCcUsers = m.getBnmmailcc().replace("[", "").replace("]", "").replaceAll(" ", "").split(",");
+
 			// 傳送
-			boolean ok = this.sendEmail(toUsers, toCcUsers, m.getBnmtitle(), m.getBnmcontent());
+			boolean ok = this.sendEmail(toUsers, toCcUsers, m.getBnmtitle(), m.getBnmcontent(), m.getBnmattname(),
+					m.getBnmattcontent());
 			m.setBnmsend(ok);// 成功?/失敗?
 		});
 		// 更新標記存入

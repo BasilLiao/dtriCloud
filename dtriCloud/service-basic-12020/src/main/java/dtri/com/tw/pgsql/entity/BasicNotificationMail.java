@@ -10,6 +10,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -61,6 +63,22 @@ public class BasicNotificationMail {
 		this.bnmsend = false;
 		this.bnmurl = "";
 		this.setBnmreaded(false);
+		this.bnmattname= "";
+		this.bnmattcontent=null;
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		this.syscdate = new Date();
+		this.syscuser = "system";
+		this.sysmdate = new Date();
+		this.sysmuser = "system";
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.sysmdate = new Date();
+		this.sysmuser = "system";
 	}
 
 	public String getBnmmailcc() {
@@ -102,9 +120,9 @@ public class BasicNotificationMail {
 	private Long bnmid;
 	@Column(name = "bnm_kind", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bnmkind;
-	@Column(name = "bnm_mail", nullable = false, columnDefinition = "varchar(450) default ''")
+	@Column(name = "bnm_mail", nullable = false, columnDefinition = "varchar(2000) default ''")
 	private String bnmmail;
-	@Column(name = "bnm_mail_cc", nullable = false, columnDefinition = "varchar(450) default ''")
+	@Column(name = "bnm_mail_cc", nullable = false, columnDefinition = "varchar(2000) default ''")
 	private String bnmmailcc;
 
 	@Column(name = "bnm_title", nullable = false, columnDefinition = "varchar(150) default ''")
@@ -117,8 +135,11 @@ public class BasicNotificationMail {
 	private String bnmurl;
 	@Column(name = "bnm_readed", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bnmreaded;
-	
-	
+	// 附加檔案
+	@Column(name = "bnm_att_name", nullable = false, columnDefinition = "varchar(255) default ''")
+	private String bnmattname;
+	@Column(name = "bnm_att_content", nullable = true, columnDefinition = "bytea")
+	private byte[] bnmattcontent;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -269,6 +290,21 @@ public class BasicNotificationMail {
 		return "BasicNotificationMail [bnmkind=" + bnmkind + ", bnmmail=" + bnmmail + ", bnmmailcc=" + bnmmailcc
 				+ ", bnmtitle=" + bnmtitle + ", bnmcontent=" + bnmcontent + "]";
 	}
-	
+
+	public byte[] getBnmattcontent() {
+		return bnmattcontent;
+	}
+
+	public void setBnmattcontent(byte[] bnmattcontent) {
+		this.bnmattcontent = bnmattcontent;
+	}
+
+	public String getBnmattname() {
+		return bnmattname;
+	}
+
+	public void setBnmattname(String bnmattname) {
+		this.bnmattname = bnmattname;
+	}
 
 }

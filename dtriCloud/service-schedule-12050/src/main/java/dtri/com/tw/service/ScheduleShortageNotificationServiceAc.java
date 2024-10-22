@@ -215,11 +215,13 @@ public class ScheduleShortageNotificationServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				// 修改
 				entityDataOld.setSsnsslerpcuser(x.getSsnsslerpcuser());
+				entityDataOld.setSsnprimary(x.getSsnprimary());
 				SystemUser user = userDao.findById(x.getSsnsuid()).get();
 				entityDataOld.setSsnsuid(user.getSuid());
 				entityDataOld.setSsnsuname(user.getSuname());
 				entityDataOld.setSsnsumail(user.getSuemail());
 				entityDataOld.setSsnsnotice(x.getSsnsnotice());// 缺料通知
+				entityDataOld.setSsnonotice(x.getSsnonotice());// 外包排程通知
 				saveDatas.add(entityDataOld);
 			}
 		});

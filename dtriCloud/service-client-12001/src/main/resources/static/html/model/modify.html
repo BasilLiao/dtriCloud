@@ -651,14 +651,14 @@
 					cloneBdv.find("select").attr("placeholder", resultDetailThead[k].m_placeholder);
 					cloneBdv.find("input").attr("placeholder", resultDetailThead[k].m_placeholder);
 					cloneBdv.find("textarea").attr("placeholder", resultDetailThead[k].m_placeholder);
-					
+
 					//Step2-10.定義Class?
 					cloneBdv.find("checkbox").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("select").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("input").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.find("textarea").addClass(resultDetailThead[k].cellName).addClass('entityVal').attr("title", resultDetailThead[k].cellName);
 					cloneBdv.css('maxWidth', resultDetailThead[k].width + "px");
-					
+
 					//Step2-N.創建
 					cloneBdt.appendTo($("#batchTdn tr"));
 					cloneBdv.appendTo($("#batchTdv tr"));
@@ -1025,8 +1025,14 @@
 											modifyThvEx.find('.' + k).prop('checked', false);
 										}
 										modifyThvEx.find("." + k).val(value);
-									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+									} else if (modifyThvEx.find("." + k).attr('type') == "image") {
 										//是否為	圖片
+										console.log(value);
+										$(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
+
+									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+										//是否為	檔案
+										console.log(value);
 										$(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
 
 									} else if (entityDateTime.indexOf(k) >= 0) {
@@ -1089,9 +1095,15 @@
 											modifyTdvEx.find('.' + k).prop('checked', false);
 										}
 										modifyTdvEx.find("." + k).val(value);
-									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+									} else if (modifyThvEx.find("." + k).attr('type') == "image") {
 										//是否為	圖片
 										$(modifyTdvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
+
+									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+										//是否為	檔案
+										console.log(value);
+										$(modifyTdvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
+
 									} else if (entityDateTime.indexOf(k) >= 0) {
 										//是否時間格式?
 										var dF = new Date(dataDetailOne[k]);
@@ -1195,9 +1207,19 @@
 						if ($(this).attr("type") == 'checkbox') {
 							val = $(this).is(':checked');
 						}
-						//=file?
+						//=file?image?
+						if ($(this).attr("type") == 'image') {
+							val = $(this.parentElement).find("img").attr("src");
+						}
 						if ($(this).attr("type") == 'file') {
 							val = $(this.parentElement).find("img").attr("src");
+							let binary = '';
+							let bytes = new Uint8Array(val);
+							let len = bytes.byteLength;
+							for (let i = 0; i < len; i++) {
+								binary += String.fromCharCode(bytes[i]);
+							}
+							val = binary;
 						}
 						entityFormatJson[$(this).attr("title")] = val;
 					});

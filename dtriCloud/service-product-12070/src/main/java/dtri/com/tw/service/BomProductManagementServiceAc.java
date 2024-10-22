@@ -131,7 +131,7 @@ public class BomProductManagementServiceAc {
 			PageRequest pageableBPR = PageRequest.of(0, 200, Sort.by(ordersBPR));
 			ArrayList<BomProductRule> entityBPR = productRuleDao.findAllBySearch(null, null, null, pageableBPR);
 			// ERP_料BOM
-			PageRequest pageableBBI = PageRequest.of(0, 30000, Sort.by(ordersBBI));
+			PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
 			ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch("90-504", null, null, null, null,
 					pageableBBI);
 			// 參數BOM
@@ -404,9 +404,11 @@ public class BomProductManagementServiceAc {
 				BasicBomIngredients searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 						BasicBomIngredients.class);
 				// ERP_料BOM
-				PageRequest pageableBBI = PageRequest.of(0, 30000, Sort.by(ordersBBI));
-				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch(searchData.getBbisn(),
-						searchData.getBbiname(), null, null, null, pageableBBI);
+				PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
+				String bbisn = searchData.getBbisn();
+				String bbiname = searchData.getBbiname();
+				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch(bbisn, bbiname, null, null,
+						null, pageableBBI);
 				// 資料整理(BBI-限制200筆)
 				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
 				int indexBBI = 0;

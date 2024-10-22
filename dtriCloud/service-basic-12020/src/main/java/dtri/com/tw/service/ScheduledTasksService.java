@@ -91,8 +91,9 @@ public class ScheduledTasksService {
 				// ==================生管機制==================
 				// 外包生管排程
 				synchronizeScheduledService.erpSynchronizeScheduleOutsourcer();
-				//
+				// 缺料通知
 				synchronizeScheduledService.scheduleShortageNotification();
+
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
@@ -121,6 +122,18 @@ public class ScheduledTasksService {
 		try {
 			// BIOS檢查版本
 			synchronizeBiosService.versionCheckBios();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+		}
+	}
+
+	// 每周一(07:30)執行一次
+	@Scheduled(cron = "0 30 07 ? * MON")
+	public void updateEveryMonday() {
+		try {
+			// 生管排程寄信通知
+			synchronizeScheduledService.scheduleOutNotification();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
