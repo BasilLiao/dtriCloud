@@ -47,6 +47,7 @@ import jakarta.persistence.Transient;
  *      this.bisdevelopment = false;指定顯示單元 開發品<br>
  *      this.bispcb = false;指定顯示單元 板階<br>
  *      this.bisiauto = false;自動導入<br>
+ *      this.bisdselect = false;預設選擇<br>
  * 
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
@@ -203,7 +204,7 @@ public class BomItemSpecifications {
 	private Boolean bisdselect;
 
 	@Transient
-	private String bisprocess;
+	private String bisprocess;//物料製成別
 
 	public Date getSyscdate() {
 		return syscdate;

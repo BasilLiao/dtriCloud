@@ -804,7 +804,7 @@
 								$("#other_c #other_c_state").addClass("text-secondary");
 								$("#other_c #other_c_state").text("None").attr("title", "None_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
-								other.methods.selectLoad(selectedRadio);
+								other.methods.selectLoad(selectedRadio, "detail");
 							}
 							break;
 						case "btn_i_add":
@@ -813,7 +813,7 @@
 							var bisgid = 0;
 							$("#other_c #other_c_state").addClass("text-success");
 							$("#other_c #other_c_state").text("Add").attr("title", "Add_" + bisgid);
-							other.methods.selectLoad(selectedRadio);
+							other.methods.selectLoad(selectedRadio, "add");
 							//}
 							break;
 						case "btn_i_modify":
@@ -822,7 +822,7 @@
 								var bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-warning");
 								$("#other_c #other_c_state").text("Modify").attr("title", "Modify_" + bisgid);
-								other.methods.selectLoad(selectedRadio);
+								other.methods.selectLoad(selectedRadio, "modify");
 							}
 							break;
 						case "btn_i_remove":
@@ -832,7 +832,7 @@
 								$("#other_c #other_c_state").addClass("text-danger");
 								$("#other_c #other_c_state").text("Remove").attr("title", "Remove_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
-								other.methods.selectLoad(selectedRadio);
+								other.methods.selectLoad(selectedRadio, "remove");
 							}
 							break;
 						case "btn_w_listAdd":
@@ -1004,7 +1004,7 @@
 				});
 			},
 			//==========================選取資料==========================
-			selectLoad(selectedRadio) {
+			selectLoad(selectedRadio, type) {
 				if (selectedRadio.length === 1) {
 					//帶入資料(選取的資料)
 					console.log($(selectedRadio).parent().parent().parent());
@@ -1067,8 +1067,8 @@
 
 					//取消選取
 					//selectedRadio.prop('checked', false);
-					//鎖定
-					if (bisiauto) {
+					//鎖定+新增除外
+					if (bisiauto && type !== "add") {
 						$('#other_dcr .testItem').addClass("locked-do");
 						$('#other_dcr .groupItem').find('input, select').not('#other_bisiauto').addClass("locked-do");
 						$('#other_dcr table').find('thead, tbody').addClass("locked-do");

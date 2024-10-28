@@ -89,11 +89,12 @@ public class ScheduledTasksService {
 				// 移除多於資料()
 				synchronizeERPService.remove120DayData();
 				// ==================生管機制==================
-				// 外包生管排程
+				// 外包生管排程(同步)
 				synchronizeScheduledService.erpSynchronizeScheduleOutsourcer();
 				// 缺料通知
 				synchronizeScheduledService.scheduleShortageNotification();
-
+				// 生管排程寄信通知(測試用)
+				//synchronizeScheduledService.scheduleOutNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();

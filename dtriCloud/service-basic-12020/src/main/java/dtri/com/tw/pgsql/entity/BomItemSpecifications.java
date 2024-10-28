@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -46,6 +47,7 @@ import jakarta.persistence.Table;
  *      this.bisdevelopment = false;指定顯示單元 開發品<br>
  *      this.bispcb = false;指定顯示單元 板階<br>
  *      this.bisiauto = false;自動導入<br>
+ *      this.bisdselect = false;預設選擇<br>
  * 
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
@@ -118,6 +120,7 @@ public class BomItemSpecifications {
 		this.bisgsplit = "";
 		this.bisgcondition = "";
 		this.setBisgffield("");
+		this.setBisprocess("");
 
 		this.bisproduct = false;
 		this.bisaccessories = false;
@@ -168,21 +171,21 @@ public class BomItemSpecifications {
 	private String bisspecifications;
 	@Column(name = "bis_description", nullable = false, columnDefinition = "text default ''")
 	private String bisdescription;
-	@Column(name = "bis_s_descripion", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_s_descripion", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bissdescripion;
 
-	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgfname;
-	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(250) default ''")
 	private String bisfname;
-	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgname;
 	@Column(name = "bis_g_split", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bisgsplit;
-	@Column(name = "bis_g_condition", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_condition", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgcondition;
 
-	@Column(name = "bis_g_f_field", nullable = false, columnDefinition = "varchar(150) default ''")
+	@Column(name = "bis_g_f_field", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgffield;
 
 	@Column(name = "bis_product", nullable = false, columnDefinition = "boolean default false")
@@ -197,6 +200,11 @@ public class BomItemSpecifications {
 	private Boolean bispcb;
 	@Column(name = "bis_i_auto", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisiauto;
+	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bisdselect;
+
+	@Transient
+	private String bisprocess;// 物料製成別
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -428,6 +436,22 @@ public class BomItemSpecifications {
 
 	public void setBisgffield(String bisgffield) {
 		this.bisgffield = bisgffield;
+	}
+
+	public Boolean getBisdselect() {
+		return bisdselect;
+	}
+
+	public void setBisdselect(Boolean bisdselect) {
+		this.bisdselect = bisdselect;
+	}
+
+	public String getBisprocess() {
+		return bisprocess;
+	}
+
+	public void setBisprocess(String bisprocess) {
+		this.bisprocess = bisprocess;
 	}
 
 }

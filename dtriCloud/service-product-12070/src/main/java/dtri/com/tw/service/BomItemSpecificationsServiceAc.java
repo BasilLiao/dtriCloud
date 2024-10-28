@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -461,15 +462,15 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisgffield(bisgffield);//
 				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisgsplit(bisgsplit);
-				// 正規畫名稱轉換
+				// 正規畫名稱轉換(物料?物料名?規格?敘述?)
 				if (bisgffield.equals("bisnb")) {
-					itemSp.setBisfname(m.getWmpnb().split(bisgsplit).toString());
+					itemSp.setBisfname(Arrays.toString(m.getWmpnb().split(bisgsplit)));
 				} else if (bisgffield.equals("bisname")) {
-					itemSp.setBisfname(m.getWmname().split(bisgsplit).toString());
+					itemSp.setBisfname(Arrays.toString(m.getWmname().split(bisgsplit)));
 				} else if (bisgffield.equals("bisspecifications")) {
-					itemSp.setBisfname(m.getWmspecification().split(bisgsplit).toString());
+					itemSp.setBisfname(Arrays.toString(m.getWmspecification().split(bisgsplit)));
 				} else if (bisgffield.equals("bisdescription")) {
-					itemSp.setBisfname(m.getWmdescription().split(bisgsplit).toString());
+					itemSp.setBisfname(Arrays.toString(m.getWmdescription().split(bisgsplit)));
 				}
 				itemSp.setSyssort(syssort);
 				sqlQueryEntitys.put(itemSp.getBisnb(), itemSp);// 物料號
@@ -515,8 +516,10 @@ public class BomItemSpecificationsServiceAc {
 				}
 			});
 			// 物料排序->修改更新
-			entityNews.sort((o1, o2) -> o1.getBisnb().compareTo(o2.getBisnb()));
-			specificationsDao.saveAll(entityNews);
+			if (entityNews.size() > 0) {
+				entityNews.sort((o1, o2) -> o1.getBisnb().compareTo(o2.getBisnb()));
+				specificationsDao.saveAll(entityNews);
+			}
 		});
 
 		return packageBean;

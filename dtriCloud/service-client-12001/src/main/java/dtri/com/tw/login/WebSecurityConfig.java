@@ -58,6 +58,7 @@ public class WebSecurityConfig {
 	private static final String bom_bps = "/ajax/bom_parameter_settings.basil";
 	private static final String bom_bsh = "/ajax/bom_software_hardware.basil";
 	private static final String bom_kee = "/ajax/bom_keeper.basil";
+	private static final String bom_his = "/ajax/bom_history.basil";
 
 	// 信件
 	private static final String basic_not = "/ajax/basic_notification_mail.basil";
@@ -244,7 +245,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, bom_bsh + ".AD").hasAuthority(actionRole(bom_bsh, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bom_bsh + ".DD").hasAuthority(actionRole(bom_bsh, "DD"))// (標記移除)
 
-				// ----請求-bom_bom_keeper-(訪問) ----
+				// ----請求-bom_keeper-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bom_kee).hasAuthority(actionRole(bom_kee, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bom_kee + ".AR").hasAuthority(actionRole(bom_kee, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.POST, bom_kee + ".ARR").hasAuthority(actionRole(bom_kee, "AR"))// (報告查詢)
@@ -252,6 +253,14 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, bom_kee + ".AU").hasAuthority(actionRole(bom_kee, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bom_kee + ".AD").hasAuthority(actionRole(bom_kee, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bom_kee + ".DD").hasAuthority(actionRole(bom_kee, "DD"))// (標記移除)
+				// ----請求-bom_history-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bom_his).hasAuthority(actionRole(bom_his, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bom_his + ".AR").hasAuthority(actionRole(bom_his, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_his + ".ARR").hasAuthority(actionRole(bom_his, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bom_his + ".AC").hasAuthority(actionRole(bom_his, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bom_his + ".AU").hasAuthority(actionRole(bom_his, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bom_his + ".AD").hasAuthority(actionRole(bom_his, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bom_his + ".DD").hasAuthority(actionRole(bom_his, "DD"))// (標記移除)
 
 				// 倉庫功能-客製化
 				// ----請求-warehouse_assignment-(訪問) ----

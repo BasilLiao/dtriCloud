@@ -7,9 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +179,7 @@ public class SynchronizeScheduledService {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "sslbslsnnb"));// 單別_單號_單序
 		PageRequest pageable = PageRequest.of(0, 9999, Sort.by(orders));
-		ArrayList<ScheduleShortageList> shortageLists = shortageListDao.findAllBySearch(null, null, 0, null, pageable);
+		ArrayList<ScheduleShortageList> shortageLists = shortageListDao.findAllBySearch("A541", null, 0, null, pageable);
 		ArrayList<ScheduleShortageList> shortageListSaves = new ArrayList<ScheduleShortageList>();
 		// 分類<工單,缺料清單>
 		Map<String, ArrayList<ScheduleShortageList>> shortageListGroups = new HashMap<String, ArrayList<ScheduleShortageList>>();
@@ -247,9 +251,11 @@ public class SynchronizeScheduledService {
 				// 模擬12筆資料
 				for (ScheduleShortageList ssl : y) {
 					String fromcommand[] = ssl.getSslfromcommand().replaceAll("\\[|\\]", "").split("\\*");
+					String mo = fromcommand.length > 0 ? fromcommand[0] : "";//製令單號
+					String pqty = fromcommand.length > 2 ? fromcommand[1] + "*" + fromcommand[2] : "";//產品品號*數量
 					bnmcontent += "<tr>"//
-							+ "<td>" + fromcommand[0] + "</td>"//
-							+ "<td>" + fromcommand[1] + "*" + fromcommand[2] + "</td>"//
+							+ "<td>" + mo + "</td>"//
+							+ "<td>" + pqty + "</td>"//
 							+ "<td>" + ssl.getSslbslsnnb() + "</td>"//
 							+ "<td>" + ssl.getSslpnumber() + "</td>"//
 							+ "<td>" + ssl.getSslpname() + "</td>"//
@@ -344,22 +350,22 @@ public class SynchronizeScheduledService {
 				o.setSostatus("暫停中");
 				break;
 			case "1":
-				o.setSostatus("暫停中");
+				o.setSostatus("未生產");
 				break;
 			case "2":
-				o.setSostatus("暫停中");
+				o.setSostatus("已發料");
 				break;
 			case "3":
-				o.setSostatus("暫停中");
+				o.setSostatus("生產中");
 				break;
 			case "Y":
-				o.setSostatus("暫停中");
+				o.setSostatus("已完工");
 				break;
 			case "y":
-				o.setSostatus("暫停中");
+				o.setSostatus("指定完工");
 				break;
 			case "V":
-				o.setSostatus("暫停中");
+				o.setSostatus("已作廢");
 				break;
 			}
 
@@ -401,14 +407,14 @@ public class SynchronizeScheduledService {
 					+ "<th style='min-width: 65px;'>加工廠-開工日</th>"//
 					+ "<th style='min-width: 65px;'>預計-完工日</th>"//
 					+ "<th style='min-width: 220px;'>生管備註</th>"//
-					+ "<th style='min-width: 65px;'>生管狀態</th>"//
-					+ "<th style='min-width: 65px;'>物控狀態</th>"//
+					// + "<th style='min-width: 65px;'>生管狀態</th>"//
+					// + "<th style='min-width: 65px;'>物控狀態</th>"//
 					+ "<th style='min-width: 65px;'>預計-開工日</th>"//
-					+ "<th style='min-width: 220px;'>製令單-備註</th>"//
-					+ "<th style='min-width: 65px;'>製令單-負責人</th>"//
-					+ "<th style='min-width: 65px;'>加工廠-完工日</th>"//
-					+ "<th style='min-width: 65px;'>製令單-狀態</th>"//
-					+ "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
+					// + "<th style='min-width: 220px;'>製令單-備註</th>"//
+					// + "<th style='min-width: 65px;'>製令單-負責人</th>"//
+					// + "<th style='min-width: 65px;'>加工廠-完工日</th>"//
+					// + "<th style='min-width: 65px;'>製令單-狀態</th>"//
+					// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
 					+ "</tr></thead>"//
 					+ "<tbody>";// 模擬12筆資料
 			int r = 1;
@@ -416,15 +422,15 @@ public class SynchronizeScheduledService {
 			// 創建Excel工作簿
 			Workbook workbook = new XSSFWorkbook();
 			Sheet sheet = workbook.createSheet("Mail Data");
-			//=================樣式=================
+			// =================樣式=================
 			sheet.setColumnWidth(2, 30 * 256); // 製令單號
 			sheet.setColumnWidth(3, 30 * 256); // 產品品號
 			sheet.setColumnWidth(4, 30 * 256); // 產品品名
 			sheet.setColumnWidth(5, 30 * 256); // 產品規格
-			
+
 			sheet.setColumnWidth(9, 40 * 256); // 物控備註
 			sheet.setColumnWidth(12, 40 * 256); // 生管備註
-			sheet.setColumnWidth(16, 40 * 256); // 製令單-備註
+			// sheet.setColumnWidth(16, 40 * 256); // 製令單-備註
 			// 創建單元格樣式
 			CellStyle wrapTextStyle = workbook.createCellStyle();
 			wrapTextStyle.setWrapText(true);
@@ -449,46 +455,46 @@ public class SynchronizeScheduledService {
 			header.createCell(10).setCellValue("加工廠-開工日");
 			header.createCell(11).setCellValue("預計-完工日");
 			header.createCell(12).setCellValue("生管備註");
-			header.createCell(13).setCellValue("生管狀態");
-			header.createCell(14).setCellValue("物控狀態");
-			header.createCell(15).setCellValue("預計-開工日");
-			header.createCell(16).setCellValue("製令單-備註");
-			header.createCell(17).setCellValue("製令單-負責人)");
-			header.createCell(18).setCellValue("加工廠-完工日");
-			header.createCell(19).setCellValue("製令單-狀態");
-			header.createCell(20).setCellValue("YYYY(年)-W00(週期)");
+			// header.createCell(13).setCellValue("生管狀態");
+			// header.createCell(14).setCellValue("物控狀態");
+			header.createCell(13).setCellValue("預計-開工日");
+			// header.createCell(16).setCellValue("製令單-備註");
+			// header.createCell(17).setCellValue("製令單-負責人)");
+			// header.createCell(18).setCellValue("加工廠-完工日");
+			// header.createCell(19).setCellValue("製令單-狀態");
+			// header.createCell(20).setCellValue("YYYY(年)-W00(週期)");
 			//
 			for (ScheduleOutsourcer oss : outsourcers) {
-				String soscstatus = "";// 生管狀態
-				switch (oss.getSoscstatus()) {
-				case 1:
-					soscstatus = "已發料";
-					break;
-				case 2:
-					soscstatus = "部份發料";
-					break;
-				case 3:
-					soscstatus = "備料中";
-					break;
-				case 4:
-					soscstatus = "未生產";
-					break;
-				case 5:
-					soscstatus = "待打件通知";
-					break;
-				}
-				String somcstatus = "";// 物控狀態
-				switch (oss.getSomcstatus()) {
-				case 0:
-					somcstatus = "未確認";
-					break;
-				case 1:
-					somcstatus = "未齊料";
-					break;
-				case 2:
-					somcstatus = "已齊料";
-					break;
-				}
+//				String soscstatus = "";// 生管狀態
+//				switch (oss.getSoscstatus()) {
+//				case 1:
+//					soscstatus = "已發料";
+//					break;
+//				case 2:
+//					soscstatus = "部份發料";
+//					break;
+//				case 3:
+//					soscstatus = "備料中";
+//					break;
+//				case 4:
+//					soscstatus = "未生產";
+//					break;
+//				case 5:
+//					soscstatus = "待打件通知";
+//					break;
+//				}
+//				String somcstatus = "";// 物控狀態
+//				switch (oss.getSomcstatus()) {
+//				case 0:
+//					somcstatus = "未確認";
+//					break;
+//				case 1:
+//					somcstatus = "未齊料";
+//					break;
+//				case 2:
+//					somcstatus = "已齊料";
+//					break;
+//				}
 				// Excel內容
 				Row dataRow = sheet.createRow(r);
 				dataRow.createCell(0).setCellValue(r);
@@ -506,23 +512,23 @@ public class SynchronizeScheduledService {
 				dataRow.createCell(11).setCellValue(oss.getSofdate());
 				dataRow.createCell(12)
 						.setCellValue(oss.getSoscnote().replaceAll("<div>", "").replaceAll("</div>", "\n"));// 生管備註
-				dataRow.createCell(13).setCellValue(soscstatus);
-				dataRow.createCell(14).setCellValue(somcstatus);
-				dataRow.createCell(15).setCellValue(oss.getSoodate());
-				dataRow.createCell(16).setCellValue(oss.getSonote().replaceAll("<div>", "").replaceAll("</div>", "\n"));// 製令單-備註
-				dataRow.createCell(17).setCellValue(oss.getSouname());
-				dataRow.createCell(18).setCellValue(oss.getSofokdate());
-				dataRow.createCell(19).setCellValue(oss.getSostatus());
-				dataRow.createCell(20).setCellValue(oss.getSoywdate());
-				//=================樣式=================
+//				dataRow.createCell(13).setCellValue(soscstatus);
+//				dataRow.createCell(14).setCellValue(somcstatus);
+				dataRow.createCell(13).setCellValue(oss.getSoodate());
+//				dataRow.createCell(16).setCellValue(oss.getSonote().replaceAll("<div>", "").replaceAll("</div>", "\n"));// 製令單-備註
+//				dataRow.createCell(17).setCellValue(oss.getSouname());
+//				dataRow.createCell(18).setCellValue(oss.getSofokdate());
+//				dataRow.createCell(19).setCellValue(oss.getSostatus());
+//				dataRow.createCell(20).setCellValue(oss.getSoywdate());
+				// =================樣式=================
 				// 將該樣式應用於每個需要的單元格
-				for (int col = 0; col <= 20; col++) {
+				for (int col = 0; col <= 13; col++) {
 					dataRow.getCell(col).setCellStyle(alignStyle);
 				}
 				// 設置每個需要換行的單元格使用該樣式
 				dataRow.getCell(9).setCellStyle(wrapTextStyle); // 物控備註
 				dataRow.getCell(12).setCellStyle(wrapTextStyle); // 生管備註
-				dataRow.getCell(16).setCellStyle(wrapTextStyle); // 製令單-備註
+				// dataRow.getCell(16).setCellStyle(wrapTextStyle); // 製令單-備註
 
 				// 信件資料結構
 				bnmcontent += "<tr>"//
@@ -539,14 +545,14 @@ public class SynchronizeScheduledService {
 						+ "<td>" + oss.getSofodate() + "</td>"// 加工廠-開工日
 						+ "<td>" + oss.getSofdate() + "</td>"// 預計-完工日
 						+ "<td>" + oss.getSoscnote() + "</td>"// 生管備註
-						+ "<td>" + soscstatus + "</td>"// 生管狀態
-						+ "<td>" + somcstatus + "</td>"// 物控狀態
+						// + "<td>" + soscstatus + "</td>"// 生管狀態
+						// + "<td>" + somcstatus + "</td>"// 物控狀態
 						+ "<td>" + oss.getSoodate() + "</td>"// 預計-開工日
-						+ "<td>" + oss.getSonote() + "</td>"// 製令單-備註
-						+ "<td>" + oss.getSouname() + "</td>"// 製令單-負責人
-						+ "<td>" + oss.getSofokdate() + "</td>"// 加工廠-完工日
-						+ "<td>" + oss.getSostatus() + "</td>"// 製令單-狀態
-						+ "<td>" + oss.getSoywdate() + "</td>"// YYYY(西元年)-W00(週期)
+						// + "<td>" + oss.getSonote() + "</td>"// 製令單-備註
+						// + "<td>" + oss.getSouname() + "</td>"// 製令單-負責人
+						// + "<td>" + oss.getSofokdate() + "</td>"// 加工廠-完工日
+						// + "<td>" + oss.getSostatus() + "</td>"// 製令單-狀態
+						// + "<td>" + oss.getSoywdate() + "</td>"// YYYY(西元年)-W00(週期)
 						+ "</tr>";
 			}
 			bnmcontent += "</tbody></table>";

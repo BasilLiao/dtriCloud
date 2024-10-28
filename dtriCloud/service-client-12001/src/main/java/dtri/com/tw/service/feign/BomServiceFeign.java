@@ -131,4 +131,23 @@ public interface BomServiceFeign {
 	@RequestMapping(value = { "/bomKeeper/setDetele" }, method = RequestMethod.POST)
 	PackageBean setKeeperDetele(@RequestBody String jsonPackageBean);
 
+	// ================================紀錄-物料異動================================
+	@RequestMapping(value = { "/bomHistory/getSearch" }, method = RequestMethod.POST)
+	PackageBean getHistorySearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomHistory/getReport" }, method = RequestMethod.POST)
+	PackageBean getHistoryReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomHistory/setModify" }, method = RequestMethod.POST)
+	PackageBean setHistoryModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomHistory/setAdd" }, method = RequestMethod.POST)
+	PackageBean setHistoryAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomHistory/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setHistoryInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomHistory/setDetele" }, method = RequestMethod.POST)
+	PackageBean setHistoryDetele(@RequestBody String jsonPackageBean);
+
 }
