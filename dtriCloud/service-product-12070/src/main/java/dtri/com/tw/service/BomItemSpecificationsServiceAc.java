@@ -462,6 +462,7 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisgffield(bisgffield);//
 				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisgsplit(bisgsplit);
+				itemSp.setBisgcondition(bisgcondition);//區分
 				// 正規畫名稱轉換(物料?物料名?規格?敘述?)
 				if (bisgffield.equals("bisnb")) {
 					itemSp.setBisfname(Arrays.toString(m.getWmpnb().split(bisgsplit)));

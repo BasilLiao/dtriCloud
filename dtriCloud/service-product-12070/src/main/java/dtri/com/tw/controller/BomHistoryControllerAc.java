@@ -15,14 +15,14 @@ import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class WarehouseHistoryControllerAc extends AbstractControllerAc {
+public class BomHistoryControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
 	private BomHistoryServiceAc serviceAc;
 
-	@RequestMapping(value = { "/warehouseHistory/getSearch" }, method = {
+	@RequestMapping(value = { "/bomHistory/getSearch" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -58,7 +58,7 @@ public class WarehouseHistoryControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseHistory/getReport" }, method = {
+	@RequestMapping(value = { "/bomHistory/getReport" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -94,7 +94,7 @@ public class WarehouseHistoryControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseHistory/setModify" }, method = {
+	@RequestMapping(value = { "/bomHistory/setModify" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -130,7 +130,7 @@ public class WarehouseHistoryControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseHistory/setAdd" }, method = {
+	@RequestMapping(value = { "/bomHistory/setAdd" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -166,7 +166,7 @@ public class WarehouseHistoryControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseHistory/setInvalid" }, method = {
+	@RequestMapping(value = { "/bomHistory/setInvalid" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -202,7 +202,7 @@ public class WarehouseHistoryControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/warehouseHistory/setDetele" }, method = {
+	@RequestMapping(value = { "/bomHistory/setDetele" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
