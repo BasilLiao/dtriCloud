@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -366,6 +367,7 @@ public class BomItemSpecificationsServiceAc {
 			Boolean bisaccessories = vs.get(0).getBisaccessories();
 			Boolean bisdevelopment = vs.get(0).getBisdevelopment();
 			String bisgfname = vs.get(0).getBisgfname();// 正規畫-群組名稱
+			Integer bisgfnameSize = bisgfname.split(" ").length;
 			String bisprocess = vs.get(0).getBisprocess();
 			String bisgname = vs.get(0).getBisgname();
 			String bisgffield = vs.get(0).getBisgffield();
@@ -462,17 +464,25 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisgffield(bisgffield);//
 				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisgsplit(bisgsplit);
-				itemSp.setBisgcondition(bisgcondition);//區分
+				itemSp.setBisgcondition(bisgcondition);// 區分
+
 				// 正規畫名稱轉換(物料?物料名?規格?敘述?)
+				String[] array = new String[0];
 				if (bisgffield.equals("bisnb")) {
-					itemSp.setBisfname(Arrays.toString(m.getWmpnb().split(bisgsplit)));
+					array = m.getWmpnb().split(bisgsplit);
 				} else if (bisgffield.equals("bisname")) {
-					itemSp.setBisfname(Arrays.toString(m.getWmname().split(bisgsplit)));
+					array = m.getWmname().split(bisgsplit);
 				} else if (bisgffield.equals("bisspecifications")) {
-					itemSp.setBisfname(Arrays.toString(m.getWmspecification().split(bisgsplit)));
+					array = m.getWmspecification().split(bisgsplit);
 				} else if (bisgffield.equals("bisdescription")) {
-					itemSp.setBisfname(Arrays.toString(m.getWmdescription().split(bisgsplit)));
+					array = m.getWmdescription().split(bisgsplit);
 				}
+				array = Arrays.copyOfRange(array, 0, Math.min(array.length, bisgfnameSize)); // 限制為最多 5 個元素
+				Gson gson = new Gson();
+				JsonArray jsonArray = gson.toJsonTree(array).getAsJsonArray();
+				// 將 JsonArray 轉成字串並存入 itemSp
+				itemSp.setBisfname(jsonArray.toString());
+
 				itemSp.setSyssort(syssort);
 				sqlQueryEntitys.put(itemSp.getBisnb(), itemSp);// 物料號
 				// entitys.add(itemSp);

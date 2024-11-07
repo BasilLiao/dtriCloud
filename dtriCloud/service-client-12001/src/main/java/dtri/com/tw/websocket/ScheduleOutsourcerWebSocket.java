@@ -174,7 +174,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			});
 		} catch (Exception e) {
 			LOGGER.warn("[websocket] 傳送訊息：" + e);
-			LOGGER.info("[websocket] 錯誤訊息：message={}", messageJson);
+			//LOGGER.info("[websocket] 錯誤訊息：message={}", messageJson);
 			return;
 		}
 		return;

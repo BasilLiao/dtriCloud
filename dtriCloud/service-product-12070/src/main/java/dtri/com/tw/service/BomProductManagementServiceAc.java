@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
+import dtri.com.tw.pgsql.dao.BomHistoryDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomKeeperDao;
 import dtri.com.tw.pgsql.dao.BomParameterSettingsDao;
@@ -32,6 +33,7 @@ import dtri.com.tw.pgsql.dao.BomProductRuleDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
+import dtri.com.tw.pgsql.entity.BomHistory;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomItemSpecificationsDetailFront;
 import dtri.com.tw.pgsql.entity.BomKeeper;
@@ -82,6 +84,9 @@ public class BomProductManagementServiceAc {
 
 	@Autowired
 	private BomKeeperDao bomKeeperDao;
+
+	@Autowired
+	private BomHistoryDao historyDao;
 
 	@Autowired
 	private EntityManager em;
@@ -138,7 +143,7 @@ public class BomProductManagementServiceAc {
 			PageRequest pageableBPS = PageRequest.of(0, 200, Sort.by(ordersBPS));
 			ArrayList<BomParameterSettings> entityBPS = settingsDao.findAllBySearch(null, null, null, pageableBPS);
 			// 物料清單
-			PageRequest pageableWM = PageRequest.of(0, 60000, Sort.by(ordersWM));
+			PageRequest pageableWM = PageRequest.of(0, 1000, Sort.by(ordersWM));
 			ArrayList<WarehouseMaterial> entityWM = materialDao.findAllBySearch(null, "停", null, pageableWM);
 
 			// 資料整理(BBI-限制200筆)
@@ -492,6 +497,26 @@ public class BomProductManagementServiceAc {
 		return packageBean;
 	}
 
+	/** 取得物料清單資料 */
+	public PackageBean getSearchWM(PackageBean packageBean) throws Exception {
+		// ========================分頁設置========================
+		// Step1.批次分頁
+		List<Order> ordersWM = new ArrayList<>();
+		ordersWM.add(new Order(Direction.ASC, "wmpnb"));//
+		// 物料清單
+		PageRequest pageableWM = PageRequest.of(0, 60000, Sort.by(ordersWM));
+		ArrayList<WarehouseMaterial> entityWM = materialDao.findAllBySearch(null, "停", null, pageableWM);
+		// 資料放入
+		String entityJsonWM = packageService.beanToJson(entityWM);
+		JsonObject other = new JsonObject();
+		other.add("WM", packageService.StringToAJson(entityJsonWM));
+		// 資料包裝
+		packageBean.setOtherSet(other.toString());
+		packageBean.setCallBackValue("BPMWM");
+
+		return packageBean;
+	}
+
 	/** 修改資料 */
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
@@ -574,10 +599,21 @@ public class BomProductManagementServiceAc {
 		}
 
 		// =======================資料整理=======================
+		// 準備比對資料<BOM號,內容新舊>
+		Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
+		Map<String, JsonObject> oldBPM = new HashMap<String, JsonObject>();
+
 		// Step3.一般資料->寫入
 		entityDatas.forEach(c -> {// 要更新的資料
 			if (c.getBpmid() != null) {
 				BomProductManagement oldData = managementDao.getReferenceById(c.getBpmid());
+				// 內容不同?->比對差異->登記異動紀錄->待發信件通知
+				if (!oldData.getBpmbisitem().equals(c.getBpmbisitem())) {
+					newBPM.put(c.getBpmnb() + "_" + c.getBpmmodel(),
+							JsonParser.parseString(c.getBpmbisitem()).getAsJsonObject());
+					oldBPM.put(c.getBpmnb() + "_" + c.getBpmmodel(),
+							JsonParser.parseString(oldData.getBpmbisitem()).getAsJsonObject());
+				}
 				// 可能->新的?
 
 				oldData.setSysmdate(new Date());
@@ -590,12 +626,133 @@ public class BomProductManagementServiceAc {
 				oldData.setSysnote(c.getSysnote());
 				oldData.setBpmbisitem(c.getBpmbisitem());
 				oldData.setBpmbpsnv(c.getBpmbpsnv());
-				oldData.setBpmmodel(c.getBpmmodel());
-				oldData.setBpmnb(c.getBpmnb());
+				oldData.setBpmmodel(c.getBpmmodel().replaceAll("\\s|/", ""));
+				oldData.setBpmnb(c.getBpmnb().replaceAll("\\s|/", ""));
 				oldData.setBpmtype(c.getBpmtype());
-				oldData.setBpmtypename(c.getBpmtypename());
+				oldData.setBpmtypename(c.getBpmtypename().replaceAll("\\s|/", ""));
 				saveDatasUpdate.add(oldData);
 			}
+		});
+		// Step4.彙整更新的資料->物料排序->標記更新 or 移除
+		ArrayList<BomHistory> changeBom = new ArrayList<BomHistory>();
+		Map<String, HashMap<String, String>> oldBom = new HashMap<String, HashMap<String, String>>();
+		Map<String, HashMap<String, String>> newBom = new HashMap<String, HashMap<String, String>>();
+		// 舊資料整理->一個BOM 內多個項目
+		oldBPM.forEach((oldK, oldV) -> {
+			// 物料號_數量_製成別(items>basic 如果有一樣的物料的話)
+			HashMap<String, String> oldVs = new HashMap<String, String>();
+			JsonArray items = oldV.getAsJsonArray("items");
+			JsonArray basic = oldV.getAsJsonArray("basic");
+			items.forEach(i -> {
+				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			basic.forEach(i -> {
+				String bisnb_bisqty_bisprocess = i.getAsString();
+				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
+				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
+				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			// 新的BOM_型號 , 物料_數量_製成別
+			oldBom.put(oldK, oldVs);
+		});
+		// 新料整理->一個BOM 內多個項目
+		newBPM.forEach((newK, newV) -> {
+			// 物料號_數量_製成別(items>basic 如果有一樣的物料的話)
+			HashMap<String, String> newVs = new HashMap<String, String>();
+			JsonArray items = newV.getAsJsonArray("items");
+			JsonArray basic = newV.getAsJsonArray("basic");
+			items.forEach(i -> {
+				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			basic.forEach(i -> {
+				String bisnb_bisqty_bisprocess = i.getAsString();
+				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
+				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
+				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			// 新的BOM_型號 , 物料_數量_製成別
+			newBom.put(newK, newVs);
+		});
+		// 資料整理入 BomHistory 內
+		newBom.forEach((newBomK, newBomV) -> {
+			// 匹配的舊BOM
+			HashMap<String, String> oldBomv = oldBom.get(newBomK);
+			// 每個新BOM的Item
+			newBomV.forEach((newItemK, newItemV) -> {
+				BomHistory bomHistory = new BomHistory();
+				bomHistory.setBhnb(newBomK.split("_")[0]);
+				bomHistory.setBhmodel(newBomK.split("_")[1]);
+				bomHistory.setBhatype("");
+				// 沒有變化(物料)
+				if (oldBomv.containsKey(newItemK)) {
+					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
+					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					// 可能更新?數量?製成?
+					String oldItemV = oldBomv.get(newItemK);
+					if (!newItemV.split("_")[1].equals(oldItemV.split("_")[1])
+							|| !newItemV.split("_")[2].equals(oldItemV.split("_")[2])) {
+						bomHistory.setBhatype("Update");
+						// 舊的資料標記
+						BomHistory bomHistoryOld = new BomHistory();
+						bomHistoryOld.setBhnb(newBomK.split("_")[0]);
+						bomHistoryOld.setBhmodel(newBomK.split("_")[1]);
+						bomHistoryOld.setBhpnb(oldItemV.split("_")[0]);
+						bomHistoryOld.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
+						bomHistoryOld.setBhpprocess(oldItemV.split("_")[2]);
+						bomHistoryOld.setBhatype("Old");
+						changeBom.add(bomHistoryOld);
+					}
+					changeBom.add(bomHistory);
+					// 複寫標記null
+					oldBomv.put(newItemK, null);
+				} else {
+					// 沒比對到?新的?
+					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
+					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhatype("New");
+					changeBom.add(bomHistory);
+				}
+			});
+			// 舊資料
+			oldBomv.forEach((oldItemK, oldItemV) -> {
+				// 表示被移除了
+				if (oldItemV != null) {
+					BomHistory bomHistoryRemove = new BomHistory();
+					bomHistoryRemove.setBhnb(newBomK.split("_")[0]);
+					bomHistoryRemove.setBhmodel(newBomK.split("_")[1]);
+					bomHistoryRemove.setBhpnb(oldItemV.split("_")[0]);
+					bomHistoryRemove.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
+					bomHistoryRemove.setBhpprocess(oldItemV.split("_")[2]);
+					bomHistoryRemove.setBhatype("Delete");
+					changeBom.add(bomHistoryRemove);
+
+				}
+			});
+			// 比對同一張BOM->的物料
+			historyDao.saveAll(changeBom);
+
 		});
 
 		// =======================資料儲存=======================
@@ -684,7 +841,12 @@ public class BomProductManagementServiceAc {
 				}
 			}
 			// =======================資料整理=======================
+			// 準備比對資料<BOM號,內容新舊>
+			Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
 			for (BomProductManagement x : entityDatas) {
+				// 登記異動紀錄->待發信件通知
+				newBPM.put(x.getBpmnb() + "_" + x.getBpmmodel(),
+						JsonParser.parseString(x.getBpmbisitem()).getAsJsonObject());
 				// 新增
 				x.setBpmid(null);
 				x.setSysmdate(new Date());
@@ -696,8 +858,59 @@ public class BomProductManagementServiceAc {
 				x.setSysheader(false);
 				x.setSyssort(0);
 				x.setSysstatus(0);
+				x.setBpmmodel(x.getBpmmodel().replaceAll("\\s|/", ""));
+				x.setBpmnb(x.getBpmnb().replaceAll("\\s|/", ""));
+				x.setBpmtypename(x.getBpmtypename().replaceAll("\\s|/", ""));
 				entitySave.add(x);
 			}
+			// 異動資料
+			ArrayList<BomHistory> changeBom = new ArrayList<BomHistory>();
+			Map<String, HashMap<String, String>> newBom = new HashMap<String, HashMap<String, String>>();
+			// 新料整理->一個BOM 內多個項目
+			newBPM.forEach((newK, newV) -> {
+				// 物料號_數量_製成別(items>basic 如果有一樣的物料的話)
+				HashMap<String, String> newVs = new HashMap<String, String>();
+				JsonArray items = newV.getAsJsonArray("items");
+				JsonArray basic = newV.getAsJsonArray("basic");
+				items.forEach(i -> {
+					String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
+					String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
+					String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+						// 若不重複則加入
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					}
+				});
+				basic.forEach(i -> {
+					String bisnb_bisqty_bisprocess = i.getAsString();
+					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
+					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
+					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+						// 若不重複則加入
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					}
+				});
+				// 新的BOM_型號 , 物料_數量_製成別
+				newBom.put(newK, newVs);
+			});
+			// 資料整理入 BomHistory 內
+			newBom.forEach((newBomK, newBomV) -> {
+				// 每個新BOM的Item
+				newBomV.forEach((newItemK, newItemV) -> {
+					// 新的?
+					BomHistory bomHistory = new BomHistory();
+					bomHistory.setBhnb(newBomK.split("_")[0]);
+					bomHistory.setBhmodel(newBomK.split("_")[1]);
+					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
+					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhatype("All New");
+					changeBom.add(bomHistory);
+				});
+				// 比對同一張BOM->的物料
+				historyDao.saveAll(changeBom);
+			});
 			// =======================資料儲存=======================
 			// 資料Data
 			managementDao.saveAll(entitySave);
@@ -801,13 +1014,67 @@ public class BomProductManagementServiceAc {
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
 		ArrayList<BomProductManagement> saveDatas = new ArrayList<>();
+		// 準備比對資料<BOM號,內容新舊>
+		Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
 		// 一般-移除內容
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
 			if (x.getBpmid() != null) {
+				// 登記異動紀錄->待發信件通知
+				newBPM.put(x.getBpmnb() + "_" + x.getBpmmodel(),
+						JsonParser.parseString(x.getBpmbisitem()).getAsJsonObject());
+				//
 				BomProductManagement entityDataOld = managementDao.getReferenceById(x.getBpmid());
 				saveDatas.add(entityDataOld);
 			}
+		});
+		// 異動資料
+		ArrayList<BomHistory> changeBom = new ArrayList<BomHistory>();
+		Map<String, HashMap<String, String>> newBom = new HashMap<String, HashMap<String, String>>();
+		// 新料整理->一個BOM 內多個項目
+		newBPM.forEach((newK, newV) -> {
+			// 物料號_數量_製成別(items>basic 如果有一樣的物料的話)
+			HashMap<String, String> newVs = new HashMap<String, String>();
+			JsonArray items = newV.getAsJsonArray("items");
+			JsonArray basic = newV.getAsJsonArray("basic");
+			items.forEach(i -> {
+				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			basic.forEach(i -> {
+				String bisnb_bisqty_bisprocess = i.getAsString();
+				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
+				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
+				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+					// 若不重複則加入
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				}
+			});
+			// 新的BOM_型號 , 物料_數量_製成別
+			newBom.put(newK, newVs);
+		});
+		// 資料整理入 BomHistory 內
+		newBom.forEach((newBomK, newBomV) -> {
+			// 每個新BOM的Item
+			newBomV.forEach((newItemK, newItemV) -> {
+				// 新的?
+				BomHistory bomHistory = new BomHistory();
+				bomHistory.setBhnb(newBomK.split("_")[0]);
+				bomHistory.setBhmodel(newBomK.split("_")[1]);
+				bomHistory.setBhpnb(newItemV.split("_")[0]);
+				bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
+				bomHistory.setBhpprocess(newItemV.split("_")[2]);
+				bomHistory.setBhatype("All Delete");
+				changeBom.add(bomHistory);
+			});
+			// 比對同一張BOM->的物料
+			historyDao.saveAll(changeBom);
 		});
 
 		// =======================資料儲存=======================

@@ -60,7 +60,12 @@ public class BomHistoryServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.DESC, "syscdate"));// 時間
+		orders.add(new Order(Direction.DESC, "syscdate"));// 建立時間
+		orders.add(new Order(Direction.ASC, "bhnb"));// 產品號
+		orders.add(new Order(Direction.ASC, "bhmodel"));// 型號
+		orders.add(new Order(Direction.ASC, "bhpnb"));// 組件號
+		orders.add(new Order(Direction.DESC, "bhatype"));// 異動狀況
+
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 

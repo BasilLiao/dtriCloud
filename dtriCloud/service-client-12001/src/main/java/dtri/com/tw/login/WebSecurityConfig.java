@@ -59,6 +59,7 @@ public class WebSecurityConfig {
 	private static final String bom_bsh = "/ajax/bom_software_hardware.basil";
 	private static final String bom_kee = "/ajax/bom_keeper.basil";
 	private static final String bom_his = "/ajax/bom_history.basil";
+	private static final String bom_sn = "/ajax/bom_shortage_notification.basil";
 
 	// 信件
 	private static final String basic_not = "/ajax/basic_notification_mail.basil";
@@ -78,6 +79,7 @@ public class WebSecurityConfig {
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
+	private static final String schedule_shn = "/ajax/schedule_shortage_notification.basil";
 	// BIOS
 	private static final String bios_not = "/ajax/bios_notification.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
@@ -223,6 +225,7 @@ public class WebSecurityConfig {
 				// ----請求-bom_product_management-(訪問) ----
 				.requestMatchers(HttpMethod.POST, bom_bpm).hasAuthority(actionRole(bom_bpm, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, bom_bpm + ".AR").hasAuthority(actionRole(bom_bpm, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_bpm + ".WM").hasAuthority(actionRole(bom_bpm, "AR"))// (查詢(物料清單))
 				.requestMatchers(HttpMethod.POST, bom_bpm + ".ART").hasAuthority(actionRole(bom_bpm, "AR"))// (測試查詢)
 				.requestMatchers(HttpMethod.POST, bom_bpm + ".ARR").hasAuthority(actionRole(bom_bpm, "AR"))// (報告查詢)
 				.requestMatchers(HttpMethod.POST, bom_bpm + ".AC").hasAuthority(actionRole(bom_bpm, "AC"))// (新增)
@@ -261,6 +264,14 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, bom_his + ".AU").hasAuthority(actionRole(bom_his, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bom_his + ".AD").hasAuthority(actionRole(bom_his, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bom_his + ".DD").hasAuthority(actionRole(bom_his, "DD"))// (標記移除)
+				// ----bom_shortage_notification-(訪問) ----
+				.requestMatchers(HttpMethod.POST, bom_sn).hasAuthority(actionRole(bom_sn, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, bom_sn + ".AR").hasAuthority(actionRole(bom_sn, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, bom_sn + ".ARR").hasAuthority(actionRole(bom_sn, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, bom_sn + ".AC").hasAuthority(actionRole(bom_sn, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, bom_sn + ".AU").hasAuthority(actionRole(bom_sn, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, bom_sn + ".AD").hasAuthority(actionRole(bom_sn, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, bom_sn + ".DD").hasAuthority(actionRole(bom_sn, "DD"))// (標記移除)
 
 				// 倉庫功能-客製化
 				// ----請求-warehouse_assignment-(訪問) ----
@@ -364,6 +375,14 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_out + ".S4").hasAuthority(actionRole(schedule_out, "S5"))// (修改S5)
 				.requestMatchers(HttpMethod.GET, "/websocket/schedule_outsourcer_client/echo").permitAll()// 前端-請求(Websocket)
 				.requestMatchers(HttpMethod.POST, "/websocket/schedule_outsourcer_service").permitAll()// 後端-同步使用(Websocket)
+				// ----請求-schedule_shortage_notification-(訪問) ----
+				.requestMatchers(HttpMethod.POST, schedule_shn).hasAuthority(actionRole(schedule_shn, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, schedule_shn + ".AR").hasAuthority(actionRole(schedule_shn, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, schedule_shn + ".ARR").hasAuthority(actionRole(schedule_shn, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, schedule_shn + ".AC").hasAuthority(actionRole(schedule_shn, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, schedule_shn + ".AU").hasAuthority(actionRole(schedule_shn, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, schedule_shn + ".AD").hasAuthority(actionRole(schedule_shn, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, schedule_shn + ".DD").hasAuthority(actionRole(schedule_shn, "DD"))// (標記移除)
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----

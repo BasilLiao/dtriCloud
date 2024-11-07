@@ -81,6 +81,9 @@ public interface BomServiceFeign {
 	@RequestMapping(value = { "/bomProductManagement/getSearch" }, method = RequestMethod.POST)
 	PackageBean getProductManagementSearch(@RequestBody String jsonPackageBean);
 
+	@RequestMapping(value = { "/bomProductManagement/getSearchWM" }, method = RequestMethod.POST)
+	PackageBean getProductManagementgetSearchWM(@RequestBody String jsonPackageBean);
+
 	@RequestMapping(value = { "/bomProductManagement/getReport" }, method = RequestMethod.POST)
 	PackageBean getProductManagementReport(@RequestBody String jsonPackageBean);
 
@@ -149,5 +152,24 @@ public interface BomServiceFeign {
 
 	@RequestMapping(value = { "/bomHistory/setDetele" }, method = RequestMethod.POST)
 	PackageBean setHistoryDetele(@RequestBody String jsonPackageBean);
+
+	// ================================BOM異動:主要負責人通知================================
+	@RequestMapping(value = { "/bomNotification/getSearch" }, method = RequestMethod.POST)
+	PackageBean getBomNotificationSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomNotification/getReport" }, method = RequestMethod.POST)
+	PackageBean getBomNotificationReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomNotification/setModify" }, method = RequestMethod.POST)
+	PackageBean setBomNotificationModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomNotification/setAdd" }, method = RequestMethod.POST)
+	PackageBean setBomNotificationAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomNotification/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setBomNotificationInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/bomNotification/setDetele" }, method = RequestMethod.POST)
+	PackageBean setBomNotificationDetele(@RequestBody String jsonPackageBean);
 
 }

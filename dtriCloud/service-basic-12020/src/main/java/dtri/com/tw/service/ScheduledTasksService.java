@@ -94,12 +94,14 @@ public class ScheduledTasksService {
 				// 缺料通知
 				synchronizeScheduledService.scheduleShortageNotification();
 				// 生管排程寄信通知(測試用)
-				//synchronizeScheduledService.scheduleOutNotification();
+				// synchronizeScheduledService.scheduleOutNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
 				// BOM結構同步
 				synchronizeBomService.erpSynchronizeBomIngredients();
+				// BOM 檢查歷史紀錄送出mail
+				synchronizeBomService.bomModification();
 				// BOM 規則同步
 				synchronizeBomService.autoBISF();
 				// ==================產品BIOS==================

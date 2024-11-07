@@ -2,8 +2,6 @@ package dtri.com.tw.pgsql.entity;
 
 import java.util.Date;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -12,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 /**
  * @author Basil
@@ -25,25 +22,22 @@ import jakarta.persistence.Transient;
  *      sys_note : 備註<br>
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
- * 
- *      ---BOM異動-紀錄---<br>
- *      private Long bhid;KEY<br>
- *      private String bhatype;動作種類CUD (AllNew = 全新的BOM/ New = 新的物料/
- *      [Old/Update]新舊料替換/ Delete=移除物料) EX:Old_1 對應 Update_1<br>
- *      private String bhnb;BOM號 EX:90-313<br>
- *      private String bhmodel;BOM型號 EX:504TY<br>
- *      private String bhpnb;物料號<br>
- *      private Integer bhpqty;數量<br>
- *      private String bhpprocess;製成別<br>
- *      private Boolean bhnotification;是否已登記通知<br>
- * 
+ *      ---異動-負責人通知---<br>
+ *      bnid;ID<br>
+ *      bnnb;BOM號<br>
+ *      bnmodel;BOM型號<br>
+ *      bnsuid;關聯帳號ID<br>
+ *      bnsuname;關聯帳號名稱<br>
+ *      bnsumail;關聯帳號MAIL<br>
+ *      bnprimary;主要/次要<br>
+ *      bnmnotice;BOM修改通知<br>
  */
 
 @Entity
-@Table(name = "bom_history")
-@EntityListeners(AuditingEntityListener.class)
-public class BomHistory {
-	public BomHistory() {
+@Table(name = "bom_notification")
+@EntityListeners(BomNotification.class)
+public class BomNotification {
+	public BomNotification() {
 		// 共用型
 		this.syscdate = new Date();
 		this.syscuser = "system";
@@ -56,14 +50,15 @@ public class BomHistory {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		// BOM異動-清單
-		this.bhid = null;
-		this.bhatype = "";
-		this.bhnb = "";
-		this.bhmodel = "";
-		this.bhpqty = 0;
-		this.bhpprocess = "";
-		this.bhnotification = false;
+		// 異動清單負責人通知
+		this.bnid = null;// ID<br>
+		this.bnnb = "";// BOM號<br>
+		this.bnmodel = ""; // BOM型號<br>
+		this.bnsuid = 0L;// 關聯帳號ID<br>
+		this.bnsuname = ""; // 關聯帳號名稱<br>
+		this.bnsumail = ""; // 關聯帳號MAIL<br>
+		this.bnprimary = 0;// 主要/次要<br>
+		this.bnmnotice = false;// BOM修改通知<br>
 	}
 
 	// 共用型
@@ -89,32 +84,28 @@ public class BomHistory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 倉儲單據過濾器-清單
+	// 負責人通知-清單
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_history_seq")
-	@SequenceGenerator(name = "bom_history_seq", sequenceName = "bom_history_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_notification_seq")
+	@SequenceGenerator(name = "bom_notification_seq", sequenceName = "bom_notification_seq", allocationSize = 1)
 	@Column(name = "bn_id")
-	private Long bhid;
-	@Column(name = "bh_a_type", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bhatype;
-	@Column(name = "bh_nb", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bhnb;
-	@Column(name = "bh_model", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bhmodel;
-	@Column(name = "bh_p_nb", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bhpnb;
-	@Column(name = "bh_p_qty", nullable = false, columnDefinition = "int default 0")
-	private Integer bhpqty;
+	private Long bnid;
+	@Column(name = "bn_nb", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnnb;
+	@Column(name = "bn_model", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnmodel;
 
-	@Column(name = "bh_p_process", nullable = false, columnDefinition = "varchar(100) default ''")
-	private String bhpprocess;
-	@Column(name = "bh_notification", nullable = false, columnDefinition = "boolean default false")
-	private Boolean bhnotification;
+	@Column(name = "bn_su_id", nullable = false)
+	private Long bnsuid;
+	@Column(name = "bn_su_name", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnsuname;
+	@Column(name = "bn_su_mail", nullable = false, columnDefinition = "varchar(100) default ''")
+	private String bnsumail;
+	@Column(name = "bn_primary", nullable = false, columnDefinition = "int default 0")
+	private Integer bnprimary;
 
-	@Transient
-	private Date ssyscdate;// 起始時間
-	@Transient
-	private Date esyscdate;// 結束時間
+	@Column(name = "bn_m_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnmnotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -196,84 +187,68 @@ public class BomHistory {
 		this.sysnote = sysnote;
 	}
 
-	public Date getSsyscdate() {
-		return ssyscdate;
+	public Long getBnid() {
+		return bnid;
 	}
 
-	public void setSsyscdate(Date ssyscdate) {
-		this.ssyscdate = ssyscdate;
+	public void setBnid(Long bnid) {
+		this.bnid = bnid;
 	}
 
-	public Date getEsyscdate() {
-		return esyscdate;
+	public String getBnnb() {
+		return bnnb;
 	}
 
-	public void setEsyscdate(Date esyscdate) {
-		this.esyscdate = esyscdate;
+	public void setBnnb(String bnnb) {
+		this.bnnb = bnnb;
 	}
 
-	public Long getBhid() {
-		return bhid;
+	public String getBnmodel() {
+		return bnmodel;
 	}
 
-	public void setBhid(Long bhid) {
-		this.bhid = bhid;
+	public void setBnmodel(String bnmodel) {
+		this.bnmodel = bnmodel;
 	}
 
-	public String getBhatype() {
-		return bhatype;
+	public Long getBnsuid() {
+		return bnsuid;
 	}
 
-	public void setBhatype(String bhatype) {
-		this.bhatype = bhatype;
+	public void setBnsuid(Long bnsuid) {
+		this.bnsuid = bnsuid;
 	}
 
-	public String getBhnb() {
-		return bhnb;
+	public String getBnsuname() {
+		return bnsuname;
 	}
 
-	public void setBhnb(String bhnb) {
-		this.bhnb = bhnb;
+	public void setBnsuname(String bnsuname) {
+		this.bnsuname = bnsuname;
 	}
 
-	public String getBhmodel() {
-		return bhmodel;
+	public String getBnsumail() {
+		return bnsumail;
 	}
 
-	public void setBhmodel(String bhmodel) {
-		this.bhmodel = bhmodel;
+	public void setBnsumail(String bnsumail) {
+		this.bnsumail = bnsumail;
 	}
 
-	public String getBhpnb() {
-		return bhpnb;
+	public Integer getBnprimary() {
+		return bnprimary;
 	}
 
-	public void setBhpnb(String bhpnb) {
-		this.bhpnb = bhpnb;
+	public void setBnprimary(Integer bnprimary) {
+		this.bnprimary = bnprimary;
 	}
 
-	public Integer getBhpqty() {
-		return bhpqty;
+	public Boolean getBnmnotice() {
+		return bnmnotice;
 	}
 
-	public void setBhpqty(Integer bhpqty) {
-		this.bhpqty = bhpqty;
-	}
-
-	public String getBhpprocess() {
-		return bhpprocess;
-	}
-
-	public void setBhpprocess(String bhpprocess) {
-		this.bhpprocess = bhpprocess;
-	}
-
-	public Boolean getBhnotification() {
-		return bhnotification;
-	}
-
-	public void setBhnotification(Boolean bhnotification) {
-		this.bhnotification = bhnotification;
+	public void setBnmnotice(Boolean bnmnotice) {
+		this.bnmnotice = bnmnotice;
 	}
 
 }

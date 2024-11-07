@@ -814,6 +814,8 @@
 				other.data.otherItemPageSet.entity = JSON.parse(main.resq_data['entityJson']);
 				other.data.otherItemPageSet.entityDetail = JSON.parse(main.resq_data['entityDetailJson']);
 				other.data.otherItemPageSet.entityOther = JSON.parse(main.resq_data['otherSet']);
+				//而外取得 物料清單
+
 
 				other.data.entityIKey['BBI'] = JSON.parse(main.resq_data['entityIKeyGKey'])['BBI'].split("_")[0];
 				other.data.entityGKey['BBI'] = JSON.parse(main.resq_data['entityIKeyGKey'])['BBI'].split("_")[1];
@@ -1006,7 +1008,7 @@
 							$('#other_' + toWhoId + ' .exTbodyTr').addClass("d-none");
 							resolve("OK:" + toWho);
 						} catch (error) {
-							reject("操作失敗:" + toWho);
+							reject("操作失敗:" + error + ":" + toWho);
 						}
 					});
 				};
@@ -1119,7 +1121,7 @@
 							}
 							resolve("OK:" + toWho);
 						} catch (error) {
-							reject("操作失敗:" + toWho);
+							reject("操作失敗:" + error + ":" + toWho);
 						}
 					});
 				};
@@ -1213,7 +1215,7 @@
 									$('#other_Detail_BPR .bisqty input').attr('type', 'number').val(0);
 									resolve("OK:" + toWho);
 								} catch (error) {
-									reject("操作失敗:" + toWho);
+									reject("操作失敗:" + error + ":" + toWho);
 								}
 							});
 						};
@@ -1271,7 +1273,7 @@
 										}
 									} resolve("OK:" + toWho);
 								} catch (error) {
-									reject("操作失敗:" + toWho);
+									reject("操作失敗:" + error + ":" + toWho);
 								}
 							});
 						};
@@ -1279,18 +1281,11 @@
 						const other_BIS = (toWho, vals) => {
 							return new Promise((resolve, reject) => {
 								try {
-									let entityJsons = other.data.otherItemPageSet.entityOther['WM'];
-									entityNewJsons = {};
-									Object.keys(entityJsons).forEach(function (k) {
-										entityNewJsons[entityJsons[k].wmpnb] =
-											entityJsons[k].wmpnb + "<_>" + entityJsons[k].wmname + "<_>" +
-											entityJsons[k].wmspecification + "<_>" + entityJsons[k].wmdescription;
-									});
-									//console.log(entityNewJsons);
-									other.data.otherItemPageSet.entityOther['WM'] = entityNewJsons;
+									//取得物料清單
+									other.methods.confirmSend("SearchWM", "BPMWM");
 									resolve("OK:" + toWho);
 								} catch (error) {
-									reject("操作失敗:" + toWho);
+									reject("操作失敗:" + error + ":" + toWho);
 								}
 							});
 						};
@@ -2888,6 +2883,25 @@
 							req_data['url'] = "bom_product_rule.basil.AR";
 						}
 						break;
+					case "SearchWM":
+						//==========================傳送對象-查詢(物料清單)==========================
+						entityJsons = JSON.parse(other.data.entityFormatJson["BPM"]);
+						$("#otherItemItem #BPM .searchVal").each(function (index) {
+							console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
+							if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = new Date($(this).val()).getTime();
+							} else {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = $(this).val() == "" ? null : $(this).val();
+							}
+						});
+						req_data['type'] = "POST";
+						req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.WM";
+						data['otherSet'] = whois;
+						data['callBackFunction'] = "other_search";
+
+
+						break;
+
 				}
 				console.log(entityJsons);
 				console.log(entityDetailJsons);
@@ -2995,7 +3009,7 @@
 						}
 						resolve("OK:" + toWho);
 					} catch (error) {
-						reject("操作失敗:" + toWho);
+						reject("操作失敗:" + error + ":" + toWho);
 					}
 				});
 			},
@@ -3055,6 +3069,19 @@
 					if ($("#other_c #other_Detail_BPM_open").hasClass("show")) {
 						$("#other_c #other_Detail_BPM_od>div>.bi-dash-square").trigger("click");
 					}
+				} else if (whois === "BPMWM") {
+					//物料清單
+					other.data.otherItemPageSet.entityOther['WM'] = JSON.parse(main.resq_data['otherSet'])['WM'];
+					let entityJsons = other.data.otherItemPageSet.entityOther['WM'];
+					//
+					entityNewJsons = {};
+					Object.keys(entityJsons).forEach(function (k) {
+						entityNewJsons[entityJsons[k].wmpnb] =
+							entityJsons[k].wmpnb + "<_>" + entityJsons[k].wmname + "<_>" +
+							entityJsons[k].wmspecification + "<_>" + entityJsons[k].wmdescription;
+					});
+					//console.log(entityNewJsons);
+					other.data.otherItemPageSet.entityOther['WM'] = entityNewJsons;
 				}
 			},
 			//==========================初始化==========================

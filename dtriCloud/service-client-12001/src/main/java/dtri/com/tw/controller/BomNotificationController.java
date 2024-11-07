@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.service.feign.BomServiceFeign;
+import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
 @Controller
-public class BomProductManagementController extends AbstractController {
+public class BomNotificationController extends AbstractController {
 
 	@Autowired
 	private PackageService packageService;
@@ -25,7 +26,7 @@ public class BomProductManagementController extends AbstractController {
 	BomServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil" }, method = {
+	@RequestMapping(value = { "/ajax/bom_notification.basil" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -48,9 +49,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductManagementSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBomNotificationSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -70,7 +70,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.AR" }, method = {
+	@RequestMapping(value = { "/ajax/bom_notification.basil.AR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -93,9 +93,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductManagementSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBomNotificationSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -115,52 +114,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.WM" }, method = {
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	String getSearchWM(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductManagementgetSearchWM(packageService.beanToJson(packageBean));
-			loggerInf(funName + "[End]", loginUser().getUsername());
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.ARR" }, method = {
+	@RequestMapping(value = { "/ajax/bom_notification.basil.ARR" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
@@ -183,9 +137,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductManagementReport(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getBomNotificationReport(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -205,7 +158,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.AC" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/ajax/bom_notification.basil.AC" }, method = { RequestMethod.POST })
 	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -227,9 +180,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductManagementAdd(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBomNotificationAdd(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -249,7 +201,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.AU" }, method = { RequestMethod.PUT })
+	@RequestMapping(value = { "/ajax/bom_notification.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -271,9 +223,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductManagementModify(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBomNotificationModify(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -293,7 +244,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.AD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/bom_notification.basil.AD" }, method = { RequestMethod.DELETE })
 	String invalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -315,9 +266,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductManagementInvalid(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBomNotificationInvalid(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -337,7 +287,7 @@ public class BomProductManagementController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_management.basil.DD" }, method = { RequestMethod.DELETE })
+	@RequestMapping(value = { "/ajax/bom_notification.basil.DD" }, method = { RequestMethod.DELETE })
 	String delete(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -359,9 +309,8 @@ public class BomProductManagementController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductManagementDetele(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setBomNotificationDetele(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
-
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -379,182 +328,4 @@ public class BomProductManagementController extends AbstractController {
 		}
 		return packageJson;
 	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_rule.basil.AR" }, method = {
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	String searchRule(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductRuleSearch(packageService.beanToJson(packageBean));
-			loggerInf(funName + "[End]", loginUser().getUsername());
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_rule.basil.AC" }, method = { RequestMethod.POST })
-	String addRule(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductRuleAdd(packageService.beanToJson(packageBean));
-			loggerInf(funName + "[End]", loginUser().getUsername());
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_rule.basil.AU" }, method = { RequestMethod.PUT })
-	String modifyRule(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductRuleModify(packageService.beanToJson(packageBean));
-			loggerInf(funName + "[End]", loginUser().getUsername());
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/bom_product_rule.basil.DD" }, method = { RequestMethod.DELETE })
-	String deleteRule(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
-		PackageBean packageBean = new PackageBean();
-		try {
-			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
-			// Step2.基礎資料整理
-			packageBean.setUserAccount(loginUser().getSystemUser().getSuaccount());// 使用者
-			packageBean.setUserLanguaue(loginUser().getSystemUser().getSulanguage());// 語言
-			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
-
-			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setProductRuleDetele(packageService.beanToJson(packageBean));
-			loggerInf(funName + "[End]", loginUser().getUsername());
-
-		} catch (Exception e) {
-			// StepX-2. 未知-故障回報
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-			packageBean.setInfo(CloudExceptionService.W0000_en_US);
-			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
-		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return packageJson;
-	}
-
 }

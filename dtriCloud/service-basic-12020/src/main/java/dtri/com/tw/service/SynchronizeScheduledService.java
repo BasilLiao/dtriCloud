@@ -179,7 +179,8 @@ public class SynchronizeScheduledService {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "sslbslsnnb"));// 單別_單號_單序
 		PageRequest pageable = PageRequest.of(0, 9999, Sort.by(orders));
-		ArrayList<ScheduleShortageList> shortageLists = shortageListDao.findAllBySearch("A541", null, 0, null, pageable);
+		ArrayList<ScheduleShortageList> shortageLists = shortageListDao.findAllBySearch("A541", null, 0, null,
+				pageable);
 		ArrayList<ScheduleShortageList> shortageListSaves = new ArrayList<ScheduleShortageList>();
 		// 分類<工單,缺料清單>
 		Map<String, ArrayList<ScheduleShortageList>> shortageListGroups = new HashMap<String, ArrayList<ScheduleShortageList>>();
@@ -251,8 +252,8 @@ public class SynchronizeScheduledService {
 				// 模擬12筆資料
 				for (ScheduleShortageList ssl : y) {
 					String fromcommand[] = ssl.getSslfromcommand().replaceAll("\\[|\\]", "").split("\\*");
-					String mo = fromcommand.length > 0 ? fromcommand[0] : "";//製令單號
-					String pqty = fromcommand.length > 2 ? fromcommand[1] + "*" + fromcommand[2] : "";//產品品號*數量
+					String mo = fromcommand.length > 0 ? fromcommand[0] : "";// 製令單號
+					String pqty = fromcommand.length > 2 ? fromcommand[1] + "*" + fromcommand[2] : "";// 產品品號*數量
 					bnmcontent += "<tr>"//
 							+ "<td>" + mo + "</td>"//
 							+ "<td>" + pqty + "</td>"//
@@ -292,7 +293,13 @@ public class SynchronizeScheduledService {
 		ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearch(null, null, 0, null,
 				true, nf_pageable);
 		// Step2. 取得須寄信清單(外包排程資料)
-		ArrayList<ScheduleOutsourcer> outsourcers = outsourcerDao.findAllBySearch(null, null, null, null, null);
+
+		List<Order> os_orders = new ArrayList<>();
+		os_orders.add(new Order(Direction.ASC, "sofdate"));// 預計完工日
+		os_orders.add(new Order(Direction.ASC, "somcdate"));// 預計其料日
+		os_orders.add(new Order(Direction.ASC, "sonb"));// 製令單
+		PageRequest os_pageable = PageRequest.of(0, 9999, Sort.by(os_orders));
+		ArrayList<ScheduleOutsourcer> outsourcers = outsourcerDao.findAllBySearch(null, null, null, null, os_pageable);
 
 		// 整理資料
 		outsourcers.forEach(o -> {

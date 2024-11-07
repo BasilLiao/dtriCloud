@@ -1,12 +1,27 @@
 package dtri.com.tw.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
@@ -16,13 +31,20 @@ import dtri.com.tw.mssql.dao.InvmaDao;
 import dtri.com.tw.mssql.entity.Bommd;
 import dtri.com.tw.mssql.entity.Invma;
 import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
+import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BasicProductModelDao;
+import dtri.com.tw.pgsql.dao.BomHistoryDao;
+import dtri.com.tw.pgsql.dao.BomNotificationDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
+import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import dtri.com.tw.pgsql.entity.BasicProductModel;
+import dtri.com.tw.pgsql.entity.BomHistory;
+import dtri.com.tw.pgsql.entity.BomNotification;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.service.feign.BomServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
+import dtri.com.tw.shared.Fm_T;
 import jakarta.annotation.Resource;
 
 @Service
@@ -40,6 +62,13 @@ public class SynchronizeBomService {
 	BasicBomIngredientsDao basicBomIngredientsDao;
 	@Autowired
 	WarehouseMaterialDao materialDao;
+	@Autowired
+	BomHistoryDao bomHistoryDao;
+	@Autowired
+	BomNotificationDao notificationDao;
+	@Autowired
+	private BasicNotificationMailDao notificationMailDao;
+
 	@Autowired
 	ERPToCloudService erpToCloudService;
 
@@ -133,9 +162,163 @@ public class SynchronizeBomService {
 		System.out.println("---");
 	}
 
+	// ============ BOM是否有異動修正() ============
+	public void bomModification() throws Exception {
+		// Step0. 準備資料
+		ArrayList<BomHistory> hisListSaves = new ArrayList<BomHistory>();
+		// 1. 讀取 Excel 檔案
+		File file = new File("src/main/resources/90-XXX-XXXXXXX.xlsx");
+		Workbook workbook = null;
+		try (InputStream inputStream = new FileInputStream(file)) {
+			System.out.println("檔案已成功讀取。");
+			// 在這裡進行文件處理邏輯
+			workbook = new XSSFWorkbook(inputStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Step1. 取得寄信人
+		List<Order> nf_orders = new ArrayList<>();
+		nf_orders.add(new Order(Direction.ASC, "bnsuname"));// 關聯帳號名稱
+		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
+		ArrayList<BomNotification> notifications = notificationDao.findAllBySearch(null, null, 0, nf_pageable);
+
+		// Step2. 取得須寄信清單(產品異動通知)
+		List<Order> os_orders = new ArrayList<>();
+		os_orders.add(new Order(Direction.ASC, "bhnb"));// 成品BOM號
+		os_orders.add(new Order(Direction.ASC, "bhpnb"));// 成品BOM號-part 物料
+		PageRequest os_pageable = PageRequest.of(0, 9999, Sort.by(os_orders));
+		ArrayList<BomHistory> outsourcers = bomHistoryDao.findAllBySearch(null, null, null, null, null, null,
+				os_pageable);
+		// Step2-1.整理資料(每一張BOM 一封信)
+		Map<String, ArrayList<BomHistory>> outsourcersMap = new HashMap<String, ArrayList<BomHistory>>();
+		for (BomHistory bomHistory : outsourcers) {
+			// 有比對到?
+			if (outsourcersMap.containsKey(bomHistory.getBhnb())) {
+				ArrayList<BomHistory> oldHis = outsourcersMap.get(bomHistory.getBhnb());
+				oldHis.add(bomHistory);
+				outsourcersMap.put(bomHistory.getBhnb(), oldHis);
+			} else {
+				// 沒比對到?
+				ArrayList<BomHistory> newHis = new ArrayList<BomHistory>();
+				newHis.add(bomHistory);
+				outsourcersMap.put(bomHistory.getBhnb(), newHis);
+			}
+		}
+
+		Workbook workbooks = workbook;// 為了下方邏輯
+		// Step3. 取得寄信模塊
+		outsourcersMap.forEach((mk, mv) -> {
+			// 寄信件對象
+			ArrayList<String> mainUsers = new ArrayList<String>();
+			ArrayList<String> secondaryUsers = new ArrayList<String>();
+
+			// 寄信對象條件
+			notifications.forEach(r -> {// 沒有設置=全寄信
+				// 如果有機型?
+				if (!r.getBnmodel().equals("") && mv.get(0).getBhmodel().contains(r.getBnmodel())) {
+					// 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				} // 如果有成品號?
+				else if (!r.getBnnb().equals("") && mv.get(0).getBhnb().contains(r.getBnnb())) {
+					// 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				} else {
+					// 如果都沒有過濾(留空白)-> 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				}
+			});
+			// 建立信件
+			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+				readyNeedMail.setBnmkind("BOM");
+				readyNeedMail.setBnmmail(mainUsers + "");
+				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+						+ "Cloud system BOM [" + mk + "] modification notification!");
+				// 內容
+				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						+ "<th>項次</th>"//
+						+ "<th>產品號</th>"//
+						+ "<th>產品型號</th>"//
+						+ "<th>異動類型</th>"//
+						+ "<th>組成-物料號</th>"//
+						+ "<th>組成-製成</th>"//
+						+ "<th>組成-數量</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>";// 模擬12筆資料
+				int r = 0;
+				for (BomHistory oss : mv) {
+					// 移除的不能算
+					if (!oss.getBhatype().equals("Delete")) {
+						r += 1;
+						// Excel
+						Sheet sheet = workbooks.getSheetAt(0); // 獲取第一個工作表
+						// 2. 修改 Excel 資料（這裡假設在第一行添加一行資料）
+						Row dataRow = sheet.createRow(r);
+						dataRow.createCell(0).setCellValue(r);
+						dataRow.createCell(1).setCellValue(oss.getBhpnb());
+						dataRow.createCell(2).setCellValue(oss.getBhpqty());
+						dataRow.createCell(8).setCellValue(oss.getBhpprocess());
+					}
+
+					// 信件資料結構
+					bnmcontent += "<tr>"//
+							+ "<td>" + (oss.getBhatype().equals("Delete") ? "0" : r) + "</td>"// 項次
+							+ "<td>" + oss.getBhnb() + "</td>"// 產品號
+							+ "<td>" + oss.getBhmodel() + "</td>"// 產品型號
+							+ "<td>" + oss.getBhatype() + "</td>"// 異動類型
+							+ "<td>" + oss.getBhpnb() + "</td>"// 組成-物料號
+							+ "<td>" + oss.getBhpprocess() + "</td>"// 組成-製成
+							+ "<td>" + oss.getBhpqty() + "</td>"// 組成-數量
+							+ "</tr>";
+					// 有登記的
+					hisListSaves.add(oss);
+				}
+				bnmcontent += "</tbody></table>";
+				readyNeedMail.setBnmcontent(bnmcontent);
+
+				// 輸出到 byte[]
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				try {
+					workbooks.write(outputStream);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				byte[] bytes = outputStream.toByteArray();
+				readyNeedMail.setBnmattcontent(bytes);
+				readyNeedMail.setBnmattname("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+						+ "Cloud system PCB outsourcing schedule.xlsx");
+
+				// 取消-檢查信件(避免重複)
+				notificationMailDao.save(readyNeedMail);
+				// Step4. 修正資料
+				hisListSaves.forEach(e -> {
+					e.setSysstatus(1);
+					e.setBhnotification(true);
+				});
+				bomHistoryDao.saveAll(hisListSaves);
+
+			}
+		});
+	}
+
 	// 而外執行(BOM規則同步)
 	public void autoBISF() {
-
 		JsonObject sendAllData = new JsonObject();
 		sendAllData.addProperty("update", "checkUpdate");
 		sendAllData.addProperty("action", "sendAllData");
