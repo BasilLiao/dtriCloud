@@ -25,10 +25,11 @@ public class ScheduleOutsourcerControllerAC extends AbstractController {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	String OutsourcerSynchronize(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
+		// 顯示方法(資料量太大會卡)
+		/*
+		 * String funName = new Object() { }.getClass().getEnclosingMethod().getName();
+		 * sysFunction(funName);
+		 */
 		// System.out.println("" + jsonObject);
 		// 資料解析準備
 		boolean isOk = false;
@@ -39,7 +40,7 @@ public class ScheduleOutsourcerControllerAC extends AbstractController {
 		// 進行呼叫廣播給所有人更新資料
 		if (action.equals("sendAllData")) {
 			try {
-				loggerInf(funName + "[Start]" + jsonObject, "system");
+				// loggerInf(funName + "[Start]" + jsonObject, "system");
 				// {"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}
 				JsonObject sendMessage = new JsonObject();
 				sendMessage.addProperty("user", "system");

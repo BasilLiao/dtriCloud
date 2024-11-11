@@ -66,7 +66,7 @@
 	/*覆寫換色*/
 	.table-hover>tbody>tr:hover>* {
 		--bs-table-accent-bg: #0d6efd40;
-		color: var(--bs-table-hover-color);
+		color: let(--bs-table-hover-color);
 	}
 
 	/*標題色彩*/
@@ -235,9 +235,9 @@
 									style="font-size: 12px;">Not Sync</b>
 							</div>
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input id="btn_send_auto" alt="" title="" type="checkbox"
+								<input id="btn_update_auto" alt="" title="" type="checkbox"
 									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">Auto(30s)</b>
+									style="font-size: 12px;">only Updata</b>
 							</div>
 							<button id="btn_send" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -447,7 +447,7 @@
 		data: {
 			marks: {},//有選取的IKeyGKey
 			entityFormatJson: {},//查詢格式
-			btn_send_auto: "",//自動傳送
+			btn_update_auto: "",//只顯示修改
 			//換頁設置
 			searchPageSet: {
 				total: 500,//批次數量(1-1000)
@@ -475,7 +475,7 @@
 				//查詢格式
 				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				//資料內容
 				other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
 				other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
@@ -485,9 +485,9 @@
 				other.data.searchSet = searchSetJson['searchSet'];
 				console.log(other.data.searchPageSet.entityJsons);
 				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
-				var btn_confirm = false;
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
+				let btn_confirm = false;
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
 				} if (ps[5] == 1) {//修改-生館編輯(S1)5
@@ -512,22 +512,22 @@
 				}
 
 				//Step1.查詢結果標題-排序
-				var resultThead = searchSetJson['resultThead'];
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let resultThead = searchSetJson['resultThead'];
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
 				resultThead = main.methods.orderedSort(resultThead);
 				//
-				var resultDetailThead = searchSetJson['resultDetailThead'];
+				let resultDetailThead = searchSetJson['resultDetailThead'];
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
-				var check1 = true, check2 = true, check3 = true, check4 = true;
-				var left = 40;
+				let check1 = true, check2 = true, check3 = true, check4 = true;
+				let left = 40;
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
 					//複製格式
-					var exTheadth = $('#search_cr_open .exTheadth').clone();
-					var exTbodytd = $('#search_cr_open .exTbodytd').clone();
+					let exTheadth = $('#search_cr_open .exTheadth').clone();
+					let exTbodytd = $('#search_cr_open .exTbodytd').clone();
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
@@ -589,7 +589,7 @@
 					}
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
 						exTheadth.css('minWidth', resultThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultThead[k].width + "px");
@@ -619,8 +619,8 @@
 					$('#search_dcr').addClass('d-none');
 				}
 				//Step3.查詢內容-格式(資料筆數)
-				for (var b = 1; b <= 10; b++) {
-					var exTbodyTr = $('.exTbodyTr').clone();
+				for (let b = 1; b <= 10; b++) {
+					let exTbodyTr = $('.exTbodyTr').clone();
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.addClass('valTbodyTr_' + b);
 					exTbodyTr.find('input').attr("alt", "row_" + b);
@@ -630,11 +630,11 @@
 				other.data.valTbodyTr = 10;
 
 				//Step4.查詢條件
-				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
-					var searchSet = searchSetJson['searchSet'][t];
-					var searchTextEx = "";
-					var searchSelectEx = "";
-					var selectEx = "";
+				for (let t = 0; t < searchSetJson['searchSet'].length; t++) {
+					let searchSet = searchSetJson['searchSet'][t];
+					let searchTextEx = "";
+					let searchSelectEx = "";
+					let selectEx = "";
 					//不顯示
 					if (!searchSet['show']) {
 						continue;
@@ -654,7 +654,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchTextEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchTextEx.find('.searchTitle').text(searchSet['searchName']);
@@ -676,7 +676,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchSelectEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchSelectEx.find('.searchTitle').text(searchSet['searchName']);
@@ -684,9 +684,9 @@
 							}
 						});
 						//選項
-						for (var s = 0; s < searchSet['select'].length; s++) {
-							var key = searchSet['select'][s].split("_")[0];
-							var val = searchSet['select'][s].split("_")[1];
+						for (let s = 0; s < searchSet['select'].length; s++) {
+							let key = searchSet['select'][s].split("_")[0];
+							let val = searchSet['select'][s].split("_")[1];
 							selectEx = searchSelectEx.find('.selectEx').clone();
 							selectEx.removeClass("selectEx");
 							selectEx.removeAttr("selected");
@@ -722,7 +722,7 @@
 				$(document).off("click", "#search_c #exthAll");
 				$(document).on("click", "#search_c #exthAll", function (event) {
 					//都有勾選?
-					var clickAll = true;
+					let clickAll = true;
 					$("#search_cr_open .exTbodyTh").each(function () {
 						if ($(this).find("input").attr("disabled") != "disabled" && $(this).find("input").prop("checked") == false) {
 							$(this).find("input").trigger("click");
@@ -759,14 +759,14 @@
 				$(document).on("change", "#search_c #search_cr_open .exTbodyTh input", function (event) {
 					console.log("search_cr_open");
 					//一般資料
-					var Ikey_Gkey = event.target.title;
-					var check = event.target.checked;
+					let Ikey_Gkey = event.target.title;
+					let check = event.target.checked;
 					//標記-選取|解除
 					if (check == true) {
 						other.data.marks[Ikey_Gkey] = true;
 						//console.log(entityDetailJsons);	
 					} else {
-						for (var k in other.data.marks) {
+						for (let k in other.data.marks) {
 							if (k == Ikey_Gkey) {
 								delete other.data.marks[k];
 								break;
@@ -818,13 +818,6 @@
 				$(document).on("click", "#search_c #btn_send", function (event) {
 					console.log("btn_send");
 					other.methods.searchSend(0);
-					if ($("#btn_send_auto").prop("checked")) {
-						other.data.btn_send_auto = setTimeout(function () {
-							$("#search_c #btn_send").trigger("click");
-						}, 30000);
-					} else {
-						clearTimeout(other.data.btn_send_auto);
-					}
 				});
 				//監聽-查詢(促發)
 				$(document).off("keyup", "#searchItem input");
@@ -865,8 +858,8 @@
 				//上傳檔案Ex?
 				$(document).off("click", "#btn_inp_excel_ex");
 				$(document).on("click", "#btn_inp_excel_ex", function (event) {
-					var inputExcelEx = $('#inputExcelEx').clone();
-					var options = {
+					let inputExcelEx = $('#inputExcelEx').clone();
+					let options = {
 						workbook: {
 							views: [{
 								x: 0, y: 0, width: 10000, height: 20000,
@@ -895,22 +888,22 @@
 				$(document).off("change", "#btn_inp_excel .form-control-file");
 				$(document).on("change", "#btn_inp_excel .form-control-file", function (event) {
 					console.log("form-control-file");
-					var target = $(event.target);
+					let target = $(event.target);
 					//沒檔案?
 					if (!this.files || !this.files[0] || target.attr("accept") != ".xlsx") {
 						target.val("");
 						return;
 					}
 					//取得狀態(生管/物控/倉儲.....)
-					var choose = $("#search_c_modify_open .mfy_datas1").find(".mfy_sonb_choose").text();
+					let choose = $("#search_c_modify_open .mfy_datas1").find(".mfy_sonb_choose").text();
 					//分析完成->比對資料寫入
-					var jsonResult = other.methods.inputExcel(this.files[0]);
+					let jsonResult = other.methods.inputExcel(this.files[0]);
 					jsonResult.then((res) => {
 						console.log(res['inputExcel']);
 						//每個Excel欄位
 						res['inputExcel'].forEach(function (t) {
 							console.log(t);
-							var inExcel = $("#search_c_modify_open ." + t.sonb);
+							let inExcel = $("#search_c_modify_open ." + t.sonb);
 							//有比對到
 							if (inExcel != null) {
 								switch (choose) {
@@ -941,19 +934,19 @@
 			},
 			//==========================Excel ==========================
 			inputExcel(file) {
-				var reader = new FileReader();
+				let reader = new FileReader();
 				reader.readAsBinaryString(file);
 				//https://www.casper.tw/development/2020/02/16/all-new-promise/
 				//
 				return new Promise((resolve, reject) => {
 					reader.onload = function (e) {
-						var data = e.target.result;
-						var workbook = XLSX.read(data, {
+						let data = e.target.result;
+						let workbook = XLSX.read(data, {
 							type: "binary",
 						});
-						var result = {};
+						let result = {};
 						workbook.SheetNames.forEach(function (sheetName) {
-							var roa = XLSX.utils.sheet_to_row_object_array(
+							let roa = XLSX.utils.sheet_to_row_object_array(
 								workbook.Sheets[sheetName]
 							);
 							if (roa.length > 0) {
@@ -967,7 +960,7 @@
 			exportExcel() {
 				//https://github.com/JackGit/table2excel.js
 				//設置
-				var options = {
+				let options = {
 					workbook: {
 						views: [{
 							x: 0, y: 0, width: 10000, height: 20000,
@@ -987,7 +980,7 @@
 							}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
 								//https://github.com/exceljs/exceljs/blob/master/README_zh.md#%E5%9B%BE%E7%89%87
 								//創建時(每一格欄位)-呼叫
-								var cellWidth = $(cell).css("minWidth").replaceAll('px', '');
+								let cellWidth = $(cell).css("minWidth").replaceAll('px', '');
 								//console.log(cell);
 								//指定欄位顏色
 								if ($(cell).hasClass("TbodyThYW") || $(cell).hasClass("TbodyThYWO")) {
@@ -1014,8 +1007,8 @@
 					]
 				}
 				//資料準備
-				var todayDate = new Date().toISOString().slice(0, 10);
-				var searchReportExcel = $('#searchReportExcel').clone();
+				let todayDate = new Date().toISOString().slice(0, 10);
+				let searchReportExcel = $('#searchReportExcel').clone();
 				searchReportExcel.find('.markFn').remove();
 				searchReportExcel.find('button').remove();
 				searchReportExcel.find('.valTbodyTrYW').remove();
@@ -1023,8 +1016,8 @@
 				//searchReportExcel.find('.markFn').remove();
 				//置換資料-生管(換行)
 				searchReportExcel.find('.soscnote').each(function () {
-					var k = "\n"
-					var doubleN = false;
+					let k = "\n"
+					let doubleN = false;
 					$(this).find('.needbr').each(function () {
 						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
 						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
@@ -1040,8 +1033,8 @@
 				});
 				//置換資料-物控(換行)
 				searchReportExcel.find('.somcnote').each(function () {
-					var k = "\n"
-					var doubleN = false;
+					let k = "\n"
+					let doubleN = false;
 					$(this).find('.needbr').each(function () {
 						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
 						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
@@ -1057,8 +1050,8 @@
 				});
 				//置換資料-倉儲(換行)
 				searchReportExcel.find('.sowmnote').each(function () {
-					var k = "\n"
-					var doubleN = false;
+					let k = "\n"
+					let doubleN = false;
 					$(this).find('.needbr').each(function () {
 						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
 						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
@@ -1074,8 +1067,8 @@
 				});
 				//置換資料-製造(換行)
 				searchReportExcel.find('.sompnote').each(function () {
-					var k = "\n"
-					var doubleN = false;
+					let k = "\n"
+					let doubleN = false;
 					$(this).find('.needbr').each(function () {
 						this.innerHTML = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{50}\x01?/g, "$&\n").replace(/\x01/g, "");
 						k += this.innerHTML.replaceAll("<br>", "\n") + "\n";
@@ -1092,7 +1085,7 @@
 
 				//置換資料 Note(換行)
 				searchReportExcel.find('.sonote').each(function () {
-					var k = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{49}\x01?/g, "$&\n").replace(/\x01/g, "");
+					let k = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{49}\x01?/g, "$&\n").replace(/\x01/g, "");
 					$(this).html(k);
 				});
 
@@ -1105,7 +1098,7 @@
 			//==========================Websocket傳送動作==========================
 			//WebsocketAction(objstring)objstring:如果有異常連線重新請求
 			websocketInit(objstring) {
-				var ws = "ws://";
+				let ws = "ws://";
 				ws += location.host;
 				ws += "/DTRcloud/websocket/schedule_outsourcer_client/echo?userAcc=";
 				ws += $("#menu_login_name").attr("alt");
@@ -1118,15 +1111,15 @@
 				}
 				other.data.websocket.onmessage = e => {
 					//Step1. 收到訊息
-					var dataJson = JSON.parse(e.data);
+					let dataJson = JSON.parse(e.data);
 					//Step2.取出資料
-					var update = dataJson.update;
-					var status = dataJson.status;
-					var action = dataJson.action;
+					let update = dataJson.update;
+					let status = dataJson.status;
+					let action = dataJson.action;
 					//一般查詢 or 同步+沒勾選同步鎖(指同步有的資料)
 					if ($("#btn_not_sync").prop("checked")) {
-						var updateCheck = JSON.parse(update);
-						var updateNewData = [];
+						let updateCheck = JSON.parse(update);
+						let updateNewData = [];
 						other.data.searchPageSet.entityJsons.forEach(function (t) {
 							updateCheck.forEach(function (n) {
 								if (t.soid == n.soid) {
@@ -1185,8 +1178,8 @@
 			websocketSendMessage(action) {
 				//{"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}
 				//包裝語法
-				var objson = {};
-				var objstring = {};
+				let objson = {};
+				let objstring = {};
 				objson.user = $("#menu_login_name").attr("alt");
 				objson.update = other.data.entityJsonForWebsocket;
 
@@ -1272,12 +1265,12 @@
 			searchToModify(order) {
 				//是否marks?markDetails?
 
-				var marks = other.data.marks;
+				let marks = other.data.marks;
 				if (JSON.stringify(marks) == "{}") {
 					return null;
 				}
 				//是否有人選了?
-				var someoneUsed = false;
+				let someoneUsed = false;
 				$('#search_cr_open tbody tr').each(function () {
 					if ($(this).find('input').prop("checked")) {
 						if ($(this).hasClass('table-danger')) {
@@ -1294,9 +1287,9 @@
 				//->還原
 				other.methods.searchToModifyRe();
 				//Step6.編輯筆數-複製
-				var count = Object.keys(marks).length;
-				for (var d = 1; d <= count; d++) {
-					var mfyEx = $("#mfyEx").clone();
+				let count = Object.keys(marks).length;
+				for (let d = 1; d <= count; d++) {
+					let mfyEx = $("#mfyEx").clone();
 					mfyEx.attr("id", "");
 					mfyEx.addClass("mfy_datas");
 					mfyEx.addClass("mfy_datas" + d);
@@ -1333,28 +1326,28 @@
 						break;
 				}
 				//顯示Data
-				var k = 0;//
+				let k = 0;//
 				$('#search_cr_open tbody tr').each(function () {
 					if ($(this).find('input').prop("checked")) {
 						//console.log(this);
 						k += 1;
 						//選擇
-						var mfyEx = $(".mfy_datas" + k);
+						let mfyEx = $(".mfy_datas" + k);
 						mfyEx.addClass("mfy_datas");
 						mfyEx.removeClass("d-none");
 						//資料
-						var soid = $(this).find(".soid").text();
-						var sonb = $(this).find(".sonb").text();
-						var sofodate = $(this).find(".sofodate").html().replaceAll("<br>", "\n");
+						let soid = $(this).find(".soid").text();
+						let sonb = $(this).find(".sonb").text();
+						let sofodate = $(this).find(".sofodate").html().replaceAll("<br>", "\n");
 						sofodate = sofodate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
-						var sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>", "\n");
+						let sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>", "\n");
 						sofokdate = sofokdate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
-						var soscstatus = $(this).find(".soscstatus").attr('title');
-						var somcdate = $(this).find(".somcdate").text();
-						var soscnote = "";
-						var somcnote = "";
-						var sowmnote = "";
-						var sompnote = "";
+						let soscstatus = $(this).find(".soscstatus").attr('title');
+						let somcdate = $(this).find(".somcdate").text();
+						let soscnote = "";
+						let somcnote = "";
+						let sowmnote = "";
+						let sompnote = "";
 						switch (order) {
 							case "btn_pc"://生管
 								//生館
@@ -1435,9 +1428,9 @@
 			//==========================傳送資料==========================
 			websocketPage() {//Websocket 抓取選擇用
 				//確認選取
-				var entityJsons = [];//回傳一般資料
+				let entityJsons = [];//回傳一般資料
 				$('#search_c_modify tbody .mfy_datas').each(function () {
-					var entityJso = [];
+					let entityJso = [];
 					if ($(this).attr("id") != "") {
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
@@ -1482,19 +1475,19 @@
 
 			//確認(needSend)
 			confirmSend() {
-				var entityJsons = [];//回傳一般資料
-				var entityDetailJsons = [];//回傳細節資料
-				var data = null;
-				var type = "PUT";
-				var action = "";
-				var req_data = {};
-				var searchPageSet = {};
-				var choose = "";
+				let entityJsons = [];//回傳一般資料
+				let entityDetailJsons = [];//回傳細節資料
+				let data = null;
+				let type = "PUT";
+				let action = "";
+				let req_data = {};
+				let searchPageSet = {};
+				let choose = "";
 
 				//確認選取
 				$('#search_c_modify tbody .mfy_datas').each(function () {
-					var entityJso = [];
-					var regEx = /^\d{4}-\d{2}-\d{2}$/;
+					let entityJso = [];
+					let regEx = /^\d{4}-\d{2}-\d{2}$/;
 					if ($(this).attr("id") != "") {
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
@@ -1511,7 +1504,7 @@
 								action = "S1";
 								break
 							case "mc"://物控
-								var somcdate = $(this).find(".mfy_somcdate_val").val()
+								let somcdate = $(this).find(".mfy_somcdate_val").val()
 								if (somcdate.match(regEx) || somcdate == '') {
 									entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
 									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
@@ -1561,10 +1554,10 @@
 			},
 			//查詢
 			searchSend(batch) {
-				var entityJson = other.data.entityFormatJson;//格式
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
+				let entityJson = other.data.entityFormatJson;//格式
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
 
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
@@ -1601,7 +1594,7 @@
 				console.log("searchReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					other.data.searchPageSet.total = searchPageSet['total'];
 					other.data.searchPageSet.batch = searchPageSet['batch'];
 					other.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
@@ -1634,24 +1627,24 @@
 					$('#search_cr .btn-outline-white').trigger('click');
 				}
 				//Step6.帶入資料
-				var marks = other.data.marks;
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				let marks = other.data.marks;
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
 				//週期插入
-				var yyW00 = "";//週期
-				var yyW00LastClass = "";//上週期位置 
-				var yyW00Qty = 0;//週期數量
+				let yyW00 = "";//週期
+				let yyW00LastClass = "";//上週期位置 
+				let yyW00Qty = 0;//週期數量
 				//如果不夠筆數?
 				if (other.data.valTbodyTr < entityJsons.length) {
-					var valTbodyTrAdd = (entityJsons.length - other.data.valTbodyTr);
+					let valTbodyTrAdd = (entityJsons.length - other.data.valTbodyTr);
 					console.log("缺:" + valTbodyTrAdd);//要從n+1起算
-					for (var b = (other.data.valTbodyTr + 1); b <= entityJsons.length; b++) {
-						var exTbodyTr = $('.exTbodyTr').clone();
+					for (let b = (other.data.valTbodyTr + 1); b <= entityJsons.length; b++) {
+						let exTbodyTr = $('.exTbodyTr').clone();
 						exTbodyTr.removeClass('exTbodyTr');
 						exTbodyTr.addClass('valTbodyTr_' + b);
 						exTbodyTr.find('input').attr("alt", "row_" + b);
@@ -1660,40 +1653,64 @@
 					other.data.valTbodyTr += valTbodyTrAdd;
 				}
 				//Step3.查詢內容-格式(資料筆數)
-				for (var x = 0; x < entityJsons.length; x++) {
-					var valTrNb = x + 1;
-					var entity = entityJsons[x];//((目前頁碼-1)*每頁數量)+x
-					var iKey = "";
-					var gKey = "";
-					//每個欄位
+				console.log("start" + new Date());
+				let onlyUpdateNb = 1;
+				entityJsons.forEach((entity, x) => {
+					//參數
+					//let entity = entityJsons[x];//((目前頁碼-1)*每頁數量)+x
+					let iKey = "";
+					let gKey = "";
+					let valTrNb = x + 1;
+					//是否只顯示有修改的?
+					if ($("#btn_update_auto").prop("checked")) {
+						let tagEntity = JSON.parse(entity['tag']);
+						let continueCheck = true;
+						Object.keys(tagEntity).forEach(function (t) {
+							if (tagEntity[t] != "") {
+								continueCheck = false;
+							}
+						});
+						//沒修改? 跳過
+						if (continueCheck) {
+							return;
+						} else {
+							valTrNb = onlyUpdateNb++;
+						}
+					}
+					//每筆資料
+					let valTr = $('.valTbodyTr_' + valTrNb);
+					let inputTrNb = $('.valTbodyTr_' + valTrNb + ' input');
+
 					Object.keys(entity).forEach(function (k) {
+						//每個欄位?
+						let cellTrNb = $('.valTbodyTr_' + valTrNb + ' .' + k);
 						//欄位計數
-						$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+						valTr.find('th input').removeAttr("disabled");
 						//是否IKEY?
 						if (entityIKey == k) {iKey = entity[k];}
 						//是否GKEY?
 						if (entityGKey == k) {gKey = entity[k];}
 						//是否時間格式?
 						if (entityDateTime.indexOf(k) >= 0) {
-							var dF = new Date(entity[k]);
-							var dateF = dF.getFullYear() + "-";
+							let dF = new Date(entity[k]);
+							let dateF = dF.getFullYear() + "-";
 							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 							dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 							dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-							$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+							cellTrNb.text(dateF);
 						} else {
 							//生管_物控_製造_倉庫
 							if (k == "soscnote" || k == "somcnote" || k == "sowmnote" || k == "sompnote") {
-								var note = JSON.parse(entity[k]);
-								var notes = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
-								var noteIns = "";
-								var first = true;
-								var mb_1 = "";
+								let note = JSON.parse(entity[k]);
+								let notes = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
+								let noteIns = "";
+								let first = true;
+								let mb_1 = "";
 								note.forEach(function (one) {
 									mb_1 = (first ? "" : "mb-1");
-									var content = one['content'];
+									let content = one['content'];
 									content = content.replaceAll('\n', '</br>');
 									noteIns = '<div class="row m-0 border border-secondary ' + mb_1 + '">' +
 										'<div class="col-12 m-0 p-0 row needbr ">' +
@@ -1706,11 +1723,11 @@
 								});
 								notes += noteIns + '</div>';
 
-								$('.valTbodyTr_' + valTrNb + ' .' + k).html(notes);
-								$('.valTbodyTr_' + valTrNb + ' .' + k).find(".row").first().removeClass("border-secondary").addClass("border-warning");
+								cellTrNb.html(notes);
+								cellTrNb.find(".row").first().removeClass("border-secondary").addClass("border-warning");
 							} else if (k == "sostatus") {
 								//製令單狀態
-								var sostatus = "";
+								let sostatus = "";
 								switch (entity[k]) {
 									case "1":
 										sostatus = "未生產";
@@ -1731,10 +1748,10 @@
 										sostatus = "已作廢";
 										break;
 								}
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(sostatus);
+								cellTrNb.text(sostatus);
 							} else if (k == "soscstatus") {
 								//生管狀態
-								var soscstatus = "";
+								let soscstatus = "";
 								switch (entity[k]) {
 									case 1:
 										soscstatus = "已發料";
@@ -1752,11 +1769,11 @@
 										soscstatus = "待通知打件";
 										break;
 								}
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(soscstatus);
-								$('.valTbodyTr_' + valTrNb + ' .' + k).attr("title", entity[k]);
+								cellTrNb.text(soscstatus);
+								cellTrNb.attr("title", entity[k]);
 
 							} else if (k == "somcstatus") {//物控狀態
-								var somcstatus = "";
+								let somcstatus = "";
 								switch (entity[k]) {
 									case 0:
 										somcstatus = "未確認";
@@ -1768,28 +1785,29 @@
 										somcstatus = "已齊料";
 										break;
 								}
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(somcstatus);
+								cellTrNb.text(somcstatus);
 							} else if (k == "sonote") {//製令單備註
-								$('.valTbodyTr_' + valTrNb + ' .' + k).html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + entity[k] + '</div>');
-
+								cellTrNb.html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + entity[k] + '</div>');
 							} else {
 								//一般文字
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+								cellTrNb.text(entity[k]);
 							}
 						}
 						//marks標記?
-						$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+						inputTrNb.attr("title", iKey + "_" + gKey);
 						//marks帶入
-						for (var m = 0; m < marks.length; m++) {
+						for (let m = 0; m < marks.length; m++) {
 							if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-								$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
+								inputTrNb.prop("checked", true);
 								break;
 							}
 						}
 					});
 					//顯示筆數
-					$('.valTbodyTr_' + valTrNb).removeClass("d-none");
-					//========指定週期欄位->每周數量========
+					valTr.removeClass("d-none");
+					//========指定週期欄位->每周數量(取消顯示)========
+					console.log("年-週期:" + yyW00);
+					/*
 					if (yyW00 != entity["soywdate"]) {
 						//Step1.上次位置?
 						if ($(yyW00LastClass).length >= 1) {
@@ -1799,7 +1817,7 @@
 						//Step2.不同週期時?
 						yyW00 = entity["soywdate"];
 						//複製						
-						var exTbodyTrYW = $('.exTbodyTrYW').clone();
+						let exTbodyTrYW = $('.exTbodyTrYW').clone();
 						exTbodyTrYW.removeClass("exTbodyTrYW");
 						//exTbodyTrYW.removeClass("d-none");
 						exTbodyTrYW.addClass("valTbodyTrYW_" + yyW00);
@@ -1822,37 +1840,36 @@
 						if ((pageSN + x) == entityJsons.length - 1) {
 							$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
 						}
-					}
+					}*/
 
 					//========有改過的資料========
-					var tagEntity = JSON.parse(entity['tag']);
+					let tagEntity = JSON.parse(entity['tag']);
 					Object.keys(tagEntity).forEach(function (t) {
 						if (tagEntity[t] != "") {
 							if (t == "all") {
 								//全部都是新的
-								$('.valTbodyTr_' + valTrNb).addClass("table-success");
+								valTr.addClass("table-success");
 							}
-							$('.valTbodyTr_' + valTrNb + " ." + t).addClass("table-success");
+							valTr.find("." + t).addClass("table-success");
 						}
-
 					});
-
 					//========有上鎖/解鎖的資料========
 					if (tagEntity.locked) {
-						$('.valTbodyTr_' + valTrNb).addClass("table-danger");
+						valTr.addClass("table-danger");
 					} else {
-						$('.valTbodyTr_' + valTrNb).removeClass("table-danger");
+						valTr.removeClass("table-danger");
 					}
-				}
+				});
+				console.log("start" + new Date());
 			},
 			//==========================初始化==========================
 			destroy() {
 				//websocket離線
-				var objson = {};
+				let objson = {};
 				objson.user = $("#menu_login_name").attr("alt");
 				objson.action = "leave";
 				objson.update = "";
-				var objstring = JSON.stringify(objson);
+				let objstring = JSON.stringify(objson);
 				other.data.websocket.send(objstring);
 				//銷毀
 				$(".datetimepicker").remove();

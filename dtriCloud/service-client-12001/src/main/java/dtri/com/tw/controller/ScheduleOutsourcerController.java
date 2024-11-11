@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
+import dtri.com.tw.websocket.ScheduleOutsourcerWebSocket;
 import jakarta.annotation.Resource;
 
 @Controller
@@ -93,6 +95,9 @@ public class ScheduleOutsourcerController extends AbstractController {
 
 			// Step3.執行=>跨服->務執行
 			packageBean = serviceFeign.getScheduleOutsourcerSearch(packageService.beanToJson(packageBean));
+			// Step4.取得 被動態標記資料->併入
+			packageBean = ScheduleOutsourcerWebSocket.getMapOutsourcerTag(packageBean);
+
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報

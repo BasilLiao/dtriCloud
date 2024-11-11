@@ -29,6 +29,7 @@ import com.google.gson.JsonParser;
 import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.shared.Fm_T;
+import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
@@ -59,6 +60,25 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 	// 暫存資料
 	private static Map<Long, ScheduleOutsourcer> mapOutsourcer = new LinkedHashMap<Long, ScheduleOutsourcer>();
 	private static Map<Long, JsonObject> mapOutsourcerTag = new HashMap<Long, JsonObject>();
+
+	// 給查詢資料取值->且併入包裝內
+	public static PackageBean getMapOutsourcerTag(PackageBean packageBean) throws Exception {
+		// 資料轉換
+		ArrayList<ScheduleOutsourcer> entityDatas = new ArrayList<>();
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleOutsourcer>>() {
+					});
+			// 標記修正
+			entityDatas.forEach(x -> {
+				if (mapOutsourcerTag.containsKey(x.getSoid())) {
+					x.setTag(mapOutsourcerTag.get(x.getSoid()).toString());
+				}
+			});
+			packageBean.setEntityJson(packageService.beanToJson(entityDatas));
+		}
+		return packageBean;
+	}
 
 	// 收到訊息
 	/**
@@ -174,7 +194,7 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 			});
 		} catch (Exception e) {
 			LOGGER.warn("[websocket] 傳送訊息：" + e);
-			//LOGGER.info("[websocket] 錯誤訊息：message={}", messageJson);
+			// LOGGER.info("[websocket] 錯誤訊息：message={}", messageJson);
 			return;
 		}
 		return;

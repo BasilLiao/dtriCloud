@@ -263,7 +263,8 @@ public class SynchronizeBomService {
 				int r = 0;
 				for (BomHistory oss : mv) {
 					// 移除的不能算
-					if (!oss.getBhatype().equals("Delete")) {
+					Boolean checkX = oss.getBhatype().equals("Delete") || oss.getBhatype().equals("Old");
+					if (!checkX) {
 						r += 1;
 						// Excel
 						Sheet sheet = workbooks.getSheetAt(0); // 獲取第一個工作表
@@ -277,7 +278,7 @@ public class SynchronizeBomService {
 
 					// 信件資料結構
 					bnmcontent += "<tr>"//
-							+ "<td>" + (oss.getBhatype().equals("Delete") ? "0" : r) + "</td>"// 項次
+							+ "<td>" + (checkX ? "X" : r) + "</td>"// 項次
 							+ "<td>" + oss.getBhnb() + "</td>"// 產品號
 							+ "<td>" + oss.getBhmodel() + "</td>"// 產品型號
 							+ "<td>" + oss.getBhatype() + "</td>"// 異動類型
@@ -289,6 +290,10 @@ public class SynchronizeBomService {
 					hisListSaves.add(oss);
 				}
 				bnmcontent += "</tbody></table>";
+				bnmcontent += "<div>Old=原先舊[物料]/Update=更新後[物料]/";
+				bnmcontent += "<br>Delete=已被移除[物料]/New=新增加[物料]/";
+				bnmcontent += "<br>All New=新增[BOM]產品/All Delete=移除[BOM]產品</div>";
+
 				readyNeedMail.setBnmcontent(bnmcontent);
 
 				// 輸出到 byte[]
@@ -312,7 +317,6 @@ public class SynchronizeBomService {
 					e.setBhnotification(true);
 				});
 				bomHistoryDao.saveAll(hisListSaves);
-
 			}
 		});
 	}
