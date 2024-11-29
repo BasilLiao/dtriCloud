@@ -2222,7 +2222,9 @@
 				$(document).off("input", "#other_BPM tbody td");
 				$(document).on('input', '#other_BPM tbody td', function (event) {
 					console.log("修正");
-					$(this).parent().find(".bpmnb").addClass("text-warning");
+					if (!$(this).parent().find(".bpmnb").hasClass("text-success")) {
+						$(this).parent().find(".bpmnb").addClass("text-warning");
+					}
 				});
 				//=====BOM Format detail=====Detail_BPM->選擇/輸入(有修改過)
 				$(document).off("input", "#other_Detail_BPM_open input,select,textarea");

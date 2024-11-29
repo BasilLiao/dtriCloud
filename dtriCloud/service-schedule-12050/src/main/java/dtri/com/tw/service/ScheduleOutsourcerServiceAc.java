@@ -74,7 +74,7 @@ public class ScheduleOutsourcerServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleOutsourcer> entitys = outsourcerDao.findAllBySearch(null, null, null, null, null, null,
-					null, null, null, null, 0, pageable);
+					null, null, null, null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -111,7 +111,7 @@ public class ScheduleOutsourcerServiceAc {
 
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sonb", "Ex:單別-單號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sopnb", "Ex:產品品號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
@@ -120,6 +120,9 @@ public class ScheduleOutsourcerServiceAc {
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sopspecifications", "Ex:產品規格?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "somcnote", "Ex:\"時間?內容", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sofname", "Ex:加工廠?", true, //
@@ -179,7 +182,7 @@ public class ScheduleOutsourcerServiceAc {
 					searchData.getSopnb(), searchData.getSopname(), searchData.getSopspecifications(),
 					searchData.getSostatus(), searchData.getSofname(), searchData.getSouname(),
 					searchData.getSofodate(), searchData.getSomcdates(), searchData.getSomcdatee(),
-					searchData.getSysstatus(), pageable);
+					searchData.getSomcnote(), searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

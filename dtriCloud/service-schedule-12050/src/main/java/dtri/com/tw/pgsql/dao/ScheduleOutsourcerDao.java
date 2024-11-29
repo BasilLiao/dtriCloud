@@ -22,11 +22,12 @@ public interface ScheduleOutsourcerDao extends JpaRepository<ScheduleOutsourcer,
 			+ "(:sofodate is null or c.sofodate LIKE %:sofodate%) and "// 加工廠上線日
 			+ "(:somcdates is null or c.somcdate >= :somcdates) and "// 預計齊料(起)
 			+ "(:somcdatee is null or c.somcdate <= :somcdatee) and "// 預計齊料(終)
+			+ "(:somcnote is null or c.somcnote LIKE %:somcnote%) and "// 物控資料
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<ScheduleOutsourcer> findAllBySearch(String sonb, String sopnb, //
 			String sopname, String sopspecifications, //
 			String sostatus, String sofname, String souname, //
-			String sofodate, String somcdates, String somcdatee, Integer sysstatus, Pageable pageable);
+			String sofodate, String somcdates, String somcdatee, String somcnote, Integer sysstatus, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleOutsourcer c WHERE "//

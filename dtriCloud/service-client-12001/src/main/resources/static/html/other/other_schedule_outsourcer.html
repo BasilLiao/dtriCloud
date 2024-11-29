@@ -1214,9 +1214,6 @@
 					// 建立連線後，往伺服器傳送資訊
 					other.data.websocket.send(objstring);
 				}
-
-
-
 			},
 			//==========================時間格式載入==========================
 			datetimepickerDate() {
@@ -1655,6 +1652,12 @@
 				//Step3.查詢內容-格式(資料筆數)
 				console.log("start" + new Date());
 				let onlyUpdateNb = 1;
+				//物控狀態
+				const somcstatusMap = {0: "未確認", 1: "未齊料", 2: "已齊料"};
+				//製令單狀態
+				const sostatusMap = {"1": "未生產", "2": "已發料", "3": "生產中", "Y": "已完工", "y": "指定完工", "V": "已作廢"};
+				// 定義生管狀態字典
+				const soscstatusMap = {1: "已發料", 2: "部分缺料", 3: "備料中", 4: "未生產", 5: "待通知打件"};
 				entityJsons.forEach((entity, x) => {
 					//參數
 					//let entity = entityJsons[x];//((目前頁碼-1)*每頁數量)+x
@@ -1680,19 +1683,21 @@
 					//每筆資料
 					let valTr = $('.valTbodyTr_' + valTrNb);
 					let inputTrNb = $('.valTbodyTr_' + valTrNb + ' input');
-
 					Object.keys(entity).forEach(function (k) {
 						//每個欄位?
 						let cellTrNb = $('.valTbodyTr_' + valTrNb + ' .' + k);
+						// 取資料值
+						let fieldValue = entity[k];
 						//欄位計數
 						valTr.find('th input').removeAttr("disabled");
-						//是否IKEY?
-						if (entityIKey == k) {iKey = entity[k];}
-						//是否GKEY?
-						if (entityGKey == k) {gKey = entity[k];}
-						//是否時間格式?
-						if (entityDateTime.indexOf(k) >= 0) {
-							let dF = new Date(entity[k]);
+						//是否IKEY?/是否GKEY?
+						if (entityIKey == k) iKey = fieldValue;
+						if (entityGKey == k) gKey = fieldValue;
+
+						//欄位處理
+						if (entityDateTime.includes(k)) {
+							//是否時間格式?
+							let dF = new Date(fieldValue);
 							let dateF = dF.getFullYear() + "-";
 							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
@@ -1700,108 +1705,49 @@
 							dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 							dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
 							cellTrNb.text(dateF);
-						} else {
+						} else if (["soscnote", "somcnote", "sowmnote", "sompnote"].includes(k)) {
 							//生管_物控_製造_倉庫
-							if (k == "soscnote" || k == "somcnote" || k == "sowmnote" || k == "sompnote") {
-								let note = JSON.parse(entity[k]);
-								let notes = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
-								let noteIns = "";
-								let first = true;
-								let mb_1 = "";
-								note.forEach(function (one) {
-									mb_1 = (first ? "" : "mb-1");
-									let content = one['content'];
-									content = content.replaceAll('\n', '</br>');
-									noteIns = '<div class="row m-0 border border-secondary ' + mb_1 + '">' +
-										'<div class="col-12 m-0 p-0 row needbr ">' +
-										one['user'] + ' ／ ' + one['date'] +
-										'</div>' +
-										'<div class="col-12 p-1 pb-0 text-start border border-secondary notes needbr "' +
-										'style="word-break:break-word;white-space:normal;height: 100%;min-height:60px;">' + content + '</div>' +
-										'</div>' + noteIns;
-									first = false;//間格用
-								});
-								notes += noteIns + '</div>';
-
-								cellTrNb.html(notes);
-								cellTrNb.find(".row").first().removeClass("border-secondary").addClass("border-warning");
-							} else if (k == "sostatus") {
-								//製令單狀態
-								let sostatus = "";
-								switch (entity[k]) {
-									case "1":
-										sostatus = "未生產";
-										break;
-									case "2":
-										sostatus = "已發料";
-										break;
-									case "3":
-										sostatus = "生產中";
-										break;
-									case "Y":
-										sostatus = "已完工";
-										break;
-									case "y":
-										sostatus = "指定完工";
-										break;
-									case "V":
-										sostatus = "已作廢";
-										break;
-								}
-								cellTrNb.text(sostatus);
-							} else if (k == "soscstatus") {
-								//生管狀態
-								let soscstatus = "";
-								switch (entity[k]) {
-									case 1:
-										soscstatus = "已發料";
-										break;
-									case 2:
-										soscstatus = "部分缺料";
-										break;
-									case 3:
-										soscstatus = "備料中";
-										break;
-									case 4:
-										soscstatus = "未生產";
-										break;
-									case 5:
-										soscstatus = "待通知打件";
-										break;
-								}
-								cellTrNb.text(soscstatus);
-								cellTrNb.attr("title", entity[k]);
-
-							} else if (k == "somcstatus") {//物控狀態
-								let somcstatus = "";
-								switch (entity[k]) {
-									case 0:
-										somcstatus = "未確認";
-										break;
-									case 1:
-										somcstatus = "未齊料";
-										break;
-									case 2:
-										somcstatus = "已齊料";
-										break;
-								}
-								cellTrNb.text(somcstatus);
-							} else if (k == "sonote") {//製令單備註
-								cellTrNb.html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + entity[k] + '</div>');
-							} else {
-								//一般文字
-								cellTrNb.text(entity[k]);
-							}
+							let notes = JSON.parse(fieldValue);
+							let noteCell = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
+							let noteIns = "";
+							notes.forEach((note, index) => {
+								let content = note['content'].replaceAll('\n', '<br>');
+								let noteInNew = '<div class="row m-0 border border-secondary ' + (index === 0 ? '' : 'mb-1') + '">';
+								noteInNew += '<div class="col-12 m-0 p-0 row needbr ">';
+								noteInNew += note['user'] + ' ／ ' + note['date'] + '</div>';
+								noteInNew += '<div class="col-12 p-1 pb-0 text-start border border-secondary notes needbr "' +
+									'style="word-break:break-word;white-space:normal;height: 100%;min-height:60px;">';
+								noteInNew += content + '</div></div>';
+								noteIns = noteInNew + noteIns;
+							});
+							noteCell += noteIns + '</div>';
+							cellTrNb.html(noteCell);
+							cellTrNb.find(".row").first().removeClass("border-secondary").addClass("border-warning");
+						} else if (k == "sostatus") {
+							//製令單狀態-如果不存在則設置為空字串
+							cellTrNb.text(sostatusMap[fieldValue] || "");
+						} else if (k == "soscstatus") {
+							//生管狀態-若不存在則預設為空字串
+							cellTrNb.text(soscstatusMap[fieldValue] || "").attr("title", fieldValue);
+						} else if (k == "somcstatus") {
+							//物控狀態-如果不存在則設置為空字串
+							cellTrNb.text(somcstatusMap[fieldValue] || "");
+						} else if (k == "sonote") {
+							//製令單備註
+							cellTrNb.html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + fieldValue + '</div>');
+						} else {
+							//一般文字
+							cellTrNb.text(fieldValue);
 						}
 						//marks標記?
 						inputTrNb.attr("title", iKey + "_" + gKey);
 						//marks帶入
-						for (let m = 0; m < marks.length; m++) {
+						/*for (let m = 0; m < marks.length; m++) {
 							if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
 								inputTrNb.prop("checked", true);
 								break;
 							}
-						}
+						}*/
 					});
 					//顯示筆數
 					valTr.removeClass("d-none");

@@ -66,6 +66,7 @@ public class BomParameterSettingsServiceAc {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.ASC, "bpsmodel"));// 型號
 		orders.add(new Order(Direction.ASC, "bpsnb"));// BOM號
+		orders.add(new Order(Direction.ASC, "syssort"));// 排序
 		orders.add(new Order(Direction.ASC, "bpsname"));// 參數名稱
 
 		// 一般模式
@@ -205,6 +206,7 @@ public class BomParameterSettingsServiceAc {
 				if (check) {
 					entityDataOld.setSysmdate(new Date());
 					entityDataOld.setSysmuser(packageBean.getUserAccount());
+					entityDataOld.setSyssort(x.getSyssort());
 					entityDataOld.setBpsmodel(x.getBpsmodel());
 					entityDataOld.setBpsnb(x.getBpsnb());
 					entityDataOld.setBpstype(x.getBpstype());

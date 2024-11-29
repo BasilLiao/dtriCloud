@@ -690,6 +690,7 @@ public class BomItemSpecificationsServiceAc {
 						entityData.getBisgffield() == null || entityData.getBisgffield().equals("") || //
 						entityData.getBisgfname() == null || entityData.getBisgfname().equals("") || //
 						entityData.getBisgsplit() == null || entityData.getBisgsplit().equals("") || //
+						entityData.getBisfname() == null || entityData.getBisfname().equals("[\"\"]") || //
 						entityData.getSyssort() == null) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { "Please check again" });

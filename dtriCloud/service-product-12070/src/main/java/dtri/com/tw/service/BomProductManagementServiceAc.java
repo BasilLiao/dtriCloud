@@ -113,6 +113,7 @@ public class BomProductManagementServiceAc {
 		ordersBIS.add(new Order(Direction.ASC, "bisgname"));//
 		ordersBIS.add(new Order(Direction.ASC, "bisfname"));//
 		List<Order> ordersBPS = new ArrayList<>();
+		ordersBPS.add(new Order(Direction.ASC, "syssort"));//
 		ordersBPS.add(new Order(Direction.ASC, "bpsname"));//
 		List<Order> ordersWM = new ArrayList<>();
 		ordersWM.add(new Order(Direction.ASC, "wmpnb"));//
