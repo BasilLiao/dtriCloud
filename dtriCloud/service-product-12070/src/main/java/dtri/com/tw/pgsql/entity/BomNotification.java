@@ -59,6 +59,7 @@ public class BomNotification {
 		this.bnsumail = ""; // 關聯帳號MAIL<br>
 		this.bnprimary = 0;// 主要/次要<br>
 		this.bnmnotice = false;// BOM修改通知<br>
+		this.setBnanotice(false);// BOM新增通知<br>
 	}
 
 	// 共用型
@@ -106,6 +107,8 @@ public class BomNotification {
 
 	@Column(name = "bn_m_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bnmnotice;
+	@Column(name = "bn_a_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnanotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -249,6 +252,14 @@ public class BomNotification {
 
 	public void setBnmnotice(Boolean bnmnotice) {
 		this.bnmnotice = bnmnotice;
+	}
+
+	public Boolean getBnanotice() {
+		return bnanotice;
+	}
+
+	public void setBnanotice(Boolean bnanotice) {
+		this.bnanotice = bnanotice;
 	}
 
 }

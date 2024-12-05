@@ -2,7 +2,9 @@ package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 
@@ -19,5 +21,11 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 
 	// 物料為0
 	ArrayList<WarehouseArea> findAllByWaerptqty(Integer waerptqty);
+
+	// 物料號
+	@Query("SELECT c FROM WarehouseArea c WHERE "//
+			+ "(:wawmpnb is null or c.wawmpnb  LIKE %:wawmpnb%) and " //
+			+ "(c.waerptqty >0) ")
+	ArrayList<WarehouseArea> findAllByWawmpnbNot0(String wawmpnb, Pageable pageable);
 
 }

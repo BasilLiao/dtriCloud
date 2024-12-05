@@ -65,4 +65,23 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleShortageNotification/setDetele" }, method = RequestMethod.POST)
 	PackageBean setScheduleShortageNotificationDetele(@RequestBody String jsonPackageBean);
 
+	// ================================紀錄-產品製造================================
+	@RequestMapping(value = { "/scheduleProductionHistory/getSearch" }, method = RequestMethod.POST)
+	PackageBean getScheduleProductionHistorySearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionHistory/getReport" }, method = RequestMethod.POST)
+	PackageBean getScheduleProductionHistoryReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionHistory/setModify" }, method = RequestMethod.POST)
+	PackageBean setScheduleProductionHistoryModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionHistory/setAdd" }, method = RequestMethod.POST)
+	PackageBean setScheduleProductionHistoryAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionHistory/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setScheduleProductionHistoryInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionHistory/setDetele" }, method = RequestMethod.POST)
+	PackageBean setScheduleProductionHistoryDetele(@RequestBody String jsonPackageBean);
+
 }

@@ -27,16 +27,15 @@ public interface BasicCommandListDao extends JpaRepository<BasicCommandList, Lon
 	@Query("SELECT c FROM BasicCommandList c WHERE "//
 			+ "(:bclclass is null or c.bclclass LIKE %:bclclass%) and "//
 			+ "(:bclsn is null or c.bclsn LIKE %:bclsn%) and "//
-			+ "(:bclpnumber is null or c.bclpnumber LIKE %:bclpnumber%) ")
+			+ "(:bclpnumber is null or c.bclpnumber LIKE %:bclpnumber% or c.bclproduct LIKE %:bclpnumber%) ")
 	ArrayList<BasicCommandList> findAllBySearch(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
-	
+
 	@Query("SELECT c FROM BasicCommandList c WHERE "//
 			+ "(:bclclass is null or c.bclclass=:bclclass) and "//
 			+ "(:bclsn is null or c.bclsn=:bclsn) and "//
 			+ "(:bclpnumber is null or c.bclpnumber=:bclpnumber) ")
 	ArrayList<BasicCommandList> findAllByCheck(String bclclass, String bclsn, String bclpnumber, Pageable pageable);
 
-	
 	@Query("SELECT c FROM BasicCommandList c WHERE "//
 			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate)") //
 	ArrayList<BasicCommandList> findAllBySyscdateRemove(Date syscdate);
