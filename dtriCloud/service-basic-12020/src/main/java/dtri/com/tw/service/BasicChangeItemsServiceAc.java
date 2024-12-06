@@ -153,10 +153,6 @@ public class BasicChangeItemsServiceAc {
 					v.setSlcshow(0);
 				}
 			});
-			mapLanguagesDetail.forEach((k, v) -> {
-				
-			});
-			
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();

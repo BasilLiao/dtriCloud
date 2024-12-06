@@ -67,21 +67,21 @@ public interface ScheduleServiceFeign {
 
 	// ================================紀錄-產品製造================================
 	@RequestMapping(value = { "/scheduleProductionHistory/getSearch" }, method = RequestMethod.POST)
-	PackageBean getScheduleProductionHistorySearch(@RequestBody String jsonPackageBean);
+	PackageBean getProductionHistorySearch(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/scheduleProductionHistory/getReport" }, method = RequestMethod.POST)
-	PackageBean getScheduleProductionHistoryReport(@RequestBody String jsonPackageBean);
+	PackageBean getProductionHistoryReport(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/scheduleProductionHistory/setModify" }, method = RequestMethod.POST)
-	PackageBean setScheduleProductionHistoryModify(@RequestBody String jsonPackageBean);
+	PackageBean setProductionHistoryModify(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/scheduleProductionHistory/setAdd" }, method = RequestMethod.POST)
-	PackageBean setScheduleProductionHistoryAdd(@RequestBody String jsonPackageBean);
+	PackageBean setProductionHistoryAdd(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/scheduleProductionHistory/setInvalid" }, method = RequestMethod.POST)
-	PackageBean setScheduleProductionHistoryInvalid(@RequestBody String jsonPackageBean);
+	PackageBean setProductionHistoryInvalid(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/scheduleProductionHistory/setDetele" }, method = RequestMethod.POST)
-	PackageBean setScheduleProductionHistoryDetele(@RequestBody String jsonPackageBean);
+	PackageBean setProductionHistoryDetele(@RequestBody String jsonPackageBean);
 
 }

@@ -220,6 +220,7 @@ public class BomNotificationServiceAc {
 				entityDataOld.setBnsuname(user.getSuname());
 				entityDataOld.setBnsumail(user.getSuemail());
 				entityDataOld.setBnmnotice(x.getBnmnotice());// 修改通知
+				entityDataOld.setBnanotice(x.getBnanotice());// 新增通知
 				saveDatas.add(entityDataOld);
 			}
 		});

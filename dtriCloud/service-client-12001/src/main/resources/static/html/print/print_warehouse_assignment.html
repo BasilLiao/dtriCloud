@@ -62,7 +62,7 @@
 						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
 						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start"
 							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
-							<div>
+							<div style="border: 1px solid gainsboro;">
 								<div style="display: inline-block; width: 315px; font-stretch: condensed;">
 									<!-- 物料名 
 									<div class="">
@@ -133,7 +133,7 @@
 									<tr style="border:1px solid rgb(0, 0, 0);">
 										<td>套數:</td>
 										<td class="pr_bslfromcommand_qty" colspan="2" style="text-align:center">100</td>
-										<td class=""></td>
+										<td class="pr_cell"></td>
 									</tr>
 									<tr style="height: 100px;font-size: 35px;">
 										<td>樓層<br>&備註:</td>
@@ -161,7 +161,8 @@
 		print = {
 			//資料
 			data: {
-
+				cells: {},//①②③④⑤⑥⑦⑧⑨⑩
+				cellNbs: ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]
 			},
 			//方法
 			methods: {
@@ -229,6 +230,17 @@
 
 				},
 				printPrepare(dataHeader, dataBody, entityIKey, entityGKey) {
+					//合併備料?
+					if (dataHeader.length > 1 && dataHeader.length <= 10) {
+						dataHeader.forEach(function (hds, index) {
+							//標記代號
+							print.data.cells[hds.gid] = print.data.cellNbs[index];
+						});
+					} else if (dataHeader.length > 10) {
+						console.warn("cellNbs 中的元素不足，無法為所有 dataHeader 匹配值");
+						return false;
+					}
+
 					//打印
 					$('#print_title').trigger('click');
 					$(".printList").remove();
@@ -254,9 +266,12 @@
 						print_ex.find(".pr_bslpnumber").text(h.waspnumber);//物料號
 						print_ex.find(".pr_bslpnqty").text(h.waspnqty);//數量
 						//	print_ex.find(".pr_bslpname").text(h.waspname);//物料名稱
-						print_ex.find(".pr_bslclass_bslsn").text(h.id.split("-")[0] + "-" + h.id.split("-")[1]);//單據號
+						let bslclass_bslsn = h.id.split("-")[0] + "-" + h.id.split("-")[1];
+						print_ex.find(".pr_bslclass_bslsn").text(bslclass_bslsn);//單據號
 						print_ex.find(".pr_bslnb").text(h.id.split("-")[2]);//單據序
-						print_ex.find(".pr_bslfromcommand").text(h.wasfromcommand.replaceAll("*", "＊").replaceAll("[", "").replaceAll("]", ""));//單據來源
+						//區分①②③④
+						let pr_bslfrom = h.wasfromcommand.replaceAll("*", "＊").replaceAll("[", "").replaceAll("]", "");
+						print_ex.find(".pr_bslfromcommand").text(print.data.cells[bslclass_bslsn] + " : " + pr_bslfrom);//單據來源
 
 						//整理文字(可能是來源 或對象)
 						//[A0002_原物料倉_2F-BH-04-02]
@@ -285,7 +300,7 @@
 						if (pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] == null && h.wastype != "入料類") {
 							pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] = true;
 							var print_m_ex = $('#print_m_ex').clone();
-							var pr_bslfromcommand = print_ex.find(".pr_bslfromcommand").text().split("＊");
+							var pr_bslfromcommand = pr_bslfrom.split("＊");
 							print_m_ex.attr("id", print_ex.find(".pr_bslclass_bslsn").text() + "_1");
 							print_m_ex.removeClass("noprint");
 							print_m_ex.addClass("printList");
@@ -293,18 +308,20 @@
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0]);//製令單
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量
+							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
 
 
-							dataHeader.forEach(function (hds)  {
+
+							dataHeader.forEach(function (hds) {
 								console.log(hds);
-								if(hds.gid==print_ex.find(".pr_bslclass_bslsn").text()){
+								if (hds.gid == print_ex.find(".pr_bslclass_bslsn").text()) {
 									print_m_ex.find(".pr_syshnote").text(hds.syshnote);//樓層備註
 									var dF = new Date(hds.wasedate);
 									var dateF = dF.getFullYear() + "-";
 									dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 									dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 									print_m_ex.find(".pr_wasedate").text(dateF);//預計開工
-		
+
 									dF = new Date(hds.wassdate);
 									dateF = dF.getFullYear() + "-";
 									dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.feign.BomServiceFeign;
+import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
@@ -22,10 +22,11 @@ public class ScheduleProductionHistoryController extends AbstractController {
 	private PackageService packageService;
 
 	@Resource
-	BomServiceFeign serviceFeign;
+	ScheduleServiceFeign serviceFeign;
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_production_history.basil" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/schedule_production_history.basil" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String access(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -36,7 +37,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -47,7 +48,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getHistorySearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getProductionHistorySearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -68,7 +69,8 @@ public class ScheduleProductionHistoryController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_production_history.basil.AR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/schedule_production_history.basil.AR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String search(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -79,7 +81,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -90,7 +92,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getHistorySearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getProductionHistorySearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -111,7 +113,8 @@ public class ScheduleProductionHistoryController extends AbstractController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_production_history.basil.ARR" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/ajax/schedule_production_history.basil.ARR" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	String report(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -122,7 +125,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -133,7 +136,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getHistoryReport(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getProductionHistoryReport(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -165,7 +168,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -176,7 +179,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setHistoryAdd(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setProductionHistoryAdd(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -208,7 +211,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -219,7 +222,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setHistoryModify(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setProductionHistoryModify(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -246,12 +249,12 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
 		sysFunction(funName);
-		
+
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -262,7 +265,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setHistoryInvalid(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setProductionHistoryInvalid(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -289,12 +292,12 @@ public class ScheduleProductionHistoryController extends AbstractController {
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
 		sysFunction(funName);
-		
+
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			loggerInf(funName + "[Start]"+jsonObject, loginUser().getUsername());
+			loggerInf(funName + "[Start]" + jsonObject, loginUser().getUsername());
 			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
 			JsonObject packageObject = packageService.StringToJson(jsonObject);
 			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
@@ -305,7 +308,7 @@ public class ScheduleProductionHistoryController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setHistoryDetele(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setProductionHistoryDetele(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報

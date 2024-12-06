@@ -84,7 +84,7 @@ public class ScheduleProductionHistoryServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("BomHistory", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleProductionHistory", null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});

@@ -48,9 +48,9 @@ import jakarta.persistence.Transient;
  *      this.sphocountry = "";訂單國家<br>
  *      this.sphhdate = "";預計出貨日<br>
  *      this.sphfrom = "";規格來源 生管自訂/產品經理<br>
- *      this.sphstatus = 0;狀態類型 0=作廢單 1=有效單 2=自訂紀錄(不具備生產能力)<br>
- *      this.sphprogress = 0;進度 完成ERP工單(準備物料)=1 完成注意事項(預約生產)=2 完成->流程卡(準備生產)=3
- *      (生產中)=4 (生產結束)=5<br>
+ *      this.sphstatus = 0;["作廢單_0","有效單_1","自訂單_2"]<br>
+ *      this.sphprogress = 0;進度
+ *      ["生產注意事項(未開)_1","生產注意事項(已開)_2","流程卡(已開)_3","生產中_4","生產結束_5"] <br>
  *      this.sphssn = "";開始SN<br>
  *      this.sphesn = "";結束SN<br>
  *      this.sphpmnote = "";產品經理事項<br>
@@ -189,6 +189,13 @@ public class ScheduleProductionHistory {
 	private String sphprnote1;
 	@Column(name = "sph_pr_note2", nullable = false, columnDefinition = "text default ''")
 	private String sphprnote2;
+
+	@Column(name = "sph_pr_nv", nullable = false, columnDefinition = "text default ''")
+	private String sphprnv;
+	@Column(name = "sph_sc_package", nullable = false, columnDefinition = "text default ''")
+	private String sphscpackage;
+	@Column(name = "sph_sc_nv", nullable = false, columnDefinition = "text default ''")
+	private String sphscnv;
 
 	@Transient
 	private Date ssyscdate;// 起始時間
@@ -457,6 +464,30 @@ public class ScheduleProductionHistory {
 
 	public void setSphprnote2(String sphprnote2) {
 		this.sphprnote2 = sphprnote2;
+	}
+
+	public String getSphprnv() {
+		return sphprnv;
+	}
+
+	public void setSphprnv(String sphprnv) {
+		this.sphprnv = sphprnv;
+	}
+
+	public String getSphscpackage() {
+		return sphscpackage;
+	}
+
+	public void setSphscpackage(String sphscpackage) {
+		this.sphscpackage = sphscpackage;
+	}
+
+	public String getSphscnv() {
+		return sphscnv;
+	}
+
+	public void setSphscnv(String sphscnv) {
+		this.sphscnv = sphscnv;
 	}
 
 }

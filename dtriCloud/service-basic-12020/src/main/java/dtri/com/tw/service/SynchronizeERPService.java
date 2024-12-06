@@ -451,8 +451,10 @@ public class SynchronizeERPService {
 						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 						saveInLists.add(o);
 					} else if (!o.getBilfuser().equals("") && !o.getBilfuser().contains("✪") && //
-							(!o.getBilpnqty().equals(m.getTb005()) || !o.getBilpnumber().equals(m.getMb001()))) {
-						// 標記二次修正(數量不同+料號不同)
+							(!o.getBilpnqty().equals(m.getTb005()) || // 數量變化?
+									!o.getBilpnumber().equals(m.getMb001()) || // 物料變化?
+									!o.getBiltowho().contains(m.getTb009()))) {// 庫別變化?
+						// 標記二次修正(數量不同+料號不同+庫別不同)
 						o.setBilfuser("✪ " + o.getBilfuser());
 					}
 				}
