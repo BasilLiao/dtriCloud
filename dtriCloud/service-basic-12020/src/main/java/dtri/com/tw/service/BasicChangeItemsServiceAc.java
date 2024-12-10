@@ -3,8 +3,10 @@ package dtri.com.tw.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +174,7 @@ public class BasicChangeItemsServiceAc {
 
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:物料1_物料2/成品號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -185,20 +187,29 @@ public class BasicChangeItemsServiceAc {
 					BasicCommandList.class);
 			ArrayList<BasicCommandList> entitysNew = new ArrayList<BasicCommandList>();
 			ArrayList<WarehouseArea> entityDetails = new ArrayList<WarehouseArea>();
+
 			// 複數?避免為空
 			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
 					? searchData.getBclpnumber().split("_")
 					: new String[] { "90-320" };
+			// 複數?
 			for (String bclpn : bclpns) {
 				// 製令單
 				ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, bclpn, pageableBC);
 				// BOM組成結構
 				ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(null, null, bclpn, null,
 						null, null);
+				// 製令單A521
+				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null,
+						pageableBC);
 
 				// BOM而外庫存量儲位
+				Set<String> entityBoms = new HashSet<>();// A521 類型需要再次查詢
 				ArrayList<WarehouseArea> entityDetailsForBom = new ArrayList<WarehouseArea>();
 				ingredients.forEach(bom -> {
+					// 登記關聯-成品類
+					entityBoms.add(bom.getBbisn());
+					//
 					ArrayList<WarehouseArea> forBom = areaDao.findAllByWawmpnbNot0(bom.getBbisn(), pageableWA);
 					// 加入到 庫存清單內
 					if (forBom.size() > 0) {
@@ -212,7 +223,7 @@ public class BasicChangeItemsServiceAc {
 
 				// 合併一起+標記
 				WarehouseArea newW = new WarehouseArea();
-				newW.setWawmpnb("==" + bclpn + "==");
+				newW.setWawmpnb("===" + bclpn + "===");
 				entityDetails.add(newW);
 				// 合併-與多筆資料
 				entityDetails.addAll(entityDetail);
@@ -220,8 +231,17 @@ public class BasicChangeItemsServiceAc {
 				// Step4-2.資料區分(一般/細節)- 排除重複單號
 				Map<String, Boolean> check = new HashMap<String, Boolean>();
 				entitys.forEach(o -> {
-					String k = o.getBclclass() + "-" + o.getBclsn();
-					if (!check.containsKey(k)) {
+					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
+					if (!check.containsKey(k) && !o.getSysnote().contains("改")) {
+						check.put(k, true);
+						entitysNew.add(o);
+					}
+				});
+				// 而外查詢A521
+				entityA521s.forEach(o -> {
+					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
+					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber())
+							&& !o.getSysnote().contains("改")) {
 						check.put(k, true);
 						entitysNew.add(o);
 					}

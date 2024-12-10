@@ -402,7 +402,7 @@ public class SynchronizeScheduledService {
 			String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 					+ "<thead><tr style= 'background-color: aliceblue;'>"//
 					+ "<th>項次</th>"//
-					+ "<th>加工廠代號(代號)</th>"//
+					+ "<th>加工廠(代號)</th>"//
 					+ "<th>製令單號</th>"//
 					+ "<th>產品品號</th>"//
 					+ "<th>產品品名</th>"//
@@ -430,8 +430,8 @@ public class SynchronizeScheduledService {
 			Workbook workbook = new XSSFWorkbook();
 			Sheet sheet = workbook.createSheet("Mail Data");
 			// =================樣式=================
-			sheet.setColumnWidth(0, 30 * 256); // 項次
-			sheet.setColumnWidth(1, 20 * 256); // 加工廠代號(代號)
+			sheet.setColumnWidth(0, 10 * 256); // 項次
+			sheet.setColumnWidth(1, 13 * 256); // 加工廠代號(代號)
 			sheet.setColumnWidth(2, 18 * 256); // 製令單號
 			sheet.setColumnWidth(3, 18 * 256); // 產品品號
 			sheet.setColumnWidth(4, 30 * 256); // 產品品名
@@ -441,11 +441,11 @@ public class SynchronizeScheduledService {
 			sheet.setColumnWidth(7, 15 * 256); // 完成-生產數
 			sheet.setColumnWidth(8, 15 * 256); // 預計-齊料日
 			//
-			sheet.setColumnWidth(9, 40 * 256); // 物控備註
+			sheet.setColumnWidth(9, 55 * 256); // 物控備註
 			sheet.setColumnWidth(10, 18 * 256); // 加工廠-開工日
 			sheet.setColumnWidth(11, 15 * 256); // 預計-完工日
 			//
-			sheet.setColumnWidth(12, 40 * 256); // 生管備註
+			sheet.setColumnWidth(12, 55 * 256); // 生管備註
 			sheet.setColumnWidth(13, 15 * 256); // 預計-開工日
 			// 創建單元格樣式
 			CellStyle wrapTextStyle = workbook.createCellStyle();

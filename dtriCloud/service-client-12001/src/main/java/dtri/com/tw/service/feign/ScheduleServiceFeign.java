@@ -84,4 +84,17 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleProductionHistory/setDetele" }, method = RequestMethod.POST)
 	PackageBean setProductionHistoryDetele(@RequestBody String jsonPackageBean);
 
+	// ================================通用-生產注意事項================================
+	@RequestMapping(value = { "/scheduleProductionNotes/getSearch" }, method = RequestMethod.POST)
+	PackageBean getProductionNotesSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionNotes/getReport" }, method = RequestMethod.POST)
+	PackageBean getProductionNotesReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionNotes/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setProductionNotesInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleProductionNotes/setModify" }, method = RequestMethod.POST)
+	PackageBean setProductionNotesModify(@RequestBody String jsonPackageBean);
+
 }

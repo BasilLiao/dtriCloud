@@ -36,7 +36,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 @Service
-public class ScheduleProductionHistoryServiceAc {
+public class ScheduleProductionNotesServiceAc {
 
 	@Autowired
 	private PackageService packageService;

@@ -330,7 +330,7 @@ public class SystemGroupServiceAc {
 
 						// 添加
 						if (y.getSggid() != null && y.getSgid() == null) {
-							SystemGroup entityDetailOld = groupDao.findBySggidOrderBySggid(y.getSggid()).get(0);
+							//SystemGroup entityDetailOld = groupDao.findBySggidOrderBySggid(y.getSggid()).get(0);
 							y.setSysmdate(new Date());
 							y.setSysmuser(packageBean.getUserAccount());
 							y.setSysodate(new Date());
@@ -340,8 +340,8 @@ public class SystemGroupServiceAc {
 							y.setSysheader(false);
 							SystemPermission permissions = permissionDao.findBySpid(y.getSpid()).get(0);
 							y.setSystemPermission(permissions);
-							y.setSgname(entityDetailOld.getSgname());
-							y.setSggid(entityDetailOld.getSggid());
+							y.setSgname(x.getSgname());
+							y.setSggid(x.getSggid());
 							//
 							char[] ch = new char[12];
 							ch[11] = (y.getpAA() == true) ? '1' : '0';
@@ -377,6 +377,7 @@ public class SystemGroupServiceAc {
 							entityDetailOld.setSysstatus(y.getSysstatus());
 							entityDetailOld.setSysnote(y.getSysnote());
 							entityDetailOld.setSyssort(y.getSyssort());
+							entityDetailOld.setSgname(x.getSgname());
 							SystemPermission permissions = permissionDao.findBySpid(y.getSpid()).get(0);
 							entityDetailOld.setSystemPermission(permissions);
 							//

@@ -13,7 +13,8 @@ public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 
 	// 查詢群組(群組ID)
 	@Query("SELECT c FROM SystemGroup c "//
-			+ "WHERE  (c.sggid = :sggid) "//
+			+ "WHERE  (c.sggid = :sggid ) and "//
+			+ "(c.sysheader = true) "//
 			+ "order by c.sggid asc, c.systemPermission.syssort asc")
 	ArrayList<SystemGroup> findBySggidOrderBySggid(Long sggid);
 
@@ -26,7 +27,8 @@ public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 			+ "(:spname is null or c.systemPermission.spname LIKE %:spname%) and "// 指定-權限名稱
 			+ "(:sggid=0L or c.sggid = :sggid) and"// 指定-群組ID
 			+ "(:notsggid=0L or c.sggid != :notsggid) and"// 排除-群組ID
-			+ "(:notsysstatus is null or c.sysstatus != :notsysstatus ) and "// 排除-一般查詢(特定排除 Admin(3))/登入-排除(2資料作廢)/沒有要排除 (4)
+			+ "(:notsysstatus is null or c.sysstatus != :notsysstatus ) and "// 排除-一般查詢(特定排除
+																				// Admin(3))/登入-排除(2資料作廢)/沒有要排除 (4)
 			+ "(:header is null or c.sysheader = :header) and "//
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus ) "// 指定-顯示/沒有要指定 (4)
 			+ "order by c.sggid asc,c.sysheader desc,c.systemPermission.syssort asc")

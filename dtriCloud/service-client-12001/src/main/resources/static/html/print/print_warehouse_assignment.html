@@ -231,6 +231,7 @@
 				},
 				printPrepare(dataHeader, dataBody, entityIKey, entityGKey) {
 					//合併備料?
+					print.data.cells = {};
 					if (dataHeader.length > 1 && dataHeader.length <= 10) {
 						dataHeader.forEach(function (hds, index) {
 							//標記代號
@@ -271,7 +272,8 @@
 						print_ex.find(".pr_bslnb").text(h.id.split("-")[2]);//單據序
 						//區分①②③④
 						let pr_bslfrom = h.wasfromcommand.replaceAll("*", "＊").replaceAll("[", "").replaceAll("]", "");
-						print_ex.find(".pr_bslfromcommand").text(print.data.cells[bslclass_bslsn] + " : " + pr_bslfrom);//單據來源
+						let pr_nb = (print.data.cells[bslclass_bslsn] == null) ? "" : print.data.cells[bslclass_bslsn] + " : ";
+						print_ex.find(".pr_bslfromcommand").text(pr_nb + pr_bslfrom);//單據來源
 
 						//整理文字(可能是來源 或對象)
 						//[A0002_原物料倉_2F-BH-04-02]

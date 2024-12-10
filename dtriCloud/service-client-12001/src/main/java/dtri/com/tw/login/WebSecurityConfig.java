@@ -82,6 +82,8 @@ public class WebSecurityConfig {
 	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
 	private static final String schedule_shn = "/ajax/schedule_shortage_notification.basil";
 	private static final String schedule_sph = "/ajax/schedule_production_history.basil";
+	private static final String schedule_spn = "/ajax/schedule_production_notes.basil";
+
 	// BIOS
 	private static final String bios_not = "/ajax/bios_notification.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
@@ -397,6 +399,14 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_sph + ".AU").hasAuthority(actionRole(schedule_sph, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, schedule_sph + ".AD").hasAuthority(actionRole(schedule_sph, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, schedule_sph + ".DD").hasAuthority(actionRole(schedule_sph, "DD"))// (標記移除)
+				// ----請求-schedule_production_notes-(訪問) ----
+				.requestMatchers(HttpMethod.POST, schedule_spn).hasAuthority(actionRole(schedule_spn, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, schedule_spn + ".AR").hasAuthority(actionRole(schedule_spn, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, schedule_spn + ".ARR").hasAuthority(actionRole(schedule_spn, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, schedule_spn + ".AC").hasAuthority(actionRole(schedule_spn, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, schedule_spn + ".AU").hasAuthority(actionRole(schedule_spn, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".AD").hasAuthority(actionRole(schedule_spn, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".DD").hasAuthority(actionRole(schedule_spn, "DD"))// (標記移除)
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----
