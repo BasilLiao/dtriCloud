@@ -43,6 +43,7 @@ import jakarta.persistence.Transient;
  *      basic:[物料號1_數量,物料號2_數量...] }<br>
  *      this.sphbpsnv = "";產品參數設置 [Name_Value ,.....]<br>
  *      this.sphbpsuser = "";BOM負責人<br>
+ *      this.sphpon = "";製令單號<br>
  *      this.sphonb = "";訂單號<br>
  *      this.sphoname = "";訂單客戶<br>
  *      this.sphocountry = "";訂單國家<br>
@@ -87,6 +88,7 @@ public class ScheduleProductionHistory {
 		this.sphbisitem = "";
 		this.sphbpsnv = "";
 		this.sphbpsuser = "";
+		this.setSphpon("");
 		this.sphonb = "";
 		this.sphoname = "";
 		this.sphocountry = "";
@@ -161,6 +163,8 @@ public class ScheduleProductionHistory {
 	@Column(name = "sph_bps_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphbpsuser;
 	//
+	@Column(name = "sph_pon", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphpon;
 	@Column(name = "sph_o_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphonb;
 	@Column(name = "sph_o_name", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -488,6 +492,14 @@ public class ScheduleProductionHistory {
 
 	public void setSphscnv(String sphscnv) {
 		this.sphscnv = sphscnv;
+	}
+
+	public String getSphpon() {
+		return sphpon;
+	}
+
+	public void setSphpon(String sphpon) {
+		this.sphpon = sphpon;
 	}
 
 }

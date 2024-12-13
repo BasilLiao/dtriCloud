@@ -250,7 +250,7 @@
 					//排序整理
 					var sortJson = {};
 					Object.keys(dataBody).forEach(function (k) {
-						sortJson[dataBody[k]['wasmuser'] + dataBody[k]['wasfromwho'] + dataBody[k]['id']] = dataBody[k];
+						sortJson[dataBody[k]['wasmuser'] + dataBody[k]['wasfromwho']+ dataBody[k]['waspnumber'] + dataBody[k]['id']] = dataBody[k];
 					});
 					sortJson = main.methods.orderedSort(sortJson);
 

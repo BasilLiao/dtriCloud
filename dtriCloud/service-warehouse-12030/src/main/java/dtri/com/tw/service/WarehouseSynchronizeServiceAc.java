@@ -141,9 +141,17 @@ public class WarehouseSynchronizeServiceAc {
 					e.setSysstatus(in.getSysstatus());
 					// header
 					entitys.add(e);
+					// 如果有異常或是尚未滿足
+					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
+							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
 				} else {
 					// 如果有異常或是尚未滿足
-					if (in.getSysnote().contains("異常") || !in.getBilpnqty().equals(in.getBilpngqty())) {
+					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
+							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}
@@ -178,9 +186,17 @@ public class WarehouseSynchronizeServiceAc {
 					e.setSysstatus(sh.getSysstatus());
 					// header
 					entitys.add(e);
+					// 如果有異常或是尚未滿足
+					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
+							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
 				} else {
 					// 如果有異常或是尚未滿足
-					if (sh.getSysnote().contains("異常") || !sh.getBslpnqty().equals(sh.getBslpngqty())) {
+					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
+							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}
@@ -412,9 +428,17 @@ public class WarehouseSynchronizeServiceAc {
 					e.setSysstatus(in.getSysstatus());
 					// header
 					entitys.add(e);
+					// 如果有異常或是尚未滿足
+					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
+							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
 				} else {
 					// 如果有異常或是尚未滿足
-					if (in.getSysnote().contains("異常") || !in.getBilpnqty().equals(in.getBilpngqty())) {
+					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
+							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}
@@ -450,9 +474,21 @@ public class WarehouseSynchronizeServiceAc {
 					e.setSysstatus(sh.getSysstatus());
 					// header
 					entitys.add(e);
+					// 如果有異常或是尚未滿足(pnerpqty / pngqty )
+					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
+							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
+						System.out.println(
+								sh.getBslfuser().contains("✪") + ":" + !sh.getBslpngqty().equals(sh.getBslpnerpqty()));
+						if (!entityMarks.containsKey(headerKey)) {
+							entityMarks.put(headerKey, true);
+						}
+					}
 				} else {
-					// 如果有異常或是尚未滿足
-					if (sh.getSysnote().contains("異常") || !sh.getBslpnqty().equals(sh.getBslpngqty())) {
+					// 如果有異常或是尚未滿足(pnerpqty / pngqty )
+					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
+							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
+						System.out.println(
+								sh.getBslfuser().contains("✪") + ":" + !sh.getBslpngqty().equals(sh.getBslpnerpqty()));
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}

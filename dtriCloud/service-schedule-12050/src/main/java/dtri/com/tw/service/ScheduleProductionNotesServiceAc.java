@@ -20,9 +20,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
+import dtri.com.tw.pgsql.entity.SystemGroup;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -48,6 +51,9 @@ public class ScheduleProductionNotesServiceAc {
 	private ScheduleProductionHistoryDao historyDao;
 
 	@Autowired
+	private BomProductManagementDao managementDao;
+
+	@Autowired
 	private EntityManager em;
 
 	/** 取得資料 */
@@ -62,8 +68,12 @@ public class ScheduleProductionNotesServiceAc {
 		List<Order> orders = new ArrayList<>();
 		orders.add(new Order(Direction.DESC, "syscdate"));// 建立時間
 		orders.add(new Order(Direction.ASC, "sphbpmnb"));// 產品號
+		List<Order> ordersD = new ArrayList<>();
+		ordersD.add(new Order(Direction.ASC, "bpmnb"));// 產品號
+		ordersD.add(new Order(Direction.ASC, "bpmmodel"));// 型號
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest pageableDetail = PageRequest.of(batch, total, Sort.by(ordersD));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
@@ -72,74 +82,95 @@ public class ScheduleProductionNotesServiceAc {
 			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null,
 					null, pageable);
 
+			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(null, null, null, null,
+					pageableDetail);
+
 			// Step3-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
-			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
+			String entityJson = packageService.beanToJson(entitys);
 			packageBean.setEntityJson(entityJson);
-			packageBean.setEntityDetailJson("{}");
+			String entityJsonDetails = packageService.beanToJson(entityDetails);
+			packageBean.setEntityDetailJson(entityJsonDetails);
 
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+			Map<String, SystemLanguageCell> mapLanguagesDetail = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleProductionHistory", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleProductionHistory",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
+			});
+			// 細節翻譯
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao
+					.findAllByLanguageCellSame("BomProductManagement", null, 2);
+			languagesDetail.forEach(x -> {
+				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
 			// 動態->覆蓋寫入->修改UI選項
 
 			// Step3-4. 欄位設置
 			JsonObject searchSetJsonAll = new JsonObject();
 			JsonArray searchJsons = new JsonArray();// 查詢設定
+			JsonArray searchDetailJsons = new JsonArray();// 查詢設定
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
 			Field[] fields = ScheduleProductionHistory.class.getDeclaredFields();
+			Field[] fieldDetails = BomProductManagement.class.getDeclaredFields();
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
 			// exceptionCell.add("material");
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
+			resultDetailTJsons = packageService.resultSet(fieldDetails, exceptionCell, mapLanguagesDetail);
 
-			// Step3-5. 建立查詢項目
+			// Step3-5. 建立查詢項目(工單紀錄)
 			searchJsons = packageService.searchSet(searchJsons, null, "sphbpmnb", "Ex:BOM號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sphbpmmodel", "Ex:型號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "sphpon", "Ex:製令單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "ssyscdate", "Ex:(起)", true, //
+
+			// Step3-5. 建立查詢項目(產品)
+			searchDetailJsons = packageService.searchSet(searchDetailJsons, null, "bpmnb", "Ex:BOM號?", true, //
 					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "esyscdate", "Ex:(終)", true, //
+			searchDetailJsons = packageService.searchSet(searchDetailJsons, null, "bpmmmodel", "Ex:型號?", true, //
 					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
+			searchSetJsonAll.add("searchDetailSet", searchDetailJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
-			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
+			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);//
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
 			ScheduleProductionHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					ScheduleProductionHistory.class);
 
-			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphbpmnb(),
-					searchData.getSphbpmmodel(), searchData.getSphonb(), searchData.getSysmuser(),
-					searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
+			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphbpmnb(), null,
+					searchData.getSphonb(), null, null, null, pageable);
+
+			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(null, null, null, null,
+					pageableDetail);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
+			String entityDteailJson = packageService.beanToJson(entityDetails);
+
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);
-			packageBean.setEntityDetailJson("");
+			packageBean.setEntityDetailJson(entityDteailJson);
 
 			// 查不到資料
-			if (packageBean.getEntityJson().equals("[]")) {
+			if (packageBean.getEntityJson().equals("[]") && packageBean.getEntityDetailJson().equals("[]")) {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
 		}
@@ -149,7 +180,8 @@ public class ScheduleProductionNotesServiceAc {
 		String entityFormatJson = packageService.beanToJson(new ScheduleProductionHistory());
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
-		packageBean.setEntityIKeyGKey("bhid_");
+		packageBean.setEntityIKeyGKey("sphid_");
+		packageBean.setEntityDetailIKeyGKey("bpmid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
