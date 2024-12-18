@@ -76,6 +76,7 @@ public class SystemUserServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.DESC, "sugid"));
 		orders.add(new Order(Direction.DESC, "sysmdate"));
 		orders.add(new Order(Direction.DESC, "suaccount"));
 		// 一般模式

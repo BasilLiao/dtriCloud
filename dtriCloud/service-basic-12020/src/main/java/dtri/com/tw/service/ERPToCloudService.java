@@ -54,6 +54,9 @@ public class ERPToCloudService {
 		o.setBclacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
 		o.setBclmodel(m.getMa003() == null ? "" : m.getMa003());// 機型
 		o.setBclcustomer(m.getTa050());// --訂單生產加工包裝資訊(客戶資訊)
+		o.setBcltqty(m.getTa015());// 預計生產數量
+		o.setBcltrqty(m.getTa017());// 已生產數量
+
 		// 單身
 		o.setBclpnumber(m.getMb001());// 物料號品號
 		o.setBclpname(m.getMb002());// 品名

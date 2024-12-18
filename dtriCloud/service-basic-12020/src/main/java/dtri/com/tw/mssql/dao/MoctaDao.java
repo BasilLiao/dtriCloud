@@ -15,6 +15,8 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
+			+ " MOCTA.TA015, "// --預計生產數量
+			+ " MOCTA.TA017, "// --已生產數
 			+ " MOCTA.TA029, "// --生管備註
 			+ "	MOCTA.TA050, "// --訂單生產加工包裝資訊(客戶資訊)
 			+ " INVMAB.MA003,"// --產品機型
@@ -67,7 +69,8 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	 ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
 			+ "	 (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3') "//
-			//+ "	 (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3' OR MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
+			// + " (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3' OR
+			// MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
 			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
 			+ "	 AND (MOCTB.TB018 = 'Y' OR MOCTB.TB018 = 'N') "// --核單碼
 			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-90, 112) "//

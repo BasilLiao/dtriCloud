@@ -31,6 +31,10 @@ public class Mocta {
 	private String ta001_ta002;// 製令單
 	@Column(name = "TA006")
 	private String ta006;// 成品品號
+	@Column(name = "TA015")
+	private Integer ta015;// 預計生產數
+	@Column(name = "TA017")
+	private Integer ta017;// 已生產數
 
 	@Column(name = "TA029")
 	private String ta029;// ,--生管備註
@@ -257,7 +261,7 @@ public class Mocta {
 				+ ", ta050=" + ta050 + ", ta009=" + ta009 + ", ta010=" + ta010 + ", tb015=" + tb015 + ", tb004=" + tb004
 				+ ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017
 				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
-				+ ", ma002=" + ma002 + ", tk000=" + tk000 + "]";
+				+ ", ma002=" + ma002 + ", tk000=" + tk000 + ", ta015=" + ta015 + ", ta017=" + ta017 + "]";
 	}
 
 	public boolean isNewone() {
@@ -338,6 +342,22 @@ public class Mocta {
 
 	public void setTb017(String tb017) {
 		this.tb017 = tb017;
+	}
+
+	public Integer getTa017() {
+		return ta017;
+	}
+
+	public void setTa017(Integer ta017) {
+		this.ta017 = ta017;
+	}
+
+	public Integer getTa015() {
+		return ta015;
+	}
+
+	public void setTa015(Integer ta015) {
+		this.ta015 = ta015;
 	}
 
 }

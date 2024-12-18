@@ -172,6 +172,11 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
+							<div class="lh-1 col p-1 m-1 border border-primary rounded">
+								<input id="btn_only_have_qty" alt="" title="" type="checkbox" checked="checked"
+									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
+									style="font-size: 12px;">Only have qty</b>
+							</div>
 							<button id="btn_printerForm" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Printer<br>form(S1)
@@ -184,7 +189,7 @@
 							</button>
 							<button id="btn_re_synchronize" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Re synchronize<br>document(AR)
+								<b>Re doc<br>sync(AR)
 								</b>
 							</button>
 						</div>
@@ -968,7 +973,12 @@
 					var gkey = dk.split("_")[1];
 					for (var en = 0; en < entityDetailJsons.length; en++) {
 						if (entityDetailJsons[en][entityIKey] == ikey) {
-							dataBody.push(entityDetailJsons[en]);
+							//而外檢查是否勾選0項目
+							if (entityDetailJsons[en]["waspnqty"] > 0) {
+								dataBody.push(entityDetailJsons[en]);
+							} else if (!$("#btn_only_have_qty").prop("checked")) {
+								dataBody.push(entityDetailJsons[en]);
+							}
 						}
 					}
 				});

@@ -13,8 +13,7 @@ public interface SystemGroupDao extends JpaRepository<SystemGroup, Long> {
 
 	// 查詢群組(群組ID)
 	@Query("SELECT c FROM SystemGroup c "//
-			+ "WHERE  (c.sggid = :sggid ) and "//
-			+ "(c.sysheader = true) "//
+			+ "WHERE  (c.sggid = :sggid ) "//
 			+ "order by c.sggid asc, c.systemPermission.syssort asc")
 	ArrayList<SystemGroup> findBySggidOrderBySggid(Long sggid);
 

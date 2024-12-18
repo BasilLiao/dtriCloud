@@ -151,6 +151,10 @@ public class BasicChangeItemsServiceAc {
 					v.setSyssort(7);
 				} else if (k.equals("bclerpcuser")) {// 開單人
 					v.setSyssort(8);
+				} else if (k.equals("bcltqty")) {// 需生產數
+					v.setSyssort(9);
+				} else if (k.equals("bcltrqty")) {// 已生產數
+					v.setSyssort(10);
 				} else {
 					v.setSlcshow(0);
 				}
@@ -173,7 +177,7 @@ public class BasicChangeItemsServiceAc {
 			resultDetailTJsons = packageService.resultSet(fieldsWA, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:物料1_物料2/成品號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:組件號1_組件號2?請用'底線_'區隔", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -229,19 +233,23 @@ public class BasicChangeItemsServiceAc {
 				entityDetails.addAll(entityDetail);
 
 				// Step4-2.資料區分(一般/細節)- 排除重複單號
-				Map<String, Boolean> check = new HashMap<String, Boolean>();
+				Map<String, Boolean> check = new HashMap<String, Boolean>();// <工單號_組物料,true>
+				Map<String, Boolean> pnumberCheck = new HashMap<String, Boolean>();// <工單號_成品物料,true>
 				entitys.forEach(o -> {
 					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
-					if (!check.containsKey(k) && !o.getSysnote().contains("改")) {
+					String p = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclproduct();
+					if (!pnumberCheck.containsKey(p) && !check.containsKey(k) && //
+							!o.getSysnote().contains("改") && !o.getSysnote().contains("退")) {
 						check.put(k, true);
+						pnumberCheck.put(p, true);
 						entitysNew.add(o);
 					}
 				});
 				// 而外查詢A521
 				entityA521s.forEach(o -> {
 					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
-					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber())
-							&& !o.getSysnote().contains("改")) {
+					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber()) && !o.getSysnote().contains("改")
+							&& !o.getSysnote().contains("退")) {
 						check.put(k, true);
 						entitysNew.add(o);
 					}
@@ -258,7 +266,6 @@ public class BasicChangeItemsServiceAc {
 			if (packageBean.getEntityJson().equals("[]")) {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
-
 		}
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)

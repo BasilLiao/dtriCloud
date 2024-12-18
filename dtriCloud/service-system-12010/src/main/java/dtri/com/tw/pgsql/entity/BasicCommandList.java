@@ -49,6 +49,8 @@ import jakarta.persistence.Table;
  *      bcl_e_date:預計時間(入料日) 指 單一項目 到齊時間 或是預定 入料時間<br>
  *      bcl_f_date:預計時間(齊料日) 指 整張單都到齊 的時間<br>
  *      bcl_s_date:預計時間(完工日) 指 完成時間<br>
+ *      bcl_t_qty : 0;預計生產數量<br>
+ *		bcl_tr_qty: 0;已生產數量<br>
  * 
  * 
  */
@@ -100,6 +102,8 @@ public class BasicCommandList {
 		this.bcledate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.bclsdate = new Date(253402271940000L);// 9999-12-31 23:59:00
 		this.checkrm = true;
+		this.bcltqty = 0;
+		this.bcltrqty = 0;
 		//
 		this.bclcustomer = "";
 		this.bclmodel = "";
@@ -148,9 +152,13 @@ public class BasicCommandList {
 	private String bclproduct;
 	@Column(name = "bcl_model", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclmodel;
+	@Column(name = "bcl_t_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bcltqty;
+	@Column(name = "bcl_tr_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer bcltrqty;
+
 	@Column(name = "bcl_customer", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclcustomer;
-
 	@Column(name = "bcl_checkin", nullable = false, columnDefinition = "int default 0")
 	private Integer bclcheckin;
 	@Column(name = "bcl_erp_c_user", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -533,6 +541,22 @@ public class BasicCommandList {
 
 	public void setBclsdate(Date bclsdate) {
 		this.bclsdate = bclsdate;
+	}
+
+	public Integer getBcltqty() {
+		return bcltqty;
+	}
+
+	public void setBcltqty(Integer bcltqty) {
+		this.bcltqty = bcltqty;
+	}
+
+	public Integer getBcltrqty() {
+		return bcltrqty;
+	}
+
+	public void setBcltrqty(Integer bcltrqty) {
+		this.bcltrqty = bcltrqty;
 	}
 
 }
