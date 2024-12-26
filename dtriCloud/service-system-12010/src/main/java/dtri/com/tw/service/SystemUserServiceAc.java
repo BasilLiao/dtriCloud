@@ -76,7 +76,7 @@ public class SystemUserServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.DESC, "sugid"));
+		orders.add(new Order(Direction.DESC, "sugname"));
 		orders.add(new Order(Direction.DESC, "sysmdate"));
 		orders.add(new Order(Direction.DESC, "suaccount"));
 		// 一般模式
@@ -171,8 +171,8 @@ public class SystemUserServiceAc {
 				user = packageBean.getUserAccount();
 			}
 
-			ArrayList<SystemUser> entitys = userDao.findAllBySystemUser(searchData.getSuname(), searchData.getSuaccount(), searchData.getSuposition(),
-					user, null, pageable);
+			ArrayList<SystemUser> entitys = userDao.findAllBySystemUser(searchData.getSuname(),
+					searchData.getSuaccount(), searchData.getSuposition(), user, null, pageable);
 			ArrayList<SystemUser> entityResp = new ArrayList<>();
 			// Step4-2.資料區分(一般/細節)
 			entitys.forEach(u -> {
@@ -219,13 +219,15 @@ public class SystemUserServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemUser>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemUser>>() {
+					});
 
 			// Step2.資料檢查
 			for (SystemUser entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemUser> checkDatas = userDao.findAllBySystemUserCheck(entityData.getSuaccount(), null, null, null);
+				ArrayList<SystemUser> checkDatas = userDao.findAllBySystemUserCheck(entityData.getSuaccount(), null,
+						null, null);
 				for (SystemUser checkData : checkDatas) {
 					if (checkData.getSuid().compareTo(entityData.getSuid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -279,6 +281,7 @@ public class SystemUserServiceAc {
 				// 群組更換
 				ArrayList<SystemGroup> glist = groupDao.findBySggidOrderBySggid(x.getSugid());
 				entityDataOld.setSystemgroups(new HashSet<>(glist));
+				entityDataOld.setSugname(glist.get(0).getSgname());
 
 				// 密碼加密
 				BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
@@ -303,32 +306,38 @@ public class SystemUserServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemUser>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemUser>>() {
+					});
 
 			// Step2.資料檢查
 			for (SystemUser entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemUser> checkDatas = userDao.findAllBySystemUserCheck(entityData.getSuaccount(), null, null, null);
+				ArrayList<SystemUser> checkDatas = userDao.findAllBySystemUserCheck(entityData.getSuaccount(), null,
+						null, null);
 				if (checkDatas.size() != 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 							new String[] { entityData.getSuaccount() });
 				}
 				checkDatas = userDao.findAllBySystemUserCheck(null, entityData.getSuemail(), null, null);
 				if (checkDatas.size() != 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSuemail() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSuemail() });
 				}
 				checkDatas = userDao.findAllBySystemUserCheck(null, null, entityData.getSuname(), null);
 				if (checkDatas.size() != 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSuname() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSuname() });
 				}
 				checkDatas = userDao.findAllBySystemUserCheck(null, null, null, entityData.getSuename());
 				if (checkDatas.size() != 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSuename() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSuename() });
 				}
 				// 檢查-密碼
 				if (entityData.getSupassword().length() == 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW, new String[] { "password" });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+							new String[] { "password" });
 				}
 			}
 		}
@@ -339,6 +348,7 @@ public class SystemUserServiceAc {
 		entityDatas.forEach(x -> {
 			ArrayList<SystemGroup> groups = groupDao.findBySggidOrderBySggid(x.getSugid());
 			x.setSystemgroups(new HashSet<SystemGroup>(groups));
+			x.setSugname(groups.get(0).getSgname());
 			x.setSysmdate(new Date());
 			x.setSysmuser(packageBean.getUserAccount());
 			x.setSysodate(new Date());
@@ -367,8 +377,9 @@ public class SystemUserServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemUser>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemUser>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -398,8 +409,9 @@ public class SystemUserServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemUser>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemUser>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================

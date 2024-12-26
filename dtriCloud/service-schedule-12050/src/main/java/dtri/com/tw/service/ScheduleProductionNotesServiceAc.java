@@ -136,13 +136,6 @@ public class ScheduleProductionNotesServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "sphpon", "Ex:製令單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
-			// Step3-5. 建立查詢項目(產品)
-			searchDetailJsons = packageService.searchSet(searchDetailJsons, null, "bpmnb", "Ex:BOM號?", true, //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
-			// Step3-5. 建立查詢項目
-			searchDetailJsons = packageService.searchSet(searchDetailJsons, null, "bpmmmodel", "Ex:型號?", true, //
-					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
-
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("searchDetailSet", searchDetailJsons);

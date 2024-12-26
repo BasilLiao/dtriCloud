@@ -51,6 +51,7 @@ import jakarta.persistence.Table;
  *      bcl_s_date:預計時間(完工日) 指 完成時間<br>
  *      bcl_t_qty : 0;預計生產數量<br>
  *		bcl_tr_qty: 0;已生產數量<br>
+ *		bcl_tr_confirm: 0;確認結單<br>
  * 
  * 
  */
@@ -107,6 +108,7 @@ public class BasicCommandList {
 		//
 		this.bclcustomer = "";
 		this.bclmodel = "";
+		this.bclerpconfirm = "";
 	}
 
 	// 共用型
@@ -204,6 +206,9 @@ public class BasicCommandList {
 
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
+
+	@Column(name = "bcl_erp_confirm", nullable = false, columnDefinition = "varchar(20) default ''")
+	private String bclerpconfirm;// 確認碼
 
 	@JsonIgnore
 	@Column(name = "check_rm", nullable = false, columnDefinition = "boolean default true")
@@ -557,6 +562,14 @@ public class BasicCommandList {
 
 	public void setBcltrqty(Integer bcltrqty) {
 		this.bcltrqty = bcltrqty;
+	}
+
+	public String getBclerpconfirm() {
+		return bclerpconfirm;
+	}
+
+	public void setBclerpconfirm(String bclerpconfirm) {
+		this.bclerpconfirm = bclerpconfirm;
 	}
 
 }

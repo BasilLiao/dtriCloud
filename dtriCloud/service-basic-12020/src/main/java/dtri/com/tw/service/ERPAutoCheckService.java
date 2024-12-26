@@ -467,7 +467,7 @@ public class ERPAutoCheckService {
 	}
 
 	// Step3. 立即結算
-	public Map<String, Integer> settlementAuto(Map<String, Integer> wAsSave) {
+	public Map<String, Integer> settlementAuto(Map<String, Integer> wAsSave, Map<String, Integer> wAsAllNewSave) {
 		ArrayList<WarehouseArea> arraySave = new ArrayList<>();
 		wAsSave.forEach((key, val) -> {
 			// 測試用
@@ -480,6 +480,13 @@ public class ERPAutoCheckService {
 				val = val < 0 ? 0 : val;
 				arrayList.get(0).setWatqty(val);
 				arraySave.add(arrayList.get(0));
+			} else {
+				// 可能是新物料?
+				if (wAsAllNewSave.containsKey(key)) {
+					// 可能有一樣的?
+					val += wAsAllNewSave.get(key);
+				}
+				wAsAllNewSave.put(key, val);
 			}
 		});
 		areaDao.saveAll(arraySave);

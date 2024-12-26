@@ -45,6 +45,7 @@ import jakarta.persistence.Transient;
  *      su_email : 使用者E mail<br>
  *      su_sgid : 使用者權限群組<br>
  *      su_language: 使用者語言<br>
+ *      su_g_name :群駔名稱<br>
  * 
  * @apiNote 標籤使用 @GeneratedValue<br>
  *          JPA提供的四種標準用法為TABLE，SEQUENCE，IDENTITY，AUTO。 <br>
@@ -109,6 +110,7 @@ public class SystemUser {
 		this.setSulanguage("");
 		// UI
 		this.sugid = null;
+		this.sugname = "";
 	}
 
 	// 共用型
@@ -151,7 +153,7 @@ public class SystemUser {
 	private String suemail;
 	@Column(name = "su_account", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String suaccount;
-	@Column(name = "su_a_account", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+	@Column(name = "su_a_account", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String suaaccount;
 
 	@Column(name = "su_password", nullable = false, columnDefinition = "varchar(300) default ''")
@@ -159,6 +161,9 @@ public class SystemUser {
 
 	@Column(name = "su_language", nullable = false, columnDefinition = "varchar(10) default 'zh-TW'")
 	private String sulanguage;
+
+	@Column(name = "su_g_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sugname;
 
 	@ManyToMany(targetEntity = SystemGroup.class, fetch = FetchType.EAGER)
 	@JoinTable(name = "su_sg_list", joinColumns = @JoinColumn(name = "su_id_fk"), inverseJoinColumns = @JoinColumn(name = "sg_id_fk"))
@@ -334,5 +339,13 @@ public class SystemUser {
 
 	public void setSuaaccount(String suaaccount) {
 		this.suaaccount = suaaccount;
+	}
+
+	public String getSugname() {
+		return sugname;
+	}
+
+	public void setSugname(String sugname) {
+		this.sugname = sugname;
 	}
 }

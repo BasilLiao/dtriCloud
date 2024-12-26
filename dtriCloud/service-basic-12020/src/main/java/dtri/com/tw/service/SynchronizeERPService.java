@@ -156,8 +156,12 @@ public class SynchronizeERPService {
 
 	// 物料自動化 修正(單據/倉別/物料)<wa_alias_wmpnb,wa_t_qty>
 	private Map<String, Integer> wAsSave = new HashMap<>();// 自動更新清單
+	// 全新物料 如果有進料的?(ERP新物料 & Cloud 新物料)<倉別_物料號,數量>
+	private Map<String, Integer> wAsAllNewSave = new HashMap<String, Integer>();
 
 	public void initERPSynchronizeService() throws Exception {
+		wAsAllNewSave = new HashMap<String, Integer>();// 初始化
+		//
 		areaDao.findAll().forEach(x -> {
 			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
 				wAs.put(x.getWaaliasawmpnb(), x);
@@ -212,6 +216,8 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setBslnb(String.format("%04d", bslnb));
 			m.setNewone(true);
 			bslnb += 1;
@@ -289,6 +295,8 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setTh001_th002(m.getTh001_th002().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
 			wTFsSave.put(m.getTh001_th002().split("-")[0], 0);
@@ -352,7 +360,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 
 		// Step6. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -390,6 +398,8 @@ public class SynchronizeERPService {
 		// Step1.資料整理
 		for (Mocte m : erpEntitys) {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
@@ -553,7 +563,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -583,6 +593,8 @@ public class SynchronizeERPService {
 			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
 			m.setTg014_tg015(m.getTg014_tg015().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
@@ -642,7 +654,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -672,6 +684,8 @@ public class SynchronizeERPService {
 			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
 			m.setTi013_ti014(m.getTi013_ti014().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setNewone(true);
 			erpInMaps.put(nKey, m);
 			wTFsSave.put(m.getTi001_ti002_ti003().split("-")[0], 0);
@@ -731,7 +745,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -764,6 +778,8 @@ public class SynchronizeERPService {
 			String nKey = m.getTg001_tg002_tg003();
 			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 單據性質別:A131 庫存借出單/ A141 庫存借入單
@@ -879,7 +895,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -913,6 +929,8 @@ public class SynchronizeERPService {
 			m.setTi001_ti002_ti003(m.getTi001_ti002_ti003().replaceAll("\\s", ""));
 			m.setTi014_ti015_ti016(m.getTi014_ti015_ti016().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 單據性質別:借出歸還A151+借入歸還單A161
@@ -1028,7 +1046,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -1064,6 +1082,8 @@ public class SynchronizeERPService {
 			String nKey = m.getTb001_tb002_tb003();
 			m.setTb001_tb002_tb003(m.getTb001_tb002_tb003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 測試用
@@ -1226,7 +1246,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -1259,6 +1279,8 @@ public class SynchronizeERPService {
 			String nKey = m.getTe001_te002_te003();
 			m.setTe001_te002_te003(m.getTe001_te002_te003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 不同一張工單?
@@ -1387,7 +1409,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -1420,6 +1442,8 @@ public class SynchronizeERPService {
 			String nKey = m.getTg001_tg002_tg003();
 			m.setTg001_tg002_tg003(m.getTg001_tg002_tg003().replaceAll("\\s", ""));
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 不同一張工單?
@@ -1550,7 +1574,7 @@ public class SynchronizeERPService {
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -1578,6 +1602,8 @@ public class SynchronizeERPService {
 		// Step1.資料整理
 		for (Copth m : erpEntitys) {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setTh001_th002_th003(m.getTh001_th002_th003().replaceAll("\\s", ""));
 			String nKey = m.getTh001_th002_th003();
 			m.setNewone(true);
@@ -1643,7 +1669,7 @@ public class SynchronizeERPService {
 		shippingListDao.saveAll(saveShLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step5. 自動結算
-		erpAutoCheckService.settlementAuto(wAsSave);
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
 		wAs = new HashMap<>();// 庫別清單
@@ -1849,6 +1875,7 @@ public class SynchronizeERPService {
 					n.setWaslocation(checkloc ? v.getMc003() : "FF-FF-FF-FF");// 物料位置
 					n.setWaaname(v.getCmc002() == null ? "" : v.getCmc002());// 倉庫名稱
 					n.setWaerptqty(v.getMc007());// 倉儲數量
+					///
 					n.setWatqty(n.getWaslocation().equals("FF-FF-FF-FF") ? 0 : v.getMc007());// (實際)倉儲數量[如果是FF-FF-FF-FF//
 																								// 則實際庫存0]
 					saveItems.add(n);
@@ -1860,6 +1887,25 @@ public class SynchronizeERPService {
 		shippingListDao.saveAll(shippingLists);
 		// Step5 儲位設定 全新資料?
 		erpSynchronizeWconfig(erpConfigMaps, configOlds);
+	}
+
+	// ============ (全新)物料+儲位同步 ============
+	public void erpAllNewAreaSynchronize() throws Exception {
+		wAsAllNewSave.forEach((key, v) -> {
+			// 必須是正數
+			if (v > 0) {
+				WarehouseArea areaNew = new WarehouseArea();
+				areaNew.setChecksum("");
+				areaNew.setWaalias(key.split("_")[0]);// 倉庫別
+				areaNew.setWawmpnb(key.split("_")[1]);// 物料號
+				areaNew.setWaaliasawmpnb(key);// 倉庫別+物料號
+				areaNew.setWaslocation("FF-FF-FF-FF");// 物料位置
+				areaNew.setWaaname("");// 倉庫名稱
+				areaNew.setWaerptqty(v);// (帳上)倉儲數量
+				areaNew.setWatqty(v);// (實際)倉儲數量[如果是FF-FF-FF-FF//
+				areaDao.save(areaNew);
+			}
+		});
 	}
 
 	// ============ 儲位過濾設定 ============

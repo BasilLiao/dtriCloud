@@ -155,6 +155,8 @@ public class BasicChangeItemsServiceAc {
 					v.setSyssort(9);
 				} else if (k.equals("bcltrqty")) {// 已生產數
 					v.setSyssort(10);
+				} else if (k.equals("bclerpconfirm")) {// 確認碼
+					v.setSyssort(11);
 				} else {
 					v.setSlcshow(0);
 				}
@@ -177,7 +179,7 @@ public class BasicChangeItemsServiceAc {
 			resultDetailTJsons = packageService.resultSet(fieldsWA, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:組件號1_組件號2?請用'底線_'區隔", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:組件號1/組件號2?請用 斜線/ 區隔", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -194,7 +196,7 @@ public class BasicChangeItemsServiceAc {
 
 			// 複數?避免為空
 			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
-					? searchData.getBclpnumber().split("_")
+					? searchData.getBclpnumber().replaceAll("\\s", "").split("/")
 					: new String[] { "90-320" };
 			// 複數?
 			for (String bclpn : bclpns) {

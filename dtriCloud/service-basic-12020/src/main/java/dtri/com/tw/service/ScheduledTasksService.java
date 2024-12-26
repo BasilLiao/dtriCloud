@@ -70,8 +70,8 @@ public class ScheduledTasksService {
 			try {
 				System.out.println(new Date());
 				// 初始化
-				synchronizeERPService.erpSynchronizeInvtb();//
-				// 事先準備匹配
+				synchronizeERPService.erpSynchronizeInvtb();
+				// /庫存儲位同步-事先準備匹配
 				synchronizeERPService.initERPSynchronizeService();//
 				// 單據
 				synchronizeERPService.erpSynchronizeInvta();
@@ -86,6 +86,8 @@ public class ScheduledTasksService {
 				synchronizeERPService.erpSynchronizeCopth();
 				synchronizeERPService.erpSynchronizePurth();
 				synchronizeERPService.erpSynchronizeWtypeFilter();
+				//庫存儲位同步-可能有新物料
+				synchronizeERPService.erpAllNewAreaSynchronize();//
 				// 移除多於資料()
 				synchronizeERPService.remove120DayData();
 				// ==================生管機制==================

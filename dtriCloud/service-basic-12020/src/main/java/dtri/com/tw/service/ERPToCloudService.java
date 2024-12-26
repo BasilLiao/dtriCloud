@@ -57,6 +57,12 @@ public class ERPToCloudService {
 		o.setBcltqty(m.getTa015());// 預計生產數量
 		o.setBcltrqty(m.getTa017());// 已生產數量
 
+		String ta011 = m.getTa011();// --確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+		o.setBclerpconfirm("1".equals(ta011) ? "未生產" : "2".equals(ta011) ? "已發料" : "3".equals(ta011) ? "生產中" : //
+				"Y".equalsIgnoreCase(ta011) ? "已完工" : "y".equalsIgnoreCase(ta011) ? "指定完工" : // 不區分大小寫
+						"未知狀態" // 預設值
+		);
+
 		// 單身
 		o.setBclpnumber(m.getMb001());// 物料號品號
 		o.setBclpname(m.getMb002());// 品名

@@ -36,13 +36,15 @@
 	/*Table 表格外框線*/
 	#search_c #search_cr table {
 		min-height: 200px;
+		max-height: 300px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
 
 	/*Table 表格外框線*/
 	#search_c #search_dcr table {
-		max-height: 200px;
+		min-height: 200px;
+		max-height: 300px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
@@ -236,7 +238,7 @@
 				data-bs-target="#search_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_cr_open" class="row m-0 shadow-sm collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
+			<b class="p-0 m-0 lh-1 wlr bg-info text-white">Production Records</b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -271,8 +273,8 @@
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="search_dcr_open" class="row m-0 shadow-sm collapse">
-			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
+		<div id="search_dcr_open" class="row m-0 shadow-sm collapse show">
+			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white">BOM List</b>
 			<table
 				class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -319,7 +321,7 @@
 				total: 1000,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
-				pageSize: 20,//每頁數量(1-20)
+				pageSize: 200,//每頁數量(1-20)
 				entityJsons: [],//資料
 				entityDetailJsons: [],//細節資料
 				entityIKey: "",//ID
@@ -460,15 +462,26 @@
 				});
 
 				//Step3.查詢內容-格式
-				for (var b = 1; b <= 20; b++) {
+				for (var b = 1; b <= search.data.searchPageSet.pageSize; b++) {
 					var exTbodyTr = $('#search_cr .exTbodyTr').clone();
+					var exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
+					//
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyTr_' + b);
 					exTbodyTr.find('input').attr("alt", "row_" + b);
+					//
+					exDetailTbodyTr.removeClass('exDetailTbodyTr');
+					exDetailTbodyTr.removeClass('d-none');
+					exDetailTbodyTr.addClass('valTbodyDetailTr_' + b);
+					exDetailTbodyTr.find('input').attr("alt", "row_" + b);
+
 					$('#search_cr .exTbodyTr').before(exTbodyTr);
+					$('#search_dcr .exDetailTbodyTr').before(exDetailTbodyTr);
+
 				}
 				$('#search_cr .exTbodyTr').addClass('d-none');
+				$('#search_cr .exDetailTbodyTr').addClass('d-none');
 
 				//Step4.查詢條件
 				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
@@ -1047,7 +1060,7 @@
 				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
 				$('#search_c .exTbodyTh input').prop("checked", false);
 				//版面預設
-				if ($('#search_dcr_open').hasClass('show')) {
+				if (!$('#search_dcr_open').hasClass('show')) {
 					$('#search_dcr .btn-outline-white').trigger('click');
 				}
 				if (!$('#search_cr_open').hasClass('show')) {
