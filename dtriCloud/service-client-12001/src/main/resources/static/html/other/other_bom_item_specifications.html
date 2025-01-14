@@ -535,7 +535,7 @@
 				//查詢格式
 				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var otherSetJson = JSON.parse(main.resq_data['searchSet']);
+				let otherSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(otherItemSetJson);
 				//資料內容
 				other.data.otherItemPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
@@ -546,8 +546,8 @@
 				other.data.otherSet = otherSetJson['searchSet'];
 
 				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
 
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
@@ -563,18 +563,18 @@
 				}
 
 				//Step1.查詢結果標題-排序
-				var resultThead = otherSetJson['resultThead'];
-				var resultDetailThead = otherSetJson['resultDetailThead'];
+				let resultThead = otherSetJson['resultThead'];
+				let resultDetailThead = otherSetJson['resultDetailThead'];
 				resultThead = main.methods.orderedSort(resultThead);
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
-				var check1 = true;
+				let check1 = true;
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
 					//複製格式
-					var exTheadth = $('#other_cr_open .exTheadth').clone();
-					var exTbodytd = $('#other_cr_open .exTbodytd').clone();
+					let exTheadth = $('#other_cr_open .exTheadth').clone();
+					let exTbodytd = $('#other_cr_open .exTbodytd').clone();
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
@@ -595,7 +595,7 @@
 
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
 						exTheadth.css('minWidth', resultThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultThead[k].width + "px");
@@ -616,8 +616,8 @@
 
 				//Step2.查詢結果標題(細節)-資料
 				check1 = true;
-				var withFixed = 80;
-				var fix3 = 1;//固定3格
+				let withFixed = 80;
+				let fix3 = 1;//固定3格
 				if (JSON.stringify(resultDetailThead) == '{}') {
 					$('#other_c #btn_detail').addClass('disabled');
 					$('#other_c #other_dcr').addClass('d-none');
@@ -625,8 +625,8 @@
 				Object.keys(resultDetailThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultDetailThead[k]);
 					//複製格式
-					var exTheadth = $('#other_dcr_open .exTheadth').clone();
-					var exTbodytd = $('#other_dcr_open .exTbodytd').clone();
+					let exTheadth = $('#other_dcr_open .exTheadth').clone();
+					let exTbodytd = $('#other_dcr_open .exTbodytd').clone();
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
@@ -651,7 +651,7 @@
 
 					//如果有翻譯
 					if (resultDetailThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
 						exTheadth.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
 						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
@@ -673,8 +673,8 @@
 				$('#other_dcr_open .exDetailTbodyTr').addClass("d-none");
 
 				//Step3.查詢內容-格式
-				for (var b = 1; b <= other.data.otherItemPageSet.pageSize; b++) {
-					var exTbodyTr = $('#other_cr .exTbodyTr').clone();
+				for (let b = 1; b <= other.data.otherItemPageSet.pageSize; b++) {
+					let exTbodyTr = $('#other_cr .exTbodyTr').clone();
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyTr_' + b);
@@ -683,11 +683,11 @@
 				}
 				$('#other_cr .exTbodyTr').addClass('d-none');
 				//Step4.查詢條件
-				for (var t = 0; t < otherSetJson['searchSet'].length; t++) {
-					var otherItemSet = otherSetJson['searchSet'][t];
-					var otherTextEx = "";
-					var otherSelectEx = "";
-					var selectEx = "";
+				for (let t = 0; t < otherSetJson['searchSet'].length; t++) {
+					let otherItemSet = otherSetJson['searchSet'][t];
+					let otherTextEx = "";
+					let otherSelectEx = "";
+					let selectEx = "";
 					//不顯示
 					if (!otherItemSet['show']) {
 						continue;
@@ -708,7 +708,7 @@
 							//如果有翻譯
 							if (k.indexOf(otherItemSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									otherTextEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
 								} else {
 									otherTextEx.find('.otherTitle').text(otherItemSet['searchName']);
@@ -730,7 +730,7 @@
 							//如果有翻譯
 							if (k.indexOf(otherItemSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									otherSelectEx.find('.otherTitle').text(cellName == "" ? otherItemSet['searchName'] : cellName);
 								} else {
 									otherSelectEx.find('.otherTitle').text(otherItemSet['searchName']);
@@ -738,9 +738,9 @@
 							}
 						});
 						//選項
-						for (var s = 0; s < otherItemSet['select'].length; s++) {
-							var key = otherItemSet['select'][s].split("_")[0];
-							var val = otherItemSet['select'][s].split("_")[1];
+						for (let s = 0; s < otherItemSet['select'].length; s++) {
+							let key = otherItemSet['select'][s].split("_")[0];
+							let val = otherItemSet['select'][s].split("_")[1];
 							selectEx = otherSelectEx.find('.selectEx').clone();
 							selectEx.removeClass("selectEx");
 							selectEx.removeAttr("selected");
@@ -775,7 +775,7 @@
 				$(document).off("click", "#other_c button");
 				$(document).on("click", "#other_c button", function (event) {
 					console.log($(event.currentTarget).attr("id"));
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					const selectedRadio = $('input[name="other_cr_c_detail"]:checked');
 
 					//初始化-狀態
@@ -800,7 +800,7 @@
 						case "btn_i_detail":
 							//細節
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-secondary");
 								$("#other_c #other_c_state").text("None").attr("title", "None_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
@@ -810,7 +810,7 @@
 						case "btn_i_add":
 							//新增
 							//if ($(selectedRadio).length === 0) {//有選擇
-							var bisgid = 0;
+							let bisgid = 0;
 							$("#other_c #other_c_state").addClass("text-success");
 							$("#other_c #other_c_state").text("Add").attr("title", "Add_" + bisgid);
 							other.methods.selectLoad(selectedRadio, "add");
@@ -819,7 +819,7 @@
 						case "btn_i_modify":
 							//修改
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-warning");
 								$("#other_c #other_c_state").text("Modify").attr("title", "Modify_" + bisgid);
 								other.methods.selectLoad(selectedRadio, "modify");
@@ -828,7 +828,7 @@
 						case "btn_i_remove":
 							//移除
 							if ($(selectedRadio).length !== 0) {//有選擇
-								var bisgid = $(selectedRadio).attr('title').split("_")[1];
+								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-danger");
 								$("#other_c #other_c_state").text("Remove").attr("title", "Remove_" + bisgid);
 								$("#other_c #other_dcr_open").addClass("dontUse");
@@ -837,10 +837,10 @@
 							break;
 						case "btn_w_listAdd":
 							//條件測試
-							var wc = $("#other_w_continue");
-							var wi = $("#other_w_item");
-							var wo = $("#other_w_option");
-							var wv = $("#other_w_val");
+							let wc = $("#other_w_continue");
+							let wi = $("#other_w_item");
+							let wo = $("#other_w_option");
+							let wv = $("#other_w_val");
 							//檢查是否有直->
 							if (wi.val() != "" && wo.val() != "" && wv.val() != "") {
 								//檢查
@@ -852,17 +852,17 @@
 									return null;
 								}
 								//取得參數
-								var wi_text = $("#other_w_item option:selected").text();
-								var wo_text = $("#other_w_option option:selected").text();
-								var wv_text = wv.val();
-								var wc_text = "";
+								let wi_text = $("#other_w_item option:selected").text();
+								let wo_text = $("#other_w_option option:selected").text();
+								let wv_text = wv.val();
+								let wc_text = "";
 								if (wc.val() != "") {
 									wc_text = $("#other_w_continue option:selected").text();
 								}
 								//切割->
 								let show_list = wc_text + " " + wi_text + " " + wo_text + " '" + wv_text + "' ";
 								let hid_list = wc.val() + "<_>" + wi.val() + "<_>" + wo.val() + "<_>" + wv.val();
-								var wlistEx = $("#other_w_list_ex").clone();
+								let wlistEx = $("#other_w_list_ex").clone();
 								wlistEx.removeClass("d-none");
 								wlistEx.removeAttr("id");
 								wlistEx.addClass("other_where");
@@ -904,7 +904,7 @@
 							break;
 						case "btn_w_save":
 							//存入資料(other_c_state=[Remove/Modify/Add])
-							var ocs = $("#other_c_state").attr("title").split("_")[0];
+							let ocs = $("#other_c_state").attr("title").split("_")[0];
 							switch (ocs) {
 								case "Add":
 									other.methods.confirmSend("Add");
@@ -926,7 +926,7 @@
 				//移除觸發-條件
 				$(document).off("click", "#other_c .other_w_one");
 				$(document).on("click", "#other_c .other_w_one", function (event) {
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					if (target.hasClass("other_w_one")) {
 						console.log($(event.currentTarget).attr("class"));
 						target.parent().remove();
@@ -935,12 +935,12 @@
 				//客製化項目
 				$(document).off("click", "#other_dcr table i");
 				$(document).on("click", "#other_dcr table i", function (event) {
-					var target = $(event.currentTarget);
+					let target = $(event.currentTarget);
 					//複製
 					if (target.hasClass("bi-stickies")) {
 						console.log($(event.currentTarget).attr("class"));
-						var d = $('#other_dcr_open .valTbodyTrD').length;
-						var exTbodyTr = $(event.currentTarget).parent().parent().parent().clone();
+						let d = $('#other_dcr_open .valTbodyTrD').length;
+						let exTbodyTr = $(event.currentTarget).parent().parent().parent().clone();
 						exTbodyTr.removeClass('exDetailTbodyTr');
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.removeAttr("class");
@@ -968,8 +968,8 @@
 					//新增
 					if (target.hasClass("bi-plus-square")) {
 						console.log($(event.currentTarget).attr("class"));
-						var d = $('#other_dcr_open .valTbodyTrD').length;
-						var exTbodyTr = $('#other_c #other_dcr_open .exDetailTbodyTr').clone();
+						let d = $('#other_dcr_open .valTbodyTrD').length;
+						let exTbodyTr = $('#other_c #other_dcr_open .exDetailTbodyTr').clone();
 						exTbodyTr.removeClass('exDetailTbodyTr');
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.addClass('valTbodyDetailTr_');
@@ -990,7 +990,7 @@
 				//輸入Enter-條件
 				$(document).off("keyup", "#other_c input");
 				$(document).on("keyup", "#other_c input", function (e) {
-					var target = $(e.currentTarget);
+					let target = $(e.currentTarget);
 					if (e.key === 'Enter' || e.keyCode === 13) {
 						console.log($(e.currentTarget).attr("id"));
 						//點擊新增
@@ -1008,11 +1008,11 @@
 				if (selectedRadio.length === 1) {
 					//帶入資料(選取的資料)
 					console.log($(selectedRadio).parent().parent().parent());
-					var se = $(selectedRadio).parent().parent().parent();
-					var bisid = se.find('input').attr('title').split('_')[0];
-					var bisgid = se.find('input').attr('title').split('_')[1];
+					let se = $(selectedRadio).parent().parent().parent();
+					let bisid = se.find('input').attr('title').split('_')[0];
+					let bisgid = se.find('input').attr('title').split('_')[1];
 
-					var bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;//自動?
+					let bisiauto = $(se).find('.bisiauto').text() === "true" ? true : false;//自動?
 					$('#other_dcr #other_bisiauto').prop('checked', bisiauto);//自動導入
 					$('#other_dcr #other_bisgname').val($(se).find('.bisgname').text());//群組名稱
 					$('#other_dcr #other_bisgfname').val($(se).find('.bisgfname').text());//項目名稱
@@ -1020,12 +1020,12 @@
 					$('#other_dcr #other_bisgsplit').val($(se).find('.bisgsplit').text());//指定分割切割
 					$('#other_dcr #other_syssort').val($(se).find('.syssort').text());//排序
 
-					var bisproduct = $(se).find('.bisproduct').text() === "true" ? true : false;
-					var bisaccessories = $(se).find('.bisaccessories').text() === "true" ? true : false;
-					var bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
-					var bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
-					var bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
-					var bisdselect = $(se).find('.bisdselect').text() === "true" ? true : false;
+					let bisproduct = $(se).find('.bisproduct').text() === "true" ? true : false;
+					let bisaccessories = $(se).find('.bisaccessories').text() === "true" ? true : false;
+					let bissfproduct = $(se).find('.bissfproduct').text() === "true" ? true : false;
+					let bisdevelopment = $(se).find('.bisdevelopment').text() === "true" ? true : false;
+					let bispcb = $(se).find('.bispcb').text() === "true" ? true : false;
+					let bisdselect = $(se).find('.bisdselect').text() === "true" ? true : false;
 
 					$('#other_dcr #other_bisproduct').prop('checked', bisproduct);//產品
 					$('#other_dcr #other_bisaccessories').prop('checked', bisaccessories);//配件
@@ -1034,7 +1034,7 @@
 					$('#other_dcr #other_bispcb').prop('checked', bispcb);//PCBA
 					$('#other_dcr #other_bisdselect').prop('checked', bisdselect);//預設
 					//==========條件==========
-					var bisgcondition = $(se).find('.bisgcondition').text();
+					let bisgcondition = $(se).find('.bisgcondition').text();
 					// 使用正則表達式匹配並保留分隔符
 					let regex = /(<AND>|<OR>)/g;
 					let modifiedString = bisgcondition.replace(regex, '<@@>$1'); // 在分隔符前添加空格
@@ -1055,7 +1055,7 @@
 					});
 					//帶入細節				
 					main.resq_data['entityDetailJson'] = [];
-					var entityDetailJson = [];
+					let entityDetailJson = [];
 					other.data.otherItemPageSet.entityDetailJsons.forEach((x) => {
 						if ((x['bisgid'] + "") === bisgid) {
 							entityDetailJson.push(x);
@@ -1108,15 +1108,15 @@
 			},
 			//==========================傳送資料==========================
 			confirmSend(kindId) {
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
 
 				//傳送資料
-				var data = {};
-				var req_data = {};
-				var entityJsons = other.data.entityFormatJson;
-				var entityDetailJsons = [];
+				let data = {};
+				let req_data = {};
+				let entityJsons = other.data.entityFormatJson;
+				let entityDetailJsons = [];
 
 				switch (kindId) {
 					case "btn_w_test":
@@ -1141,7 +1141,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1180,7 +1180,7 @@
 
 
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1200,7 +1200,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1239,7 +1239,7 @@
 
 
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1259,7 +1259,7 @@
 								entityFormatJson = {};
 								//每一格資料
 								$(this).find('.valTbodytd').each(function (ix) {
-									var val = $(this).find("input").val();
+									let val = $(this).find("input").val();
 									//可能是時間格式
 									if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 										val = new Date(val).getTime();
@@ -1298,7 +1298,7 @@
 
 
 								//條件
-								var bisgcondition = "";
+								let bisgcondition = "";
 								$('#other_w_list .other_where').each(function (t) {
 									bisgcondition += $(this).attr('title');
 								});
@@ -1332,7 +1332,7 @@
 				console.log(entityJsons);
 				console.log(entityDetailJsons);
 				//換頁
-				var searchPageSet = {};
+				let searchPageSet = {};
 				searchPageSet['total'] = other.data.otherItemPageSet.total;//批次數量
 				searchPageSet['batch'] = other.data.otherItemPageSet.batch;//第幾批次
 				data['searchPageSet'] = JSON.stringify(searchPageSet);
@@ -1356,32 +1356,32 @@
 			otherDetailReturn() {
 				console.log("otherDetailReturn()");
 				//帶回資料
-				var entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				let entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 				//基本格式
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
 				//Step0.取得基本分割...等等條件
-				var owg = $('#other_bisgfname').val();
-				var owf = $('#other_bisgffield').val();
-				var ows = $('#other_bisgsplit').val();
+				let owg = $('#other_bisgfname').val();
+				let owf = $('#other_bisgffield').val();
+				let ows = $('#other_bisgsplit').val();
 				//console.log(entityDetailJsons);
 				//Step1.查詢細節內容-格式
 				$("#other_dcr_open .valTbodyTrD").remove();
 				$('#other_dcr_open tbody td').removeClass('bg-warning');
-				for (var d = 0; d < entityDetailJsons.length; d++) {
+				for (let d = 0; d < entityDetailJsons.length; d++) {
 					//=======格式=======
-					var exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
+					let exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
 					exTbodyTr.removeClass('exDetailTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
 					exTbodyTr.addClass('valTbodyTrD');
 					exTbodyTr.find('input').attr("alt", "row_" + (d + 1));
 					//=======資料=======
-					var entity = entityDetailJsons[d];//
-					var iKey = "", gKey = "";
-					var valTrNb = d + 1;
-					var owgs = owg.split(" ").length > 5 ? 5 : owg.split(" ").length;//切割數量
+					let entity = entityDetailJsons[d];//
+					let iKey = "", gKey = "";
+					let valTrNb = d + 1;
+					let owgs = owg.split(" ").length > 5 ? 5 : owg.split(" ").length;//切割數量
 					Object.keys(entity).forEach(function (s) {
 						//是否IKEY?
 						if (entityIKey == s) {iKey = entity[s];}
@@ -1393,8 +1393,8 @@
 
 						//是否時間格式?
 						if (entityDateTime.indexOf(s) >= 0) {
-							var dF = new Date(entity[s]);
-							var dateF = dF.getFullYear() + "-";
+							let dF = new Date(entity[s]);
+							let dateF = dF.getFullYear() + "-";
 							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -1404,8 +1404,8 @@
 						} else {
 							//正規化
 							if ('bisfname' === s && owf != "") {
-								var bisfname = entity[owf].split(ows);
-								var bisfnameOk = [];
+								let bisfname = entity[owf].split(ows);
+								let bisfnameOk = [];
 								bisfname.forEach(function (i) {
 									if (owgs > 0) {
 										bisfnameOk.push(i.replaceAll(/[\n\r\t]/g, ''));
@@ -1453,23 +1453,23 @@
 				}
 
 				//Step5.帶入資料
-				var marks = other.data.marks;
-				var entityJsons = other.data.otherItemPageSet.entityJsons;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var pageSize = other.data.otherItemPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = other.data.otherItemPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
-				for (var x = 0; x < pageSize; x++) {
+				let marks = other.data.marks;
+				let entityJsons = other.data.otherItemPageSet.entityJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.otherItemPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.otherItemPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				for (let x = 0; x < pageSize; x++) {
 					//筆數還夠
 					if (pageSN + x < entityJsons.length) {
-						var entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
-						var iKey = "";
-						var gKey = "";
+						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						let iKey = "";
+						let gKey = "";
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
-							var valTrNb = x + 1;
+							let valTrNb = x + 1;
 							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
@@ -1477,8 +1477,8 @@
 							if (entityGKey == k) {gKey = entity[k];}
 							//是否時間格式?
 							if (entityDateTime.indexOf(k) >= 0) {
-								var dF = new Date(entity[k]);
-								var dateF = dF.getFullYear() + "-";
+								let dF = new Date(entity[k]);
+								let dateF = dF.getFullYear() + "-";
 								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -1500,7 +1500,7 @@
 				console.log("otherItemReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					//var otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					//let otherItemPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					//other.data.otherItemPageSet.total = otherItemPageSet['total'];
 					//other.data.otherItemPageSet.batch = otherItemPageSet['batch'];
 					other.data.otherItemPageSet.pageNew = 1; //單前頁碼(1-50)

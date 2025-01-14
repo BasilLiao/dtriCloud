@@ -47,6 +47,8 @@ import jakarta.persistence.Transient;
  *      this.sphonb = "";訂單號<br>
  *      this.sphoname = "";訂單客戶<br>
  *      this.sphocountry = "";訂單國家<br>
+ *      this.sphobpmnb = "";訂單 BOM 的產品號<br>
+ *      this.sphoqty = 0;數量<br>
  *      this.sphhdate = "";預計出貨日<br>
  *      this.sphfrom = "";規格來源 生管自訂/產品經理<br>
  *      this.sphstatus = 0;["作廢單_0","有效單_1","自訂單_2"]<br>
@@ -92,6 +94,7 @@ public class ScheduleProductionHistory {
 		this.sphonb = "";
 		this.sphoname = "";
 		this.sphocountry = "";
+		this.sphobpmnb = "";
 		this.sphhdate = "";
 		this.sphfrom = "";
 		this.sphstatus = 0;
@@ -171,6 +174,11 @@ public class ScheduleProductionHistory {
 	private String sphoname;
 	@Column(name = "sph_o_country", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphocountry;
+	@Column(name = "sph_o_bpm_nb", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphobpmnb;
+	@Column(name = "sph_o_qty", nullable = false, columnDefinition = "int default 0")
+	private Integer sphoqty;
+
 	@Column(name = "sph_h_date", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphhdate;
 	@Column(name = "sph_from", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -500,6 +508,22 @@ public class ScheduleProductionHistory {
 
 	public void setSphpon(String sphpon) {
 		this.sphpon = sphpon;
+	}
+
+	public String getSphobpmnb() {
+		return sphobpmnb;
+	}
+
+	public void setSphobpmnb(String sphobpmnb) {
+		this.sphobpmnb = sphobpmnb;
+	}
+
+	public Integer getSphoqty() {
+		return sphoqty;
+	}
+
+	public void setSphoqty(Integer sphoqty) {
+		this.sphoqty = sphoqty;
 	}
 
 }

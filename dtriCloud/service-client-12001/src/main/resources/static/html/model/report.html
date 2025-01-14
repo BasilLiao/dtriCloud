@@ -293,24 +293,24 @@
 			create() {
 				//Step1.初始化
 				console.log("report.html(created)");
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				report.data.searchSet = searchSetJson['searchSet'];
 				report.data.entityDateTime = main.resq_data['entityDateTime'];
 				//console.log(searchSetJson);
 				//Step1.查詢按鍵-排序
-				var resultThead = searchSetJson['resultThead'];
+				let resultThead = searchSetJson['resultThead'];
 				resultThead = main.methods.orderedSort(resultThead);
 				//choose table cell && 
-				var check1 = true;
+				let check1 = true;
 				Object.keys(resultThead).forEach(function (k) {
 					//如果隱藏
 					if (!resultThead[k].show == 0) {
 						//exReportTitle.addClass('d-none');
 						//exReportVal.addClass('d-none');
 						//複製格式
-						var itemBtn = $('#exReportItemList .exItemBtn').clone();
-						var exReportTitle = $('#reportTitleList .exReportTitle').clone();
-						var exReportVal = $('#reportValueList .exReportVal').clone();
+						let itemBtn = $('#exReportItemList .exItemBtn').clone();
+						let exReportTitle = $('#reportTitleList .exReportTitle').clone();
+						let exReportVal = $('#reportValueList .exReportVal').clone();
 						//條件按鈕
 						itemBtn.addClass("itemBtn");
 						itemBtn.removeClass("exItemBtn");
@@ -332,7 +332,7 @@
 
 						//如果有翻譯
 						if (resultThead[k].cellLanguage != '') {
-							var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+							let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 							itemBtn.find(".itemBtnShow").text(cellName == "" ? resultThead[k].cellName : cellName);
 							//欄位
 							exReportTitle.text(cellName == "" ? resultThead[k].cellName : cellName);
@@ -390,14 +390,14 @@
 				$(document).on("click", "#rcAddQuery", function () {
 					//console.log( $(this).val());
 					if ($('#rcCellName').val() != "") {
-						var rcCellTitle = $('#rcCellName').attr('title');
-						var rcCellName = $('#rcCellName').val();
-						var rcWhereTitle = $("#rcWhere option:selected").text();
-						var rcWhereValue = $("#rcWhere option:selected").val();
-						var rcValueTypeTitle = $("#rcValueType option:selected").text();
-						var rcValueTypeValue = $("#rcValueType option:selected").val();
+						let rcCellTitle = $('#rcCellName').attr('title');
+						let rcCellName = $('#rcCellName').val();
+						let rcWhereTitle = $("#rcWhere option:selected").text();
+						let rcWhereValue = $("#rcWhere option:selected").val();
+						let rcValueTypeTitle = $("#rcValueType option:selected").text();
+						let rcValueTypeValue = $("#rcValueType option:selected").val();
 
-						var rcValue = "";
+						let rcValue = "";
 						//Value type?
 						if (!$('#rcValueText').hasClass('d-none')) {
 							rcValue = $('#rcValueText').val();
@@ -407,11 +407,11 @@
 							rcValue = $('#rcValueDateTime').val();
 						}
 						//查詢條件
-						var queryList = rcCellName + ' ' + rcWhereTitle + ' ' + rcValue + ' [' + rcValueTypeTitle + ']';
-						var queryListValue = rcCellTitle + '<_>' + rcWhereValue + '<_>' + rcValue + '<_>' + rcValueTypeValue;
+						let queryList = rcCellName + ' ' + rcWhereTitle + ' ' + rcValue + ' [' + rcValueTypeTitle + ']';
+						let queryListValue = rcCellTitle + '<_>' + rcWhereValue + '<_>' + rcValue + '<_>' + rcValueTypeValue;
 						//KEY
 						report.data.rcQueryNumber++;
-						var rcQueryNumber = report.data.rcQueryNumber;
+						let rcQueryNumber = report.data.rcQueryNumber;
 						rcQueryOneEx = $('#rcQueryOneEx').clone();
 						rcQueryOneEx.removeClass('d-none');
 						rcQueryOneEx.attr("id", "rcQueryOne_" + rcQueryNumber);
@@ -476,7 +476,7 @@
 				$(document).on("click", "#rcExport", function () {
 					//https://github.com/JackGit/table2excel.js
 					//設置
-					var options = {
+					let options = {
 						workbook: {
 							views: [{
 								x: 0, y: 0, width: 10000, height: 20000,
@@ -498,9 +498,9 @@
 									//https://github.com/exceljs/exceljs/blob/master/README_zh.md#%E5%9B%BE%E7%89%87
 									//沒效果?
 									/*if ($(cell).find("img").length > 0) {
-										var myBase64Image = $(cell).find("img").attr("src");
+										let myBase64Image = $(cell).find("img").attr("src");
 										console.log(myBase64Image);
-										var imageId2 = workbook.addImage({
+										let imageId2 = workbook.addImage({
 											base64: myBase64Image,
 											extension: 'png',
 										});
@@ -563,9 +563,9 @@
 				//進度條
 				$('#report_pro').text("25%...Search...");
 				$('#report_pro').css("width", "25%");
-				var data = {};
-				var req_data = {};
-				var entityJson = [];
+				let data = {};
+				let req_data = {};
+				let entityJson = [];
 				//查詢
 				if ($("#rcQueryListOpen .rcQuerySend").length > 0) {
 					$("#rcQueryListOpen .rcQuerySend").each(function (index) {
@@ -599,11 +599,11 @@
 
 				//資料處理
 				$('.rcRe').remove();
-				var entityJsons = report.data.entityJsons;
-				for (var x = 0; x < entityJsons.length; x++) {
-					var entity = entityJsons[x];//1筆資料
-					var entityDateTime = report.data.entityDateTime;
-					var reportValueList = $('#reportValueList').clone();
+				let entityJsons = report.data.entityJsons;
+				for (let x = 0; x < entityJsons.length; x++) {
+					let entity = entityJsons[x];//1筆資料
+					let entityDateTime = report.data.entityDateTime;
+					let reportValueList = $('#reportValueList').clone();
 					reportValueList.attr('id', '');
 					reportValueList.removeClass("d-none");
 					reportValueList.addClass("rcRe");
@@ -611,8 +611,8 @@
 					Object.keys(entity).forEach(function (k) {
 						//是否時間格式?
 						if (entityDateTime.indexOf(k) >= 0) {
-							var dF = new Date(entity[k]);
-							var dateF = dF.getFullYear() + "-";
+							let dF = new Date(entity[k]);
+							let dateF = dF.getFullYear() + "-";
 							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 							dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -622,7 +622,7 @@
 						} else {
 							//如果換行
 							if (entity[k] != "" && entity[k] != null) {
-								var val = entity[k] + "";
+								let val = entity[k] + "";
 								//如果圖片?
 								if (val.indexOf("data:image") >= 0) {
 									reportValueList.find('.' + k).html('<img src="' + val + '" style="height:50px;">');

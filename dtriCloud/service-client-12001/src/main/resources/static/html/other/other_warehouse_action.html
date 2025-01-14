@@ -179,7 +179,7 @@
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
 				data-bs-target="#search_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div class="row m-0 collapse" id="search_c_item_open">
+		<div class="row m-0 collapse show" id="search_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
 			<div id="searchItem" class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 searchTextEx col-md-1 p-1 d-none">
@@ -435,7 +435,7 @@
 				//查詢格式
 				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(searchSetJson);
 				//資料內容
 				other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
@@ -445,8 +445,8 @@
 				other.data.entityDateTime = main.resq_data['entityDateTime'];
 				other.data.searchSet = searchSetJson['searchSet'];
 				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
 
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
@@ -456,17 +456,17 @@
 
 
 				//Step1.查詢結果標題-排序
-				var resultThead = searchSetJson['resultThead'];
-				var resultDetailThead = searchSetJson['resultDetailThead'];
+				let resultThead = searchSetJson['resultThead'];
+				let resultDetailThead = searchSetJson['resultDetailThead'];
 				resultThead = main.methods.orderedSort(resultThead);
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
-				var check1 = true;
+				let check1 = true;
 				//合併存格
-				var mergeCell = 1;
-				var exTheadth = "";
-				var exTbodytd = "";
+				let mergeCell = 1;
+				let exTheadth = "";
+				let exTbodytd = "";
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
 					if (mergeCell == 1) {
@@ -505,14 +505,14 @@
 					}
 					//Step1-4.如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						cellName = cellName == "" ? resultThead[k].cellName : cellName
-						var cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();//有可能內容是空的
+						let cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();//有可能內容是空的
 						exTheadth.html(cellText + "<div>" + cellName + "</div>");
 						exTheadth.css('minWidth', resultThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultThead[k].width + "px");
 					} else {
-						var cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
+						let cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
 						exTheadth.html(cellText + "<div>" + resultThead[k].cellName + "</div>");
 						exTheadth.html(cellText + "<div>" + cellName + "</div>");
 						exTheadth.css('minWidth', resultThead[k].width + "px");
@@ -579,14 +579,14 @@
 
 					//Step2-4.如果有翻譯
 					if (resultDetailThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
 						cellName = cellName == "" ? resultDetailThead[k].cellName : cellName
-						var cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
+						let cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
 						exTheadth.html(cellText + "<div>" + cellName + "</div>");
 						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
 					} else {
-						var cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
+						let cellText = exTheadth.html() == "N/A" ? "" : exTheadth.html();
 						exTheadth.html(cellText + "<div>" + resultDetailThead[k].cellName + "</div>");
 						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
@@ -598,9 +598,9 @@
 					}
 				});
 				//Step3.查詢內容-格式
-				var pageSize = other.data.searchPageSet.pageSize;
-				for (var b = 1; b <= pageSize; b++) {
-					var exTbodyTr = $('.exTbodyTr').clone();
+				let pageSize = other.data.searchPageSet.pageSize;
+				for (let b = 1; b <= pageSize; b++) {
+					let exTbodyTr = $('.exTbodyTr').clone();
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyTr_' + b);
@@ -610,11 +610,11 @@
 				$('.exTbodyTr').addClass('d-none');
 
 				//Step4.查詢條件
-				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
-					var searchSet = searchSetJson['searchSet'][t];
-					var searchTextEx = "";
-					var searchSelectEx = "";
-					var selectEx = "";
+				for (let t = 0; t < searchSetJson['searchSet'].length; t++) {
+					let searchSet = searchSetJson['searchSet'][t];
+					let searchTextEx = "";
+					let searchSelectEx = "";
+					let selectEx = "";
 					//不顯示
 					if (!searchSet['show']) {
 						continue;
@@ -634,7 +634,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchTextEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchTextEx.find('.searchTitle').text(searchSet['searchName']);
@@ -656,7 +656,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchSelectEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchSelectEx.find('.searchTitle').text(searchSet['searchName']);
@@ -664,9 +664,9 @@
 							}
 						});
 						//選項
-						for (var s = 0; s < searchSet['select'].length; s++) {
-							var key = searchSet['select'][s].split("_")[0];
-							var val = searchSet['select'][s].split("_")[1];
+						for (let s = 0; s < searchSet['select'].length; s++) {
+							let key = searchSet['select'][s].split("_")[0];
+							let val = searchSet['select'][s].split("_")[1];
 							selectEx = searchSelectEx.find('.selectEx').clone();
 							selectEx.removeClass("selectEx");
 							selectEx.removeAttr("selected");
@@ -703,23 +703,23 @@
 				$(document).on("change", "#search_c #search_cr_open .exTbodyTh input", function (event) {
 					console.log("search_cr_open");
 					//一般資料
-					var Ikey_Gkey = event.target.title;
-					var check = event.target.checked;
+					let Ikey_Gkey = event.target.title;
+					let check = event.target.checked;
 					//細節細項
-					var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
-					var entityIKey = other.data.entityIKey;//IKey
-					var entityGKey = other.data.entityGKey;//GKey
-					var detailGKey = Ikey_Gkey.split("_")[1];
+					let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+					let entityIKey = other.data.entityIKey;//IKey
+					let entityGKey = other.data.entityGKey;//GKey
+					let detailGKey = Ikey_Gkey.split("_")[1];
 					//標記-選取|解除
 					if (check == true) {
 						other.data.marks[Ikey_Gkey] = true;
 					} else {
-						for (var k in other.data.marks) {
+						for (let k in other.data.marks) {
 							if (k == Ikey_Gkey) {
 								delete other.data.marks[k];
 								//細節
-								var markDetailsRemove = "_" + Ikey_Gkey.split("_")[1];
-								for (var s in other.data.markDetails) {
+								let markDetailsRemove = "_" + Ikey_Gkey.split("_")[1];
+								for (let s in other.data.markDetails) {
 									if (s.indexOf(markDetailsRemove) >= 0) {//取得群組尾數
 										delete other.data.markDetails[s];
 										continue;
@@ -736,14 +736,14 @@
 				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).on("change", "#search_c #search_dcr_open .exTbodyTh input", function (event) {
 					console.log("search_dcr_open");
-					var Ikey_Gkey = event.target.title;
-					var check = event.target.checked;
-					var mark = {};
+					let Ikey_Gkey = event.target.title;
+					let check = event.target.checked;
+					let mark = {};
 					//標記-選取|解除
 					if (check == true) {
 						other.data.markDetails[Ikey_Gkey] = true;
 					} else {
-						for (var k in other.data.markDetails) {
+						for (let k in other.data.markDetails) {
 							if (k == Ikey_Gkey) {
 								delete other.data.markDetails[k];
 								break;
@@ -756,7 +756,7 @@
 				$(document).off("click", "#search_c #exthAll");
 				$(document).on("click", "#search_c #exthAll", function (event) {
 					//都有勾選?
-					var clickAll = true;
+					let clickAll = true;
 					$("#search_cr_open .exTbodyTh").each(function () {
 						if ($(this).find("input").attr("disabled") != "disabled" && $(this).find("input").prop("checked") == false) {
 							$(this).find("input").trigger("click");
@@ -782,8 +782,8 @@
 				$(document).off("click", "#search_c #btn_detail");
 				$(document).on("click", "#search_c #btn_detail", function (event) {
 					console.log("btn_detail");
-					var marks = other.data.marks;
-					var markDetails = other.data.markDetails;
+					let marks = other.data.marks;
+					let markDetails = other.data.markDetails;
 					$(".valTbodyTrD").remove();
 					//準備細節自動查詢用
 					other.data.marksLock = marks;
@@ -794,23 +794,23 @@
 
 					//Step1.清單->有標記+有資料?
 					if (marks != null && other.data.searchPageSet.entityDetailJsons != null) {
-						var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
-						var entityIKey = other.data.entityIKey;
-						var entityGKey = other.data.entityGKey;
-						var entityDateTime = other.data.entityDateTime;
-						var menu_account = $('#menu_login_name').attr('alt');
+						let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+						let entityIKey = other.data.entityIKey;
+						let entityGKey = other.data.entityGKey;
+						let entityDateTime = other.data.entityDateTime;
+						let menu_account = $('#menu_login_name').attr('alt');
 						//console.log(entityDetailJsons);
 						//Step1.查詢細節內容-格式-排序(負責人_物料[對象 or 來源])
-						var sortEntity = {};
-						for (var k in other.data.marks) {
-							var needGkey = k.split("_")[1];
+						let sortEntity = {};
+						for (let k in other.data.marks) {
+							let needGkey = k.split("_")[1];
 							//所有的細節資料
-							for (var d = 0; d < entityDetailJsons.length; d++) {
+							for (let d = 0; d < entityDetailJsons.length; d++) {
 								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
-									var waspnumber = entityDetailJsons[d].waspnumber;
-									var was_tofrom_who = "";
-									var wasclasssn = entityDetailJsons[d].wasclasssn;
-									var wasnb = entityDetailJsons[d].wasnb;
+									let waspnumber = entityDetailJsons[d].waspnumber;
+									let was_tofrom_who = "";
+									let wasclasssn = entityDetailJsons[d].wasclasssn;
+									let wasnb = entityDetailJsons[d].wasnb;
 									if (entityDetailJsons[d].wastype == "入料類") {
 										was_tofrom_who = entityDetailJsons[d].wastowho;
 									} else {
@@ -821,8 +821,8 @@
 							}
 						}
 						sortEntity = main.methods.orderedSort(sortEntity);
-						var d = 0;
-						for (var k in sortEntity) {
+						let d = 0;
+						for (let k in sortEntity) {
 							//=======過濾負責人=======
 							if (sortEntity[k]['wasmuser'] != "" && sortEntity[k]['wasmuser'].indexOf(menu_account) < 0) {
 								if (menu_account != "admin") {
@@ -831,7 +831,7 @@
 							}
 							d += 1;
 							//=======格式=======
-							var exTbodyTr = $('.exDetailTbodyTr').clone();
+							let exTbodyTr = $('.exDetailTbodyTr').clone();
 							exTbodyTr.removeClass('exDetailTbodyTr');
 							exTbodyTr.removeClass('d-none');
 							exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
@@ -839,9 +839,9 @@
 							exTbodyTr.addClass(sortEntity[k]['id']);
 							exTbodyTr.find('input').attr("alt", "row_" + (d + 1));
 							//=======資料=======
-							var entity = sortEntity[k];//
-							var iKey = "", gKey = "";
-							var valTrNb = d + 1;
+							let entity = sortEntity[k];//
+							let iKey = "", gKey = "";
+							let valTrNb = d + 1;
 
 							Object.keys(entity).forEach(function (s) {
 								//是否IKEY?
@@ -869,8 +869,8 @@
 								}
 								//是否時間格式?
 								if (entityDateTime.indexOf(s) >= 0) {
-									var dF = new Date(entity[s]);
-									var dateF = dF.getFullYear() + "-";
+									let dF = new Date(entity[s]);
+									let dateF = dF.getFullYear() + "-";
 									dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 									dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 									dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -893,6 +893,7 @@
 							$('.exDetailTbodyTr').before(exTbodyTr);
 						}
 						$('.exDetailTbodyTr').addClass('d-none');
+						//關閉查詢
 					}
 
 					//Step2.清空(選取)
@@ -917,8 +918,9 @@
 					}
 					//Step4.觸發?
 					$("#command_send input").focus();
-					$('#search_dcr i').trigger('click');
-					$('#search_cr i').trigger('click');
+					$('#search_dcr i').trigger('click');//細節
+					$('#search_c_item i').trigger('click');//查詢介面
+					$('#search_cr i').trigger('click');//清單
 				});
 
 
@@ -989,20 +991,20 @@
 						$('#command_send input').val("");
 					} else if (e.key == 'Enter') {
 						//確認-儲位類型?
-						var command_alias = $("#command_send input").val().split("_")[0];
-						var command_val = $("#command_send input").val().split("_")[1];
-						var re = new RegExp("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
-						var accUser = $("#menu_login_name").attr("alt");
-						var command_sel = $("#command_sel").val();
+						let command_alias = $("#command_send input").val().split("_")[0];
+						let command_val = $("#command_send input").val().split("_")[1];
+						let re = new RegExp("[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}-[0-9A-Z]{2}");
+						let accUser = $("#menu_login_name").attr("alt");
+						let command_sel = $("#command_sel").val();
 						if (re.exec(command_val)) {
 							//儲位類型
-							var sendData = [];
+							let sendData = [];
 							console.log("倉別:" + command_alias + " 儲位類型:" + command_val);
-							var onlyOne = true;//只能一次
+							let onlyOne = true;//只能一次
 							$('#search_dcr .valTbodyTrD').each(function () {
 								//比對欄位(單據類型+儲位+倉別)
-								var wastowho = $(this).find(".wastowho").text();//入料類
-								var wastype = $(this).find(".wastype").text();
+								let wastowho = $(this).find(".wastowho").text();//入料類
+								let wastype = $(this).find(".wastype").text();
 								//必須是入料類才能用
 								if (wastype == "入料類" && wastowho.indexOf(command_val) >= 0 &&
 									wastowho.indexOf(command_alias) >= 0 &&
@@ -1019,7 +1021,7 @@
 											$(this).find(".waspngqty").text($("#command_qty input").val());
 											$(this).find(".wasfuser").text(accUser);
 											//Note
-											var sysnote = "";
+											let sysnote = "";
 											if (command_sel == "Abnormal_in") {
 												sysnote = "異常:進貨料短少";
 											} else if (command_sel == "Abnormal_out") {
@@ -1035,21 +1037,24 @@
 											//other.methods.confirmSend(this);
 										}
 									}
+									//專注移動?
+									this.scrollIntoView({behavior: "smooth", block: "center"});
 								}
 							});
 							other.methods.confirmSend(sendData);
-							var st = $('#search_dcr table').scrollTop();
+							let st = $('#search_dcr table').scrollTop();
 							$('#search_dcr table').scrollTop(st + 146);
 						} else {
 							//物料類型
 							console.log("倉別:" + command_alias + " 物料類型:" + command_val);
-							var sendData = [];
+							let sendData = [];
+
 							//比對欄位(單據類型+物料+倉別)
-							var onlyOne = true;//只能一次
+							let onlyOne = true;//只能一次
 							$('#search_dcr .valTbodyTrD').each(function () {
-								var wasfromwho = $(this).find(".wastowho").text();//入料類
-								var waspnumber = $(this).find(".waspnumber").text();
-								var wastype = $(this).find(".wastype").text();
+								let wasfromwho = $(this).find(".wastowho").text();//入料類
+								let waspnumber = $(this).find(".waspnumber").text();
+								let wastype = $(this).find(".wastype").text();
 								//如果是領料
 								if (wastype == "領料類") {
 									wasfromwho = $(this).find(".wasfromwho").text();
@@ -1078,7 +1083,7 @@
 											$(this).find(".waspngqty").text($("#command_qty input").val());
 											$(this).find(".wasfuser").text(accUser);
 											//Note
-											var sysnote = "";
+											let sysnote = "";
 											if (command_sel == "Abnormal_in") {
 												sysnote = "異常:進貨料短少";
 											} else if (command_sel == "Abnormal_out") {
@@ -1094,18 +1099,20 @@
 											//other.methods.confirmSend(this);
 										}
 									}
+									//專注移動?
+									this.scrollIntoView({behavior: "smooth", block: "center"});
 								}
 							});
 							other.methods.confirmSend(sendData);
-							var st = $('#search_dcr table').scrollTop();
-							$('#search_dcr table').scrollTop(st + 146);
+							//let st = $('#search_dcr table').scrollTop();
+							//$('#search_dcr table').scrollTop(st + 146);//取消移動
 						}
 						$("#command_send input").val("");
 					} else if (e.key == 'Shift') {
 						//排除
 					} else {
 						//輸入
-						var command_val = $("#command_send input").val();
+						let command_val = $("#command_send input").val();
 						$('#command_send input').val(command_val + e.key);
 					}
 					$("#command_send input").focus();
@@ -1133,7 +1140,7 @@
 					if ($("#searchCheckin #checkInCode").val() == "**********" &&
 						$("#searchCheckin #OrderID").val() != "" &&
 						$("#searchCheckin #UserAcc").val() != "") {
-						var sendData = $("#searchCheckin #checkInCode").val();
+						let sendData = $("#searchCheckin #checkInCode").val();
 						sendData += "_" + $("#searchCheckin #OrderID").val();
 						sendData += "_" + $("#searchCheckin #UserAcc").val();
 						other.methods.checkInSend(sendData);
@@ -1150,7 +1157,7 @@
 				$(document).on("keydown", "#searchCheckin input", function (e) {
 					console.log(e.currentTarget.id + ":" + e.key);
 					if (e.key == 'Backspace') {
-						var checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
+						let checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
 						//自動切換
 						switch (e.currentTarget.id) {
 							case "checkInCode":
@@ -1185,7 +1192,7 @@
 								if ($("#searchCheckin #checkInCode").val() == "**********" &&
 									$("#searchCheckin #OrderID").val() != "" &&
 									$("#searchCheckin #UserAcc").val() != "") {
-									var sendData = $("#searchCheckin #checkInCode").val();
+									let sendData = $("#searchCheckin #checkInCode").val();
 									sendData += "_" + $("#searchCheckin #OrderID").val();
 									sendData += "_" + $("#searchCheckin #UserAcc").val();
 									other.methods.checkInSend(sendData);
@@ -1203,7 +1210,7 @@
 						//排除
 					} else {
 						//一班輸入
-						var checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
+						let checkin_val = $("#searchCheckin #" + e.currentTarget.id).val();
 						$("#searchCheckin #" + e.currentTarget.id).val(checkin_val + e.key);
 					}
 				});
@@ -1281,24 +1288,24 @@
 			searchToPrint(order) {
 				//比對資料 
 				//是否marks?markDetails?
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
-				var marks = other.data.marks;
-				var markDetails = other.data.markDetails;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var dataHeader = [];
-				var dataBody = [];
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				let marks = other.data.marks;
+				let markDetails = other.data.markDetails;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let dataHeader = [];
+				let dataBody = [];
 				console.log(JSON.stringify(marks));
 				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
 					return null;
 				}
 				//Data
 				Object.keys(marks).forEach(function (ik) {
-					var ikey = ik.split("_")[0];
-					var gkey = ik.split("_")[1];
-					for (var en = 0; en < entityJsons.length; en++) {
+					let ikey = ik.split("_")[0];
+					let gkey = ik.split("_")[1];
+					for (let en = 0; en < entityJsons.length; en++) {
 						if (entityJsons[en][entityIKey] == ikey) {
 							dataHeader.push(entityJsons[en]);
 						}
@@ -1306,9 +1313,9 @@
 				});
 				//Details
 				Object.keys(markDetails).forEach(function (dk) {
-					var ikey = dk.split("_")[0];
-					var gkey = dk.split("_")[1];
-					for (var en = 0; en < entityDetailJsons.length; en++) {
+					let ikey = dk.split("_")[0];
+					let gkey = dk.split("_")[1];
+					for (let en = 0; en < entityDetailJsons.length; en++) {
 						if (entityDetailJsons[en][entityIKey] == ikey) {
 							dataBody.push(entityDetailJsons[en]);
 						}
@@ -1321,22 +1328,22 @@
 
 			//==========================傳送資料==========================
 			confirmSend(onlyOne) {
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
-				var markDetails = other.data.markDetails;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var dataHeader = [];
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				let markDetails = other.data.markDetails;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let dataHeader = [];
 
 				//單一筆資料-送出
 				if (onlyOne != null) {
 					//可能合併備料
 					$(onlyOne).each(function (row_index) {
-						var entityJosn = {};
+						let entityJosn = {};
 						$(this).find('.valTbodytd div').each(function (index) {
-							var val = $(this).text() == "[N/A]" ? "" : $(this).text();
-							var name = $(this).attr('class').split(' ')[0];
+							let val = $(this).text() == "[N/A]" ? "" : $(this).text();
+							let name = $(this).attr('class').split(' ')[0];
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
 								val = new Date(val).getTime();
@@ -1350,10 +1357,10 @@
 					$('#search_dcr_open tbody tr').each(function () {
 						//同意:最後完成人
 						if ($(this).find('.wasfuser').hasClass('bg-success')) {
-							var entityJosn = {};
+							let entityJosn = {};
 							$(this).find('.valTbodytd div').each(function (index) {
-								var val = $(this).text() == "[N/A]" ? "" : $(this).text();
-								var name = $(this).attr('class').split(' ')[0];
+								let val = $(this).text() == "[N/A]" ? "" : $(this).text();
+								let name = $(this).attr('class').split(' ')[0];
 								//可能是時間格式
 								if (entityDateTime.indexOf(name) >= 0) {
 									val = new Date(val).getTime();
@@ -1366,11 +1373,11 @@
 				}
 
 				console.log(dataHeader);
-				var action = "";
-				var type = "PUT";
-				var data = null;
-				var req_data = {};
-				var searchPageSet = {};
+				let action = "";
+				let type = "PUT";
+				let data = null;
+				let req_data = {};
+				let searchPageSet = {};
 				if (dataHeader.length > 0) {
 					action = "S1";
 					//傳送....
@@ -1390,10 +1397,10 @@
 			},
 			//細節查詢
 			searchDetailSend() {
-				var entityJson = other.data.entityFormatJson;//格式
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
+				let entityJson = other.data.entityFormatJson;//格式
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
 				//查詢(選定的單號)
 				wasclasssn = "";
 				Object.keys(other.data.marksLock).forEach(function (key) {
@@ -1416,10 +1423,11 @@
 			},
 			//一般查詢
 			searchSend(batch) {
-				var entityJson = other.data.entityFormatJson;//格式
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
+				$('#search_cr_open table,#search_dcr_open table').animate({scrollTop: 0}, 'slow');
+				let entityJson = other.data.entityFormatJson;//格式
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
 					//console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
@@ -1446,14 +1454,14 @@
 			},
 			//集結物料修改
 			checkInSend(val) {
-				var entityJosn = {};
+				let entityJosn = {};
 				entityJosn['sysnote'] = val;
 				//
-				var action = "";
-				var type = "PUT";
-				var data = null;
-				var req_data = {};
-				var searchPageSet = {};
+				let action = "";
+				let type = "PUT";
+				let data = null;
+				let req_data = {};
+				let searchPageSet = {};
 				action = "SS1";
 				//傳送....
 				data = {};
@@ -1484,21 +1492,21 @@
 
 
 				//Step5.帶入資料
-				var marks = other.data.marks;
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
-				for (var x = 0; x < pageSize; x++) {
+				let marks = other.data.marks;
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				for (let x = 0; x < pageSize; x++) {
 					//筆數還夠
 					if (pageSN + x < entityJsons.length) {
-						var entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
-						var iKey = "";
-						var gKey = "";
-						var valTrNb = x + 1;
+						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						let iKey = "";
+						let gKey = "";
+						let valTrNb = x + 1;
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
 							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
@@ -1508,8 +1516,8 @@
 							if (entityGKey == k) {gKey = entity[k];}
 							//是否時間格式?
 							if (entityDateTime.indexOf(k) >= 0) {
-								var dF = new Date(entity[k]);
-								var dateF = dF.getFullYear() + "-";
+								let dF = new Date(entity[k]);
+								let dateF = dF.getFullYear() + "-";
 								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -1523,7 +1531,7 @@
 							//marks標記?
 							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
 							//帶入
-							for (var m = 0; m < marks.length; m++) {
+							for (let m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
 									$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
 									break;
@@ -1546,7 +1554,7 @@
 			otherModifyReturn() {
 				if (main.resq_data.callBackValue != "") {
 					//集結物料促發
-					var jsonCheckin = JSON.parse(main.resq_data.callBackValue);
+					let jsonCheckin = JSON.parse(main.resq_data.callBackValue);
 					console.log(jsonCheckin);
 					//還原
 					$("#searchCheckin #checkin_ms").removeClass('bg-success').removeClass('bg-warning').removeClass('bg-danger');
@@ -1578,7 +1586,7 @@
 				console.log("searchReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					other.data.searchPageSet.total = searchPageSet['total'];
 					other.data.searchPageSet.batch = searchPageSet['batch'];
 					other.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
@@ -1603,15 +1611,15 @@
 					if ($("#nav_message_color").hasClass("alert-success")) {
 						$("#nav_message_close").trigger("click");
 					}
-					var searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					//更新子項目
 					if ($(".valTbodyTrD").length > 0) {
-						var entityDetailJsons = other.data.searchPageSet.entityDetailOpenJsons;
+						let entityDetailJsons = other.data.searchPageSet.entityDetailOpenJsons;
 						console.log(entityDetailJsons);
 						//細節
 						Object.keys(entityDetailJsons).forEach(function (k) {
-							var d = entityDetailJsons[k];
-							var target = $('#search_dcr_open .' + d['id']);
+							let d = entityDetailJsons[k];
+							let target = $('#search_dcr_open .' + d['id']);
 							if (target != null && d['wasfuser'] != "" && d['waspngqty'] >= 0) {
 								target.find('.wasfuser').text(d['wasfuser']);
 								target.find('.waspngqty').text(d['waspngqty']);
@@ -1626,11 +1634,11 @@
 						});
 
 						$(".valTbodyTrD input").each(function () {
-							var id = $(this).attr('title').split("_")[0];
-							var gid = $(this).attr('title').split("_")[1];
-							var check = false;
-							var waspngqty = 0;
-							var wasfuser = "";
+							let id = $(this).attr('title').split("_")[0];
+							let gid = $(this).attr('title').split("_")[1];
+							let check = false;
+							let waspngqty = 0;
+							let wasfuser = "";
 							//$(this).prop("checked",check);
 						});
 					}

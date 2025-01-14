@@ -265,7 +265,7 @@ public class BasicChangeItemsServiceAc {
 			packageBean.setEntityJson(entityJson);
 			packageBean.setEntityDetailJson(entityDetailJson);
 			// 查不到資料
-			if (packageBean.getEntityJson().equals("[]")) {
+			if (packageBean.getEntityJson().equals("[]") && packageBean.getEntityDetailJson().equals("[]")) {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
 		}

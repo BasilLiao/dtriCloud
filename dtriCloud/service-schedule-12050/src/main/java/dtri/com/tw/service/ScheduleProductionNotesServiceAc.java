@@ -20,9 +20,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
 import dtri.com.tw.pgsql.entity.SystemGroup;
@@ -52,6 +54,9 @@ public class ScheduleProductionNotesServiceAc {
 
 	@Autowired
 	private BomProductManagementDao managementDao;
+
+	@Autowired
+	private BasicCommandListDao commandListDao;
 
 	@Autowired
 	private EntityManager em;
@@ -129,11 +134,11 @@ public class ScheduleProductionNotesServiceAc {
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 			resultDetailTJsons = packageService.resultSet(fieldDetails, exceptionCell, mapLanguagesDetail);
 
-			// Step3-5. 建立查詢項目(工單紀錄)
-			searchJsons = packageService.searchSet(searchJsons, null, "sphbpmnb", "Ex:BOM號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sphpon", "Ex:製令單號?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目(工單紀錄)
+			searchJsons = packageService.searchSet(searchJsons, null, "sphbpmnb", "Ex:BOM號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -150,8 +155,8 @@ public class ScheduleProductionNotesServiceAc {
 			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphbpmnb(), null,
 					searchData.getSphonb(), null, null, null, pageable);
 
-			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(null, null, null, null,
-					pageableDetail);
+			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(searchData.getSphbpmnb(),
+					null, null, null, pageableDetail);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -167,6 +172,136 @@ public class ScheduleProductionNotesServiceAc {
 				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
 			}
 		}
+		// ========================配置共用參數========================
+		// Step5. 取得資料格式/(主KEY/群組KEY)
+		// 資料格式
+		String entityFormatJson = packageService.beanToJson(new ScheduleProductionHistory());
+		packageBean.setEntityFormatJson(entityFormatJson);
+		// KEY名稱Ikey_Gkey
+		packageBean.setEntityIKeyGKey("sphid_");
+		packageBean.setEntityDetailIKeyGKey("bpmid_");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		return packageBean;
+	}
+
+	/** 取得資料Order */
+	public PackageBean getSearchOrder(PackageBean packageBean) throws Exception {
+		// ========================分頁設置========================
+		// Step1.批次分頁
+		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
+		int total = pageSetJson.get("total").getAsInt();
+		int batch = pageSetJson.get("batch").getAsInt();
+
+		// Step2.排序
+		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.DESC, "syscdate"));// 建立時間
+		orders.add(new Order(Direction.ASC, "sphbpmnb"));// 產品號
+		List<Order> ordersD = new ArrayList<>();
+		ordersD.add(new Order(Direction.ASC, "bpmnb"));// 產品號
+		ordersD.add(new Order(Direction.ASC, "bpmmodel"));// 型號
+		// 一般模式
+		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest pageableDetail = PageRequest.of(batch, total, Sort.by(ordersD));
+
+		// ========================區分:訪問/查詢========================
+
+		// Step4-1. 取得資料(一般/細節)
+
+		ScheduleProductionHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+				ScheduleProductionHistory.class);
+		ArrayList<ScheduleProductionHistory> entitys = new ArrayList<ScheduleProductionHistory>();
+
+		ArrayList<BomProductManagement> entityDetails = new ArrayList<BomProductManagement>();
+		// 必須切兩段->要有資料->只抓一筆
+		String sphpon[] = searchData.getSphpon().split("-");
+		if (sphpon.length == 2) {
+			String bclclass = sphpon[0];
+			String bclsn = sphpon[1];
+			ArrayList<BasicCommandList> commandLists = commandListDao.findAllByComList(bclclass, bclsn, null, null);
+			if (commandLists.size() > 0) {
+				BasicCommandList commandList = commandLists.get(0);
+				ScheduleProductionHistory entity = new ScheduleProductionHistory();
+				// 客戶/國家/訂單
+				String sysnot[] = commandList.getSyshnote().split("\\");
+				//
+				entity.setSyscdate(commandList.getSyscdate());
+				entity.setSysmdate(commandList.getSysmdate());
+				entity.setSyscuser(commandList.getSyscuser());
+				entity.setSysmuser(commandList.getSysmuser());
+				entity.setSphid(null);
+				entity.setSphbpmnb(commandList.getBclproduct());// BOM 的產品號
+				entity.setSphbpmmodel("");// BOM 的產品型號
+				entity.setSphbpmtype("2");// 產品歸類:0 = 開發BOM/1 = 產品BOM/2 = 配件BOM/3 = 半成品BOM/3 = 板階BOM
+				entity.setSphbpmtypename("產品BOM");// 產品歸類名稱
+				entity.setSphbisitem("{}");// 產品-物料結構
+				entity.setSphbpsnv("[]");// 產品-參數設置
+				entity.setSphprnv("[]");// 製造-參數設置
+				entity.setSphscnv("[]");// 生管-參數設置
+				entity.setSphbpsuser("");// BOM負責人
+				entity.setSphpon(searchData.getSphpon());// 製令單號
+				entity.setSphonb(sysnot[2] != null ? sysnot[0] : "");// 訂單號
+				entity.setSphoname(sysnot[0] != null ? sysnot[0] : "");// 訂單客戶
+				entity.setSphocountry(sysnot[1] != null ? sysnot[0] : "");// 訂單國家
+				entity.setSphobpmnb("");// 訂單 BOM的產品號
+				entity.setSphhdate(Fm_T.to_y_M_d(commandList.getBclsdate()));// 預計出貨日
+				entity.setSphfrom("");// 規格來源:生管自訂/產品經理
+				entity.setSphstatus(1);// 狀態類型 0=作廢單 1=有效單 2=自訂紀錄(不具備生產能力)
+				entity.setSphprogress(0);// 進度:完成ERP工單(準備物料)=1/完成注意事項(預約生產)=2/完成->流程卡(準備生產)=3/(生產中)=4/(生產結束)=5
+				entity.setSphssn("");// SN開始
+				entity.setSphesn("");// SN結束
+				entity.setSphpmnote("");// 產品經理事項
+				entity.setSphscnote("");// 生管備註事項
+				entity.setSphprnote1("");// 製造事項1
+				entity.setSphprnote2("");// 製造事項2
+
+				// BOM清單
+				ArrayList<BomProductManagement> managements = managementDao.findAllBySearch(commandList.getBclproduct(),
+						null, null, null, pageableDetail);
+				entitys.add(entity);
+				// 如果有匹配到BOM->
+				if (managements.size() > 0) {
+					entityDetails = managements;
+					// 補充
+					entity.setSphbpmmodel(managements.get(0).getBpmmodel());// BOM 的產品型號
+					entity.setSphbisitem(managements.get(0).getBpmbisitem());// 產品-物料結構
+					entity.setSphbpsnv(managements.get(0).getBpmbisitem());// 產品-參數設置
+					entity.setSphbpsuser(managements.get(0).getSyscuser());// 最後更改人
+					// 處裡格式化
+					StringBuilder noteAll = new StringBuilder();
+					try {
+						JsonArray notes = JsonParser.parseString(managements.get(0).getBpmbisitem()).getAsJsonArray();
+						String s = "「";
+						String e = "」";
+						notes.forEach(n -> {
+							noteAll.append(s);
+							noteAll.append(n.getAsString().replace("_", ":"));
+							noteAll.append(e);
+						});
+
+					} catch (Exception e) {
+						// not do anything->不加入note
+					}
+					entity.setSphpmnote(managements.get(0).getSysnote() + noteAll.toString());
+
+				}
+			}
+		}
+
+		// Step4-2.資料區分(一般/細節)
+
+		// 類別(一般模式)
+		String entityJson = packageService.beanToJson(entitys);
+		String entityDteailJson = packageService.beanToJson(entityDetails);
+
+		// 資料包裝
+		packageBean.setEntityJson(entityJson);
+		packageBean.setEntityDetailJson(entityDteailJson);
+
+		// 查不到資料
+		if (packageBean.getEntityJson().equals("[]") && packageBean.getEntityDetailJson().equals("[]")) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+		}
+
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式

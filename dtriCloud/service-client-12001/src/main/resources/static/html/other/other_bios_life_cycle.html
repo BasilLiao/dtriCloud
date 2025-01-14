@@ -288,7 +288,7 @@
 				//查詢格式
 				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(searchSetJson);
 				//資料內容
 				other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
@@ -298,27 +298,27 @@
 				other.data.entityDateTime = main.resq_data['entityDateTime'];
 				other.data.searchSet = searchSetJson['searchSet'];
 				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
 
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
 				}
 
 				//Step1.查詢結果標題-排序
-				var resultThead = searchSetJson['resultThead'];
-				var resultDetailThead = searchSetJson['resultDetailThead'];
+				let resultThead = searchSetJson['resultThead'];
+				let resultDetailThead = searchSetJson['resultDetailThead'];
 				resultThead = main.methods.orderedSort(resultThead);
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 
 				//Step2.Detail清單
 				Object.keys(resultThead).forEach(function (k) {
-					var modelAllEx = $(".modelAllEx").clone();
+					let modelAllEx = $(".modelAllEx").clone();
 					modelAllEx.removeClass("modelAllEx");
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						modelAllEx.find('.title').text(cellName == "" ? resultThead[k].cellName : cellName);
 						modelAllEx.addClass("modelAll_" + resultThead[k].cellName);
 					} else {
@@ -330,15 +330,15 @@
 
 
 				//Step3.查詢內容-格式
-				var pageSize = other.data.searchPageSet.pageSize;
+				let pageSize = other.data.searchPageSet.pageSize;
 
 
 				//Step4.查詢條件
-				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
-					var searchSet = searchSetJson['searchSet'][t];
-					var searchTextEx = "";
-					var searchSelectEx = "";
-					var selectEx = "";
+				for (let t = 0; t < searchSetJson['searchSet'].length; t++) {
+					let searchSet = searchSetJson['searchSet'][t];
+					let searchTextEx = "";
+					let searchSelectEx = "";
+					let selectEx = "";
 					//不顯示
 					if (!searchSet['show']) {
 						continue;
@@ -358,7 +358,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchTextEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchTextEx.find('.searchTitle').text(searchSet['searchName']);
@@ -380,7 +380,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchSelectEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchSelectEx.find('.searchTitle').text(searchSet['searchName']);
@@ -388,9 +388,9 @@
 							}
 						});
 						//選項
-						for (var s = 0; s < searchSet['select'].length; s++) {
-							var key = searchSet['select'][s].split("_")[0];
-							var val = searchSet['select'][s].split("_")[1];
+						for (let s = 0; s < searchSet['select'].length; s++) {
+							let key = searchSet['select'][s].split("_")[0];
+							let val = searchSet['select'][s].split("_")[1];
 							selectEx = searchSelectEx.find('.selectEx').clone();
 							selectEx.removeClass("selectEx");
 							selectEx.removeAttr("selected");
@@ -456,19 +456,19 @@
 					console.log($(e.currentTarget).attr("id"));
 					$(".modelAllContent .val").text("N/A");
 					//找尋該資料帶入
-					var entityJsons = other.data.searchPageSet.entityJsons;
-					var entityDateTime = other.data.entityDateTime;
+					let entityJsons = other.data.searchPageSet.entityJsons;
+					let entityDateTime = other.data.entityDateTime;
 					Object.keys(entityJsons).forEach(function (k) {
 						//匹配到內容
 						if (entityJsons[k].bvid == $(e.currentTarget).attr("id")) {
 							//填入所以資訊
 							Object.keys(entityJsons[k]).forEach(function (j) {
 								if (entityJsons[k][j] != "") {
-									var val = "";
+									let val = "";
 									//是否時間格式?
 									if (entityDateTime.indexOf(j) >= 0) {
-										var dF = new Date(entityJsons[k][j]);
-										var dateF = dF.getFullYear() + "-";
+										let dF = new Date(entityJsons[k][j]);
+										let dateF = dF.getFullYear() + "-";
 										dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 										dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 										dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -523,10 +523,10 @@
 			//==========================傳送資料==========================
 			//一般查詢
 			searchSend(batch) {
-				var entityJson = other.data.entityFormatJson;//格式
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
+				let entityJson = other.data.entityFormatJson;//格式
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
 					//console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
@@ -557,18 +557,18 @@
 				$(".p_model_item").remove();
 
 				//Step5.帶入資料
-				var marks = other.data.marks;
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var entityIKey = other.data.entityIKey;
-				var entityGKey = other.data.entityGKey;
-				var entityDateTime = other.data.entityDateTime;
-				var pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				let marks = other.data.marks;
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
 
 				//按鈕選擇
-				var pModelExBtn = "";
-				var jsonCheckSame = {};
+				let pModelExBtn = "";
+				let jsonCheckSame = {};
 				Object.keys(entityJsons).forEach(function (k) {
 					console.log("pModelExBtn :" + entityJsons[k].bvmodel);
 					//避免重複
@@ -590,9 +590,9 @@
 				$("#search_cr .modelTbodyTr").remove();
 
 
-				var entityJsons = other.data.searchPageSet.entityJsons;
-				var jsonCheckDef = {};//機種別 )_( 系統版次
-				var jsonCheckCustomer = {};//機種別 )_( 客戶名稱 )_( 系統版次
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let jsonCheckDef = {};//機種別 )_( 系統版次
+				let jsonCheckCustomer = {};//機種別 )_( 客戶名稱 )_( 系統版次
 				//抓取Def 
 				Object.keys(entityJsons).forEach(function (k) {
 					if (entityJsons[k].bvcname == "" &&
@@ -601,9 +601,9 @@
 					}
 				});
 				//預設Def
-				var count = Object.keys(jsonCheckDef).length;
+				let count = Object.keys(jsonCheckDef).length;
 				if (count != 0) {
-					var exTbodyTr = $("#search_cr .exTbodyTr").clone();
+					let exTbodyTr = $("#search_cr .exTbodyTr").clone();
 					exTbodyTr.removeClass("exTbodyTr");
 					exTbodyTr.removeClass("d-none");
 					exTbodyTr.addClass("modelTbodyTr");
@@ -611,7 +611,7 @@
 					exTbodyTr.find(".customerTbodyTh").text("Def");
 					//寫入版本
 					Object.keys(jsonCheckDef).forEach(function (k) {
-						var exTbodytd = $("#search_cr .exTbodytd").clone();
+						let exTbodytd = $("#search_cr .exTbodytd").clone();
 						//顏色
 						if (jsonCheckDef[k].bvbugnote != "") {
 							exTbodytd.find("button").removeClass("btn-outline-success");
@@ -643,27 +643,27 @@
 				});
 				//指定Customer
 				count = Object.keys(jsonCheckCustomer).length;
-				var jsonCheckSame = {};
+				let jsonCheckSame = {};
 				if (count != 0) {
 					Object.keys(jsonCheckCustomer).forEach(function (k) {
 						//第一次建立
 						if (jsonCheckSame[k] == null) {
 							jsonCheckSame[k] = true;//標記
 							//登記客戶別(沒有重複)
-							var bvcname = jsonCheckCustomer[k].bvcname;//客戶名稱
-							var bvaversion = jsonCheckCustomer[k].bvaversion;//自動版本
+							let bvcname = jsonCheckCustomer[k].bvcname;//客戶名稱
+							let bvaversion = jsonCheckCustomer[k].bvaversion;//自動版本
 
 							if (!$(".modelTbodyTr").hasClass("modelTbodyTr_" + bvcname.replaceAll(" ", ""))) {
-								var exTbodyTr = $("#search_cr .exTbodyTr").clone();
+								let exTbodyTr = $("#search_cr .exTbodyTr").clone();
 								exTbodyTr.removeClass("exTbodyTr");
 								exTbodyTr.removeClass("d-none");
 								exTbodyTr.addClass("modelTbodyTr");
 								exTbodyTr.addClass("modelTbodyTr_" + bvcname.replaceAll(" ", ""));
 								exTbodyTr.find(".customerTbodyTh").text(bvcname);
 								//複製長度(跟Def一樣)
-								var def_length = $(".modelTbodyTr_Def td").length;
-								for (var i = 1; i <= def_length - 2; i++) {
-									var exTbodytd = $(exTbodyTr).find(".exTbodytd").clone();
+								let def_length = $(".modelTbodyTr_Def td").length;
+								for (let i = 1; i <= def_length - 2; i++) {
+									let exTbodytd = $(exTbodyTr).find(".exTbodytd").clone();
 									exTbodytd.removeClass("exTbodytd");
 									exTbodytd.removeClass("d-none");
 									exTbodytd.addClass("model_lv_" + i);
@@ -675,7 +675,7 @@
 								$('#search_cr  .modelTbodyTr_Def').after(exTbodyTr);
 							}
 							//登記版本
-							var tagetModel = $(".modelTbodyTr_" + bvcname.replaceAll(" ", "") + " .model_lv_" + bvaversion);
+							let tagetModel = $(".modelTbodyTr_" + bvcname.replaceAll(" ", "") + " .model_lv_" + bvaversion);
 							if (tagetModel != null) {
 								//顏色
 								if (jsonCheckCustomer[k].bvbugnote != "") {
@@ -706,7 +706,7 @@
 				console.log("searchReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					other.data.searchPageSet.total = searchPageSet['total'];
 					other.data.searchPageSet.batch = searchPageSet['batch'];
 					other.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)

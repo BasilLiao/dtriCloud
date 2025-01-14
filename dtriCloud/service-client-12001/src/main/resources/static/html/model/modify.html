@@ -408,32 +408,32 @@
 				modify.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
 				modify.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
 
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
-				var searchSet = searchSetJson['searchSet'];
-				var resultThead = searchSetJson['resultThead'];
-				var resultDetailThead = searchSetJson['resultDetailThead'];
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSet = searchSetJson['searchSet'];
+				let resultThead = searchSetJson['resultThead'];
+				let resultDetailThead = searchSetJson['resultDetailThead'];
 				//Step1.修改標題-排序
 				resultThead = main.methods.orderedSort(resultThead);
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//Step2.修改標題-資料
 				//一般
-				var check1 = true;
+				let check1 = true;
 				Object.keys(resultThead).forEach(function (k) {
 					//如果有翻譯
-					var cloneBht = $("#modify_c_ex_tkey").clone();
+					let cloneBht = $("#modify_c_ex_tkey").clone();
 					cloneBht.attr("id", "");
 					cloneBht.removeClass("f_c_3");
 					//Step2-1.標題
 					cloneBht.css('minWidth', resultThead[k].width + "px");
 					//Step2-2.翻譯(Batch(H/B) Modify(H/B))
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						cloneBht.text(cellName == "" ? resultThead[k].cellName : cellName);
 					} else {
 						cloneBht.text(resultThead[k].cellName);
 					}
 					//Step2-3.欄位類型?
-					var cloneBhv = "";
+					let cloneBhv = "";
 					switch (resultThead[k].m_type) {
 						case "text":
 							cloneBhv = $("#modify_c_ex_it").clone();
@@ -466,11 +466,11 @@
 						case "select":
 							cloneBhv = $("#modify_c_ex_st").clone();
 							//比對是否有匹配選項
-							var arrSelect = JSON.parse(resultThead[k].m_select);
+							let arrSelect = JSON.parse(resultThead[k].m_select);
 							//選項
-							for (var s = 0; s < arrSelect.length; s++) {
-								var key = arrSelect[s].split("_")[0];
-								var val = arrSelect[s].split("_")[1];
+							for (let s = 0; s < arrSelect.length; s++) {
+								let key = arrSelect[s].split("_")[0];
+								let val = arrSelect[s].split("_")[1];
 								selectEx = $('.modify_st_ex').clone();
 								selectEx.removeClass("modify_st_ex");
 								selectEx.removeAttr("selected");
@@ -548,20 +548,20 @@
 				}
 
 				Object.keys(resultDetailThead).forEach(function (k) {//如果有翻譯
-					var cloneBdt = $("#modify_c_ex_tkey").clone();
+					let cloneBdt = $("#modify_c_ex_tkey").clone();
 					cloneBdt.attr("id", "");
 					cloneBdt.removeClass("f_c_3");
 					//Step2-1.標題
 					cloneBdt.css('minWidth', resultDetailThead[k].width + "px");
 					//Step2-2.翻譯(Batch(H/B) Modify(H/B))
 					if (resultDetailThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
 						cloneBdt.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
 					} else {
 						cloneBdt.text(resultDetailThead[k].cellName);
 					}
 					//Step2-3.欄位類型?
-					var cloneBdv = "";
+					let cloneBdv = "";
 					switch (resultDetailThead[k].m_type) {
 						case "text":
 							cloneBdv = $("#modify_c_ex_it").clone();
@@ -594,12 +594,12 @@
 						case "select":
 							cloneBdv = $("#modify_c_ex_st").clone();
 							//比對是否有匹配選項
-							var arrSelect = JSON.parse(resultDetailThead[k].m_select);
+							let arrSelect = JSON.parse(resultDetailThead[k].m_select);
 							//console.log(searchSet[t].select);
 							//選項
-							for (var s = 0; s < arrSelect.length; s++) {
-								var key = arrSelect[s].split("_")[0];
-								var val = arrSelect[s].split("_")[1];
+							for (let s = 0; s < arrSelect.length; s++) {
+								let key = arrSelect[s].split("_")[0];
+								let val = arrSelect[s].split("_")[1];
 								selectEx = $('.modify_st_ex').clone();
 								selectEx.removeClass("modify_st_ex");
 								selectEx.removeAttr("selected");
@@ -706,7 +706,7 @@
 				$(document).off("click", "#modifyThAll .modifyThvEx .bi-plus-square");//++
 				$(document).on("click", "#modifyThAll .modifyThvEx .bi-plus-square", function (event) {
 					console.log("modifyThAll bi-plus-square");
-					var modifyThvEx = $('.modifyThvEx').clone();
+					let modifyThvEx = $('.modifyThvEx').clone();
 					modifyThvEx.removeClass('modifyThvEx');
 					modifyThvEx.find(".bi-plus-square").addClass('d-none');
 					modifyThvEx.find(".bi-dash-square").removeClass('d-none');
@@ -729,15 +729,15 @@
 				$(document).off("click", "#modifyThAll .modifyThvM .bi-stickies");//copy
 				$(document).on("click", "#modifyThAll .modifyThvM .bi-stickies", function (event) {
 					console.log("modifyThAll bi-stickies");
-					var copyTarget = $(event.target.parentElement.parentElement.parentElement);
-					var copy = copyTarget.clone();
+					let copyTarget = $(event.target.parentElement.parentElement.parentElement);
+					let copy = copyTarget.clone();
 					//Data : 將現有ID /GID 清除
-					var id = copy.find('.bi-stickies').attr('title').split("_")[0];
-					var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
+					let id = copy.find('.bi-stickies').attr('title').split("_")[0];
+					let gid = copy.find('.bi-stickies').attr('title').split("_")[1];
 					//if (id != "") {copy.find('.' + id).val("");}
 					//if (gid != "") {copy.find('.' + gid).val("");}
 					//select : 如果有選單複製
-					var select = copyTarget.find("select");
+					let select = copyTarget.find("select");
 					select.each(function (index) {
 						console.log($(this).attr("title"));
 						copy.find('.' + $(this).attr("title")).val($(this).val());
@@ -756,7 +756,7 @@
 				$(document).off("click", "#modifyTdAll .modifyTdvEx .bi-plus-square");//++
 				$(document).on("click", "#modifyTdAll .modifyTdvEx .bi-plus-square", function (event) {
 					console.log("modifyTdAll bi-plus-square");
-					var modifyTdvEx = $('.modifyTdvEx').clone();
+					let modifyTdvEx = $('.modifyTdvEx').clone();
 					modifyTdvEx.removeClass('modifyTdvEx');
 					modifyTdvEx.find(".bi-plus-square").addClass('d-none');
 					modifyTdvEx.find(".bi-dash-square").removeClass('d-none');
@@ -778,14 +778,14 @@
 				$(document).off("click", "#modifyTdAll .modifyTdvM .bi-stickies");//copy
 				$(document).on("click", "#modifyTdAll .modifyTdvM .bi-stickies", function (event) {
 					console.log("modifyTdAll bi-stickies");
-					var copyTarget = $(event.target.parentElement.parentElement.parentElement);
-					var copy = copyTarget.clone();
+					let copyTarget = $(event.target.parentElement.parentElement.parentElement);
+					let copy = copyTarget.clone();
 					//Detail : 將現有ID 
-					var id = copy.find('.bi-stickies').attr('title').split("_")[0];
-					var gid = copy.find('.bi-stickies').attr('title').split("_")[1];
+					let id = copy.find('.bi-stickies').attr('title').split("_")[0];
+					let gid = copy.find('.bi-stickies').attr('title').split("_")[1];
 					if (id != "") {copy.find('.' + id).val("");}
 					//select : 如果有選單複製
-					var select = copyTarget.find("select");
+					let select = copyTarget.find("select");
 					select.each(function (index) {
 						console.log($(this).attr("title"));
 						copy.find('.' + $(this).attr("title")).val($(this).val());
@@ -803,7 +803,7 @@
 				$(document).on("click", "#modify_c_date_overwrite", function (event) {
 					console.log("modify_c_date_overwrite");
 					$('#batchThv .entityVal').each(function (index) {
-						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
+						let tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
 						//過濾-如果是檔案類
 						if ($(this).attr('type') == "file") {
 							return false;
@@ -828,9 +828,9 @@
 					console.log("modify_c_date_replace");
 					$('#batchThv .entityVal').each(function (index) {
 						console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
-						var tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
-						var batchVal = $(this).val();
-						var replaceVal = $('#batchTrhv .' + $(this).attr('title')).val();
+						let tigger = $('#modifyThAll .modifyThvM .' + $(this).attr('title'));
+						let batchVal = $(this).val();
+						let replaceVal = $('#batchTrhv .' + $(this).attr('title')).val();
 						//過濾-如果是檔案類
 						if ($(this).attr('type') == "file") {
 							return false;
@@ -867,7 +867,7 @@
 					console.log("modify_c_detail_overwrite");
 					$('#batchTdv .entityVal').each(function (index) {
 						//過濾沒開啟的
-						var tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
+						let tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
 						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
 							console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
 							//過濾沒資料的
@@ -887,9 +887,9 @@
 					console.log("modify_c_detail_replace");
 					$('#batchTdv .entityVal').each(function (index) {
 						console.log(index + ": " + $(this).attr('title') + ": " + $(this).val());
-						var tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
-						var batchVal = $(this).val();
-						var replaceVal = $('#batchTrdv .' + $(this).attr('title')).val();
+						let tigger = $('#modifyTdAll .modifyTdvM .' + $(this).attr('title'));
+						let batchVal = $(this).val();
+						let replaceVal = $('#batchTrdv .' + $(this).attr('title')).val();
 						//過濾沒開啟的
 						if ($(this).attr('disabled') != 'disabled' && tigger.attr('disabled') != 'disabled') {
 							//過濾沒資料的
@@ -936,7 +936,7 @@
 				$(document).off("change", ".form-control-file");
 				$(document).on("change", ".form-control-file", function (event) {
 					console.log("form-control-file");
-					var target = $(event.target);
+					let target = $(event.target);
 					$(target[0].parentElement).find("img").attr("src", "");
 					//沒檔案?
 					if (!this.files || !this.files[0]) {
@@ -947,7 +947,7 @@
 					//限制圖片副檔->確定是圖片?
 					if (target.attr("accept") == ".jpg,.jpeg,.gif,.png") {
 						let url = target.val();
-						var is_image = /\.(jpg|jpeg|gif|png)$/.test(url);
+						let is_image = /\.(jpg|jpeg|gif|png)$/.test(url);
 						console.log("image:" + is_image);
 						if (is_image) {
 							const fileReader = new FileReader();
@@ -973,9 +973,9 @@
 			//==========================處理資料==========================
 			modify(order, datas, dataDetails, entityDateTime) {
 				console.log("modify_Start:" + new Date());
-				var entityDateTime = modify.data.entityDateTime;
-				var ikey = modify.data.entityIKey;
-				var gkey = modify.data.entityGKey;
+				entityDateTime = modify.data.entityDateTime;
+				let ikey = modify.data.entityIKey;
+				let gkey = modify.data.entityGKey;
 				console.log("=====order:" + order + "=====");
 				console.log(datas);
 				console.log(dataDetails);
@@ -994,8 +994,8 @@
 					case "delete":
 						//一般
 						if (datas.length > 0) {
-							for (var d = 0; d < datas.length; d++) {
-								var modifyThvEx = $('.modifyThvEx').clone();
+							for (let d = 0; d < datas.length; d++) {
+								let modifyThvEx = $('.modifyThvEx').clone();
 								modifyThvEx.find('input').removeClass("d-none");
 								modifyThvEx.find('select').removeClass("d-none");
 								modifyThvEx.find('textarea').removeClass("d-none");
@@ -1010,11 +1010,11 @@
 								//
 								modifyThvEx.removeClass('modifyThvEx');
 								modifyThvEx.addClass('modifyThvM');
-								var dataOne = datas[d];
+								let dataOne = datas[d];
 								//每個欄位 >對應 < 資料
 								Object.keys(dataOne).forEach(function (k) {
 									//是否時間格式?
-									var value = dataOne[k];
+									let value = dataOne[k];
 
 									//console.log(modifyThvEx.find("."+k).attr('type'));
 									if (modifyThvEx.find("." + k).attr('type') == "checkbox") {
@@ -1037,7 +1037,7 @@
 
 									} else if (entityDateTime.indexOf(k) >= 0) {
 										//是否為 時間
-										var dF = new Date(dataOne[k]);
+										let dF = new Date(dataOne[k]);
 										value = dF.getFullYear() + "-";
 										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 										value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
@@ -1056,17 +1056,17 @@
 						}
 						//細節
 						if (dataDetails.length > 0) {
-							var newGkey = dataDetails[0][gkey];
-							var newIkey = dataDetails[0][ikey];
+							let newGkey = dataDetails[0][gkey];
+							let newIkey = dataDetails[0][ikey];
 							//分隔線
-							var nextOneTr = $("<tr><td></td></tr>");
+							let nextOneTr = $("<tr><td></td></tr>");
 							nextOneTr.find("td").attr("colspan", (Object.keys(dataDetails[0]).length + 2));
 							nextOneTr.addClass("nextOne");
-							var nextOne = $("#nextOne").clone().removeAttr("id").removeClass("d-none");
+							let nextOne = $("#nextOne").clone().removeAttr("id").removeClass("d-none");
 							nextOne.appendTo(nextOneTr.find("td"));
 
-							for (var d = 0; d < dataDetails.length; d++) {
-								var modifyTdvEx = $('.modifyTdvEx').clone();
+							for (let d = 0; d < dataDetails.length; d++) {
+								let modifyTdvEx = $('.modifyTdvEx').clone();
 								modifyTdvEx.find('input').removeClass("d-none");
 								modifyTdvEx.find('select').removeClass("d-none");
 								modifyTdvEx.find('textarea').removeClass("d-none");
@@ -1081,10 +1081,10 @@
 								//
 								modifyTdvEx.removeClass('modifyTdvEx');
 								modifyTdvEx.addClass('modifyTdvM');
-								var dataDetailOne = dataDetails[d];
+								let dataDetailOne = dataDetails[d];
 								//每個欄位 >對應< 資料
 								Object.keys(dataDetailOne).forEach(function (k) {
-									var value = dataDetailOne[k];
+									let value = dataDetailOne[k];
 
 									//console.log(modifyThvEx.find("."+k).attr('type'));
 									if (modifyTdvEx.find("." + k).attr('type') == "checkbox") {
@@ -1095,18 +1095,18 @@
 											modifyTdvEx.find('.' + k).prop('checked', false);
 										}
 										modifyTdvEx.find("." + k).val(value);
-									} else if (modifyThvEx.find("." + k).attr('type') == "image") {
+									} else if (modifyTdvEx.find("." + k).attr('type') == "image") {
 										//是否為	圖片
 										$(modifyTdvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
 
-									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
+									} else if (modifyTdvEx.find("." + k).attr('type') == "file") {
 										//是否為	檔案
 										console.log(value);
 										$(modifyTdvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
 
 									} else if (entityDateTime.indexOf(k) >= 0) {
 										//是否時間格式?
-										var dF = new Date(dataDetailOne[k]);
+										let dF = new Date(dataDetailOne[k]);
 										value = dF.getFullYear() + "-";
 										value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 										value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
@@ -1180,15 +1180,15 @@
 			//傳送
 			modifySend() {
 				console.log("modifySend:" + new Date());
-				var entityFormatJson = {};
-				var entityJsons = [];//回傳一般資料
-				var entityDetailJsons = [];//回傳細節資料
-				var entityDateTime = modify.data.entityDateTime;
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
-				var action = $('#modify_c_state').attr('title').split("_")[0];
-				var type = $('#modify_c_state').attr('title').split("_")[1];
+				let entityFormatJson = {};
+				let entityJsons = [];//回傳一般資料
+				let entityDetailJsons = [];//回傳細節資料
+				let entityDateTime = modify.data.entityDateTime;
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
+				let action = $('#modify_c_state').attr('title').split("_")[0];
+				let type = $('#modify_c_state').attr('title').split("_")[1];
 				//無效
 				if (action == "None") {
 					return false;
@@ -1198,7 +1198,7 @@
 					//每一格欄位
 					entityFormatJson = {};
 					$(this).find('.entityVal').each(function (index) {
-						var val = $(this).val();
+						let val = $(this).val();
 						//可能是時間格式
 						if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 							val = new Date(val).getTime();
@@ -1231,7 +1231,7 @@
 					//每一格欄位
 					entityFormatJson = {};
 					$(this).find('.entityVal').each(function (index) {
-						var val = $(this).val();
+						let val = $(this).val();
 						//可能是時間格式
 						if (entityDateTime.indexOf($(this).attr("title")) >= 0) {
 							val = new Date(val).getTime();

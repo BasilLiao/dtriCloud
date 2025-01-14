@@ -85,7 +85,7 @@ public class ManufactureActionServiceAc {
 		// Step3-1.取得資料(一般/細節)
 		ArrayList<ManufactureActionFront> entitys = new ArrayList<ManufactureActionFront>();
 		ArrayList<ManufactureActionDetailFront> entityDetails = new ArrayList<ManufactureActionDetailFront>();
-		Map<String, String> entityChecks = new HashMap<>();
+		Map<String, Integer> entityChecks = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -158,7 +158,7 @@ public class ManufactureActionServiceAc {
 				// header
 				if (entityChecks.size() < 100) {
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						ManufactureActionFront eh = new ManufactureActionFront();
 						eh.setId(Key);
@@ -189,8 +189,15 @@ public class ManufactureActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
+				}
+			});
+			// 顯示數量
+			entitys.forEach(enh -> {
+				if (entityChecks.containsKey(enh.getGid())) {
+					enh.setMasclassname(enh.getMasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
 				}
 			});
 
@@ -323,7 +330,7 @@ public class ManufactureActionServiceAc {
 				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
-						entityChecks.put(headerKey, headerKey);
+						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
 						ManufactureActionFront eh = new ManufactureActionFront();
 						eh.setId(Key);
@@ -354,11 +361,17 @@ public class ManufactureActionServiceAc {
 					}
 				}
 				if (entityChecks.containsKey(headerKey)) {
+					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
 					entityDetails.add(e);
 				}
 			});
-
+			// 顯示數量
+			entitys.forEach(enh -> {
+				if (entityChecks.containsKey(enh.getGid())) {
+					enh.setMasclassname(enh.getMasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
+				}
+			});
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);

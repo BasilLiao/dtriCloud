@@ -35,16 +35,16 @@
 
 	/*Table 表格外框線*/
 	#search_c #search_cr table {
-		min-height: 200px;
-		max-height: 300px;
+		min-height: 300px;
+		max-height: 400px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
 
 	/*Table 表格外框線*/
 	#search_c #search_dcr table {
-		min-height: 200px;
-		max-height: 300px;
+		min-height: 300px;
+		max-height: 400px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
@@ -65,10 +65,22 @@
 		background-color: #cfe2ff;
 	}
 
+	#search_c .pink_color {
+		background-color: var(--bs-orange);
+	}
+
+
+
 	/*直立式呈現邊字*/
 	#search_c .wlr {
 		writing-mode: vertical-lr;
 		width: 20px;
+	}
+
+	/*checkbox_32*/
+	#search_c .checkbox_32 {
+		width: 32px;
+		height: 32px;
 	}
 
 	/*checkbox_24*/
@@ -132,62 +144,52 @@
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
-							<button id="btn_detail" type="button"
+							<button id="btn_production" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>Production<br>import()
+								</b>
+							</button>
+							<button id="btn_bom" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>Detail<br>(AR)
+								<b>BOM<br>import()
 								</b>
 							</button>
-							<button id="btn_create" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Create<br>new(AC)
-								</b>
-							</button>
-							<button id="btn_saveAs" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Save<br>as...(AC2)
-								</b>
-							</button>
-							<button id="btn_modify" type="button"
+							<button id="btn_order" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Modify<br>(AU)
+								<b>Order<br>import(AR)
 								</b>
 							</button>
 							<button id="btn_invalid" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Invalid<br>(AD)
-								</b>
-							</button>
-							<button id="btn_delete" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
-								<b>Delete<br>(DD)
-								</b>
-							</button>
-							<button id="btn_markCancel" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Mark<br>cancel()
+								<b>Void <br>documents(AD)
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-2 p-1">
+				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Special</div>
+						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
-
-							<button id="btn_printerForm" type="button"
+							<button id="btn_intoForm" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Printer<br>form()
+								<b>Preview<br>()
 								</b>
 							</button>
-							<button id="btn_compare" type="button"
+							<button id="btn_saveForm" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Compare<br>()
+								<b>Save<br>(AU/AC/AD)
+								</b>
+							</button>
+							<button id="btn_printerForm" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Printer<br>form
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-2 p-1">
+				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
@@ -209,22 +211,468 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-12 col-lg-2 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Page</div>
-						<div class="row m-0">
-							<button id="btn_pageU" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>＜＜<br>Page
-								</b>
-							</button>
-							<input id="numberPage" class="lh-base col-4 p-1 m-1 " name="page" type="number"
-								placeholder="1-50" value="1" />
-							<button id="btn_pageD" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>＞＞<br>Page
-								</b>
-							</button>
+			</div>
+		</div>
+	</div>
+	<!-- 編輯過程 -->
+	<div id="modify_cr" class="col-12 m-0 p-1">
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#modify_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		</div>
+		<div id="modify_cr_open" class="row m-0 shadow-sm collapse show">
+			<b class="p-0 m-0 lh-1 wlr bg-warning text-white">Modify choose</b>
+			<div class="col p-0">
+				<div class="row m-0">
+					<!--編輯-->
+					<div class="col-12 col-lg-6 border border-primary row m-0 p-1">
+						<!--1-->
+						<div class="col-6 p-1 col-lg-3">
+							<div id="bomDefinition" class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">model(模式)</div>
+								<div class="p-1">
+									<select class="col-12 m-0 p-1 border border-dark form-select">
+										<option class="" value="bom" selected="selected">一般模式(General)</option>
+										<option class="" value="definition">自定義(Custom)</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphpon" class=" border border-secondary rounded">
+								<div class="searchTitle bg-warning fw-bolder rounded-top">製令單</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										placeholder="Ex:A512-99990101001">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphonb" class="border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">訂單號</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										placeholder="Ex:US110762450">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphhdate" class="border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">預計出貨</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="date"
+										placeholder="Ex:2090-12-12">
+								</div>
+							</div>
+						</div>
+						<!--2-->
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphbpmnb" class="border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">公司BOM號</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										placeholder="Ex:90-317-R141010">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphobpmnb" class="border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">客戶BOM號</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										placeholder="Ex:313T-51-49">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphbpmmodel" class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">機型</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										placeholder="Ex:313T">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div id="sphoqty" class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">生產數量</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+										type="number" value="1">
+								</div>
+							</div>
+						</div>
+						<!--3-->
+						<div class="col-6 p-1 col-lg-3">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">客戶名稱</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										id="sphbpmnb" name="sphbpmnb" placeholder="Ex:BOM號?" autofocus="">
+								</div>
+							</div>
+						</div>
+						<div class="col-6 p-1 col-lg-3">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">國家名稱</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
+										id="sphbpmnb" name="sphbpmnb" placeholder="Ex:BOM號?" autofocus="">
+								</div>
+							</div>
+						</div>
+						<!--4:自訂需裝配-->
+						<div class="col-12 p-1"></div>
+						<div class="col-6 p-1">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle pink_color fw-bolder rounded-top">產品規格-需裝配</div>
+								<div class="p-1">
+									<select class="col-12 m-0 p-1 border border-dark form-select" id="bom_items"
+										name="bom_items">
+										<option class="selectItemsEx" value="" selected="selected">select(請選擇)</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-2 p-1">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle pink_color fw-bolder rounded-top">Qty</div>
+								<div class="p-1">
+									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" value="0"
+										type="number" id="btn_bom_item_qty" name="btn_bom_item_qty">
+								</div>
+							</div>
+						</div>
+						<div class="col-4 p-1">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle pink_color fw-bolder rounded-top">Add/Remove</div>
+								<div class="p-1">
+									<button id="btn_bom_item_add" type="button"
+										class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+										<b>Add</b>
+									</button>
+									<button id="btn_bom_item_remove" type="button"
+										class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+										<b>Remove</b>
+									</button>
+								</div>
+							</div>
+						</div>
+						<!--5-->
+						<div class="col-12 p-1">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">備註-包裝說明</div>
+								<div class=" p-1" id="sphscpackage">
+									<div class="row m-0 p-0">
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox1" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control"
+												value="Power cord" type="text" id="sphscpackage_value1"
+												name="sphscpackage_value1">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox2" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="BOG"
+												type="text" id="sphscpackage_value2" name="sphscpackage_value2">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox3" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="License"
+												type="text" id="sphscpackage_value3" name="sphscpackage_value3">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox4" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="BOX Label"
+												type="text" id="sphscpackage_value4" name="sphscpackage_value4">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox5" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="Bulk Pack"
+												type="text" id="sphscpackage_value5" name="sphscpackage_value5">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox6" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control"
+												value="Retail Pack" type="text" id="sphscpackage_value6"
+												name="sphscpackage_value6">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox7" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="作業系統OS"
+												type="text" id="sphscpackage_value7" name="sphscpackage_value7">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox8" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="NA1"
+												type="text" id="sphscpackage_value8" name="sphscpackage_value8">
+										</div>
+										<div class="col-6 col-lg-4 row m-0 p-1">
+											<input class="m-0 form-check-input checkbox_32 border border-dark"
+												id="sphscpackage_checkbox9" alt="" title="" type="checkbox"
+												checked="checked">
+											<input class="col m-0 p-1 border border-dark form-control" value="NA2"
+												type="text" id="sphscpackage_value9" name="sphscpackage_value9">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 p-1">
+							<div class=" border border-secondary rounded">
+								<div class="searchTitle title_color fw-bolder rounded-top">備註-生管說明</div>
+								<div class="p-1">
+									<textarea class="col-12 m-0 p-1 border border-dark form-control searchVal" rows="6"
+										id="sphscnote" name="sphscnote" placeholder="Ex:3年保固 貼先 4F"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
+					<div id="printNotes"
+						class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
+						style="max-height: 686px;overflow: auto;">
+						<div class=""
+							style="height:880px;width:600px;min-width:600px;border: 1px solid #000000;padding: 0px;">
+							<div style="border: 1px solid #000000;">
+								<h4 style="padding: 5px;margin: 0px;text-align: center;"><b>生產注意事項</b></h4>
+							</div>
+							<div
+								style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;text-align: center;">
+								<div style="width: 10%;"><b>製令</b></div>
+								<div style="width: 25%;overflow: hidden;">AXXX-250101001</div>
+								<div style="width: 10%;border-left: 1px solid #000000;"><b>訂單</b></div>
+								<div style="width: 20%;overflow: hidden;">XXX1111</div>
+								<div style="width: 15%;border-left: 1px solid #000000;"><b>預計出貨</b></div>
+								<div style="width: 20%;overflow: hidden;">2099-01-01</div>
+							</div>
+							<div
+								style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
+								<div style="width: 10%;"><b>客戶</b></div>
+								<div style="width: 25%;overflow: hidden;">ASUS</div>
+								<div style="width: 10%;border-left: 1px solid #000000;"><b>國家</b></div>
+								<div style="width: 20%;overflow: hidden;">Taiwan</div>
+								<div style="width: 15%;border-left: 1px solid #000000;"></div>
+								<div style="width: 20%;overflow: hidden;"></div>
+							</div>
+							<div
+								style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
+								<div style="width: 10%;"><b>品號</b></div>
+								<div style="width: 25%;overflow: hidden;">90-345-XXXXXXX</div>
+								<div style="width: 10%;border-left: 1px solid #000000;"><b>型號</b></div>
+								<div style="width: 20%;overflow: hidden;">340TR</div>
+								<div style="width: 15%;border-left: 1px solid #000000;"><b>需生產量</b></div>
+								<div style="width: 20%;overflow: hidden;">500</div>
+							</div>
+							<!--產品資訊-->
+							<div
+								style="border: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content: space-between;">
+								<div
+									style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
+									產品規格 & 專案經理說明
+								</div>
+								<div style="border-left: 1px solid #000000;width: 98%;">
+									<!--規格內容-->
+									<div style="height: 448px; border-bottom: 1px solid #000000;padding-top: 2px;
+										           display: grid;overflow: hidden;grid-template-rows: repeat(20, 1fr); 
+										           grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+										           grid-auto-flow: column;gap: 2px;font-size: 14px;">
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											<b>RAM </b>RAM,2G,78.A2G72.405,APACER(x2)
+										</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											2</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											3</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											4</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											5</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											6</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											7</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											8</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											9</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											10</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											11</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											12</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											13</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											14</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											15</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											16</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											17</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											18</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											19</div>
+										<div
+											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+											<b>CPU </b>CPU,N97,Intel
+										</div>
+									</div>
+									<div id="sphbisitemNot" style="overflow: hidden;height: 50px; border-bottom: 1px solid #000000;
+										display:flex;flex-wrap: wrap;justify-content:start;font-size: 14px;">
+										<span style="height: 16px;"><b>注意!!不裝配：</b></span>
+										<span id="sphbisitemExNot_val"
+											style="height: 16px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">N/A</span>
+
+
+									</div>
+									<div
+										style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
+										<div style="width: 10%; text-align: center;"><b>專案<br>備註<br>
+												<p style="font-size: 8px;line-height: 8px;margin: 0px;">Project
+													instructions</p>
+											</b></div>
+										<div style="width: 90%;padding: 2px;">
+											<textarea id="sphpmnote_val"
+												style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
+												disabled="disabled">N/A ⁕產品狀態:技轉單 ⁕主機板本:R1.2</textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--生產資訊-->
+							<div
+								style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;">
+								<div
+									style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
+									生產管理
+								</div>
+								<div style="border-left: 1px solid #000000;width: 98%;">
+									<div
+										style="height: 70px;border-bottom: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content:space-between;">
+										<div style="width: 10%; text-align: center;"><b>包裝<br>配置
+												<p style="font-size: 8px;line-height: 8px;margin: 0px;">package
+													configuration</p>
+											</b></div>
+										<div
+											style="width: 90%;display:flex;flex-wrap: wrap;justify-content: space-between;pointer-events: none;">
+											<div id="pkg_checkbox1"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox" checked>
+												<span>Power cord</span>
+											</div>
+											<div id="pkg_checkbox2"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>BOG</span>
+											</div>
+											<div id="pkg_checkbox3"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>License</span>
+											</div>
+											<div id="pkg_checkbox4"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>BOX Label</span>
+											</div>
+											<div id="pkg_checkbox5"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>Bulk Pack</span>
+											</div>
+											<div id="pkg_checkbox6"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>Retail Pack</span>
+											</div>
+											<div id="pkg_checkbox7"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>作業系統OS</span>
+											</div>
+											<div id="pkg_checkbox8"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>NA1</span>
+											</div>
+											<div id="pkg_checkbox9"
+												style="width: 33%;text-align: start;font-size: 14px;">
+												<input type="checkbox">
+												<span>NA2</span>
+											</div>
+										</div>
+									</div>
+									<div
+										style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
+										<div style="width: 10%; text-align: center;"><b>生管<br>備註
+												<p style="font-size: 8px;line-height: 8px;margin: 0px;">Production
+													instructions</p>
+											</b></div>
+										<div style="width: 90%;padding: 2px;">
+											<textarea id="sphscnote_val"
+												style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
+												disabled="disabled">N/A ⁕說明1 ⁕說明2</textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--其他資訊-->
+							<div style="display:flex;flex-wrap: wrap;justify-content:space-between;
+								border: 1px solid #000000;font-size: 6px;">
+								<div>
+									<span>產品類:</span><span>product/accessories</span>
+								</div>
+								<div>
+									<span>客戶品號:</span><span>ACC-123456</span>
+								</div>
+								<div>
+									<span>建單人:</span><span></span><span>
+								</div>
+								<div>
+									<span>產品負責:</span></span><span>
+								</div>
+								<div>
+									<span>單據編號:</span><span>QR-701-06</span>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -246,7 +694,7 @@
 						<th class="fixedC1" style="min-width: 40px;">
 							<div>
 								<button id="exthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
-									<b>M</b>
+									<b>Ｃ</b>
 								</button>
 							</div>
 						</th>
@@ -257,7 +705,7 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox"
+								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="radio"
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -283,7 +731,7 @@
 							<div>
 								<button id="exthDetailAll" type="button"
 									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
-									<b>M</b>
+									<b>Ｃ</b>
 								</button>
 							</div>
 						</th>
@@ -294,7 +742,7 @@
 					<tr class="exDetailTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input type="checkbox" alt="row_x" title="IKey_GKey"
+								<input type="radio" alt="row_x" title="IKey_GKey" name="radio_dt"
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -339,7 +787,7 @@
 				//查詢格式
 				search.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
-				var searchSetJson = JSON.parse(main.resq_data['searchSet']);
+				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(searchSetJson);
 				//資料內容
 				search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
@@ -349,8 +797,8 @@
 				search.data.entityDateTime = main.resq_data['entityDateTime'];
 				search.data.searchSet = searchSetJson['searchSet'];
 				//按鈕權限?
-				var p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
-				var ps = Array.from(p);
+				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
+				let ps = Array.from(p);
 
 				if (ps[10] != 1) {//查詢(AR)10
 					$("#btn_send").addClass("disabled");
@@ -366,17 +814,17 @@
 				}
 
 				//Step1.查詢結果標題-排序
-				var resultThead = searchSetJson['resultThead'];
-				var resultDetailThead = searchSetJson['resultDetailThead'];
+				let resultThead = searchSetJson['resultThead'];
+				let resultDetailThead = searchSetJson['resultDetailThead'];
 				resultThead = main.methods.orderedSort(resultThead);
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//Step2.查詢結果標題-資料
-				var check1 = true;
+				let check1 = true;
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
 					//複製格式
-					var exTheadth = $('#search_cr_open .exTheadth').clone();
-					var exTbodytd = $('#search_cr_open .exTbodytd').clone();
+					let exTheadth = $('#search_cr_open .exTheadth').clone();
+					let exTbodytd = $('#search_cr_open .exTbodytd').clone();
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
@@ -395,7 +843,7 @@
 					}
 					//如果有翻譯
 					if (resultThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 						exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
 						exTheadth.css('minWidth', resultThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultThead[k].width + "px");
@@ -415,15 +863,12 @@
 				});
 				//Step2.查詢結果標題(細節)-資料
 				check1 = true;
-				if (JSON.stringify(resultDetailThead) == '{}') {
-					$('#search_c #btn_detail').addClass('disabled');
-					$('#search_c #search_dcr').addClass('d-none');
-				}
+
 				Object.keys(resultDetailThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultDetailThead[k]);
 					//複製格式
-					var exTheadth = $('#search_dcr_open .exTheadth').clone();
-					var exTbodytd = $('#search_dcr_open .exTbodytd').clone();
+					let exTheadth = $('#search_dcr_open .exTheadth').clone();
+					let exTbodytd = $('#search_dcr_open .exTbodytd').clone();
 					exTheadth.removeClass('exTheadth');
 					exTheadth.removeClass('d-none')
 					exTheadth.addClass('titTheadth');
@@ -442,7 +887,7 @@
 					}
 					//如果有翻譯
 					if (resultDetailThead[k].cellLanguage != '') {
-						var cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+						let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
 						exTheadth.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
 						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
 						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
@@ -462,9 +907,9 @@
 				});
 
 				//Step3.查詢內容-格式
-				for (var b = 1; b <= search.data.searchPageSet.pageSize; b++) {
-					var exTbodyTr = $('#search_cr .exTbodyTr').clone();
-					var exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
+				for (let b = 1; b <= search.data.searchPageSet.pageSize; b++) {
+					let exTbodyTr = $('#search_cr .exTbodyTr').clone();
+					let exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
 					//
 					exTbodyTr.removeClass('exTbodyTr');
 					exTbodyTr.removeClass('d-none');
@@ -484,11 +929,11 @@
 				$('#search_cr .exDetailTbodyTr').addClass('d-none');
 
 				//Step4.查詢條件
-				for (var t = 0; t < searchSetJson['searchSet'].length; t++) {
-					var searchSet = searchSetJson['searchSet'][t];
-					var searchTextEx = "";
-					var searchSelectEx = "";
-					var selectEx = "";
+				for (let t = 0; t < searchSetJson['searchSet'].length; t++) {
+					let searchSet = searchSetJson['searchSet'][t];
+					let searchTextEx = "";
+					let searchSelectEx = "";
+					let selectEx = "";
 					//不顯示
 					if (!searchSet['show']) {
 						continue;
@@ -509,7 +954,7 @@
 							//如果有翻譯
 							if (k.split("_")[1] == (searchSet['searchName'])) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchTextEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchTextEx.find('.searchTitle').text(searchSet['searchName']);
@@ -531,7 +976,7 @@
 							//如果有翻譯
 							if (k.indexOf(searchSet['searchName']) >= 0) {
 								if (resultThead[k].cellLanguage != '') {
-									var cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+									let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
 									searchSelectEx.find('.searchTitle').text(cellName == "" ? searchSet['searchName'] : cellName);
 								} else {
 									searchSelectEx.find('.searchTitle').text(searchSet['searchName']);
@@ -539,9 +984,9 @@
 							}
 						});
 						//選項
-						for (var s = 0; s < searchSet['select'].length; s++) {
-							var key = searchSet['select'][s].split("_")[0];
-							var val = searchSet['select'][s].split("_")[1];
+						for (let s = 0; s < searchSet['select'].length; s++) {
+							let key = searchSet['select'][s].split("_")[0];
+							let val = searchSet['select'][s].split("_")[1];
 							selectEx = searchSelectEx.find('.selectEx').clone();
 							selectEx.removeClass("selectEx");
 							selectEx.removeAttr("selected");
@@ -571,177 +1016,60 @@
 				search.methods.searchReLoad();
 
 				//==========================監聽==========================
-				//監聽-換頁數
-				$(document).off("change", "#search_c #numberPage");
-				$(document).on("change", "#search_c #numberPage", function () {
-					if ($(this).val() > 50) {$(this).val(50);}
-					else if ($(this).val() < 1) {$(this).val(1);}
-				});
-				//監聽-選取資料
+				//監聽-選取資料(一般)
 				$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
 				$(document).on("change", "#search_c #search_cr_open .exTbodyTh input", function (event) {
 					console.log("search_cr_open");
 					//一般資料
-					var Ikey_Gkey = event.target.title;
-					var check = event.target.checked;
-					//細節細項
-					var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-					var entityIKey = search.data.entityIKey;//IKey
-					var entityGKey = search.data.entityGKey;//GKey
-					var detailGKey = Ikey_Gkey.split("_")[1];
-					//標記-選取|解除
-					if (check == true) {
-						search.data.marks[Ikey_Gkey] = true;
-						console.log(entityDetailJsons);
-						//細節
-						for (var k in entityDetailJsons) {
-							if (entityDetailJsons[k][entityGKey] + "" == detailGKey) {
-								var markDetail = entityDetailJsons[k][entityIKey] + "_" + entityDetailJsons[k][entityGKey];
-								search.data.markDetails[markDetail] = true;
-								continue;
-							};
-						}
-					} else {
-						for (var k in search.data.marks) {
-							if (k == Ikey_Gkey) {
-								delete search.data.marks[k];
-								//細節
-								var markDetailsRemove = "_" + Ikey_Gkey.split("_")[1];
-								for (var s in search.data.markDetails) {
-									if (s.indexOf(markDetailsRemove) >= 0) {//取得群組尾數
-										delete search.data.markDetails[s];
-										continue;
-									};
-								}
-								break;
-							};
-						}
-					}
-					//console.log(search.data.marks);	
-					//console.log(search.data.markDetails);
+					let Ikey_Gkey = event.target.title;
+					let check = event.target.checked;
 				});
-				//監聽-選取資料
+				//監聽-選取資料(細節)
 				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).on("change", "#search_c #search_dcr_open .exTbodyTh input", function (event) {
 					console.log("search_dcr_open");
-					var Ikey_Gkey = event.target.title;
-					var check = event.target.checked;
-					var mark = {};
-					//標記-選取|解除
-					if (check == true) {
-						search.data.markDetails[Ikey_Gkey] = true;
-					} else {
-						for (var k in search.data.markDetails) {
-							if (k == Ikey_Gkey) {
-								delete search.data.markDetails[k];
-								break;
-							};
-						}
-					}
-					//console.log(search.data.markDetails);				
+					let Ikey_Gkey = event.target.title;
+					let check = event.target.checked;
 				});
-				//監聽-全選資料
+				//監聽-全清除資料(一般)
 				$(document).off("click", "#search_c #exthAll");
 				$(document).on("click", "#search_c #exthAll", function (event) {
 					//都有勾選?
-					var clickAll = true;
-					$("#search_cr_open .exTbodyTh").each(function () {
-						if ($(this).find("input").attr("disabled") != "disabled" && $(this).find("input").prop("checked") == false) {
-							$(this).find("input").trigger("click");
-							clickAll = false;
-						}
-					});
+					let clickAll = true;
 					//全部取消?
 					if (clickAll) {
-						$("#search_cr_open .exTbodyTh").find("input").trigger("click");
+						$("#search_cr_open .exTbodyTh").find("input").prop("checked", false);;
 					}
 				});
-				//監聽-全選資料
+				//監聽-全清除資料(細節)
 				$(document).off("click", "#search_c #exthDetailAll");
 				$(document).on("click", "#search_c #exthDetailAll", function (event) {
 					//都有勾選?
-					var clickAll = true;
-					$("#search_dcr_open .exTbodyTh").each(function () {
-						if ($(this).find("input").attr("disabled") != "disabled" && $(this).find("input").prop("checked") == false) {
-							$(this).find("input").trigger("click");
-							clickAll = false;
-						}
-					});
+					let clickAll = true;
 					//全部取消?
 					if (clickAll) {
-						$("#search_dcr_open .exTbodyTh").find("input").trigger("click");
+						$("#search_dcr_open .exTbodyTh").find("input").prop("checked", false);
 					}
 				});
-				//監聽-細節
-				$(document).off("click", "#search_c #btn_detail");
-				$(document).on("click", "#search_c #btn_detail", function (event) {
-					console.log("btn_detail");
-					var marks = search.data.marks;
-					var markDetails = search.data.markDetails;
-					//觸發?
-					$('#search_c #search_cr i').trigger('click');
-					if (!$('#search_c #search_dcr_open').hasClass('show')) {
-						$('#search_c #search_dcr i').trigger('click');
-					}
-					//有標記?
-					if (marks != null && search.data.searchPageSet.entityDetailJsons != null) {
-						var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-						var entityIKey = search.data.entityIKey;
-						var entityGKey = search.data.entityGKey;
-						var entityDateTime = search.data.entityDateTime;
-						//console.log(entityDetailJsons);
-						//Step1.查詢細節內容-格式
-						$(".valTbodyTrD").remove();
+				//選取BOM
+				$(document).off("click", "#search_c #btn_bom");
+				$(document).on("click", "#search_c #btn_bom", function (event) {
+					//帶入BOM號
+					console.log("btn_bom");
+					let bom = $("#search_dcr_open .exTbodyTh").find("input:checked");
+					let bom_n = bom.attr('alt').replace("row_", "");
+					$("#sphbpmnb input").val($("#search_dcr_open .valTbodyDetailTr_" + bom_n + " .bpmnb").text());
 
-						for (var k in search.data.marks) {
-							for (var d = 0; d < entityDetailJsons.length; d++) {
-								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
-									//=======格式=======
-									var exTbodyTr = $('#search_c .exDetailTbodyTr').clone();
-									exTbodyTr.removeClass('exDetailTbodyTr');
-									exTbodyTr.removeClass('d-none');
-									exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
-									exTbodyTr.addClass('valTbodyTrD');
-									exTbodyTr.find('input').attr("alt", "row_" + (d + 1));
-									//=======資料=======
-									var entity = entityDetailJsons[d];//
-									var iKey = "", gKey = "";
-									var valTrNb = d + 1;
-									Object.keys(entity).forEach(function (s) {
-										//是否IKEY?
-										if (entityIKey == s) {iKey = entity[s];}
-										//是否GKEY?
-										if (entityGKey == s) {gKey = entity[s];}
-										exTbodyTr.find('input').removeAttr("disabled");
-										exTbodyTr.find('input').attr("title", iKey + "_" + gKey);
-										//是否時間格式?
-										if (entityDateTime.indexOf(s) >= 0) {
-											var dF = new Date(entity[s]);
-											var dateF = dF.getFullYear() + "-";
-											dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-											dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-											dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
-											dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
-											dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-											exTbodyTr.find('.' + s).text(dateF);
-										} else {
-											exTbodyTr.find('.' + s).text(entity[s]);
-										}
-									});
-									//marks標記?	->帶入[mark]
-									if (search.data.markDetails[iKey + "_" + gKey] != null) {
-										exTbodyTr.find('input').prop("checked", true);
-									}
-									$('#search_c .exDetailTbodyTr').before(exTbodyTr);
-								} else {
-									continue;
-								}
-
-							}
-						}
-						$('#search_c .exDetailTbodyTr').addClass('d-none');
-					}
 				});
+				//選取現存單據
+				$(document).off("click", "#search_c #btn_order");
+				$(document).on("click", "#search_c #btn_order", function (event) {
+					console.log("btn_order");
+					$("#sphpon").val($("#sphpon input").val());
+
+					search.methods.searchSend(0, "order");
+				});
+
 				//監聽-建立
 				$(document).off("click", "#search_c #btn_create");
 				$(document).on("click", "#search_c #btn_create", function (event) {
@@ -785,8 +1113,46 @@
 				$(document).off("click", "#search_c #btn_printerForm");
 				$(document).on("click", "#search_c #btn_printerForm", function (event) {
 					console.log("btn_printerForm");
-					search.methods.searchToPrint(null);
 
+					// 獲取 #printNotes 的 HTML 內容
+					const content = $("#printNotes").clone();
+					content.children("div").first().css({
+						transform: "scale(1.3)", /* 放大內容 25% */
+						transformOrigin: "top left"
+					});
+					const contentHtml = content.html();
+
+					// 開啟一個新視窗
+					const printWindow = window.open("", "_blank", "width=800,height=800");
+
+					// 在新視窗中寫入 HTML
+					printWindow.document.open();
+					printWindow.document.write("<!DOCTYPE html>" +
+						"<html>" +
+						"<head><title>打印內容</title>" +
+						'<link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />' +
+						'<link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />' +
+						'<link rel="stylesheet" href="./thirdparty/css/bootstrap-datetimepicker.min.css" />' +
+						'<link rel="stylesheet" href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">' +
+						"<style>" +
+						'body {' +
+						'width: 210mm; /* A4 寬度 */' +
+						'height: 297mm; /* A4 高度 */' +
+						' margin: 0;' +
+						'padding: 0;' +
+						'overflow: hidden;' +
+						'font-family: Arial, sans-serif;' +
+						'}' +
+						"</style>" +
+						"</head>" +
+						"<body>" + contentHtml + "</body>" +
+						"</html>");
+					printWindow.document.close();
+					// 等待新視窗加載完成後打印
+					printWindow.onload = function () {
+						printWindow.print();
+						printWindow.close();
+					};
 				});
 				//監聽-比對
 				$(document).off("click", "#search_c #btn_compare");
@@ -799,7 +1165,7 @@
 				$(document).off("click", "#search_c #btn_send");
 				$(document).on("click", "#search_c #btn_send", function (event) {
 					console.log("btn_send");
-					search.methods.searchSend(0);
+					search.methods.searchSend(0, null);
 
 					if ($("#btn_send_auto").prop("checked")) {
 						search.data.btn_send_auto = setTimeout(function () {
@@ -825,51 +1191,7 @@
 					$("#searchItem select").val("");
 
 				});
-				//監聽-上一頁
-				$(document).off("click", "#search_c #btn_pageU");
-				$(document).on("click", "#search_c #btn_pageU", function (event) {
-					console.log("btn_pageU");
-					$('#btn_pageU').addClass("disabled");
-					var pageNew = search.data.searchPageSet.pageNew;
-					var batch = search.data.searchPageSet.batch;//第幾批次 
-					//目前資料可以換上一頁
-					if (pageNew > 1) {
-						pageNew = pageNew - 1;
-						search.data.searchPageSet.pageNew = pageNew;
-						search.methods.searchReLoad();
-						$("#numberPage").val(pageNew);
-						$('#btn_pageU').removeClass("disabled");
-						$('#btn_pageD').removeClass("disabled");
-					} else if (batch > 0) {
-						//沒資料可以換上一頁&&資料 與 批次數量相同
-						search.methods.searchSend(batch - 1);
-					}
-				});
-				//監聽-下一頁
-				$(document).off("click", "#search_c #btn_pageD");
-				$(document).on("click", "#search_c #btn_pageD", function (event) {
-					console.log("btn_pageD");
-					$('#btn_pageD').addClass("disabled");
-					//存入-頁面設定
-					//search.data.searchPageSet.total=1000;//批次數量
-					var total = search.data.searchPageSet.total;//批次數量
-					var batch = search.data.searchPageSet.batch;//第幾批次 
-					var entityJsons = search.data.searchPageSet.entityJsons;//存入資料
-					var pageNew = search.data.searchPageSet.pageNew;//目前分頁
-					var pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-					//目前資料可以換下一頁
-					if (entityJsons.length > (pageNew * pageSize)) {
-						pageNew = pageNew + 1;
-						search.data.searchPageSet.pageNew = pageNew;
-						search.methods.searchReLoad();
-						$("#numberPage").val(pageNew);
-						$('#btn_pageU').removeClass("disabled");
-						$('#btn_pageD').removeClass("disabled");
-					} else if (entityJsons.length == total) {
-						//沒資料可以換下一頁&&資料 與 批次數量相同
-						search.methods.searchSend(batch + 1);
-					}
-				});
+
 				//時間格式
 				search.methods.datetimepickerDate();
 
@@ -909,24 +1231,24 @@
 				}
 
 				//是否marks?markDetails?
-				var entityJsons = search.data.searchPageSet.entityJsons;
-				var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				var marks = search.data.marks;
-				var markDetails = search.data.markDetails;
-				var entityIKey = search.data.entityIKey;
-				var entityGKey = search.data.entityGKey;
-				var entityDateTime = search.data.entityDateTime;
-				var dataHeader = [];
-				var dataBody = [];
+				let entityJsons = search.data.searchPageSet.entityJsons;
+				let entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
+				let marks = search.data.marks;
+				let markDetails = search.data.markDetails;
+				let entityIKey = search.data.entityIKey;
+				let entityGKey = search.data.entityGKey;
+				let entityDateTime = search.data.entityDateTime;
+				let dataHeader = [];
+				let dataBody = [];
 				console.log(JSON.stringify(marks));
 				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
 					return null;
 				}
 				//Data
 				Object.keys(marks).forEach(function (ik) {
-					var ikey = ik.split("_")[0];
-					var gkey = ik.split("_")[1];
-					for (var en = 0; en < entityJsons.length; en++) {
+					let ikey = ik.split("_")[0];
+					let gkey = ik.split("_")[1];
+					for (let en = 0; en < entityJsons.length; en++) {
 						if (entityJsons[en][entityIKey] == ikey) {
 							dataHeader.push(entityJsons[en]);
 						}
@@ -934,9 +1256,9 @@
 				});
 				//Details
 				Object.keys(markDetails).forEach(function (dk) {
-					var ikey = dk.split("_")[0];
-					var gkey = dk.split("_")[1];
-					for (var en = 0; en < entityDetailJsons.length; en++) {
+					let ikey = dk.split("_")[0];
+					let gkey = dk.split("_")[1];
+					for (let en = 0; en < entityDetailJsons.length; en++) {
 						if (entityDetailJsons[en][entityIKey] == ikey) {
 							dataBody.push(entityDetailJsons[en]);
 						}
@@ -945,89 +1267,13 @@
 
 				modify.methods.modify(order, dataHeader, dataBody);
 			},
-			searchToPrint(order) {
-				//比對資料 
-				//是否marks?markDetails?
-				var entityJsons = search.data.searchPageSet.entityJsons;
-				var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				var marks = search.data.marks;
-				var markDetails = search.data.markDetails;
-				var entityIKey = search.data.entityIKey;
-				var entityGKey = search.data.entityGKey;
-				var entityDateTime = search.data.entityDateTime;
-				var dataHeader = [];
-				var dataBody = [];
-				console.log(JSON.stringify(marks));
-				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
-					return null;
-				}
-				//Data
-				Object.keys(marks).forEach(function (ik) {
-					var ikey = ik.split("_")[0];
-					var gkey = ik.split("_")[1];
-					for (var en = 0; en < entityJsons.length; en++) {
-						if (entityJsons[en][entityIKey] == ikey) {
-							dataHeader.push(entityJsons[en]);
-						}
-					}
-				});
-				//Details
-				Object.keys(markDetails).forEach(function (dk) {
-					var ikey = dk.split("_")[0];
-					var gkey = dk.split("_")[1];
-					for (var en = 0; en < entityDetailJsons.length; en++) {
-						if (entityDetailJsons[en][entityIKey] == ikey) {
-							dataBody.push(entityDetailJsons[en]);
-						}
-					}
-				});
-				//打印資料
-				print.methods.printPrepare(dataHeader, dataBody, entityIKey, entityGKey);
-			},
-			searchToCompare(order) {
-				//比對資料 
-				//是否marks?markDetails?
-				var entityJsons = search.data.searchPageSet.entityJsons;
-				var entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				var marks = search.data.marks;
-				var markDetails = search.data.markDetails;
-				var entityIKey = search.data.entityIKey;
-				var entityGKey = search.data.entityGKey;
-				var entityDateTime = search.data.entityDateTime;
-				var dataHeader = [];
-				var dataBody = [];
-				console.log(JSON.stringify(marks));
-				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
-					return null;
-				}
-				//Data
-				Object.keys(marks).forEach(function (ik) {
-					var ikey = ik.split("_")[0];
-					var gkey = ik.split("_")[1];
-					for (var en = 0; en < entityJsons.length; en++) {
-						if (entityJsons[en][entityIKey] == ikey) {
-							dataHeader.push(entityJsons[en]);
-						}
-					}
-				});
-				//Details
-				Object.keys(markDetails).forEach(function (dk) {
-					var ikey = dk.split("_")[0];
-					var gkey = dk.split("_")[1];
-					for (var en = 0; en < entityDetailJsons.length; en++) {
-						if (entityDetailJsons[en][entityIKey] == ikey) {
-							dataBody.push(entityDetailJsons[en]);
-						}
-					}
-				});
-				compare.methods.compare(dataHeader, dataBody, entityDateTime, entityIKey, entityGKey);
-			},
+
 			//==========================傳送資料==========================
-			searchSend(batch) {
-				var entityJson = search.data.entityFormatJson;//格式
-				var data = {};
-				var req_data = {};
-				var searchPageSet = {};
+			searchSend(batch, order) {
+				let entityJson = search.data.entityFormatJson;//格式
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
 					console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
@@ -1046,6 +1292,9 @@
 				//包裝
 				req_data['data'] = data;
 				req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AR";
+				if (order != null) {
+					req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.ARO";
+				}
 				req_data['type'] = "POST";
 				main.methods.ajaxSend(req_data, true);
 				//時間格式
@@ -1068,23 +1317,24 @@
 				}
 
 				//Step5.帶入資料
-				var marks = search.data.marks;
-				var entityJsons = search.data.searchPageSet.entityJsons;
-				var entityIKey = search.data.entityIKey;
-				var entityGKey = search.data.entityGKey;
-				var entityDateTime = search.data.entityDateTime;
-				var pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-				var pageNew = search.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
-				var pageSN = pageSize * pageNew;//目前分頁->資料戳記
-				for (var x = 0; x < pageSize; x++) {
+				let marks = search.data.marks;
+				let entityJsons = search.data.searchPageSet.entityJsons;
+				let entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
+				let entityIKey = search.data.entityIKey;
+				let entityGKey = search.data.entityGKey;
+				let entityDateTime = search.data.entityDateTime;
+				let pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = search.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
+				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
+				for (let x = 0; x < pageSize; x++) {
 					//筆數還夠
 					if (pageSN + x < entityJsons.length) {
-						var entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
-						var iKey = "";
-						var gKey = "";
+						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						let iKey = "";
+						let gKey = "";
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
-							var valTrNb = x + 1;
+							let valTrNb = x + 1;
 							$('#search_c .valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
@@ -1092,8 +1342,8 @@
 							if (entityGKey == k) {gKey = entity[k];}
 							//是否時間格式?
 							if (entityDateTime.indexOf(k) >= 0) {
-								var dF = new Date(entity[k]);
-								var dateF = dF.getFullYear() + "-";
+								let dF = new Date(entity[k]);
+								let dateF = dF.getFullYear() + "-";
 								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
@@ -1107,7 +1357,7 @@
 							//marks標記?
 							$('#search_c .valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
 							//帶入
-							for (var m = 0; m < marks.length; m++) {
+							for (let m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
 									$('#search_c .valTbodyTr_' + valTrNb + ' input').prop("checked", true);
 									break;
@@ -1116,6 +1366,49 @@
 						});
 					}
 				}
+				//下面清單
+				for (let x = 0; x < pageSize; x++) {
+					//筆數還夠
+					if (pageSN + x < entityDetailJsons.length) {
+						let entity = entityDetailJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
+						let iKey = "";
+						let gKey = "";
+						Object.keys(entity).forEach(function (k) {
+							//欄位計數
+							let valTrNb = x + 1;
+							$('#search_c .valTbodyDetailTr_' + valTrNb + ' th input').removeAttr("disabled");
+							//是否IKEY?
+							if (entityIKey == k) {iKey = entity[k];}
+							//是否GKEY?
+							if (entityGKey == k) {gKey = entity[k];}
+							//是否時間格式?
+							if (entityDateTime.indexOf(k) >= 0) {
+								let dF = new Date(entity[k]);
+								let dateF = dF.getFullYear() + "-";
+								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
+								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
+								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
+								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+								$('#search_c .valTbodyDetailTr_' + valTrNb + ' .' + k).text(dateF);
+							} else {
+								$('#search_c .valTbodyDetailTr_' + valTrNb + ' .' + k).text(entity[k]);
+							}
+
+							//marks標記?
+							$('#search_c .valTbodyDetailTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							//帶入
+							for (let m = 0; m < marks.length; m++) {
+								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
+									$('#search_c .valTbodyDetailTr_' + valTrNb + ' input').prop("checked", true);
+									break;
+								}
+							}
+						});
+					}
+				}
+
+
 				console.log("searchReLoad_OK:" + new Date());
 			},
 			//==========================回傳接收==========================
@@ -1124,31 +1417,29 @@
 				console.log("searchReturn:" + new Date());
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
-					var searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
+					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					search.data.searchPageSet.total = searchPageSet['total'];
 					search.data.searchPageSet.batch = searchPageSet['batch'];
 					search.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
 					search.data.marks = {};//有選取的IKeyGKey
 					search.data.markDetails = {};//有選取的IKeyGKey
-					$("#search_c #numberPage").val(1);
-					$('#search_c #btn_pageD').removeClass("disabled");
-					$('#search_c #btn_pageU').removeClass("disabled");
+
 					//Step5.帶入資料
 					if (main.resq_data['entityJson'] != "") {
 						search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
-						search.methods.searchReLoad();
+
 					}
 					if (main.resq_data['entityDetailJson'] != "") {
 						search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 					}
+					search.methods.searchReLoad();
 				}
 			},
 			//==========================初始化==========================
 			destroy() {
 				//銷毀
 				$(".datetimepicker").remove();
-				$(document).off("click", "#search_c #btn_pageD");
-				$(document).off("click", "#search_c #btn_pageU");
+				$(document).off("click", "#search_c #btn_bom");
 				$(document).off("click", "#search_c #btn_clearAll");
 				$(document).off("keyup", "#searchItem input");
 				$(document).off("click", "#search_c #btn_send");
@@ -1160,12 +1451,11 @@
 				$(document).off("click", "#search_c #btn_modify");
 				$(document).off("click", "#search_c #btn_saveAs");
 				$(document).off("click", "#search_c #btn_create");
-				$(document).off("click", "#search_c #btn_detail");
 				$(document).off("click", "#search_c #exthDetailAll");
 				$(document).off("click", "#search_c #exthAll");
+				//
 				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
-				$(document).off("change", "#search_c #numberPage");
 				console.log("search.html(destroy)");
 			},
 		},
