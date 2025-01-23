@@ -109,6 +109,7 @@ public class BasicCommandList {
 		this.bclcustomer = "";
 		this.bclmodel = "";
 		this.bclerpconfirm = "";
+		this.syshonote = "";
 	}
 
 	// 共用型
@@ -135,6 +136,8 @@ public class BasicCommandList {
 	private String sysnote;
 	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
 	private String syshnote;
+	@Column(name = "sys_ho_note", nullable = false, columnDefinition = "text default ''")
+	private String syshonote;
 
 	// 入料單-清單
 	@Id
@@ -570,6 +573,14 @@ public class BasicCommandList {
 
 	public void setBclerpconfirm(String bclerpconfirm) {
 		this.bclerpconfirm = bclerpconfirm;
+	}
+
+	public String getSyshonote() {
+		return syshonote;
+	}
+
+	public void setSyshonote(String syshonote) {
+		this.syshonote = syshonote;
 	}
 
 }

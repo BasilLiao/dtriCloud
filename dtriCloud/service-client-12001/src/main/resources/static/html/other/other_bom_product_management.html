@@ -1535,6 +1535,7 @@
 										let bisidCheck = detailTbodyTr.find('.bisfname select option[value="' + itemOne.bisid + '"]').length > 0;
 										if (bisidCheck) {
 											detailTbodyTr.find(".bisfname select").val("" + itemOne.bisid).focus().trigger('change');
+											detailTbodyTr.find(".bisqty  input").val(itemOne.bisqty);
 											detailTbodyTr.find(".bisprocess input").val(itemOne.bisprocess == null ? "ASM" : itemOne.bisprocess);
 										}
 									}
@@ -1726,7 +1727,7 @@
 									//bpmbisitem.items.push(bpmbisitemOne);
 									//====排序====
 									const result = bis.filter(item => item.bisgid + "" === bisgid);
-									let key = result[0].syssort.toString().padStart(3, '0') + "_sort_" + bisfname;
+									let key = result[0].syssort.toString().padStart(3, '0') + "_sort_" + bisgname + ":" + bisfname;
 									console.log(key);
 									bpmbasicSort[key] = bpmbisitemOne;
 								} else if (bisid === "0") {

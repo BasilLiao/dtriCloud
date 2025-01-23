@@ -2,11 +2,11 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,30 +15,27 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BasicCommandListDao;
+import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
+import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
-import dtri.com.tw.pgsql.entity.SystemGroup;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
-import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.Query;
 
 @Service
 public class ScheduleProductionNotesServiceAc {
@@ -59,7 +56,10 @@ public class ScheduleProductionNotesServiceAc {
 	private BasicCommandListDao commandListDao;
 
 	@Autowired
-	private EntityManager em;
+	private BomItemSpecificationsDao specificationsDao;
+
+	// @Autowired
+	// private EntityManager em;
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
@@ -76,21 +76,47 @@ public class ScheduleProductionNotesServiceAc {
 		List<Order> ordersD = new ArrayList<>();
 		ordersD.add(new Order(Direction.ASC, "bpmnb"));// 產品號
 		ordersD.add(new Order(Direction.ASC, "bpmmodel"));// 型號
+
+		List<Order> ordersI = new ArrayList<>();
+		ordersI.add(new Order(Direction.ASC, "bisgname"));// 項目組名稱
+		ordersI.add(new Order(Direction.ASC, "bisfname"));// 正規化-項目內容
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 		PageRequest pageableDetail = PageRequest.of(batch, total, Sort.by(ordersD));
+		PageRequest pageableI = PageRequest.of(0, 99999, Sort.by(ordersI));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null,
-					null, pageable);
+					null, null, pageable);
 
 			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(null, null, null, null,
 					pageableDetail);
 
+			ArrayList<BomItemSpecifications> specifications = specificationsDao.findAllBySearch(null, null, null,
+					pageableI);
+
 			// Step3-2.資料區分(一般/細節)
+			entityDetails.forEach(ed -> {
+				// 處裡格式化
+				StringBuilder noteAll = new StringBuilder();
+				try {
+					JsonArray notes = JsonParser.parseString(ed.getBpmbpsnv()).getAsJsonArray();
+					String s = "「";
+					String e = "」";
+					notes.forEach(n -> {
+						noteAll.append(s);
+						noteAll.append(n.getAsString().replace("_", ":"));
+						noteAll.append(e);
+					});
+					ed.setSysnote(ed.getSysnote() + noteAll);
+				} catch (Exception e) {
+					System.out.println(e);
+					// not do anything->不加入note
+				}
+			});
 
 			// 類別(一般模式)
 			// 資料包裝
@@ -123,6 +149,8 @@ public class ScheduleProductionNotesServiceAc {
 			JsonArray searchDetailJsons = new JsonArray();// 查詢設定
 			JsonObject resultDataTJsons = new JsonObject();// 回傳欄位-一般名稱
 			JsonObject resultDetailTJsons = new JsonObject();// 回傳欄位-細節名稱
+			JsonObject resultSettingJsons = new JsonObject();// 自動化參數
+			JsonArray resultItemsJsons = new JsonArray();// 自選規格項目
 			// 結果欄位(名稱Entity變數定義)=>取出=>排除/寬度/語言/順序
 			Field[] fields = ScheduleProductionHistory.class.getDeclaredFields();
 			Field[] fieldDetails = BomProductManagement.class.getDeclaredFields();
@@ -140,24 +168,58 @@ public class ScheduleProductionNotesServiceAc {
 			// Step3-5. 建立查詢項目(工單紀錄)
 			searchJsons = packageService.searchSet(searchJsons, null, "sphbpmnb", "Ex:BOM號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立其他(自動化參數)
+
+			// Step3-5. 建立其他(自選規格項目)
+			String lastBisgname = "";
+			for (BomItemSpecifications ii : specifications) {
+				if (!lastBisgname.equals(ii.getBisgname())) {
+					resultItemsJsons.add(">==============<" + ii.getBisgname() + ">==============<");
+					lastBisgname = ii.getBisgname();
+				}
+				resultItemsJsons.add(ii.getBisgname() + "<_>" + ii.getBisfname() + "<_>" + ii.getBisnb());
+			}
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("searchDetailSet", searchDetailJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
 			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);//
+			// 自動化參數
+			searchSetJsonAll.add("resultSetting", resultSettingJsons);//
+			// 自選規格項目
+			searchSetJsonAll.add("resultItems", resultItemsJsons);//
+
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
 			ScheduleProductionHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					ScheduleProductionHistory.class);
 
-			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphbpmnb(), null,
-					searchData.getSphonb(), null, null, null, pageable);
+			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphpon(),
+					searchData.getSphbpmnb(), null, null, null, null, null, pageable);
 
 			ArrayList<BomProductManagement> entityDetails = managementDao.findAllBySearch(searchData.getSphbpmnb(),
 					null, null, null, pageableDetail);
 			// Step4-2.資料區分(一般/細節)
+			entityDetails.forEach(ed -> {
+				// 處裡格式化
+				StringBuilder noteAll = new StringBuilder();
+				try {
+					JsonArray notes = JsonParser.parseString(ed.getBpmbpsnv()).getAsJsonArray();
+					String s = "「";
+					String e = "」";
+					notes.forEach(n -> {
+						noteAll.append(s);
+						noteAll.append(n.getAsString().replace("_", ":"));
+						noteAll.append(e);
+					});
+					ed.setSysnote(ed.getSysnote() + noteAll);
+				} catch (Exception e) {
+					System.out.println(e);
+					// not do anything->不加入note
+				}
+			});
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
@@ -180,7 +242,7 @@ public class ScheduleProductionNotesServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
 		packageBean.setEntityDetailIKeyGKey("bpmid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate");
 		return packageBean;
 	}
 
@@ -200,7 +262,7 @@ public class ScheduleProductionNotesServiceAc {
 		ordersD.add(new Order(Direction.ASC, "bpmnb"));// 產品號
 		ordersD.add(new Order(Direction.ASC, "bpmmodel"));// 型號
 		// 一般模式
-		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		// PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 		PageRequest pageableDetail = PageRequest.of(batch, total, Sort.by(ordersD));
 
 		// ========================區分:訪問/查詢========================
@@ -213,6 +275,10 @@ public class ScheduleProductionNotesServiceAc {
 
 		ArrayList<BomProductManagement> entityDetails = new ArrayList<BomProductManagement>();
 		// 必須切兩段->要有資料->只抓一筆
+		if (searchData.getSphpon() == null || searchData.getSphpon().equals("")) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+					new String[] { "check the fields again." });
+		}
 		String sphpon[] = searchData.getSphpon().split("-");
 		if (sphpon.length == 2) {
 			String bclclass = sphpon[0];
@@ -222,7 +288,12 @@ public class ScheduleProductionNotesServiceAc {
 				BasicCommandList commandList = commandLists.get(0);
 				ScheduleProductionHistory entity = new ScheduleProductionHistory();
 				// 客戶/國家/訂單
-				String sysnot[] = commandList.getSyshnote().split("\\");
+				String[] sysnot = null;
+				String syshnote = commandList.getSyshnote();
+				if (syshnote != null && !syshnote.trim().isEmpty()) {
+					// 去除所有空格並進行分割
+					sysnot = syshnote.replaceAll("\\s+", "").split("/");
+				}
 				//
 				entity.setSyscdate(commandList.getSyscdate());
 				entity.setSysmdate(commandList.getSysmdate());
@@ -239,18 +310,19 @@ public class ScheduleProductionNotesServiceAc {
 				entity.setSphscnv("[]");// 生管-參數設置
 				entity.setSphbpsuser("");// BOM負責人
 				entity.setSphpon(searchData.getSphpon());// 製令單號
-				entity.setSphonb(sysnot[2] != null ? sysnot[0] : "");// 訂單號
+				entity.setSphoqty(commandList.getBclpnqty());// 需生產數
+				entity.setSphonb(sysnot[2] != null ? sysnot[2] : "");// 訂單號
 				entity.setSphoname(sysnot[0] != null ? sysnot[0] : "");// 訂單客戶
-				entity.setSphocountry(sysnot[1] != null ? sysnot[0] : "");// 訂單國家
+				entity.setSphocountry(sysnot[1] != null ? sysnot[1] : "");// 訂單國家
 				entity.setSphobpmnb("");// 訂單 BOM的產品號
-				entity.setSphhdate(Fm_T.to_y_M_d(commandList.getBclsdate()));// 預計出貨日
+				entity.setSphhdate(commandList.getBclsdate());// 預計出貨日
 				entity.setSphfrom("");// 規格來源:生管自訂/產品經理
 				entity.setSphstatus(1);// 狀態類型 0=作廢單 1=有效單 2=自訂紀錄(不具備生產能力)
 				entity.setSphprogress(0);// 進度:完成ERP工單(準備物料)=1/完成注意事項(預約生產)=2/完成->流程卡(準備生產)=3/(生產中)=4/(生產結束)=5
 				entity.setSphssn("");// SN開始
 				entity.setSphesn("");// SN結束
 				entity.setSphpmnote("");// 產品經理事項
-				entity.setSphscnote("");// 生管備註事項
+				entity.setSphscnote(commandList.getSyshonote());// 生管備註事項
 				entity.setSphprnote1("");// 製造事項1
 				entity.setSphprnote2("");// 製造事項2
 
@@ -264,12 +336,12 @@ public class ScheduleProductionNotesServiceAc {
 					// 補充
 					entity.setSphbpmmodel(managements.get(0).getBpmmodel());// BOM 的產品型號
 					entity.setSphbisitem(managements.get(0).getBpmbisitem());// 產品-物料結構
-					entity.setSphbpsnv(managements.get(0).getBpmbisitem());// 產品-參數設置
+					entity.setSphbpsnv(managements.get(0).getBpmbpsnv());// 產品-參數設置
 					entity.setSphbpsuser(managements.get(0).getSyscuser());// 最後更改人
 					// 處裡格式化
 					StringBuilder noteAll = new StringBuilder();
 					try {
-						JsonArray notes = JsonParser.parseString(managements.get(0).getBpmbisitem()).getAsJsonArray();
+						JsonArray notes = JsonParser.parseString(managements.get(0).getBpmbpsnv()).getAsJsonArray();
 						String s = "「";
 						String e = "」";
 						notes.forEach(n -> {
@@ -279,14 +351,13 @@ public class ScheduleProductionNotesServiceAc {
 						});
 
 					} catch (Exception e) {
+						System.out.println(e);
 						// not do anything->不加入note
 					}
-					entity.setSphpmnote(managements.get(0).getSysnote() + noteAll.toString());
-
+					entity.setSphpmnote(managements.get(0).getSysnote() + noteAll);
 				}
 			}
 		}
-
 		// Step4-2.資料區分(一般/細節)
 
 		// 類別(一般模式)
@@ -310,7 +381,8 @@ public class ScheduleProductionNotesServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
 		packageBean.setEntityDetailIKeyGKey("bpmid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate");
+
 		return packageBean;
 	}
 
@@ -318,6 +390,7 @@ public class ScheduleProductionNotesServiceAc {
 	@Transactional
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
+		System.out.println("setModify");
 		// =======================資料檢查=======================
 		return packageBean;
 	}
@@ -325,8 +398,52 @@ public class ScheduleProductionNotesServiceAc {
 	/** 新增資料 */
 	// @Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
-		// =======================資料準備=======================
+		// =======================資料準備 =======================
+		System.out.println("setAdd");
+		ArrayList<ScheduleProductionHistory> entityDatas = new ArrayList<>();
+		ScheduleProductionHistory oldData = null;
 		// =======================資料檢查=======================
+
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleProductionHistory>>() {
+					});
+
+			// Step2.資料檢查
+			for (ScheduleProductionHistory entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)->如果重複?->檢查狀態 是否已經打印->
+				// 沒流程卡->舊資料 標記 stop
+				// 有流成卡->不可動
+				ArrayList<ScheduleProductionHistory> checkDatas = historyDao.findAllByCheck(entityData.getSphpon(),
+						null, null, null);
+				// 有資料?
+				if (checkDatas.size() > 0 && checkDatas.get(0).getSphprogress() >= 3) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+							new String[] { entityData.getSphpon() });
+				} else if (checkDatas.size() > 0 && checkDatas.get(0).getSphprogress() < 3) {
+					// 可修改?
+					oldData = new ScheduleProductionHistory();
+					oldData = checkDatas.get(0);
+					int n = historyDao.findAllBySearch(entityData.getSphpon(), null, null, null, null, null, null, null)
+							.size();
+					oldData.setSphpon(oldData.getSphpon() + "_STOP" + n);
+					oldData.setSysmuser(packageBean.getUserAccount());
+
+				}
+			}
+		}
+		// =======================資料整理=======================
+		if (oldData != null) {
+			historyDao.save(oldData);
+		}
+		entityDatas.forEach(a -> {
+			a.setSyscuser(packageBean.getUserAccount());
+			a.setSyscdate(new Date());
+			a.setSphprogress(2);
+			a.setSphid(null);
+		});
+		historyDao.saveAll(entityDatas);
 		return packageBean;
 	}
 
@@ -334,6 +451,7 @@ public class ScheduleProductionNotesServiceAc {
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
+		System.out.println("setInvalid");
 		// =======================資料檢查=======================
 		return packageBean;
 	}
@@ -346,107 +464,7 @@ public class ScheduleProductionNotesServiceAc {
 
 	/** 取得資料 */
 	// @Transactional
-	@SuppressWarnings("unchecked")
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
-		String entityReport = packageBean.getEntityReportJson();
-		JsonArray reportAry = packageService.StringToAJson(entityReport);
-		List<ScheduleProductionHistory> entitys = new ArrayList<>();
-		Map<String, String> sqlQuery = new HashMap<>();
-		// =======================查詢語法=======================
-		// 拼湊SQL語法
-		String nativeQuery = "SELECT e.* FROM schedule_production_history e Where ";
-		for (JsonElement x : reportAry) {
-			// entity 需要轉換SQL與句 && 欄位
-			String cellName = x.getAsString().split("<_>")[0];
-			cellName = cellName.replace("sys", "sys_");
-			cellName = cellName.replace("sys_m", "sys_m_");
-			cellName = cellName.replace("sys_c", "sys_c_");
-			cellName = cellName.replace("sys_o", "sys_o_");
-			cellName = cellName.replace("sph", "sph_");
-			//
-			cellName = cellName.replace("sph_bpmnb", "sph_bpm_nb");
-			cellName = cellName.replace("sph_bpmmodel", "sph_bpm_model");
-			cellName = cellName.replace("sph_bpmtype", "sph_bpm_type");
-			cellName = cellName.replace("sph_bpmtypename", "sph_bpm_type_name");
-			//
-			cellName = cellName.replace("sph_bisitem", "sph_bis_item");
-			cellName = cellName.replace("sph_bpsnv", "sph_bps_nv");
-			cellName = cellName.replace("sph_bpsuser", "sph_bps_user");
-			cellName = cellName.replace("sph_onb", "sph_o_nb");
-			//
-			cellName = cellName.replace("sph_oname", "sph_o_name");
-			cellName = cellName.replace("sph_ocountry", "sph_o_country");
-			cellName = cellName.replace("sph_hdate", "sph_h_date");
-			cellName = cellName.replace("sph_onb", "sph_o_nb");
-			//
-			cellName = cellName.replace("sph_ssn", "sph_s_sn");
-			cellName = cellName.replace("sph_esn", "sph_e_sn");
-			cellName = cellName.replace("sph_pmnote", "sph_pm_note");
-			cellName = cellName.replace("sph_scnote", "sph_sc_note");
-			cellName = cellName.replace("sph_prnote1", "sph_pr_note1");
-			cellName = cellName.replace("sph_prnote2", "sph_pr_note2");
-
-			String where = x.getAsString().split("<_>")[1];
-			String value = x.getAsString().split("<_>")[2];// 有可能空白
-			String valueType = x.getAsString().split("<_>")[3];
-
-			switch (where) {
-			case "AllSame":
-				nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "NotSame":
-				nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "Like":
-				nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "NotLike":
-				nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "MoreThan":
-				nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "LessThan":
-				nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			}
-		}
-
-		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
-		nativeQuery += " order by e.sys_c_date desc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
-		Query query = em.createNativeQuery(nativeQuery, ScheduleProductionHistory.class);
-		// =======================查詢參數=======================
-		sqlQuery.forEach((key, valAndType) -> {
-			String val = valAndType.split("<_>")[0];
-			String tp = valAndType.split("<_>")[1];
-			if (tp.equals("dateTime")) {
-				// 時間格式?
-				query.setParameter(key, Fm_T.toDate(val));
-			} else if (tp.equals("number")) {
-				// 數字?
-				query.setParameter(key, Integer.parseInt(val));
-			} else {
-				// 文字?
-				query.setParameter(key, val);
-			}
-		});
-		try {
-			entitys = query.getResultList();
-		} catch (PersistenceException e) {
-			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1004, Lan.zh_TW, null);
-		}
-
-		// 資料包裝
-		String entityJsonDatas = packageService.beanToJson(entitys);
-		packageBean.setEntityJson(entityJsonDatas);
-
 		return packageBean;
 	}
 }

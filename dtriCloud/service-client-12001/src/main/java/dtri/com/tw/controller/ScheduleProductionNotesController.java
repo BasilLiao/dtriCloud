@@ -155,10 +155,10 @@ public class ScheduleProductionNotesController extends AbstractController {
 		return packageJson;
 	}
 
+
 	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_production_notes.basil.ARR" }, method = {
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	String report(@RequestBody String jsonObject) {
+	@RequestMapping(value = { "/ajax/schedule_production_notes.basil.AC" }, method = { RequestMethod.POST })
+	String add(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
@@ -179,7 +179,7 @@ public class ScheduleProductionNotesController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getProductionNotesReport(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setProductionNotesAdd(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
@@ -196,19 +196,6 @@ public class ScheduleProductionNotesController extends AbstractController {
 			e.printStackTrace();
 			loggerWarn(eStktToSg(e), loginUser().getUsername());
 		}
-		return packageJson;
-	}
-
-	@ResponseBody
-	@RequestMapping(value = { "/ajax/schedule_production_notes.basil.AC" }, method = { RequestMethod.POST })
-	String add(@RequestBody String jsonObject) {
-		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
-		// Step0.資料準備
-		String packageJson = "{}";
 		return packageJson;
 	}
 

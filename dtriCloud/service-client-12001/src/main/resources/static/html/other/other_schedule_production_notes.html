@@ -35,16 +35,16 @@
 
 	/*Table 表格外框線*/
 	#search_c #search_cr table {
-		min-height: 300px;
-		max-height: 400px;
+		min-height: 200px;
+		max-height: 320px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
 
 	/*Table 表格外框線*/
 	#search_c #search_dcr table {
-		min-height: 300px;
-		max-height: 400px;
+		min-height: 200px;
+		max-height: 320px;
 		border-collapse: separate;
 		border-spacing: 0px;
 	}
@@ -131,546 +131,501 @@
 			</div>
 		</div>
 	</div>
-	<!-- 控制面板 -->
-	<div id="search_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-		</div>
-		<div id="search_c_controller_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-12 col-lg-5 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Execution</div>
-						<div class="row m-0">
-							<button id="btn_production" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Production<br>import()
-								</b>
-							</button>
-							<button id="btn_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>BOM<br>import()
-								</b>
-							</button>
-							<button id="btn_order" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Order<br>import(AR)
-								</b>
-							</button>
-							<button id="btn_invalid" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Void <br>documents(AD)
-								</b>
-							</button>
-						</div>
-					</div>
-				</div>
-				<div class="col-6 col-lg-3 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Action</div>
-						<div class="row m-0">
-							<button id="btn_intoForm" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>Preview<br>()
-								</b>
-							</button>
-							<button id="btn_saveForm" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Save<br>(AU/AC/AD)
-								</b>
-							</button>
-							<button id="btn_printerForm" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Printer<br>form
-								</b>
-							</button>
-						</div>
-					</div>
-				</div>
-				<div class="col-6 col-lg-3 p-1">
-					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Search</div>
-						<div class="row m-0">
-							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input id="btn_send_auto" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">Auto(30s)</b>
+	<form onsubmit="return other.methods.handleSubmit(event);" class="p-0">
+		<!-- 控制面板 -->
+		<div id="search_c_controller" class="col-12 p-1 ">
+			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#search_c_controller_open" aria-expanded="false"
+					style="width: 22px; height: 24px;"></i>
+			</div>
+			<div id="search_c_controller_open" class="row m-0 collapse show">
+				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
+				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+					<div class="col-12 col-lg-4 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Execution</div>
+							<div class="row m-0">
+								<button id="btn_production" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+									<b>Production<br>import()
+									</b>
+								</button>
+								<button id="btn_bom" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
+									<b>BOM<br>import()
+									</b>
+								</button>
+								<button id="btn_order" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>Order<br>import(AR)
+									</b>
+								</button>
+								<button id="btn_allClear" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+									<b>All<br>clear(AD)
+									</b>
+								</button>
 							</div>
-							<button id="btn_send" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Query<br>(AR)
-								</b>
-							</button>
-							<button id="btn_clearAll" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Clear<br>all()
-								</b>
-							</button>
+						</div>
+					</div>
+					<div class="col-6 col-lg-3 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Action</div>
+							<div class="row m-0">
+								<button id="btn_intoForm" type="submit" value="btn_intoForm"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+									<b>Preview<br>()
+									</b>
+								</button>
+								<button id="btn_saveForm" type="submit" value="btn_saveForm"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>Save<br>(AU/AC/AD)
+									</b>
+								</button>
+								<button id="btn_printerForm" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+									<b>Printer<br>form
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-6 col-lg-3 p-1">
+						<div class=" border border-secondary rounded">
+							<div class="title_color fw-bolder rounded-top">Search</div>
+							<div class="row m-0">
+								<div class="lh-1 col p-1 m-1 border border-primary rounded">
+									<input id="btn_send_auto" alt="" title="" type="checkbox"
+										class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
+										style="font-size: 12px;">Auto(30s)</b>
+								</div>
+								<button id="btn_send" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>Query<br>(AR)
+									</b>
+								</button>
+								<button id="btn_clearAll" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+									<b>Clear<br>all()
+									</b>
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- 編輯過程 -->
-	<div id="modify_cr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#modify_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-		</div>
-		<div id="modify_cr_open" class="row m-0 shadow-sm collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-warning text-white">Modify choose</b>
-			<div class="col p-0">
-				<div class="row m-0">
-					<!--編輯-->
-					<div class="col-12 col-lg-6 border border-primary row m-0 p-1">
-						<!--1-->
-						<div class="col-6 p-1 col-lg-3">
-							<div id="bomDefinition" class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">model(模式)</div>
-								<div class="p-1">
-									<select class="col-12 m-0 p-1 border border-dark form-select">
-										<option class="" value="bom" selected="selected">一般模式(General)</option>
-										<option class="" value="definition">自定義(Custom)</option>
-									</select>
+		<!-- 編輯過程 -->
+		<div id="modify_cr" class="col-12 m-0 p-1">
+			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+					data-bs-target="#modify_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			</div>
+			<div id="modify_cr_open" class="row m-0 shadow-sm collapse show">
+				<b class="p-0 m-0 lh-1 wlr bg-warning text-white">Modify choose</b>
+				<div class="col p-0">
+					<div class="row m-0">
+						<!--編輯-->
+						<div class="col-12 col-lg-6 border border-primary row m-0 p-1">
+							<!--1-->
+							<div class="col-6 p-1 col-lg-3">
+								<div id="bomDefinition" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">model(模式)</div>
+									<div class="p-1">
+										<select class="col-12 m-0 p-1 border border-dark form-select" required>
+											<option class="" value="bom" selected="selected">一般模式(General)</option>
+											<option class="" value="definition">自定義(Custom)</option>
+											<option class="bg-danger" value="invalid">作廢單據(Invalid)</option>
+										</select>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphpon" class=" border border-secondary rounded">
-								<div class="searchTitle bg-warning fw-bolder rounded-top">製令單</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										placeholder="Ex:A512-99990101001">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphpon" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color text-success fw-bolder rounded-top">製令單</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:A512-99990101001" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphonb" class="border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">訂單號</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										placeholder="Ex:US110762450">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphonb" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">訂單號</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:US110762450" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphhdate" class="border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">預計出貨</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="date"
-										placeholder="Ex:2090-12-12">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphhdate" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">預計出貨</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="date" placeholder="Ex:2090-12-12" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<!--2-->
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphbpmnb" class="border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">公司BOM號</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										placeholder="Ex:90-317-R141010">
+							<!--2-->
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphbpmnb" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">公司BOM號</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:90-317-R141010" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphobpmnb" class="border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">客戶BOM號</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										placeholder="Ex:313T-51-49">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphobpmnb" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">客戶BOM號</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:313T-51-49">
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphbpmmodel" class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">機型</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										placeholder="Ex:313T">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphbpmmodel" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">機型</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:313T" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div id="sphoqty" class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">生產數量</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
-										type="number" value="1">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphoqty" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">生產數量</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="number" value="1" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<!--3-->
-						<div class="col-6 p-1 col-lg-3">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">客戶名稱</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										id="sphbpmnb" name="sphbpmnb" placeholder="Ex:BOM號?" autofocus="">
+							<!--3-->
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphoname" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">客戶名稱</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:DTR?" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-6 p-1 col-lg-3">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">國家名稱</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" type="text"
-										id="sphbpmnb" name="sphbpmnb" placeholder="Ex:BOM號?" autofocus="">
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphocountry" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">國家名稱</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:USA?" required>
+									</div>
 								</div>
 							</div>
-						</div>
-						<!--4:自訂需裝配-->
-						<div class="col-12 p-1"></div>
-						<div class="col-6 p-1">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle pink_color fw-bolder rounded-top">產品規格-需裝配</div>
-								<div class="p-1">
-									<select class="col-12 m-0 p-1 border border-dark form-select" id="bom_items"
-										name="bom_items">
-										<option class="selectItemsEx" value="" selected="selected">select(請選擇)</option>
-									</select>
+							<!--4:自訂需裝配-->
+							<div class="col-12 p-1"></div>
+							<div class="col-2 p-1">
+								<div class=" border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">Seach-item</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" id="searchSelectItems" placeholder="搜尋選項...">
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-2 p-1">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle pink_color fw-bolder rounded-top">Qty</div>
-								<div class="p-1">
-									<input class="col-12 m-0 p-1 border border-dark form-control searchVal" value="0"
-										type="number" id="btn_bom_item_qty" name="btn_bom_item_qty">
+							<div class="col-5 p-1">
+								<div class=" border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">Product-item</div>
+									<div class="p-1">
+										<select class="col-12 m-0 p-1 border border-dark form-select" id="bom_items"
+											name="bom_items">
+											<option id="selectItemsEx" value="" selected="selected">select(請選擇)</option>
+										</select>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-4 p-1">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle pink_color fw-bolder rounded-top">Add/Remove</div>
-								<div class="p-1">
-									<button id="btn_bom_item_add" type="button"
-										class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-										<b>Add</b>
-									</button>
-									<button id="btn_bom_item_remove" type="button"
-										class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
-										<b>Remove</b>
-									</button>
+							<div class="col-2 p-1">
+								<div class=" border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">Qty</div>
+									<div class="p-1">
+										<input class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											value="0" type="number" id="bom_items_qty">
+									</div>
 								</div>
 							</div>
-						</div>
-						<!--5-->
-						<div class="col-12 p-1">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">備註-包裝說明</div>
-								<div class=" p-1" id="sphscpackage">
-									<div class="row m-0 p-0">
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox1" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control"
-												value="Power cord" type="text" id="sphscpackage_value1"
-												name="sphscpackage_value1">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox2" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="BOG"
-												type="text" id="sphscpackage_value2" name="sphscpackage_value2">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox3" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="License"
-												type="text" id="sphscpackage_value3" name="sphscpackage_value3">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox4" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="BOX Label"
-												type="text" id="sphscpackage_value4" name="sphscpackage_value4">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox5" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="Bulk Pack"
-												type="text" id="sphscpackage_value5" name="sphscpackage_value5">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox6" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control"
-												value="Retail Pack" type="text" id="sphscpackage_value6"
-												name="sphscpackage_value6">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox7" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="作業系統OS"
-												type="text" id="sphscpackage_value7" name="sphscpackage_value7">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox8" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="NA1"
-												type="text" id="sphscpackage_value8" name="sphscpackage_value8">
-										</div>
-										<div class="col-6 col-lg-4 row m-0 p-1">
-											<input class="m-0 form-check-input checkbox_32 border border-dark"
-												id="sphscpackage_checkbox9" alt="" title="" type="checkbox"
-												checked="checked">
-											<input class="col m-0 p-1 border border-dark form-control" value="NA2"
-												type="text" id="sphscpackage_value9" name="sphscpackage_value9">
+							<div class="col-3 p-1">
+								<div class=" border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">Add/Remove</div>
+									<div class="p-1">
+										<button id="btn_bom_item_add" type="button"
+											class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+											<b>Add</b>
+										</button>
+										<button id="btn_bom_item_remove" type="button"
+											class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
+											<b>Remove</b>
+										</button>
+									</div>
+								</div>
+							</div>
+							<!--5-->
+							<div class="col-12 p-1">
+								<div class=" border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">備註-包裝說明</div>
+									<div class=" p-1" id="sphscpackage">
+										<div class="row m-0 p-0">
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox1" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="Power cord" type="text" id="sphscpackage_value1"
+													name="sphscpackage_value1">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox2" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control" value="BOG"
+													type="text" id="sphscpackage_value2" name="sphscpackage_value2">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox3" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="License" type="text" id="sphscpackage_value3"
+													name="sphscpackage_value3">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox4" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="BOX Label" type="text" id="sphscpackage_value4"
+													name="sphscpackage_value4">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox5" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="Bulk Pack" type="text" id="sphscpackage_value5"
+													name="sphscpackage_value5">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox6" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="Retail Pack" type="text" id="sphscpackage_value6"
+													name="sphscpackage_value6">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox7" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control"
+													value="作業系統OS" type="text" id="sphscpackage_value7"
+													name="sphscpackage_value7">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox8" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control" value="NA1"
+													type="text" id="sphscpackage_value8" name="sphscpackage_value8">
+											</div>
+											<div class="col-6 col-lg-4 row m-0 p-1">
+												<input class="m-0 form-check-input checkbox_32 border border-dark"
+													id="sphscpackage_checkbox9" alt="" title="" type="checkbox">
+												<input class="col m-0 p-1 border border-dark form-control" value="NA2"
+													type="text" id="sphscpackage_value9" name="sphscpackage_value9">
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-12 p-1">
-							<div class=" border border-secondary rounded">
-								<div class="searchTitle title_color fw-bolder rounded-top">備註-生管說明</div>
-								<div class="p-1">
-									<textarea class="col-12 m-0 p-1 border border-dark form-control searchVal" rows="6"
-										id="sphscnote" name="sphscnote" placeholder="Ex:3年保固 貼先 4F"></textarea>
+							<div class="col-12 p-1">
+								<div id="sphscnote" class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">備註-生管說明</div>
+									<div class="p-1">
+										<textarea class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											rows="6" name="sphscnote" placeholder="Ex:3年保固 貼先 4F" required></textarea>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
-					<div id="printNotes"
-						class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
-						style="max-height: 686px;overflow: auto;">
-						<div class=""
-							style="height:880px;width:600px;min-width:600px;border: 1px solid #000000;padding: 0px;">
-							<div style="border: 1px solid #000000;">
-								<h4 style="padding: 5px;margin: 0px;text-align: center;"><b>生產注意事項</b></h4>
-							</div>
-							<div
-								style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;text-align: center;">
-								<div style="width: 10%;"><b>製令</b></div>
-								<div style="width: 25%;overflow: hidden;">AXXX-250101001</div>
-								<div style="width: 10%;border-left: 1px solid #000000;"><b>訂單</b></div>
-								<div style="width: 20%;overflow: hidden;">XXX1111</div>
-								<div style="width: 15%;border-left: 1px solid #000000;"><b>預計出貨</b></div>
-								<div style="width: 20%;overflow: hidden;">2099-01-01</div>
-							</div>
-							<div
-								style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
-								<div style="width: 10%;"><b>客戶</b></div>
-								<div style="width: 25%;overflow: hidden;">ASUS</div>
-								<div style="width: 10%;border-left: 1px solid #000000;"><b>國家</b></div>
-								<div style="width: 20%;overflow: hidden;">Taiwan</div>
-								<div style="width: 15%;border-left: 1px solid #000000;"></div>
-								<div style="width: 20%;overflow: hidden;"></div>
-							</div>
-							<div
-								style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
-								<div style="width: 10%;"><b>品號</b></div>
-								<div style="width: 25%;overflow: hidden;">90-345-XXXXXXX</div>
-								<div style="width: 10%;border-left: 1px solid #000000;"><b>型號</b></div>
-								<div style="width: 20%;overflow: hidden;">340TR</div>
-								<div style="width: 15%;border-left: 1px solid #000000;"><b>需生產量</b></div>
-								<div style="width: 20%;overflow: hidden;">500</div>
-							</div>
-							<!--產品資訊-->
-							<div
-								style="border: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content: space-between;">
+						<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
+						<div id="printNotes"
+							class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
+							style="max-height: 686px;overflow: auto;">
+							<div class=""
+								style="height:880px;width:600px;min-width:600px;border: 1px solid #000000;padding: 0px;">
+								<div style="border: 1px solid #000000;">
+									<h4 style="padding: 5px;margin: 0px;text-align: center;"><b>生產注意事項</b></h4>
+								</div>
 								<div
-									style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
-									產品規格 & 專案經理說明
+									style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;text-align: center;">
+									<div style="width: 10%;"><b>製令</b></div>
+									<div id="sphpon_val" style="width: 25%;overflow: hidden;text-align: left;"></div>
+									<div style="width: 10%;border-left: 1px solid #000000;"><b>訂單</b></div>
+									<div id="sphonb_val" style="width: 20%;overflow: hidden;text-align: left;"></div>
+									<div style="width: 15%;border-left: 1px solid #000000;"><b>預計出貨</b></div>
+									<div id="sphhdate_val" style="width: 20%;overflow: hidden;text-align: left;"></div>
 								</div>
-								<div style="border-left: 1px solid #000000;width: 98%;">
-									<!--規格內容-->
-									<div style="height: 448px; border-bottom: 1px solid #000000;padding-top: 2px;
+								<div
+									style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
+									<div style="width: 10%;"><b>客戶</b></div>
+									<div id="sphoname_val" style="width: 25%;overflow: hidden;text-align: left;"></div>
+									<div style="width: 10%;border-left: 1px solid #000000;"><b>國家</b></div>
+									<div id="sphocountry_val" style="width: 20%;overflow: hidden;text-align: left;">
+									</div>
+									<div style="width: 15%;border-left: 1px solid #000000;"></div>
+									<div style="width: 20%;overflow: hidden;text-align: left;"></div>
+								</div>
+								<div
+									style="display:flex;flex-wrap: wrap;justify-content: space-between;border-bottom: 1px solid #000000;border-right: 1px solid #000000;border-left: 1px solid #000000;text-align: center;">
+									<div style="width: 10%;"><b>品號</b></div>
+									<div id="sphbpmnb_val" style="width: 25%;overflow: hidden;text-align: left;"></div>
+									<div style="width: 10%;border-left: 1px solid #000000;"><b>型號</b></div>
+									<div id="sphbpmmodel_val" style="width: 20%;overflow: hidden;text-align: left;">
+									</div>
+									<div style="width: 15%;border-left: 1px solid #000000;"><b>需生產量</b></div>
+									<div id="sphoqty_val" style="width: 20%;overflow: hidden;text-align: left;"></div>
+								</div>
+								<!--產品資訊-->
+								<div
+									style="border: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content: space-between;">
+									<div
+										style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
+										產品規格 & 專案經理說明
+									</div>
+									<div style="border-left: 1px solid #000000;width: 98%;">
+										<!--規格內容-->
+										<div id="sphbisitem" style="height: 448px; border-bottom: 1px solid #000000;padding-top: 2px;
 										           display: grid;overflow: hidden;grid-template-rows: repeat(20, 1fr); 
 										           grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-										           grid-auto-flow: column;gap: 2px;font-size: 14px;">
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											<b>RAM </b>RAM,2G,78.A2G72.405,APACER(x2)
+										           grid-auto-flow: column;gap: 2px;font-size: 14px;white-space: nowrap;
+										           font-family: sans-serif;font-stretch: condensed;">
+											<div class="d-none" id="sphbisitemEx_val" style="overflow: hidden; text-align: start;height: 20px; 
+											border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
+												<b>RAM </b>Ex:RAM,2G,78.A2G72.405,APACER(x2)
+											</div>
+
 										</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											2</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											3</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											4</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											5</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											6</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											7</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											8</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											9</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											10</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											11</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											12</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											13</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											14</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											15</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											16</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											17</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											18</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											19</div>
-										<div
-											style="overflow: hidden; text-align: start;height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-											<b>CPU </b>CPU,N97,Intel
-										</div>
-									</div>
-									<div id="sphbisitemNot" style="overflow: hidden;height: 50px; border-bottom: 1px solid #000000;
+										<div id="sphbisitemNot" style="overflow: hidden;height: 50px; border-bottom: 1px solid #000000;
 										display:flex;flex-wrap: wrap;justify-content:start;font-size: 14px;">
-										<span style="height: 16px;"><b>注意!!不裝配：</b></span>
-										<span id="sphbisitemExNot_val"
-											style="height: 16px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">N/A</span>
-
-
-									</div>
-									<div
-										style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
-										<div style="width: 10%; text-align: center;"><b>專案<br>備註<br>
-												<p style="font-size: 8px;line-height: 8px;margin: 0px;">Project
-													instructions</p>
-											</b></div>
-										<div style="width: 90%;padding: 2px;">
-											<textarea id="sphpmnote_val"
-												style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
-												disabled="disabled">N/A ⁕產品狀態:技轉單 ⁕主機板本:R1.2</textarea>
+											<span style="height: 16px;"><b>注意!!不裝配:</b></span>
+											<span id="sphbisitemExNot_val" class="d-none"
+												style="margin-left: 5px;height: 16px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">N/A</span>
 										</div>
-									</div>
-								</div>
-							</div>
-							<!--生產資訊-->
-							<div
-								style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;">
-								<div
-									style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
-									生產管理
-								</div>
-								<div style="border-left: 1px solid #000000;width: 98%;">
-									<div
-										style="height: 70px;border-bottom: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content:space-between;">
-										<div style="width: 10%; text-align: center;"><b>包裝<br>配置
-												<p style="font-size: 8px;line-height: 8px;margin: 0px;">package
-													configuration</p>
-											</b></div>
 										<div
-											style="width: 90%;display:flex;flex-wrap: wrap;justify-content: space-between;pointer-events: none;">
-											<div id="pkg_checkbox1"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox" checked>
-												<span>Power cord</span>
-											</div>
-											<div id="pkg_checkbox2"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>BOG</span>
-											</div>
-											<div id="pkg_checkbox3"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>License</span>
-											</div>
-											<div id="pkg_checkbox4"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>BOX Label</span>
-											</div>
-											<div id="pkg_checkbox5"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>Bulk Pack</span>
-											</div>
-											<div id="pkg_checkbox6"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>Retail Pack</span>
-											</div>
-											<div id="pkg_checkbox7"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>作業系統OS</span>
-											</div>
-											<div id="pkg_checkbox8"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>NA1</span>
-											</div>
-											<div id="pkg_checkbox9"
-												style="width: 33%;text-align: start;font-size: 14px;">
-												<input type="checkbox">
-												<span>NA2</span>
+											style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
+											<div style="width: 10%; text-align: center;"><b>專案<br>備註<br>
+													<p style="font-size: 8px;line-height: 8px;margin: 0px;">Project
+														instructions</p>
+												</b></div>
+											<div style="width: 90%;padding: 2px;">
+												<textarea id="sphpmnote_val"
+													style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
+													disabled="disabled">「Ex:產品狀態:技轉中」</textarea>
 											</div>
 										</div>
 									</div>
+								</div>
+								<!--生產資訊-->
+								<div
+									style="display:flex;flex-wrap: wrap;justify-content: space-between;border: 1px solid #000000;">
 									<div
-										style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
-										<div style="width: 10%; text-align: center;"><b>生管<br>備註
-												<p style="font-size: 8px;line-height: 8px;margin: 0px;">Production
-													instructions</p>
-											</b></div>
-										<div style="width: 90%;padding: 2px;">
-											<textarea id="sphscnote_val"
-												style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
-												disabled="disabled">N/A ⁕說明1 ⁕說明2</textarea>
+										style="text-align: center;writing-mode: vertical-lr;text-orientation: upright;font-size: 6px;">
+										生產管理
+									</div>
+									<div style="border-left: 1px solid #000000;width: 98%;">
+										<div
+											style="height: 70px;border-bottom: 1px solid #000000;display:flex;flex-wrap: wrap;justify-content:space-between;">
+											<div style="width: 10%; text-align: center;"><b>包裝<br>配置
+													<p style="font-size: 8px;line-height: 8px;margin: 0px;">package
+														configuration</p>
+												</b></div>
+											<div
+												style="width: 90%;display:flex;flex-wrap: wrap;justify-content: space-between;pointer-events: none;">
+												<div id="pkg_checkbox1"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>Power cord</span>
+												</div>
+												<div id="pkg_checkbox2"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>BOG</span>
+												</div>
+												<div id="pkg_checkbox3"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>License</span>
+												</div>
+												<div id="pkg_checkbox4"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>BOX Label</span>
+												</div>
+												<div id="pkg_checkbox5"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>Bulk Pack</span>
+												</div>
+												<div id="pkg_checkbox6"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>Retail Pack</span>
+												</div>
+												<div id="pkg_checkbox7"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>作業系統OS</span>
+												</div>
+												<div id="pkg_checkbox8"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>NA1</span>
+												</div>
+												<div id="pkg_checkbox9"
+													style="width: 33%;text-align: start;font-size: 14px;">
+													<input type="checkbox">
+													<span>NA2</span>
+												</div>
+											</div>
+										</div>
+										<div
+											style="height: 90px;display:flex;flex-wrap: wrap;justify-content:space-between;">
+											<div style="width: 10%; text-align: center;"><b>生管<br>備註
+													<p style="font-size: 8px;line-height: 8px;margin: 0px;">Production
+														instructions</p>
+												</b></div>
+											<div style="width: 90%;padding: 2px;">
+												<textarea id="sphscnote_val"
+													style="width: 100%;font-size: 14px;line-height: 16px;" rows="5"
+													disabled="disabled">「Ex:NPI_EE/NPI_NE及PLT人員須到現場確認技轉狀況，產線須提出技轉報告」</textarea>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<!--其他資訊-->
-							<div style="display:flex;flex-wrap: wrap;justify-content:space-between;
+								<!--其他資訊-->
+								<div style="display:flex;flex-wrap: wrap;justify-content:space-between;
 								border: 1px solid #000000;font-size: 6px;">
-								<div>
-									<span>產品類:</span><span>product/accessories</span>
-								</div>
-								<div>
-									<span>客戶品號:</span><span>ACC-123456</span>
-								</div>
-								<div>
-									<span>建單人:</span><span></span><span>
-								</div>
-								<div>
-									<span>產品負責:</span></span><span>
-								</div>
-								<div>
-									<span>單據編號:</span><span>QR-701-06</span>
+									<div>
+										<span>產品類:</span><span>product/accessories</span>
+									</div>
+									<div>
+										<span>客戶品號:</span><span id="sphobpmnb_val"></span>
+									</div>
+									<div>
+										<span>建單人:</span><span id="fromwho_val"></span>
+									</div>
+									<div>
+										<span>產品負責:</span><span id="sphbpsuser_val"></span>
+									</div>
+									<div>
+										<span>單據模式:</span><span id="bomDefinition_val">一般模式</span>
+									</div>
+									<div>
+										<span>單據編號:</span><span>QR-701-06</span>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -678,7 +633,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</form>
 	<!-- 查詢結果 -->
 	<div id="search_cr" class="col-12 m-0 p-1">
 		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
@@ -705,7 +660,7 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="radio"
+								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="radio" name="radio_t"
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
@@ -757,13 +712,14 @@
 <script type="text/javascript">
 	//宣告
 	//console.log("search.html(init)");
-	search = {
+	other = {
 		//資料
 		data: {
 			marks: {},//有選取的IKeyGKey
 			markDetails: {},//有選取的IKeyGKey
 			entityFormatJson: {},//查詢格式
 			btn_send_auto: "",//自動傳送
+			btn_order: false,//是否-工單查詢填入
 			//換頁設置
 			searchPageSet: {
 				total: 1000,//批次數量(1-1000)
@@ -785,17 +741,17 @@
 				//Step0.初始化
 				console.log("search.html(created)");
 				//查詢格式
-				search.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
+				other.data.entityFormatJson = JSON.parse(main.resq_data['entityFormatJson']);
 				//查詢項目 
 				let searchSetJson = JSON.parse(main.resq_data['searchSet']);
 				//console.log(searchSetJson);
 				//資料內容
-				search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
-				search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
-				search.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
-				search.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
-				search.data.entityDateTime = main.resq_data['entityDateTime'];
-				search.data.searchSet = searchSetJson['searchSet'];
+				other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+				other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+				other.data.entityIKey = main.resq_data['entityIKeyGKey'].split("_")[0];
+				other.data.entityGKey = main.resq_data['entityIKeyGKey'].split("_")[1];
+				other.data.entityDateTime = main.resq_data['entityDateTime'];
+				other.data.searchSet = searchSetJson['searchSet'];
 				//按鈕權限?
 				let p = $("#nav_functional_unit").attr("alt").split("<_>")[2];
 				let ps = Array.from(p);
@@ -907,7 +863,7 @@
 				});
 
 				//Step3.查詢內容-格式
-				for (let b = 1; b <= search.data.searchPageSet.pageSize; b++) {
+				for (let b = 1; b <= other.data.searchPageSet.pageSize; b++) {
 					let exTbodyTr = $('#search_cr .exTbodyTr').clone();
 					let exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
 					//
@@ -1012,8 +968,31 @@
 							break;
 					}
 				}
+				//產品選單項目
+				let resultItems = searchSetJson['resultItems'];
+				resultItems.forEach(function (ik) {
+					let hik = "";
+					let selectItemsEx = $("#selectItemsEx").clone();
+					selectItemsEx.removeAttr("id").addClass("selectItems");
+					if (ik.split("<_>").length === 1) {
+						selectItemsEx.attr("disabled", "disabled");
+						selectItemsEx.val(ik).text(ik);
+					}
+					if (ik.split("<_>").length === 3) {
+						hik = ik.split("<_>")[0];
+						hinb = ik.split("<_>")[2];
+						ik = JSON.parse(ik.split("<_>")[1]).join(', ');
+						selectItemsEx.val(ik).text("(" + hik + ")" + ik);
+						selectItemsEx.attr("title", hik + "<_>" + ik + "<_>" + hinb)
+					}
+
+
+					selectItemsEx.removeAttr("selected");
+					$("#selectItemsEx").before(selectItemsEx);
+				});
+
 				//Step5.帶入資料
-				search.methods.searchReLoad();
+				other.methods.searchReLoad();
 
 				//==========================監聽==========================
 				//監聽-選取資料(一般)
@@ -1054,61 +1033,269 @@
 				//選取BOM
 				$(document).off("click", "#search_c #btn_bom");
 				$(document).on("click", "#search_c #btn_bom", function (event) {
-					//帶入BOM號
 					console.log("btn_bom");
-					let bom = $("#search_dcr_open .exTbodyTh").find("input:checked");
-					let bom_n = bom.attr('alt').replace("row_", "");
-					$("#sphbpmnb input").val($("#search_dcr_open .valTbodyDetailTr_" + bom_n + " .bpmnb").text());
+					//選取?
+					if ($("#search_dcr_open tbody input:checked").length === 1) {
+						//介面
+						if (!$('#modify_cr_open').hasClass('show')) {
+							$('#modify_cr .btn-outline-white').trigger('click');
+						}
+						//還原
+						//$(".btnAutoOrder input").val("");
+						$(".sphbisitemList").remove();
+						//帶入BOM號
+						let n = $("#search_dcr_open tbody input:checked").attr("alt").replaceAll("row_", "");
+						let entity = $(".valTbodyDetailTr_" + n);
+						//選擇 欄位(編輯)
+						$("#sphbpmnb input").val(entity.find(".bpmnb").text());
+						$("#sphbpmmodel input").val(entity.find(".bpmmodel").text());
+						//產品資訊
+						let bpmbisitem = entity.find(".bpmbisitem").text();//產品資訊
+						let sphbisitemJson = JSON.parse(bpmbisitem);
+						let items = sphbisitemJson['items'];
+						if (items != null) {
+							Object.keys(items).forEach(function (i) {
+								//console.log(items[i]['bisgname'] + ":" + items[i]['bisfname'] + ":" + items[i]['bisqty']);
+								//寫入
+								let bisgname = items[i]['bisgname'];
+								let bisnb = items[i]['bisnb'];
+								let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
+								let bisqty = Number(items[i]['bisqty']);
+								//每個項目(有?沒有?)
+								if (bisqty > 0) {
+									let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+									let sphbisitemEx = $('#sphbisitemEx_val').clone();
+									sphbisitemEx.removeAttr("id");
+									sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
+									sphbisitemEx.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
+									sphbisitemEx.html(htmlc);
+									$('#sphbisitemEx_val').after(sphbisitemEx);
+								} else {
+									let htmlc = '<b> ' + bisgname + ' </b>' + bisfname;
+									let sphbisitemExNot = $('#sphbisitemExNot_val').clone();
+									sphbisitemExNot.removeAttr("id");
+									sphbisitemExNot.removeClass("d-none").addClass("sphbisitemList");
+									sphbisitemExNot.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty)
+									sphbisitemExNot.html(htmlc);
+									$('#sphbisitemExNot_val').after(sphbisitemExNot);
+								}
+							});
+							//console.log(sphbisitemJson);
+						}
+						//負責人
+						let sysmuser = entity.find(".sysmuser").text();
+						$("#sphbpsuser_val").text(sysmuser);
+						//PM 備註
+						let sysnote = entity.find(".sysnote").text();
+						$("#sphpmnote_val").text(sysnote);
+					}
 
 				});
+				//帶入單據資料
+				$(document).off("click", "#search_c #btn_production");
+				$(document).on("click", "#search_c #btn_production", function (event) {
+					console.log("btn_production");
+					//先清除
+					$('#btn_allClear').trigger('click');
+					//取得
+					if ($("#search_cr_open tbody input:checked").length != 1) {
+						return false;
+					}
+					let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
+					let entity = $(".valTbodyTr_" + n);
+					//介面
+					if (!$('#modify_cr_open').hasClass('show')) {
+						$('#modify_cr .btn-outline-white').trigger('click');
+					}
+					//
+					$("#sphpon input").val(entity.find(".sphpon").text());//工單
+					$("#sphonb input").val(entity.find(".sphonb").text());//訂單
+					let dF = new Date(entity.find(".sphhdate").text());
+					let dateF = dF.getFullYear() + "-";
+					dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+					dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate());
+					$("#sphhdate input").val(dateF);//出貨日
+					//
+					$("#sphoname input").val(entity.find(".sphoname").text());//客戶
+					$("#sphocountry input").val(entity.find(".sphocountry").text());//國家
+					$("#sphobpmnb input").val(entity.find(".sphobpmnb").text());//客戶BOM
+					//
+					$("#sphbpmnb input").val(entity.find(".sphbpmnb").text());//品號
+					$("#sphbpmmodel input").val(entity.find(".sphbpmmodel").text());//型號
+					$("#sphoqty input").val(entity.find(".sphoqty").text());//數量
+					//
+					$("#sphscnote textarea").text(entity.find(".sphscnote").text());
+					//選項
+					let sphscpackage = JSON.parse(entity.find(".sphscpackage").text());
+					for (let x = 0; x < sphscpackage.length; x++) {
+						$("#sphscpackage_value" + (x + 1)).val(sphscpackage[x].split("<_>")[0]);
+						let isChecked = sphscpackage[x].split("<_>")[1] === "true";
+						$("#sphscpackage_checkbox" + (x + 1)).prop("checked", isChecked);
+					}
+					$("#bomDefinition input").val("一般模式");
+					//
+					//產品資訊
+					let bpmbisitem = entity.find(".sphbisitem").text();//產品資訊
+					let sphbisitemJson = JSON.parse(bpmbisitem);
+					let items = sphbisitemJson['items'];
+					if (items != null) {
+						Object.keys(items).forEach(function (i) {
+							//console.log(items[i]['bisgname'] + ":" + items[i]['bisfname'] + ":" + items[i]['bisqty']);
+							//寫入
+							let bisgname = items[i]['bisgname'];
+							let bisnb = items[i]['bisnb'];
+							let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
+							let bisqty = Number(items[i]['bisqty']);
+							let del = items[i]['del'];
+							//每個項目(有?沒有?)
+							if (bisqty > 0) {
+								let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+								if (del) {
+									htmlc = "<del  style='color: #ccc; '>" + htmlc + "</del>";
+								}
+								let sphbisitemEx = $('#sphbisitemEx_val').clone();
+								sphbisitemEx.removeAttr("id");
+								sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
+								sphbisitemEx.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
+								sphbisitemEx.html(htmlc);
+								$('#sphbisitemEx_val').after(sphbisitemEx);
+							} else {
+								let htmlc = '<b> ' + bisgname + ' </b>' + bisfname;
+								let sphbisitemExNot = $('#sphbisitemExNot_val').clone();
+								sphbisitemExNot.removeAttr("id");
+								sphbisitemExNot.removeClass("d-none").addClass("sphbisitemList");
+								sphbisitemExNot.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty)
+								sphbisitemExNot.html(htmlc);
+								$('#sphbisitemExNot_val').after(sphbisitemExNot);
+							}
+						});
+						//console.log(sphbisitemJson);
+					}
+					//負責人
+					let sysmuser = entity.find(".sysmuser").text();
+					$("#sphbpsuser_val").text(sysmuser);
+					//PM 備註
+					let sphpmnote = entity.find(".sphpmnote").text();
+					$("#sphpmnote_val").text(sphpmnote);
+
+
+				});
+				//自訂項目-查詢
+				$(document).off("input", "#search_c #searchSelectItems");
+				$('#search_c #searchSelectItems').on('input', function () {
+					const keyword = $(this).val().toLowerCase();
+					$('#bom_items option').each(function () {
+						$(this).toggle($(this).text().toLowerCase().includes(keyword));
+					});
+				});
+
+				//自訂項目-新增
+				$(document).off("click", "#search_c #btn_bom_item_add");
+				$('#search_c #btn_bom_item_add').on('click', function () {
+					$(".sphbisitemList").each(function (index) {
+						if ($(this).text().includes($("#bom_items").select().val())) {
+							console.log(index + " : " + $(this).html());
+							$(this).find("del").contents().unwrap();
+							//.contents()：選取 <del> 標籤的內容，包括文字或其他子節點。
+							//.unwrap()：移除目標標籤，但保留內容。
+						}
+					});
+					//自定義才能使用
+					if ($("#bomDefinition select").val() === "definition" && $('#bom_items_qty').val() > 0) {
+						$("#bomDefinition select").attr("disabled", "disabled");
+						//每個項目
+						let bom_items = $('#bom_items option:selected').attr("title");
+						let bisgname = bom_items.split("<_>")[0];
+						let bisfname = bom_items.split("<_>")[1];
+						let bisnb = bom_items.split("<_>")[2];
+						let bisqty = $('#bom_items_qty').val();
+						//
+						let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+						let sphbisitemEx = $('#sphbisitemEx_val').clone();
+						sphbisitemEx.removeAttr("id");
+						sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
+						sphbisitemEx.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
+						sphbisitemEx.html(htmlc);
+						$('#sphbisitemEx_val').after(sphbisitemEx);
+						$("#bom_items_qty").val(0);
+						$("#bomDefinition_val").text("自訂義模式");
+
+					}
+				});
+				//自訂項目-移除
+				$(document).off("click", "#search_c #btn_bom_item_remove");
+				$('#search_c #btn_bom_item_remove').on('click', function () {
+					$(".sphbisitemList").each(function (index) {
+						if ($(this).text().includes($("#bom_items").select().val())) {
+							console.log(index + " : " + $(this).html());
+							$(this).html("<del  style='color: #ccc; '>" + $(this).html() + "</del>");
+						}
+					});
+					//自定義才能使用
+					if ($("#bomDefinition select").val() === "definition" && $('#bom_items_qty').val() < 0) {
+						$("#bomDefinition select").attr("disabled", "disabled");
+						//移除項目
+						$(".sphbisitemList").each(function (index) {
+							if ($(this).text().includes($('#bom_items option:selected').val())) {
+								$(this).remove();
+								$("#bom_items_qty").val(0);
+							}
+						});
+					}
+				});
+
 				//選取現存單據
 				$(document).off("click", "#search_c #btn_order");
 				$(document).on("click", "#search_c #btn_order", function (event) {
 					console.log("btn_order");
 					$("#sphpon").val($("#sphpon input").val());
-
-					search.methods.searchSend(0, "order");
+					other.data.btn_order = true;//標記自動帶入
+					other.methods.searchSend(0, "order");
 				});
 
-				//監聽-建立
-				$(document).off("click", "#search_c #btn_create");
-				$(document).on("click", "#search_c #btn_create", function (event) {
-					console.log("btn_create");
-					search.methods.searchToModify("create");
-				});
-				//監聽-另存
-				$(document).off("click", "#search_c #btn_saveAs");
-				$(document).on("click", "#search_c #btn_saveAs", function (event) {
-					console.log("btn_saveAs");
-					search.methods.searchToModify("saveAs");
-				});
-				//監聽-修改
-				$(document).off("click", "#search_c #btn_modify");
-				$(document).on("click", "#search_c #btn_modify", function (event) {
-					console.log("btn_modify");
-					search.methods.searchToModify("modify");
-				});
-				//監聽-作廢
-				$(document).off("click", "#search_c #btn_invalid");
-				$(document).on("click", "#search_c #btn_invalid", function (event) {
-					console.log("btn_invalid");
-					search.methods.searchToModify("invalid");
-				});
-				//監聽-移除
-				$(document).off("click", "#search_c #btn_delete");
-				$(document).on("click", "#search_c #btn_delete", function (event) {
-					console.log("btn_delete");
-					search.methods.searchToModify("delete");
-				});
-				//監聽-標記移除
-				$(document).off("click", "#search_c #btn_markCancel");
-				$(document).on("click", "#search_c #btn_markCancel", function (event) {
-					console.log("btn_markCancel");
-					search.data.marks = [];
-					search.data.markDetails = [];
-					$('#search_c .exTbodyTh input').prop("checked", false);
+				//清除所有資料
+				$(document).off("click", "#search_c #btn_allClear");
+				$(document).on("click", "#search_c #btn_allClear", function (event) {
+					console.log("btn_allClear");
+					//還原
+					//上方
+					$("#sphpon_val").text("");//工單
+					$("#sphonb_val").text("");//訂單
+					$("#sphhdate_val").text("");//出貨日
+					//
+					$("#sphoname_val").text("");//客戶
+					$("#sphocountry_val").text("");//國家
+					//
+					$("#sphbpmnb_val").text("");//品號
+					$("#sphbpmmodel_val").text("");//型號
+					$("#sphoqty_val").text("");//數量
+
+					//
+					$(".btnAutoOrder input").val("");
+					$(".sphbisitemList").remove();
+					$("#sphscnote_val").text("「Ex:NPI_EE/NPI_NE及PLT人員須到現場確認技轉狀況，產線須提出技轉報告」");
+					$("#sphpmnote_val").text("「Ex:產品狀態:技轉中」");
+					//選項
+					for (let x = 1; x <= 9; x++) {
+						$("#sphscpackage_checkbox" + x).prop("checked", false);
+						$("#pkg_checkbox" + x + " input").attr("checked", false);
+					}
+					//下面初始化
+					$("#fromwho_val").text("");
+					$("#sphbpsuser_val").text("");
+					$("#bomDefinition select").val("bom");
+					$("#bomDefinition select").removeAttr("disabled", "disabled");
+					//
+					$("#searchSelectItems").val("");
+					$("#bom_items").val("");
+					$("#bom_items_qty").val(0);
+					$("#sphoqty input").val(0);//生產數
+
+					$("#bomDefinition_val").text("一般模式");
+					$("#sphscnote textarea").text("");
 
 				});
+
 				//監聽-打印
 				$(document).off("click", "#search_c #btn_printerForm");
 				$(document).on("click", "#search_c #btn_printerForm", function (event) {
@@ -1154,25 +1341,19 @@
 						printWindow.close();
 					};
 				});
-				//監聽-比對
-				$(document).off("click", "#search_c #btn_compare");
-				$(document).on("click", "#search_c #btn_compare", function (event) {
-					console.log("btn_compare");
-					search.methods.searchToCompare(null);
 
-				});
 				//監聽-查詢
 				$(document).off("click", "#search_c #btn_send");
 				$(document).on("click", "#search_c #btn_send", function (event) {
 					console.log("btn_send");
-					search.methods.searchSend(0, null);
+					other.methods.searchSend(0, null);
 
 					if ($("#btn_send_auto").prop("checked")) {
-						search.data.btn_send_auto = setTimeout(function () {
+						other.data.btn_send_auto = setTimeout(function () {
 							$("#search_c #btn_send").trigger("click");
 						}, 30000);
 					} else {
-						clearTimeout(search.data.btn_send_auto);
+						clearTimeout(other.data.btn_send_auto);
 					}
 				});
 				//監聽-查詢(促發)
@@ -1193,7 +1374,7 @@
 				});
 
 				//時間格式
-				search.methods.datetimepickerDate();
+				other.methods.datetimepickerDate();
 
 			},
 			datetimepickerDate() {
@@ -1223,54 +1404,190 @@
 				});
 			},
 			//==========================修改資料==========================
-			searchToModify(order) {
-				//新建?
-				if (order == "create") {
-					modify.methods.modify(order, null, null);
-					return null;
+			handleSubmit(event) {
+				event.preventDefault(); // 防止表單預設提交
+				const action = event.submitter.value;
+				if (action === "btn_intoForm") {
+					other.methods.btn_intoForm();
+				} else if (action === "btn_saveForm") {
+					other.methods.btn_saveForm();
 				}
 
-				//是否marks?markDetails?
-				let entityJsons = search.data.searchPageSet.entityJsons;
-				let entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				let marks = search.data.marks;
-				let markDetails = search.data.markDetails;
-				let entityIKey = search.data.entityIKey;
-				let entityGKey = search.data.entityGKey;
-				let entityDateTime = search.data.entityDateTime;
-				let dataHeader = [];
-				let dataBody = [];
-				console.log(JSON.stringify(marks));
-				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
-					return null;
-				}
-				//Data
-				Object.keys(marks).forEach(function (ik) {
-					let ikey = ik.split("_")[0];
-					let gkey = ik.split("_")[1];
-					for (let en = 0; en < entityJsons.length; en++) {
-						if (entityJsons[en][entityIKey] == ikey) {
-							dataHeader.push(entityJsons[en]);
-						}
-					}
-				});
-				//Details
-				Object.keys(markDetails).forEach(function (dk) {
-					let ikey = dk.split("_")[0];
-					let gkey = dk.split("_")[1];
-					for (let en = 0; en < entityDetailJsons.length; en++) {
-						if (entityDetailJsons[en][entityIKey] == ikey) {
-							dataBody.push(entityDetailJsons[en]);
-						}
-					}
-				});
+			},
+			//預覽資料
+			btn_intoForm() {
+				//預覽內容
+				console.log("btn_intoForm");
+				//單據內容
+				$("#sphpon_val").text($('#sphpon input').val());//工單
+				$("#sphonb_val").text($('#sphonb input').val());//訂單
+				$("#sphhdate_val").text($('#sphhdate input').val());//出貨日
+				//
+				$("#sphoname_val").text($('#sphoname input').val());//客戶
+				$("#sphocountry_val").text($('#sphocountry input').val());//國家
+				//
+				$("#sphbpmnb_val").text($('#sphbpmnb input').val());//品號
+				$("#sphbpmmodel_val").text($('#sphbpmmodel input').val());//型號
+				$("#sphoqty_val").text($('#sphoqty input').val());//數量
+				//
+				$("#fromwho_val").text($('#menu_login_name').text());//來自於誰?
+				//自訂?
 
-				modify.methods.modify(order, dataHeader, dataBody);
+				//生管備註內容
+				for (let x = 1; x <= 9; x++) {
+					if ($("#sphscpackage_checkbox" + x).prop("checked")) {
+						$("#pkg_checkbox" + x + " input").attr("checked", "checked");
+					} else {
+						$("#pkg_checkbox" + x + " input").removeAttr("checked");
+					}
+					$("#pkg_checkbox" + x + " span").text($("#sphscpackage_value" + x).val());
+				}
+				$("#sphscnote_val").text($("#sphscnote textarea").text());
+				$("#sphobpmnb_val").text($("#sphobpmnb input").val());
+				//產品資訊內容
+
+			},
+			//存檔資料
+			btn_saveForm() {
+				//預覽內容
+				console.log("btn_saveForm");
+				console.log(other.data.entityFormatJson);
+				let entityJson = other.data.entityFormatJson;//格式
+
+				//
+				entityJson.sphpon = $("#sphpon_val").text();//工單
+				entityJson.sphonb = $("#sphonb_val").text();//訂單
+				entityJson.sphhdate = new Date($("#sphhdate_val").text().trim()).getTime();//出貨日2025-02-21
+				//
+				entityJson.sphoname = $("#sphoname_val").text();//客戶;
+				entityJson.sphocountry = $("#sphocountry_val").text();//國家
+				//
+				entityJson.sphbpmnb = $("#sphbpmnb_val").text();//品號
+				entityJson.sphbpmmodel = $("#sphbpmmodel_val").text();//型號
+				entityJson.sphoqty = Number($("#sphoqty_val").text());//數量
+				//
+				entityJson.sphbpsuser = $("#fromwho_val").text();//來自於誰?(PM)
+				entityJson.sphfrom = $("#bomDefinition_val").text();//自訂單據?一般單據?
+				entityJson.sphobpmnb = $("#sphobpmnb_val").text(); //客戶BOM號
+				//PM備註?
+				entityJson.sphpmnote = $("#sphpmnote_val").text();
+				//生管備註?
+				entityJson.sphscnote = $("#sphscnote_val").text();
+				entityJson.sphprnv = "";
+				entityJson.sphscnv = "";
+				//生管包裝
+				let sphscpackages = [];
+				for (let x = 1; x <= 9; x++) {
+					let sphscpackage_checkbox = $("#pkg_checkbox" + x + " input:checked").length > 0;
+					let sphscpackage_value = $("#pkg_checkbox" + x + " span").text();
+					sphscpackages.push(sphscpackage_value + "<_>" + sphscpackage_checkbox);
+				}
+				entityJson.sphscpackage = JSON.stringify(sphscpackages);
+				//產品規格-存入資料<格式>
+				let allContent = {};
+				let basic = [];
+				let items = [];
+				let delList = new Map();
+				console.log("格式化內容");
+				//格式化
+				$(".sphbisitemList").each(function (index) {
+					let htmlContent = $(this).html();
+					//標記移除?
+					let itemsOnedel = false;
+					if (htmlContent.includes("</del>")) {
+						$(this).find("del").contents().unwrap();
+						itemsOnedel = true;
+					}
+					// 抓取標題						
+					let title = $(this).attr("title").split("<_>")[0].trim();
+					//內容
+					let content = $(this).attr("title").split("<_>")[1]; // 如果有括號數量，取括號前部分
+					let contentArray = content.split(",").map(item => item.trim());// 將內容以逗號分隔並移除前後空格
+					let jsonArray = JSON.stringify(contentArray);
+					//物料號
+					let bisNumber = $(this).attr("title").split("<_>")[2];
+					delList.set(bisNumber, itemsOnedel);
+					//解析數量
+					let quantity = $(this).attr("title").split("<_>")[3];
+					//資料格式
+					let itemsOne = {};
+					itemsOne.bisfname = title;//項目名稱
+					itemsOne.bisgfname = "";
+					itemsOne.bisgid = "0";
+					itemsOne.bisgname = jsonArray;//項目組名稱
+					itemsOne.bisid = "0";
+					itemsOne.bisname = "";
+					itemsOne.bisnb = bisNumber;//物料號
+					itemsOne.bisprocess = "";
+					itemsOne.bisqty = quantity + "";//數量
+					itemsOne.bissdescripion = "";
+					itemsOne.del = itemsOnedel;//移除標記
+					items.push(itemsOne);
+				});
+				allContent.basic = basic;
+				allContent.items = items;
+				//放入->
+				entityJson.sphbisitem = allContent;
+				//產品類型
+				entityJson.sphbpmtypename = "產品BOM";
+				entityJson.sphbpmtype = "1";
+
+				//找尋配對-產品規格
+				let valTbodyDetailTr = "";
+				$("#search_dcr_open .bpmnb").each(function (index) {
+					if ($(this).text() === entityJson.sphbpmnb && entityJson.sphbpmnb != "") {
+						console.log($(this).parent().attr("class"));
+						//配對到後取出
+						valTbodyDetailTr = $(this).parent().attr("class");
+						return null;
+					}
+				});
+				//如果有配對到
+				if (valTbodyDetailTr != "") {
+					//放入->
+					entityJson.sphbisitem = $("." + valTbodyDetailTr).find(".bpmbisitem").text();
+					let sphbisitemCheck = JSON.parse(entityJson.sphbisitem);
+					sphbisitemCheck.items.forEach((item, index) => {
+						let bisnbKey = sphbisitemCheck.items[index].bisnb;
+						if (delList.has(bisnbKey)) {
+							let val = delList.get(bisnbKey);
+							sphbisitemCheck.items[index].del = val
+						}
+					});
+					entityJson.sphbisitem = JSON.stringify(sphbisitemCheck);
+					//產品類型
+					entityJson.sphbpmtypename = $("." + valTbodyDetailTr).find(".bpmtypename").text();
+					entityJson.sphbpmtype = $("." + valTbodyDetailTr).find(".bpmtype").text();
+				}
+				//傳送準備
+				console.log("modifySend:" + new Date());
+				let entityFormatJson = {};
+				let entityJsons = [];//回傳一般資料
+				let entityDetailJsons = [];//回傳細節資料
+				let data = {};
+				let req_data = {};
+				let searchPageSet = {};
+				let type = "POST";
+				let action = "AC";
+				//
+				entityJsons.push(entityJson);
+				data['entityJson'] = JSON.stringify(entityJsons);
+				data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
+				data['callBackFunction'] = "other_modify";
+				console.log(entityJsons);
+				console.log(entityDetailJsons);
+
+				//包裝
+				req_data['data'] = data;
+				req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil." + action;//AC/AD....
+				req_data['type'] = type;//POST/PUT/DELETE...
+				main.methods.ajaxSend(req_data, true);
+				return false;
 			},
 
 			//==========================傳送資料==========================
 			searchSend(batch, order) {
-				let entityJson = search.data.entityFormatJson;//格式
+				let entityJson = other.data.entityFormatJson;//格式
 				let data = {};
 				let req_data = {};
 				let searchPageSet = {};
@@ -1285,10 +1602,10 @@
 				});
 				data['entityJson'] = JSON.stringify(entityJson);
 				//換頁
-				searchPageSet['total'] = search.data.searchPageSet.total;//批次數量
+				searchPageSet['total'] = other.data.searchPageSet.total;//批次數量
 				searchPageSet['batch'] = batch;//第幾批次
 				data['searchPageSet'] = JSON.stringify(searchPageSet);
-				data['callBackFunction'] = "search";
+				data['callBackFunction'] = "other_search";
 				//包裝
 				req_data['data'] = data;
 				req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AR";
@@ -1298,7 +1615,7 @@
 				req_data['type'] = "POST";
 				main.methods.ajaxSend(req_data, true);
 				//時間格式
-				search.methods.datetimepickerDate();
+				other.methods.datetimepickerDate();
 			},
 			//==========================資料載入==========================
 			searchReLoad() {
@@ -1315,16 +1632,21 @@
 				if (!$('#search_cr_open').hasClass('show')) {
 					$('#search_cr .btn-outline-white').trigger('click');
 				}
+				//編輯畫面
+				if ($('#modify_cr_open').hasClass('show') && !other.data.btn_order) {
+					$('#modify_cr .btn-outline-white').trigger('click');
+				}
+
 
 				//Step5.帶入資料
-				let marks = search.data.marks;
-				let entityJsons = search.data.searchPageSet.entityJsons;
-				let entityDetailJsons = search.data.searchPageSet.entityDetailJsons;
-				let entityIKey = search.data.entityIKey;
-				let entityGKey = search.data.entityGKey;
-				let entityDateTime = search.data.entityDateTime;
-				let pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-				let pageNew = search.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
+				let marks = other.data.marks;
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let pageSize = other.data.searchPageSet.pageSize;//每頁數量(1-20)
+				let pageNew = other.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
 				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
 				for (let x = 0; x < pageSize; x++) {
 					//筆數還夠
@@ -1353,7 +1675,6 @@
 							} else {
 								$('#search_c .valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
 							}
-
 							//marks標記?
 							$('#search_c .valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
 							//帶入
@@ -1408,51 +1729,126 @@
 					}
 				}
 
+				//確認自動加載
+				if (other.data.btn_order) {
+					other.data.btn_order = false;
+					//還原
+					$(".btnAutoOrder input").val("");
+					$(".sphbisitemList").remove();
 
+					//例遍 欄位
+					let entity = entityJsons[0];
+					Object.keys(entity).forEach(function (k) {
+						//btnAutoOrder
+						//略過 sphscpackage / 
+						if (k === "sphscpackage") {
+							//包裝備註
+							return; // 跳過本次迭代
+						} else if (k === "sphscnote") {
+							//生管 備註
+							$("#" + k + " textarea").text(entity[k]);
+							return; // 跳過本次迭代
+						} else if (k === "sphpmnote") {
+							//PM 備註
+							$("#sphpmnote_val").text(entity[k]);
+						} else if (k === "sphbpsuser") {
+							//負責人
+							$("#sphbpsuser_val").text(entity[k]);
+						} else if (k === "sphbisitem") {
+							//產品資訊
+							let sphbisitemJson = JSON.parse(entity[k]);
+							let items = sphbisitemJson['items'];
+
+							if (items != null) {
+								Object.keys(items).forEach(function (i) {
+									//console.log(items[i]['bisgname'] + ":" + items[i]['bisfname'] + ":" + items[i]['bisqty']);
+									//寫入
+									let bisgname = items[i]['bisgname'];
+									let bisnb = items[i]['bisnb'];
+									let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
+									let bisqty = Number(items[i]['bisqty']);
+									//每個項目(有?沒有?)
+									if (bisqty > 0) {
+										let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+										let sphbisitemEx = $('#sphbisitemEx_val').clone();
+										sphbisitemEx.removeAttr("id");
+										sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
+										sphbisitemEx.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
+										sphbisitemEx.html(htmlc);
+										$('#sphbisitemEx_val').after(sphbisitemEx);
+									} else {
+										let htmlc = '<b> ' + bisgname + ' </b>' + bisfname;
+										let sphbisitemExNot = $('#sphbisitemExNot_val').clone();
+										sphbisitemExNot.removeAttr("id");
+										sphbisitemExNot.removeClass("d-none").addClass("sphbisitemList");
+										sphbisitemExNot.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
+										sphbisitemExNot.html(htmlc);
+										$('#sphbisitemExNot_val').after(sphbisitemExNot);
+									}
+								});
+								//console.log(sphbisitemJson);
+							}
+						}
+						console.log(k + ":" + entity[k]);
+						//是否時間格式?
+						if (entityDateTime.indexOf(k) >= 0) {
+							let dF = new Date(entity[k]);
+							let dateF = dF.getFullYear() + "-";
+							dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
+							dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate());
+
+							$("#" + k + " input").val(dateF);
+						} else {
+							$("#" + k + " input").val(entity[k]);
+						}
+					});
+				}
 				console.log("searchReLoad_OK:" + new Date());
 			},
 			//==========================回傳接收==========================
-			searchReturn() {
+			otherReturn() {
 				//查詢回傳
 				console.log("searchReturn:" + new Date());
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
 					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
-					search.data.searchPageSet.total = searchPageSet['total'];
-					search.data.searchPageSet.batch = searchPageSet['batch'];
-					search.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
-					search.data.marks = {};//有選取的IKeyGKey
-					search.data.markDetails = {};//有選取的IKeyGKey
+					other.data.searchPageSet.total = searchPageSet['total'];
+					other.data.searchPageSet.batch = searchPageSet['batch'];
+					other.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
+					other.data.marks = {};//有選取的IKeyGKey
+					other.data.markDetails = {};//有選取的IKeyGKey
 
 					//Step5.帶入資料
 					if (main.resq_data['entityJson'] != "") {
-						search.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+						other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
 
 					}
 					if (main.resq_data['entityDetailJson'] != "") {
-						search.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
+						other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
 					}
-					search.methods.searchReLoad();
+					other.methods.searchReLoad();
 				}
+			},
+			otherModifyReturn() {
+				console.log("otherModifyReturn");
+				$("#btn_send").trigger('click');
+				$('#btn_allClear').trigger('click');
+
 			},
 			//==========================初始化==========================
 			destroy() {
 				//銷毀
 				$(".datetimepicker").remove();
+				$(document).off("input", "#search_c #searchSelectItems");
 				$(document).off("click", "#search_c #btn_bom");
 				$(document).off("click", "#search_c #btn_clearAll");
 				$(document).off("keyup", "#searchItem input");
 				$(document).off("click", "#search_c #btn_send");
-				$(document).off("click", "#search_c #btn_compare");
 				$(document).off("click", "#search_c #btn_printerForm");
-				$(document).off("click", "#search_c #btn_markCancel");
-				$(document).off("click", "#search_c #btn_delete");
-				$(document).off("click", "#search_c #btn_invalid");
-				$(document).off("click", "#search_c #btn_modify");
-				$(document).off("click", "#search_c #btn_saveAs");
-				$(document).off("click", "#search_c #btn_create");
 				$(document).off("click", "#search_c #exthDetailAll");
 				$(document).off("click", "#search_c #exthAll");
+				$(document).off("click", "#search_c #btn_allClear");
+				$(document).off("click", "#search_c #btn_production");
 				//
 				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");

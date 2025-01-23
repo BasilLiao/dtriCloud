@@ -70,7 +70,7 @@ public class ScheduleProductionHistoryServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(null, null, null, null, null,
-					null, pageable);
+					null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -84,7 +84,8 @@ public class ScheduleProductionHistoryServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleProductionHistory", null, 2);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("ScheduleProductionHistory",
+					null, 2);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -127,7 +128,7 @@ public class ScheduleProductionHistoryServiceAc {
 			ScheduleProductionHistory searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					ScheduleProductionHistory.class);
 
-			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(searchData.getSphbpmnb(),
+			ArrayList<ScheduleProductionHistory> entitys = historyDao.findAllBySearch(null, searchData.getSphbpmnb(),
 					searchData.getSphbpmmodel(), searchData.getSphonb(), searchData.getSysmuser(),
 					searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
 			// Step4-2.資料區分(一般/細節)

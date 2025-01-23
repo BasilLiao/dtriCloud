@@ -95,9 +95,9 @@ public class ScheduleProductionHistory {
 		this.sphoname = "";
 		this.sphocountry = "";
 		this.sphobpmnb = "";
-		this.sphhdate = "";
+		this.sphhdate = new Date();
 		this.sphfrom = "";
-		this.sphstatus = 0;
+		this.sphstatus = 1;
 		this.sphprogress = 0;
 		this.sphssn = "";
 		this.sphesn = "";
@@ -110,15 +110,12 @@ public class ScheduleProductionHistory {
 	@PrePersist
 	protected void onCreate() {
 		this.syscdate = new Date(System.currentTimeMillis() / 1000 * 1000); // 去除毫秒
-		this.syscuser = "system";
 		this.sysmdate = new Date(System.currentTimeMillis() / 1000 * 1000);
-		this.sysmuser = "system";
 	}
 
 	@PreUpdate
 	protected void onUpdate() {
 		this.sysmdate = new Date(System.currentTimeMillis() / 1000 * 1000);
-		this.sysmuser = "system";
 	}
 
 	// 共用型
@@ -166,7 +163,7 @@ public class ScheduleProductionHistory {
 	@Column(name = "sph_bps_user", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphbpsuser;
 	//
-	@Column(name = "sph_pon", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "sph_pon", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String sphpon;
 	@Column(name = "sph_o_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphonb;
@@ -179,8 +176,8 @@ public class ScheduleProductionHistory {
 	@Column(name = "sph_o_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer sphoqty;
 
-	@Column(name = "sph_h_date", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String sphhdate;
+	@Column(name = "sph_h_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date sphhdate;
 	@Column(name = "sph_from", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphfrom;
 	@Column(name = "sph_status", nullable = false, columnDefinition = "int default 0")
@@ -398,11 +395,11 @@ public class ScheduleProductionHistory {
 		this.sphocountry = sphocountry;
 	}
 
-	public String getSphhdate() {
+	public Date getSphhdate() {
 		return sphhdate;
 	}
 
-	public void setSphhdate(String sphhdate) {
+	public void setSphhdate(Date sphhdate) {
 		this.sphhdate = sphhdate;
 	}
 

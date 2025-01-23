@@ -161,7 +161,6 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, own_use + ".AU").hasAuthority(actionRole(own_use, "AU"))// (修改)
 
 				// 基本單據功能
-
 				// ----請求-basic_notification_mail-(訪問) ----
 				.requestMatchers(HttpMethod.POST, basic_not).hasAuthority(actionRole(basic_not, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, basic_not + ".AR").hasAuthority(actionRole(basic_not, "AR"))// (查詢)
@@ -402,11 +401,9 @@ public class WebSecurityConfig {
 				// ----請求-schedule_production_notes-(訪問) ----
 				.requestMatchers(HttpMethod.POST, schedule_spn).hasAuthority(actionRole(schedule_spn, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, schedule_spn + ".AR").hasAuthority(actionRole(schedule_spn, "AR"))// (查詢)
-				.requestMatchers(HttpMethod.POST, schedule_spn + ".ARR").hasAuthority(actionRole(schedule_spn, "AR"))// (報告查詢)
 				.requestMatchers(HttpMethod.POST, schedule_spn + ".ARO").hasAuthority(actionRole(schedule_spn, "AR"))// (在途單據查詢)
 				.requestMatchers(HttpMethod.POST, schedule_spn + ".AC").hasAuthority(actionRole(schedule_spn, "AC"))// (新增)
 				.requestMatchers(HttpMethod.PUT, schedule_spn + ".AU").hasAuthority(actionRole(schedule_spn, "AU"))// (修改)
-				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".AD").hasAuthority(actionRole(schedule_spn, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".DD").hasAuthority(actionRole(schedule_spn, "DD"))// (標記移除)
 
 				// -客製化

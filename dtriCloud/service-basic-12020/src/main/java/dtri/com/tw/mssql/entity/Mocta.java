@@ -38,6 +38,9 @@ public class Mocta {
 
 	@Column(name = "TA029")
 	private String ta029;// ,--生管備註
+	@Column(name = "TA054")
+	private String ta054;// ,--生管備註(生產注意事項)
+
 	@Column(name = "TA050")
 	private String ta050;// ,--訂單生產加工包裝資訊(客戶資訊)
 	@Column(name = "MA003")
@@ -258,11 +261,11 @@ public class Mocta {
 	@Override
 	public String toString() {
 		return "Mocta [ta026_ta027_ta028=" + ta026_ta027_ta028 + ", ta001_ta002=" + ta001_ta002 + ", ta006=" + ta006
-				+ ", ta050=" + ta050 + ", ta009=" + ta009 + ", ta010=" + ta010 + ", tb015=" + tb015 + ", tb004=" + tb004
-				+ ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017
-				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002
-				+ ", ma002=" + ma002 + ", tk000=" + tk000 + ", ta015=" + ta015 + ", ta017=" + ta017 + ", ta011=" + ta011
-				+ "]";
+				+ ", ta054=" + ta054 + ", ta050=" + ta050 + ", ta009=" + ta009 + ", ta010=" + ta010 + ", tb015=" + tb015
+				+ ", tb004=" + tb004 + ", tb005=" + tb005 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003
+				+ ", mb017=" + mb017 + ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040
+				+ ", mc002=" + mc002 + ", ma002=" + ma002 + ", tk000=" + tk000 + ", ta015=" + ta015 + ", ta017=" + ta017
+				+ ", ta011=" + ta011 + "]";
 	}
 
 	public boolean isNewone() {
@@ -359,6 +362,20 @@ public class Mocta {
 
 	public void setTa015(Integer ta015) {
 		this.ta015 = ta015;
+	}
+
+	/**
+	 * @return the ta054
+	 */
+	public String getTa054() {
+		return ta054;
+	}
+
+	/**
+	 * @param ta054 the ta054 to set
+	 */
+	public void setTa054(String ta054) {
+		this.ta054 = ta054;
 	}
 
 }

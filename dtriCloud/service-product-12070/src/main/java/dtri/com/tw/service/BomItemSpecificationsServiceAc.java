@@ -437,6 +437,7 @@ public class BomItemSpecificationsServiceAc {
 
 			materials = query.getResultList();
 			// 資料轉換
+			Map<String, String> sameBisfname = new HashMap<String, String>();
 			materials.forEach(m -> {
 				BomItemSpecifications itemSp = new BomItemSpecifications();
 				itemSp.setSyscdate(m.getSyscdate());
@@ -480,12 +481,20 @@ public class BomItemSpecificationsServiceAc {
 				array = Arrays.copyOfRange(array, 0, Math.min(array.length, bisgfnameSize)); // 限制為最多 5 個元素
 				Gson gson = new Gson();
 				JsonArray jsonArray = gson.toJsonTree(array).getAsJsonArray();
-				// 將 JsonArray 轉成字串並存入 itemSp
-				itemSp.setBisfname(jsonArray.toString());
-
+				// 將 JsonArray 轉成字串並存入 itemSp\\n: 移除換行符號。 \\r: 移除回車符號。 \\t: 移除制表符號。
+				String setBisfname = jsonArray.toString();
+				setBisfname = setBisfname.replaceAll("[\\n\\r\\t]", "");
+				setBisfname = setBisfname.replaceAll("\\\\[nrt]", "");
+				itemSp.setBisfname(setBisfname);
 				itemSp.setSyssort(syssort);
-				sqlQueryEntitys.put(itemSp.getBisnb(), itemSp);// 物料號
-				// entitys.add(itemSp);
+
+				// 如果重複?
+				if (!sameBisfname.containsKey(setBisfname)) {
+					sameBisfname.put(setBisfname, "");
+					sqlQueryEntitys.put(itemSp.getBisnb(), itemSp);// 物料號
+				} else {
+					System.out.println("重複:" + itemSp.getBisfname());
+				}
 			});
 
 			// 資料比對整理(新舊整合)
@@ -519,7 +528,6 @@ public class BomItemSpecificationsServiceAc {
 			// 可能有新的?
 			sqlQueryEntitys.forEach((k, v) -> {
 				if (v.getSysstatus() == 0) {
-					// entityNews.add(v);
 					// 如果有標記自動?
 					if (v.getBisiauto()) {
 						specificationsDao.save(v);
@@ -541,7 +549,7 @@ public class BomItemSpecificationsServiceAc {
 	public PackageBean setModify(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		ArrayList<BomItemSpecifications> entityDatas = new ArrayList<>();
-		Map<String, Boolean> entitySame = new HashMap<String, Boolean>();
+		Map<String, String> entitySame = new HashMap<String, String>();// 敘述+物料號
 		// =======================資料檢查=======================
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1.資料轉譯(一般)
@@ -551,22 +559,13 @@ public class BomItemSpecificationsServiceAc {
 
 			// Step2.資料檢查
 			for (BomItemSpecifications entityData : entityDatas) {
-				// 檢查-舊資料-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BomItemSpecifications> checkDatas = specificationsDao.findAllByCheck(null,
-						entityData.getBisfname(), null);
-				for (BomItemSpecifications checkData : checkDatas) {
-					// 排除自己
-					if (entityData.getBisid() != null && checkData.getBisid().compareTo(entityData.getBisid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getBisfname() });
-					}
-				}
+
 				// 檢查-新資料-名稱重複
 				if (entitySame.containsKey(entityData.getBisfname())) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { entityData.getBisfname() });
+							new String[] { entitySame.get(entityData.getBisfname()) + ":" + entityData.getBisnb() });
 				}
-				entitySame.put(entityData.getBisfname(), true);
+				entitySame.put(entityData.getBisfname(), entityData.getBisnb());
 				// 檢查資料-正規化值?
 				if (entityData.getBisfname().equals("[\"\"]")) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
@@ -621,7 +620,7 @@ public class BomItemSpecificationsServiceAc {
 				entityDataOld.setBisspecifications(x.getBisspecifications());
 				entityDataOld.setBisdescription(x.getBisdescription());
 				entityDataOld.setBissdescripion(x.getBissdescripion());
-				entityDataOld.setBisfname(x.getBisfname());
+				entityDataOld.setBisfname(x.getBisfname().replaceAll("[\\n\\r\\t]", "").replaceAll("\\\\[nrt]", ""));
 				entityDataOld.setBisgfname(x.getBisgfname());
 				entityDataOld.setBisgffield(x.getBisgffield());
 				entityDataOld.setBisgname(x.getBisgname());
@@ -659,7 +658,7 @@ public class BomItemSpecificationsServiceAc {
 		// =======================資料準備 =======================
 		ArrayList<BomItemSpecifications> entityDatas = new ArrayList<>();
 		ArrayList<BomItemSpecifications> entitySave = new ArrayList<>();
-		Map<String, BomItemSpecifications> checkSame = new HashMap<String, BomItemSpecifications>();
+		Map<String, String> entitySame = new HashMap<String, String>();// 敘述+物料號
 		// =======================資料檢查=======================
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1.資料轉譯(一般)
@@ -677,13 +676,13 @@ public class BomItemSpecificationsServiceAc {
 				}
 
 				// Step2-2.資料檢查-檢查基本重複?
-				if (!checkSame.containsKey(entityData.getBisfname())) {
-					checkSame.put(entityData.getBisfname(), entityData);
-				} else {
+				// 檢查-新資料-名稱重複
+				if (entitySame.containsKey(entityData.getBisfname())) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { checkSame.get(entityData.getBisfname()).getBisnb() + " : "
-									+ entityData.getBisnb() + "->" + entityData.getBisfname() });
+							new String[] { entitySame.get(entityData.getBisfname()) + ":" + entityData.getBisnb() });
 				}
+				entitySame.put(entityData.getBisfname(), entityData.getBisnb());
+
 				// Step2-3.資料檢查-缺少值?
 				if (entityData.getBisgcondition() == null || entityData.getBisgcondition().equals("") || //
 						entityData.getBisgname() == null || entityData.getBisgname().equals("") || //
