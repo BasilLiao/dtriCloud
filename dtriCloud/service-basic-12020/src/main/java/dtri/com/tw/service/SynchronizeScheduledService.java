@@ -27,13 +27,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.mssql.dao.MoctaScheduleInfactoryDao;
 import dtri.com.tw.mssql.dao.MoctaScheduleOutsourcerDao;
+import dtri.com.tw.mssql.entity.MoctaScheduleInfactory;
 import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
+import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.dao.ScheduleShortageListDao;
 import dtri.com.tw.pgsql.dao.ScheduleShortageNotificationDao;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
+import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.ScheduleShortageList;
 import dtri.com.tw.pgsql.entity.ScheduleShortageNotification;
@@ -50,15 +54,20 @@ public class SynchronizeScheduledService {
 	@Autowired
 	private ScheduleOutsourcerDao scheduleOutsourcerDao;
 	@Autowired
+	private ScheduleOutsourcerDao outsourcerDao;
+	@Autowired
+	private ScheduleInfactoryDao scheduleInfactoryDao;
+	@Autowired
 	private MoctaScheduleOutsourcerDao erpOutsourcerDao;
+	@Autowired
+	private MoctaScheduleInfactoryDao erpInfactoryDao;
+
 	@Autowired
 	private ScheduleShortageNotificationDao notificationDao;
 	@Autowired
 	private ScheduleShortageListDao shortageListDao;
 	@Autowired
 	private BasicNotificationMailDao notificationMailDao;
-	@Autowired
-	private ScheduleOutsourcerDao outsourcerDao;
 
 	@Autowired
 	private ERPToCloudService erpToCloudService;
@@ -150,6 +159,100 @@ public class SynchronizeScheduledService {
 		public void run() {
 			try {
 				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+			} catch (Exception e) {
+				logger.warn(CloudExceptionService.eStktToSg(e));
+			}
+		}
+
+		public String getSendAllData() {
+			return sendAllData;
+		}
+
+		public void setSendAllData(String sendAllData) {
+			this.sendAllData = sendAllData;
+		}
+	}
+
+	// ============ 同步廠內生管平台() ============
+	public void erpSynchronizeScheduleInfactory() throws Exception {
+		ArrayList<MoctaScheduleInfactory> erpInfactorys = erpInfactoryDao.findAllByMocta(null, "Y");// 目前ERP有的資料
+		Map<String, MoctaScheduleInfactory> erpMapInfactorys = new HashMap<String, MoctaScheduleInfactory>();// ERP整理後資料
+		ArrayList<ScheduleInfactory> scheduleInfactorys = scheduleInfactoryDao.findAllByNotFinish(null);// 尚未結束的
+		ArrayList<ScheduleInfactory> newScheduleInfactorys = new ArrayList<ScheduleInfactory>();// 要更新的
+		// 資料整理
+		for (MoctaScheduleInfactory one : erpInfactorys) {
+			// 避免時間-問題
+			if (one.getTa009() != null && !one.getTa009().equals(""))
+				one.setNewone(true);
+			erpMapInfactorys.put(one.getTa001_ta002(), one);
+//				//測試用
+//				if(one.getTa001_ta002().equals("A512-240311001")) {
+//					System.out.println(one.getTa001_ta002());
+//				}
+		}
+
+		// 比對資料?
+		scheduleInfactorys.forEach(o -> {
+//				//測試用
+//				if(o.getSonb().equals("A512-240311001")) {
+//					System.out.println(o.getSonb());
+//				}
+			// 有抓取到同樣單據
+			if (erpMapInfactorys.containsKey(o.getSinb())) {
+				erpMapInfactorys.get(o.getSinb()).setNewone(false);
+				// sum不同->更新
+				String sum = erpMapInfactorys.get(o.getSinb()).toString();
+				if (!sum.equals(o.getSisum())) {
+					erpToCloudService.scheduleInfactoryOne(o, erpMapInfactorys.get(o.getSinb()), sum);
+					newScheduleInfactorys.add(o);
+				}
+			} else {
+				ArrayList<MoctaScheduleInfactory> erpInfactorysEnd = erpInfactoryDao.findAllByMocta(o.getSinb(), null);
+				if (erpInfactorysEnd.size() == 1) {
+					// 更新最後一次?
+					o = erpToCloudService.scheduleInfactoryOne(o, erpInfactorysEnd.get(0),
+							erpInfactorysEnd.get(0).toString());
+				}
+				// 沒比對到?移除?完成?
+				o.setSysstatus(2);
+				newScheduleInfactorys.add(o);
+			}
+		});
+		// 新增?
+		erpMapInfactorys.forEach((k, n) -> {
+			ArrayList<ScheduleInfactory> OldEndOne = scheduleInfactoryDao.findAllByFinish(k, null);
+			if (n.isNewone()) {
+				ScheduleInfactory outsourcer = new ScheduleInfactory();
+				// 檢查是否有舊資料?
+				if (OldEndOne.size() > 0) {
+					outsourcer = OldEndOne.get(0);
+					outsourcer.setSysstatus(0);// 開啟
+				}
+				outsourcer = erpToCloudService.scheduleInfactoryOne(outsourcer, n, n.toString());
+				newScheduleInfactorys.add(outsourcer);
+			}
+		});
+
+		// 更新資料+建立新資料
+		scheduleInfactoryDao.saveAll(newScheduleInfactorys);
+		String update = packageService.beanToJson(newScheduleInfactorys);
+		JsonObject sendAllData = new JsonObject();
+		sendAllData.addProperty("update", update);
+		sendAllData.addProperty("action", "sendAllData");
+		// 測試 通知Client->Websocket(sendAllUsers)
+		InfactorySynchronizeCell sendTo = new InfactorySynchronizeCell();
+		sendTo.setSendAllData(sendAllData.toString());
+		sendTo.run();
+	}
+
+	// 而外執行(廠內生管同步)
+	public class InfactorySynchronizeCell implements Runnable {
+		private String sendAllData;
+
+		@Override
+		public void run() {
+			try {
+				serviceFeign.setInfactorySynchronizeCell(sendAllData);
 			} catch (Exception e) {
 				logger.warn(CloudExceptionService.eStktToSg(e));
 			}

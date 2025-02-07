@@ -46,6 +46,22 @@ public interface ScheduleServiceFeign {
 	@RequestMapping(value = { "/scheduleOutsourcer/setModifyMp" }, method = RequestMethod.PUT)
 	PackageBean setScheduleOutsourcerModifyMp(@RequestBody String jsonPackageBean);// 製造
 
+	// ================================通用-場內排程================================
+	@RequestMapping(value = { "/scheduleInfactory/getSearch" }, method = RequestMethod.POST)
+	PackageBean getScheduleInfactorySearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/scheduleInfactory/setModifySc" }, method = RequestMethod.PUT)
+	PackageBean setScheduleInfactoryModifySc(@RequestBody String jsonPackageBean);// 生管
+
+	@RequestMapping(value = { "/scheduleInfactory/setModifyMc" }, method = RequestMethod.PUT)
+	PackageBean setScheduleInfactoryModifyMc(@RequestBody String jsonPackageBean);// 物控
+
+	@RequestMapping(value = { "/scheduleInfactory/setModifyWm" }, method = RequestMethod.PUT)
+	PackageBean setScheduleInfactoryModifyWm(@RequestBody String jsonPackageBean);// 倉儲
+
+	@RequestMapping(value = { "/scheduleInfactory/setModifyMp" }, method = RequestMethod.PUT)
+	PackageBean setScheduleInfactoryModifyMp(@RequestBody String jsonPackageBean);// 製造
+
 	// ================================缺料通知:主要負責人通知================================
 	@RequestMapping(value = { "/scheduleShortageNotification/getSearch" }, method = RequestMethod.POST)
 	PackageBean getScheduleShortageNotificationSearch(@RequestBody String jsonPackageBean);

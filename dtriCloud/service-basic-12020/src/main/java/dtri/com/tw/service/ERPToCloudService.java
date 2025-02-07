@@ -19,6 +19,7 @@ import dtri.com.tw.mssql.entity.Invta;
 import dtri.com.tw.mssql.entity.Invtg;
 import dtri.com.tw.mssql.entity.Invth;
 import dtri.com.tw.mssql.entity.Mocta;
+import dtri.com.tw.mssql.entity.MoctaScheduleInfactory;
 import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.mssql.entity.Mocte;
 import dtri.com.tw.mssql.entity.Moctf;
@@ -28,6 +29,7 @@ import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
+import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
@@ -1159,8 +1161,26 @@ public class ERPToCloudService {
 		} else {
 			o.setSoywdate("9999-W99");
 		}
-		o.setSoodate(m.getTa009() != null ? Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa009())) : "99991201");// 預計開工時間
-		o.setSofdate(m.getTa010() != null ? Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa010())) : "99991201");// 預計完工時間
+		// 避免時間錯誤
+		String soodate = "9999-12-01";
+		String sofdate = "9999-12-01";
+		// 測試用
+		// if (m.getTa001_ta002().equals("A512-250124003")) {
+		// System.out.println(m.getTa001_ta002());
+		// }
+		if (m.getTa009() != null) {
+			if (Fm_T.toYMDate(m.getTa009()) != null) {
+				soodate = Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa009()));
+			}
+		}
+		if (m.getTa010() != null) {
+			if (Fm_T.toYMDate(m.getTa010()) != null) {
+				sofdate = Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa010()));
+			}
+		}
+
+		o.setSoodate(soodate);// 預計開工時間
+		o.setSofdate(sofdate);// 預計完工時間
 		o.setSonb(m.getTa001_ta002());// --製令單
 		o.setSopnb(m.getTa006());// --產品品號
 		o.setSopname(m.getTa034());// --產品品名
@@ -1216,6 +1236,99 @@ public class ERPToCloudService {
 
 		o.setSosum(checkSum);// 檢查/更新相同?資料串比對
 		return o;
+	}
+
+	// 廠內-生產管理
+	public ScheduleInfactory scheduleInfactoryOne(ScheduleInfactory i, MoctaScheduleInfactory m, String checkSum) {
+		// 資料匹配
+
+		// 年-週期
+		if (m.getTa009() != null || !m.getTa009().equals("")) {
+			Date soywdate = Fm_T.toYMDate(m.getTa009());
+			String week = String.format("%02d", Fm_T.getWeek(soywdate));
+			int year = Fm_T.getYear(soywdate);
+			i.setSiywdate(year + "-W" + week);
+		} else {
+			i.setSiywdate("9999-W99");
+		}
+		// 避免時間錯誤
+		String siodate = "9999-12-01";
+		String sifdate = "9999-12-01";
+		// 測試用
+		// if (m.getTa001_ta002().equals("A512-250124003")) {
+		// System.out.println(m.getTa001_ta002());
+		// }
+		if (m.getTa009() != null) {
+			if (Fm_T.toYMDate(m.getTa009()) != null) {
+				siodate = Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa009()));
+			}
+		}
+		if (m.getTa010() != null) {
+			if (Fm_T.toYMDate(m.getTa010()) != null) {
+				sifdate = Fm_T.to_y_M_d(Fm_T.toYMDate(m.getTa010()));
+			}
+		}
+
+		i.setSiodate(siodate);// 預計開工時間
+		i.setSifdate(sifdate);// 預計完工時間
+		i.setSinb(m.getTa001_ta002());// --製令單
+		i.setSipnb(m.getTa006());// --產品品號
+		i.setSipname(m.getTa034());// --產品品名
+		i.setSipspecifications(m.getTa035());// --產品規格
+		i.setSirqty(m.getTa015());// 預計生產
+		i.setSiokqty(m.getTa017());// 目前生產數
+		i.setSistatus(m.getTa011());// --狀態碼1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
+		i.setSicnote("");// 客戶備註
+		i.setSicorder(m.getTc012() == null ? "" : m.getTc012());// 客戶訂單
+		i.setSicpnb(m.getTd004() == null ? "" : m.getTd004());// 客戶產品號
+		i.setSinote(m.getTa029());// 製令備註(客戶/國家/訂單)
+		i.setSiuname(m.getCreator());// 開單人
+		// 作廢?
+		if (m.getTa013().equals("V")) {
+			i.setSistatus("V");
+		}
+		if (!m.getMa002().equals("")) {
+			i.setSifname(m.getMa002() + "(" + m.getTa032() + ")");// --加工廠
+		}
+
+		JsonArray siscnotes = new JsonArray();
+		JsonObject siscnoteOne = new JsonObject();
+		// 如果是空的(第一筆)?
+		if (i.getSiscnote().equals("[]") || i.getSiscnote().equals("")) {
+			siscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+			siscnoteOne.addProperty("user", m.getCreator());
+			siscnoteOne.addProperty("content", m.getTa054());// m.getTa054() 不常使用
+			siscnotes.add(siscnoteOne);
+			i.setSiscnote(siscnotes.toString());// 生管備註(格式)人+時間+內容
+		} else {
+			// 不是空的(第N筆資料)->取出轉換->比對最新資料
+			siscnotes = JsonParser.parseString(i.getSiscnote()).getAsJsonArray();
+
+			// 取出先前的-最新資料比對->不同內容->添加新的
+			JsonArray soscnoteOld = new JsonArray();
+			soscnoteOld = JsonParser.parseString(i.getSiscnote()).getAsJsonArray();
+			String contentNew = m.getTa054().replaceAll("\n", "");
+			Boolean checkNotSame = true;
+			// 比對每一筆資料
+			for (JsonElement jsonElement : soscnoteOld) {
+				String contentOld = jsonElement.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+				if (contentOld.equals(contentNew)) {
+					checkNotSame = false;
+					break;
+				}
+			}
+			// 確定不同 才能更新
+			if (checkNotSame) {
+				siscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+				siscnoteOne.addProperty("user", m.getCreator());
+				siscnoteOne.addProperty("content", m.getTa054());// m.getTa054() 不常使用
+				siscnotes.add(siscnoteOne);
+				i.setSiscnote(siscnotes.toString());// 生管備註(格式)人+時間+內容
+			}
+		}
+
+		i.setSisum(checkSum);// 檢查/更新相同?資料串比對
+		return i;
 	}
 
 	// ERP BOM 轉換

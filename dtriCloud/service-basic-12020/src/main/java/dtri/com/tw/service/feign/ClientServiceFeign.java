@@ -19,5 +19,9 @@ public interface ClientServiceFeign {
 	// 觸發
 	@RequestMapping(value = { "/websocket/schedule_outsourcer_service" }, method = RequestMethod.POST)
 	String setOutsourcerSynchronizeCell(@RequestBody String json);
-	
+
+	// 觸發
+	@RequestMapping(value = { "/websocket/schedule_infactory_service" }, method = RequestMethod.POST)
+	String setInfactorySynchronizeCell(@RequestBody String json);
+
 }

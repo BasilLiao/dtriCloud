@@ -1033,6 +1033,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysmdate(new Date());
 									t.setSysmuser(packageBean.getUserAccount());
 									t.setBilfuser("");
+									t.setSysnote("");
 									t.setBilpngqty(0);
 								}
 							}
@@ -1094,6 +1095,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysmdate(new Date());
 									t.setSysmuser(packageBean.getUserAccount());
 									t.setBslfuser("");
+									t.setSysnote("");
 									t.setBslpngqty(0);
 									t.setBslfucheckin(false);
 								}

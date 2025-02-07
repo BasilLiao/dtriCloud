@@ -80,6 +80,7 @@ public class WebSecurityConfig {
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
+	private static final String schedule_inf = "/ajax/schedule_infactory.basil";
 	private static final String schedule_shn = "/ajax/schedule_shortage_notification.basil";
 	private static final String schedule_sph = "/ajax/schedule_production_history.basil";
 	private static final String schedule_spn = "/ajax/schedule_production_notes.basil";
@@ -382,6 +383,16 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_out + ".S4").hasAuthority(actionRole(schedule_out, "S5"))// (修改S5)
 				.requestMatchers(HttpMethod.GET, "/websocket/schedule_outsourcer_client/echo").permitAll()// 前端-請求(Websocket)
 				.requestMatchers(HttpMethod.POST, "/websocket/schedule_outsourcer_service").permitAll()// 後端-同步使用(Websocket)
+				// ----請求-schedule_inf-(訪問) ----
+				.requestMatchers(HttpMethod.POST, schedule_inf).hasAuthority(actionRole(schedule_inf, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, schedule_inf + ".AR").hasAuthority(actionRole(schedule_inf, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S1").hasAuthority(actionRole(schedule_inf, "S1"))// (修改S1)
+				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S2").hasAuthority(actionRole(schedule_inf, "S2"))// (修改S2)
+				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S3").hasAuthority(actionRole(schedule_inf, "S3"))// (修改S3)
+				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S4").hasAuthority(actionRole(schedule_inf, "S4"))// (修改S4)
+				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S4").hasAuthority(actionRole(schedule_inf, "S5"))// (修改S5)
+				.requestMatchers(HttpMethod.GET, "/websocket/schedule_infactory_client/echo").permitAll()// 前端-請求(Websocket)
+				.requestMatchers(HttpMethod.POST, "/websocket/schedule_infactory_service").permitAll()// 後端-同步使用(Websocket)
 				// ----請求-schedule_shortage_notification-(訪問) ----
 				.requestMatchers(HttpMethod.POST, schedule_shn).hasAuthority(actionRole(schedule_shn, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, schedule_shn + ".AR").hasAuthority(actionRole(schedule_shn, "AR"))// (查詢)

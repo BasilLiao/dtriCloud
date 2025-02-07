@@ -93,6 +93,8 @@ public class ScheduledTasksService {
 				// ==================生管機制==================
 				// 外包生管排程(同步)
 				synchronizeScheduledService.erpSynchronizeScheduleOutsourcer();
+				// 廠內生管排程(同步)
+				synchronizeScheduledService.erpSynchronizeScheduleInfactory();
 				// 缺料通知
 				synchronizeScheduledService.scheduleShortageNotification();
 				// 生管排程寄信通知(測試用)

@@ -97,13 +97,13 @@
 	}
 
 	/**指定靠左*/
-	.sonb,
-	.sopnb,
-	.sopname,
-	.sopspecifications,
-	.soscstatus,
-	.somcstatus,
-	.souname {
+	.sinb,
+	.sipnb,
+	.sipname,
+	.sipspecifications,
+	.siscstatus,
+	.simcstatus,
+	.siuname {
 		text-align: left !important;
 	}
 
@@ -267,25 +267,21 @@
 			<table id="inputExcelEx" class="d-none">
 				<thead class="">
 					<tr class="">
-						<th>sonb</th>
-						<th>sofodate</th>
-						<th>sofokdate</th>
-						<th>soscstatus</th>
-						<th>soscnote</th>
+						<th>sinb</th>
+						<!--生管-->
+						<th>siscnote</th>
 						<!--物控-->
-						<th>somcdate</th>
-						<th>somcnote</th>
+						<th>simcdate</th>
+						<th>simcnote</th>
 						<!--倉庫製造-->
-						<th>sowmnote</th>
-						<th>sompnote</th>
+						<th>siwmnote</th>
+						<th>simpnote</th>
 					</tr>
 				</thead>
 				<tbody class="">
 					<tr class="">
 						<th>工單號</th>
-						<th>生管-加工廠-開工日</th>
-						<th>生管-加工廠-完工日</th>
-						<th>生管-狀態</th>
+						<!--生管-->
 						<th>生管-備註</th>
 						<!--物控-->
 						<th>物控-預計齊料日</th>
@@ -301,56 +297,41 @@
 				<thead class="table-warning fixedCt">
 					<tr class="">
 						<th class="fixedC1">Btn</th>
-						<th class="mfy_sonb_show mfy_sonb fixedC1" style="min-width: 100px;">工單號</th>
-						<th class="mfy_sofo_show mfy_sofodate" style="min-width: 100px;">加工廠-開工日</th>
-						<th class="mfy_sofo_show mfy_sofokdate" style="min-width: 100px;">加工廠-完工日</th>
-						<th class="mfy_sosc_show mfy_soscstatus" style="min-width: 100px;">生管狀態</th>
-						<th class="mfy_sosc_show mfy_soscnote" style="min-width: 100px;">生管備註</th>
+						<th class="mfy_sinb_show mfy_sinb fixedC1" style="min-width: 100px;">工單號</th>
+						<th class="mfy_sosc_show mfy_siscstatus" style="min-width: 100px;">生管狀態</th>
+						<th class="mfy_sosc_show mfy_siscnote" style="min-width: 100px;">生管備註</th>
 						<!--物控-->
-						<th class="mfy_somc_show mfy_somcdate" style="min-width: 100px;">預計齊料日</th>
-						<th class="mfy_somc_show mfy_somcnote" style="min-width: 100px;">物控備註</th>
+						<th class="mfy_somc_show mfy_simcdate" style="min-width: 100px;">預計齊料日</th>
+						<th class="mfy_somc_show mfy_simcnote" style="min-width: 100px;">物控備註</th>
 						<!--倉庫製造-->
-						<th class="mfy_sowm_show mfy_sowmnote" style="min-width: 100px;">倉庫備註</th>
-						<th class="mfy_somp_show mfy_sompnote" style="min-width: 100px;">製造備註</th>
+						<th class="mfy_sowm_show mfy_siwmnote" style="min-width: 100px;">倉庫備註</th>
+						<th class="mfy_somp_show mfy_simpnote" style="min-width: 100px;">製造備註</th>
 						<th class="mfy_sobr_show mfy_bright" style="min-width: 100px;">置亮取消</th>
 					</tr>
 				</thead>
 				<tbody class="table-white">
 					<tr id="mfyEx" class="d-none">
-						<th class="mfy_sonb_choose fixedC1"></th>
-						<th class="mfy_sonb_show fixedC1">
+						<th class="mfy_sinb_choose fixedC1"></th>
+						<th class="mfy_sinb_show fixedC1">
 							<div class="p-1">
-								<input class="mfy_sonb_val col-12 m-0 p-1 border border-dark form-control"
+								<input class="mfy_sinb_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:單別-單號?">
-							</div>
-						</th>
-						<th class="mfy_sofo_show">
-							<div class="p-1">
-								<textarea class="mfy_sofodate_val col-12 m-0 p-1 border border-dark form-control"
-									rows="3"></textarea>
-							</div>
-						</th>
-						<th class="mfy_sofo_show">
-							<div class="p-1">
-								<textarea class="mfy_sofokdate_val col-12 m-0 p-1 border border-dark form-control"
-									rows="3"></textarea>
 							</div>
 						</th>
 						<th class="mfy_sosc_show">
 							<div class="p-1">
-								<select class="mfy_soscstatus_val col-12 m-0 p-1 border border-dark form-select">
+								<select disabled="disabled"
+									class="mfy_siscstatus_val col-12 m-0 p-1 border border-dark form-select">
 									<option value="" selected="selected">select(請選擇)</option>
-									<option value="1">已發料</option>
-									<option value="2">部分缺料</option>
-									<option value="3">備料中</option>
-									<option value="4">未生產</option>
-									<option value="5">待打件通知</option>
+									<option value="0">未開注意事項</option>
+									<option value="1">已開注意事項</option>
+									<option value="2">已核准流程卡</option>
 								</select>
 							</div>
 						</th>
 						<th class="mfy_sosc_show">
 							<div class="p-1">
-								<textarea class="mfy_soscnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea class="mfy_siscnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="1"></textarea>
 							</div>
 						</th>
@@ -358,27 +339,27 @@
 						<th class="mfy_somc_show">
 							<div class="p-1">
 								<input
-									class="mfy_somcdate_val col-12 m-0 p-1 border border-dark form-control datetimepicker_onlydate"
-									type="text" placeholder="Ex:2024-01-01?">
+									class="mfy_simcdate_val col-12 m-0 p-1 border border-dark form-control datetimepicker_onlydate"
+									type="text" placeholder="Ex:20240101?">
 							</div>
 						</th>
 						<th class="mfy_somc_show">
 							<div class="p-1">
-								<textarea class="mfy_somcnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea class="mfy_simcnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="1"></textarea>
 							</div>
 						</th>
 						<!--倉儲-->
 						<th class="mfy_sowm_show">
 							<div class="p-1">
-								<textarea class="mfy_sowmnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea class="mfy_siwmnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="1"></textarea>
 							</div>
 						</th>
 						<!--產線-->
 						<th class="mfy_somp_show">
 							<div class="p-1">
-								<textarea class="mfy_sompnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea class="mfy_simpnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="1"></textarea>
 							</div>
 						</th>
@@ -567,23 +548,23 @@
 						left += resultThead[k].width;
 					}
 					//生館區塊
-					if (resultThead[k].cellName == "sofodate" ||
-						resultThead[k].cellName == "sofokdate" ||
-						resultThead[k].cellName == "soscstatus" ||
-						resultThead[k].cellName == "soscnote") {
+					if (resultThead[k].cellName == "sifodate" ||
+						resultThead[k].cellName == "sifokdate" ||
+						resultThead[k].cellName == "siscstatus" ||
+						resultThead[k].cellName == "siscnote") {
 						exTheadth.addClass('border-secondary');
 						exTbodytd.addClass('border-secondary');
 					}
 					//物控區塊
-					if (resultThead[k].cellName == "somcdate" ||
-						resultThead[k].cellName == "somcnote" ||
-						resultThead[k].cellName == "somcstatus") {
+					if (resultThead[k].cellName == "simcdate" ||
+						resultThead[k].cellName == "simcnote" ||
+						resultThead[k].cellName == "simcstatus") {
 						exTheadth.addClass('border-success');
 						exTbodytd.addClass('border-success');
 					}
 					//倉儲區塊
-					if (resultThead[k].cellName == "sowmprogress" ||
-						resultThead[k].cellName == "sowmnote") {
+					if (resultThead[k].cellName == "siwmprogress" ||
+						resultThead[k].cellName == "siwmnote") {
 						exTheadth.addClass('border-info');
 						exTbodytd.addClass('border-info');
 					}
@@ -895,7 +876,7 @@
 						return;
 					}
 					//取得狀態(生管/物控/倉儲.....)
-					let choose = $("#search_c_modify_open .mfy_datas1").find(".mfy_sonb_choose").text();
+					let choose = $("#search_c_modify_open .mfy_datas1").find(".mfy_sinb_choose").text();
 					//分析完成->比對資料寫入
 					let jsonResult = other.methods.inputExcel(this.files[0]);
 					jsonResult.then((res) => {
@@ -903,26 +884,29 @@
 						//每個Excel欄位
 						res['inputExcel'].forEach(function (t) {
 							console.log(t);
-							let inExcel = $("#search_c_modify_open ." + t.sonb);
+							let inExcel = $("#search_c_modify_open ." + t.sinb);
 							//有比對到
 							if (inExcel != null && inExcel.length == 1) {
 								switch (choose) {
 									case "pc"://生館
-										inExcel.find(".mfy_sofodate_val").val(t.sofodate == null ? inExcel.find(".mfy_sofodate_val").val() : t.sofodate);
-										inExcel.find(".mfy_sofokdate_val").val(t.sofokdate == null ? inExcel.find(".mfy_sofokdate_val").val() : t.sofokdate);
-										inExcel.find(".mfy_soscstatus_val").val(t.soscstatus == null ? inExcel.find(".mfy_soscstatus_val").val() : t.soscstatus);
-										inExcel.find(".mfy_soscnote_val").val(t.soscnote == null ? inExcel.find(".mfy_soscnote_val").val() : t.soscnote);
+										inExcel.find(".mfy_siscnote_val").val(t.siscnote == null ? inExcel.find(".mfy_siscnote_val").val() : t.siscnote);
 										break
 									case "mc"://物控
-										inExcel.find(".mfy_somcdate_val").val(t.somcdate == null ? inExcel.find(".mfy_somcdate_val").val() : t.somcdate);
-										inExcel.find(".mfy_somcnote_val").val(t.somcnote == null ? inExcel.find(".mfy_somcnote_val").val() : t.somcnote);
+										let dateStr = t.simcdate;
+										//無效格式
+										if (dateStr == null || (!/^\d{8}$/.test(dateStr))) {
+											inExcel.find(".mfy_simcdate_val").val();
+										} else {
+											inExcel.find(".mfy_simcdate_val").val(dateStr);
+										}
+										inExcel.find(".mfy_simcnote_val").val(t.simcnote == null ? inExcel.find(".mfy_simcnote_val").val() : t.simcnote);
 										break;
 									case "wm"://倉儲
-										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote == null ? inExcel.find(".mfy_sowmnote_val").val() : t.sowmnote);
+										inExcel.find(".mfy_siwmnote_val").val(t.siwmnote == null ? inExcel.find(".mfy_siwmnote_val").val() : t.siwmnote);
 
 										break;
 									case "pl"://製造
-										inExcel.find(".mfy_sompnote_val").val(t.sompnote == null ? inExcel.find(".mfy_sompnote_val").val() : t.sompnote);
+										inExcel.find(".mfy_simpnote_val").val(t.simpnote == null ? inExcel.find(".mfy_simpnote_val").val() : t.simpnote);
 										break;
 								}
 							}
@@ -990,48 +974,64 @@
 								//完成時-呼叫
 								//worksheet.getRow(1).hidden = true//隱藏第一筆
 								//worksheet.getColumn(1).hidden = true;//隱藏第一行
-								worksheet.getColumn(1).width = 14;//加工廠
-								worksheet.getColumn(2).width = 16;
-								worksheet.getColumn(3).width = 16;
-								worksheet.getColumn(4).width = 30;
-								worksheet.getColumn(5).width = 30;
-								worksheet.getColumn(6).width = 12;
-								worksheet.getColumn(7).width = 12;
-								worksheet.getColumn(8).width = 12;
-								worksheet.getColumn(9).width = 60;//物控
-								worksheet.getColumn(10).width = 16;
-								worksheet.getColumn(11).width = 12;
-								worksheet.getColumn(12).width = 60;//生管
-								worksheet.getColumn(13).width = 12;
-								worksheet.getColumn(14).width = 12;
-								worksheet.getColumn(15).width = 12;
-								worksheet.getColumn(16).width = 60;//製令單備註
-								worksheet.getColumn(17).width = 16;
-								worksheet.getColumn(18).width = 16;
-								worksheet.getColumn(19).width = 12;
-								worksheet.getColumn(20).width = 12;
-								worksheet.getColumn(21).width = 60;//倉庫
-								worksheet.getColumn(22).width = 12;
-								worksheet.getColumn(23).width = 60;//製造
-								worksheet.getColumn(24).width = 25;
+								worksheet.getColumn(1).width = 14;//預計開工日
+								worksheet.getColumn(2).width = 14;
+								worksheet.getColumn(3).width = 16;//製令單號
+								worksheet.getColumn(4).width = 20;
+								worksheet.getColumn(5).width = 20;
+								worksheet.getColumn(6).width = 14;//訂單
+								worksheet.getColumn(7).width = 50;
+								worksheet.getColumn(8).width = 50;
+								worksheet.getColumn(9).width = 14;//預計生產
+								worksheet.getColumn(10).width = 14;
+								worksheet.getColumn(11).width = 14;
+								worksheet.getColumn(12).width = 40;//製令單備註(客戶/國家/訂單/其他)
+								worksheet.getColumn(13).width = 15;
+								worksheet.getColumn(14).width = 15;
+								worksheet.getColumn(15).width = 60;//生管備註
+								worksheet.getColumn(16).width = 15;//物控狀態
+								worksheet.getColumn(17).width = 14;
+								worksheet.getColumn(18).width = 60;//物控備註
+								worksheet.getColumn(19).width = 14;
+								worksheet.getColumn(20).width = 60;//倉庫備註
+								worksheet.getColumn(21).width = 14;
+								worksheet.getColumn(22).width = 60;//製造備註
+								worksheet.getColumn(23).width = 28;//年周
 								//換行設製
 								let alignments = {wrapText: true, vertical: 'top', horizontal: 'left'};
 								for (let ii = 1; ii <= 24; ii++) {
 									worksheet.getColumn(ii).alignment = alignments;//加工廠
 								}
-								//顏色標記:預計開工日(soodate) <= 預計齊料日(somcdate)
+								//顏色標記:預計開工日(siodate) <= 預計齊料日(simcdate)
 								// 比對資料並設定第三格
 								worksheet.eachRow((row, rowIndex) => {
 									if (rowIndex === 1) return; // 跳過第一筆資料 (標題行)
-									const cell8 = row.getCell(8); // 齊料日
-									const cell15 = row.getCell(15); // 開工日
-									// 預設每行高度為 60，避免資料超出影響排版
-									row.height = 60;
+									const cell8 = row.getCell(17); // 齊料日
+									const cell1 = row.getCell(1);  //  開工日 or 有"週期"字眼的欄位
+									const cell6 = row.getCell(6); //客戶訂單
+
 									// 比對資料
-									if (cell8.value >= cell15.value) {
-										cell15.font = {color: {argb: 'FFFF0000'}}; // 紅色
+									if (cell8.value && cell1.value && cell8.value >= cell1.value) {
+										cell1.font = {color: {argb: 'FFFF0000'}}; // 紅色
+									}
+									// 如果 cell1 (第 1 欄) 包含 "週期"，則設定黃色背景
+									if (cell1.value && cell1.value.toString().includes("週期")) {
+										cell1.fill = {
+											type: 'pattern',
+											pattern: 'solid',
+											fgColor: {argb: 'FFFFFF00'} // 黃色
+										};
+										cell6.fill = {
+											type: 'pattern',
+											pattern: 'solid',
+											fgColor: {argb: 'FFFFFF00'} // 黃色
+										};
+									} else {
+										// 預設每行高度為 60，避免資料超出影響排版(除了黃字)
+										row.height = 60;
 									}
 								});
+
 								// 凍結第一列
 								worksheet.views = [
 									{state: 'frozen', ySplit: 1} // 凍結第一列（ySplit 表示橫向分割點）
@@ -1050,11 +1050,14 @@
 				let searchReportExcel = $('#searchReportExcel').clone();
 				searchReportExcel.find('.markFn').remove();
 				searchReportExcel.find('button').remove();
-				searchReportExcel.find('.valTbodyTrYW').remove();
+				//searchReportExcel.find('.valTbodyTrYW').remove();
 				searchReportExcel.find('.d-none').remove();
 				//searchReportExcel.find('.markFn').remove();
+				//周年修正
+				searchReportExcel.find('.valTbodyTrYW_Re .TbodyThYWO').attr("colspan", "18");//18
+
 				//置換資料-生管(換行)
-				searchReportExcel.find('.soscnote').each(function () {
+				searchReportExcel.find('.siscnote').each(function () {
 					let k = "\n"
 					let doubleN = false;
 					$(this).find('.needbr').each(function () {
@@ -1071,7 +1074,7 @@
 					$(this).html(k);
 				});
 				//置換資料-物控(換行)
-				searchReportExcel.find('.somcnote').each(function () {
+				searchReportExcel.find('.simcnote').each(function () {
 					let k = "\n"
 					let doubleN = false;
 					$(this).find('.needbr').each(function () {
@@ -1088,7 +1091,7 @@
 					$(this).html(k);
 				});
 				//置換資料-倉儲(換行)
-				searchReportExcel.find('.sowmnote').each(function () {
+				searchReportExcel.find('.siwmnote').each(function () {
 					let k = "\n"
 					let doubleN = false;
 					$(this).find('.needbr').each(function () {
@@ -1105,7 +1108,7 @@
 					$(this).html(k);
 				});
 				//置換資料-製造(換行)
-				searchReportExcel.find('.sompnote').each(function () {
+				searchReportExcel.find('.simpnote').each(function () {
 					let k = "\n"
 					let doubleN = false;
 					$(this).find('.needbr').each(function () {
@@ -1123,7 +1126,7 @@
 				});
 
 				//置換資料 Note(換行)
-				searchReportExcel.find('.sonote').each(function () {
+				searchReportExcel.find('.sinote').each(function () {
 					let k = this.innerHTML.replace(/[^\x00-\xff]/g, "$&\x01").replace(/.{49}\x01?/g, "$&\n").replace(/\x01/g, "");
 					$(this).html(k);
 				});
@@ -1139,7 +1142,7 @@
 			websocketInit(objstring) {
 				let ws = "ws://";
 				ws += location.host;
-				ws += "/DTRcloud/websocket/schedule_outsourcer_client/echo?userAcc=";
+				ws += "/DTRcloud/websocket/schedule_infactory_client/echo?userAcc=";
 				ws += $("#menu_login_name").attr("alt");
 
 				//console.log(ip);
@@ -1161,7 +1164,7 @@
 						let updateNewData = [];
 						other.data.searchPageSet.entityJsons.forEach(function (t) {
 							updateCheck.forEach(function (n) {
-								if (t.soid == n.soid) {
+								if (t.siid == n.siid) {
 									updateNewData.push(n);
 								}
 							});
@@ -1194,6 +1197,7 @@
 								}
 								break;
 						}
+
 					} else {
 						//失敗時候也清除
 						$("#btn_markCancel").trigger('click');
@@ -1338,28 +1342,28 @@
 					$("#search_c_modify .bi-dash-square").trigger('click');
 				}
 				//顯示標題?
-				$("thead .mfy_sonb_show").removeClass("d-none");
+				$("thead .mfy_sinb_show").removeClass("d-none");
 				switch (order) {
 					case "btn_pc"://生管
 						$("thead .mfy_sofo_show").removeClass("d-none");
 						$("thead .mfy_sosc_show").removeClass("d-none");
-						$(".mfy_sonb_choose").text("pc");
+						$(".mfy_sinb_choose").text("pc");
 						break
 					case "btn_mc"://物控
 						$("thead .mfy_somc_show").removeClass("d-none");
-						$(".mfy_sonb_choose").text("mc");
+						$(".mfy_sinb_choose").text("mc");
 						break;
 					case "btn_wm"://倉儲
 						$("thead .mfy_sowm_show").removeClass("d-none");
-						$(".mfy_sonb_choose").text("wm");
+						$(".mfy_sinb_choose").text("wm");
 						break;
 					case "btn_pl"://製造
 						$("thead .mfy_somp_show").removeClass("d-none");
-						$(".mfy_sonb_choose").text("pl");
+						$(".mfy_sinb_choose").text("pl");
 						break;
 					case "btn_br"://置亮
 						$("thead .mfy_sobr_show").removeClass("d-none");
-						$(".mfy_sonb_choose").text("br");
+						$(".mfy_sinb_choose").text("br");
 						break;
 				}
 				//顯示Data
@@ -1373,81 +1377,81 @@
 						mfyEx.addClass("mfy_datas");
 						mfyEx.removeClass("d-none");
 						//資料
-						let soid = $(this).find(".soid").text();
-						let sonb = $(this).find(".sonb").text();
-						let sofodate = $(this).find(".sofodate").html().replaceAll("<br>", "\n");
-						sofodate = sofodate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
-						let sofokdate = $(this).find(".sofokdate").html().replaceAll("<br>", "\n");
-						sofokdate = sofokdate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
-						let soscstatus = $(this).find(".soscstatus").attr('title');
-						let somcdate = $(this).find(".somcdate").text();
-						let soscnote = "";
-						let somcnote = "";
-						let sowmnote = "";
-						let sompnote = "";
+						let siid = $(this).find(".siid").text();
+						let sinb = $(this).find(".sinb").text();
+						let sifodate = $(this).find(".sifodate").html().replaceAll("<br>", "\n");
+						sifodate = sifodate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+						let sifokdate = $(this).find(".sifokdate").html().replaceAll("<br>", "\n");
+						sifokdate = sifokdate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+						let siscstatus = $(this).find(".siscstatus").attr('title');
+						let simcdate = $(this).find(".simcdate").text();
+						let siscnote = "";
+						let simcnote = "";
+						let siwmnote = "";
+						let simpnote = "";
 						switch (order) {
 							case "btn_pc"://生管
 								//生館
-								if ($(this).find(".soscnote .notes").length > 0) {
-									soscnote = $(this).find(".soscnote .notes").first().html().replaceAll("<br>", "\n")
-									soscnote = soscnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+								if ($(this).find(".siscnote .notes").length > 0) {
+									siscnote = $(this).find(".siscnote .notes").first().html().replaceAll("<br>", "\n")
+									siscnote = siscnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
+								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sosc_show").removeClass("d-none");
 								mfyEx.find(".mfy_sofo_show").removeClass("d-none")
 								break
 							case "btn_mc"://物控
 								//悟空
-								if ($(this).find(".somcnote .notes").length > 0) {
-									somcnote = $(this).find(".somcnote .notes").first().html().replaceAll("<br>", "\n");
-									somcnote = somcnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+								if ($(this).find(".simcnote .notes").length > 0) {
+									simcnote = $(this).find(".simcnote .notes").first().html().replaceAll("<br>", "\n");
+									simcnote = simcnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
+								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somc_show").removeClass("d-none");
 
 								break;
 							case "btn_wm"://倉儲
 								//倉庫
-								if ($(this).find(".sowmnote .notes").length > 0) {
-									sowmnote = $(this).find(".sowmnote .notes").first().html().replaceAll("<br>", "\n");
-									sowmnote = sowmnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+								if ($(this).find(".siwmnote .notes").length > 0) {
+									siwmnote = $(this).find(".siwmnote .notes").first().html().replaceAll("<br>", "\n");
+									siwmnote = siwmnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
+								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sowm_show").removeClass("d-none");
 								break;
 							case "btn_pl"://製造
 								//製造
-								if ($(this).find(".sompnote .notes").length > 0) {
-									sompnote = $(this).find(".sompnote .notes").first().html().replaceAll("<br>", "\n");
-									sompnote = sompnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+								if ($(this).find(".simpnote .notes").length > 0) {
+									simpnote = $(this).find(".simpnote .notes").first().html().replaceAll("<br>", "\n");
+									simpnote = simpnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
+								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_somp_show").removeClass("d-none");
 								break;
 							case "btn_br"://置亮
 
-								mfyEx.find(".mfy_sonb_show").removeClass("d-none");
+								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sobr_show").removeClass("d-none");
 								break;
 						}
 						//資料填入
-						mfyEx.attr("id", soid);
-						mfyEx.addClass(sonb);
-						mfyEx.find(".mfy_sonb_val").val(sonb);
-						mfyEx.find(".mfy_sofodate_val").val(sofodate);
-						mfyEx.find(".mfy_sofokdate_val").val(sofokdate);
-						mfyEx.find(".mfy_soscstatus_val").val(soscstatus);
-						mfyEx.find(".mfy_soscnote_val").val(soscnote);
-						mfyEx.find(".mfy_soscnote_val").attr("rows", "6");
+						mfyEx.attr("id", siid);
+						mfyEx.addClass(sinb);
+						mfyEx.find(".mfy_sinb_val").val(sinb);
+						mfyEx.find(".mfy_sifodate_val").val(sifodate);
+						mfyEx.find(".mfy_sifokdate_val").val(sifokdate);
+						mfyEx.find(".mfy_siscstatus_val").val(siscstatus);
+						mfyEx.find(".mfy_siscnote_val").val(siscnote);
+						mfyEx.find(".mfy_siscnote_val").attr("rows", "6");
 
-						mfyEx.find(".mfy_somcdate_val").val(somcdate);
-						mfyEx.find(".mfy_somcnote_val").val(somcnote);
-						mfyEx.find(".mfy_somcnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_simcdate_val").val(simcdate.replaceAll("-", ""));
+						mfyEx.find(".mfy_simcnote_val").val(simcnote);
+						mfyEx.find(".mfy_simcnote_val").attr("rows", "6");
 
-						mfyEx.find(".mfy_sowmnote_val").val(sowmnote);
-						mfyEx.find(".mfy_sowmnote_val").attr("rows", "6");
-						mfyEx.find(".mfy_sompnote_val").val(sompnote);
-						mfyEx.find(".mfy_sompnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_siwmnote_val").val(siwmnote);
+						mfyEx.find(".mfy_siwmnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_simpnote_val").val(simpnote);
+						mfyEx.find(".mfy_simpnote_val").attr("rows", "6");
 					}
 				});
 				//是否有人使用?/如果已經鎖住 不需要再傳送
@@ -1457,7 +1461,7 @@
 			},
 			searchToModifyRe() {
 				$("#search_c_modify th").addClass("d-none");
-				$(".mfy_sonb_choose").text("");
+				$(".mfy_sinb_choose").text("");
 				$("#search_c_modify th input").val("");
 				//$("#search_c_modify tbody tr").attr("id", "");
 				$("#search_c_modify tbody .mfy_datas").remove();
@@ -1471,34 +1475,34 @@
 					if ($(this).attr("id") != "") {
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
-						entityJson['soid'] = parseInt($(this).attr("id"));
-						entityJson['sonb'] = $(this).find(".mfy_sonb_val").val();
-						entityJson['sofodate'] = "";
-						entityJson['sofokdate'] = "";
-						entityJson['soscstatus'] = "4";
-						entityJson['soscnote'] = "";
-						entityJson['somcdate'] = "";
-						entityJson['somcnote'] = "";
-						entityJson['sowmnote'] = "";
-						entityJson['sompnote'] = "";
+						entityJson['siid'] = parseInt($(this).attr("id"));
+						entityJson['sinb'] = $(this).find(".mfy_sinb_val").val();
+						entityJson['sifodate'] = "";
+						entityJson['sifokdate'] = "";
+						entityJson['siscstatus'] = "4";
+						entityJson['siscnote'] = "";
+						entityJson['simcdate'] = "";
+						entityJson['simcnote'] = "";
+						entityJson['siwmnote'] = "";
+						entityJson['simpnote'] = "";
 
-						choose = $(this).find(".mfy_sonb_choose").text();
+						choose = $(this).find(".mfy_sinb_choose").text();
 						switch (choose) {
 							case "pc"://生館
-								entityJson['sofodate'] = $(this).find(".mfy_sofodate_val").val();
-								entityJson['sofokdate'] = $(this).find(".mfy_sofokdate_val").val();
-								entityJson['soscstatus'] = $(this).find(".mfy_soscstatus_val").val();
-								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val();
+								entityJson['sifodate'] = $(this).find(".mfy_sifodate_val").val();
+								entityJson['sifokdate'] = $(this).find(".mfy_sifokdate_val").val();
+								entityJson['siscstatus'] = $(this).find(".mfy_siscstatus_val").val();
+								entityJson['siscnote'] = $(this).find(".mfy_siscnote_val").val();
 								break
 							case "mc"://物控
-								entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
-								entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
+								entityJson['simcdate'] = $(this).find(".mfy_simcdate_val").val();
+								entityJson['simcnote'] = $(this).find(".mfy_simcnote_val").val();
 								break;
 							case "wm"://倉儲
-								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val();
+								entityJson['siwmnote'] = $(this).find(".mfy_siwmnote_val").val();
 								break;
 							case "pl"://製造
-								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val();
+								entityJson['simpnote'] = $(this).find(".mfy_simpnote_val").val();
 								break;
 							case "br"://置亮
 								entityJson['sysheader'] = $(this).find(".mfy_sobr_val").prop("checked");
@@ -1528,23 +1532,30 @@
 					if ($(this).attr("id") != "") {
 						console.log($(this).attr("id"));
 						entityJson = JSON.parse(JSON.stringify(other.data.entityFormatJson));//格式
-						entityJson['soid'] = parseInt($(this).attr("id"));
-						entityJson['sonb'] = $(this).find("mfy_sonb_val").val();
+						entityJson['siid'] = parseInt($(this).attr("id"));
+						entityJson['sinb'] = $(this).find("mfy_sinb_val").val();
 						data = {};
-						choose = $(this).find(".mfy_sonb_choose").text();
+						choose = $(this).find(".mfy_sinb_choose").text();
 						switch (choose) {
 							case "pc"://生館
-								entityJson['sofodate'] = $(this).find(".mfy_sofodate_val").val();
-								entityJson['sofokdate'] = $(this).find(".mfy_sofokdate_val").val();
-								entityJson['soscstatus'] = $(this).find(".mfy_soscstatus_val").val();
-								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val();
+								entityJson['sifodate'] = $(this).find(".mfy_sifodate_val").val();
+								entityJson['sifokdate'] = $(this).find(".mfy_sifokdate_val").val();
+								entityJson['siscstatus'] = $(this).find(".mfy_siscstatus_val").val();
+								entityJson['siscnote'] = $(this).find(".mfy_siscnote_val").val();
 								action = "S1";
 								break
 							case "mc"://物控
-								let somcdate = $(this).find(".mfy_somcdate_val").val();
-								if (somcdate.match(regEx) || somcdate == '') {
-									entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
-									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
+								let simcdate = $(this).find(".mfy_simcdate_val").val();
+								if ((/^\d{8}$/.test(simcdate)) || simcdate == '') {
+									//無效格式
+									if (simcdate !== '') {
+										let year = simcdate.slice(0, 4);
+										let month = simcdate.slice(4, 6);
+										let day = simcdate.slice(6, 8);
+										simcdate = year + "-" + month + "-" + day;
+									}
+									entityJson['simcdate'] = simcdate;
+									entityJson['simcnote'] = $(this).find(".mfy_simcnote_val").val();
 									action = "S2";
 								} else {
 									entityJsons = [];//清除
@@ -1552,11 +1563,11 @@
 								}
 								break;
 							case "wm"://倉儲
-								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val();
+								entityJson['siwmnote'] = $(this).find(".mfy_siwmnote_val").val();
 								action = "S3";
 								break;
 							case "pl"://製造
-								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val();
+								entityJson['simpnote'] = $(this).find(".mfy_simpnote_val").val();
 								action = "S4";
 								break;
 							case "br"://置亮
@@ -1701,11 +1712,11 @@
 				console.log("start" + new Date());
 				let onlyUpdateNb = 1;
 				//物控狀態
-				const somcstatusMap = {0: "未確認", 1: "未齊料", 2: "已齊料"};
+				const simcstatusMap = {0: "未確認", 1: "未齊料", 2: "已齊料"};
 				//製令單狀態
-				const sostatusMap = {"1": "未生產", "2": "已發料", "3": "生產中", "Y": "已完工", "y": "指定完工", "V": "已作廢"};
+				const sistatusMap = {"1": "未生產", "2": "已發料", "3": "生產中", "Y": "已完工", "y": "指定完工", "V": "已作廢"};
 				// 定義生管狀態字典
-				const soscstatusMap = {1: "已發料", 2: "部分缺料", 3: "備料中", 4: "未生產", 5: "待通知打件"};
+				const siscstatusMap = {0: "未開注意事項", 1: "已開注意事項", 2: "已核准流程卡"};
 				entityJsons.forEach((entity, x) => {
 					//參數
 					//let entity = entityJsons[x];//((目前頁碼-1)*每頁數量)+x
@@ -1732,6 +1743,8 @@
 					let valTr = $('.valTbodyTr_' + valTrNb);
 					let inputTrNb = $('.valTbodyTr_' + valTrNb + ' input');
 					let valTbodyTrs = $('.valTbodyTr_' + valTrNb);
+					// 當前週期
+					let todayWeek = other.methods.getWeekNumber(new Date());
 					Object.keys(entity).forEach(function (k) {
 						//每個欄位?
 						let cellTrNb = valTbodyTrs.find(' .' + k);
@@ -1754,7 +1767,7 @@
 							dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 							dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
 							cellTrNb.text(dateF);
-						} else if (["soscnote", "somcnote", "sowmnote", "sompnote"].includes(k)) {
+						} else if (["siscnote", "simcnote", "siwmnote", "simpnote"].includes(k)) {
 							//生管_物控_製造_倉庫
 							let notes = JSON.parse(fieldValue);
 							let noteCell = '<div class="noteShow" style="overflow: hidden;height: 80px;">';
@@ -1772,24 +1785,24 @@
 							noteCell += noteIns + '</div>';
 							cellTrNb.html(noteCell);
 							cellTrNb.find(".row").first().removeClass("border-secondary").addClass("border-warning");
-						} else if (k == "sostatus") {
+						} else if (k == "sistatus") {
 							//製令單狀態-如果不存在則設置為空字串
-							cellTrNb.text(sostatusMap[fieldValue] || "");
-						} else if (k == "soscstatus") {
+							cellTrNb.text(sistatusMap[fieldValue] || "");
+						} else if (k == "siscstatus") {
 							//生管狀態-若不存在則預設為空字串
-							cellTrNb.text(soscstatusMap[fieldValue] || "").attr("title", fieldValue);
-						} else if (k == "somcstatus") {
+							cellTrNb.text(siscstatusMap[fieldValue] || "").attr("title", fieldValue);
+						} else if (k == "simcstatus") {
 							//物控狀態-如果不存在則設置為空字串
-							cellTrNb.text(somcstatusMap[fieldValue] || "");
-						} else if (k == "sonote") {
+							cellTrNb.text(simcstatusMap[fieldValue] || "");
+						} else if (k == "sinote") {
 							//製令單備註
 							cellTrNb.html('<div class="text-start" style="height:80px;white-space: normal;line-height: 16px; font-size:14px;">' + fieldValue + '</div>');
 						}
 						else {
 							//一般文字
 							cellTrNb.text(fieldValue);
-							if (k == "soodate" && entity["soodate"] <= entity["somcdate"]) {
-								//顏色標記:預計開工日(soodate) <= 預計齊料日(somcdate)
+							if (k == "siodate" && entity["siodate"] <= entity["simcdate"]) {
+								//顏色標記:預計開工日(siodate) <= 預計齊料日(simcdate)
 								cellTrNb.addClass("text-danger");
 							} else {
 								//時間內 : 取消標記
@@ -1810,7 +1823,47 @@
 					valTr.removeClass("d-none");
 					//========指定週期欄位->每周數量(取消顯示)========
 					console.log("年-週期:" + yyW00);
-					
+					if (yyW00 != entity["siywdate"]) {
+						//Step1.上次位置?
+						if ($(yyW00LastClass).length >= 1 && yyW00 >= todayWeek) {
+							$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
+							yyW00Qty = 0;
+						}
+						//第一筆?->需要建立
+						let fyyW00 = (yyW00 === "");
+						//Step2.不同週期時?
+						yyW00 = entity["siywdate"];
+						//前期累加?
+						if (fyyW00 || yyW00 > todayWeek) {
+							//複製						
+							let exTbodyTrYW = $('.exTbodyTrYW').clone();
+							exTbodyTrYW.removeClass("exTbodyTrYW d-none");
+							exTbodyTrYW.addClass("valTbodyTrYW_" + yyW00);
+							exTbodyTrYW.addClass("valTbodyTrYW valTbodyTrYW_Re");
+							//Step3.登記
+							yyW00LastClass = ".valTbodyTrYW_" + yyW00;
+							yyW00Qty += (entity["sirqty"] - entity["siokqty"]);
+							console.log("年-週期:" + yyW00 + " / 周-未產總數:" + yyW00Qty);
+							//Step4.插入
+							exTbodyTrYW.insertBefore('.valTbodyTr_' + valTrNb);
+							//Step5-2.最後一筆?
+							if ((pageSN + x) == entityJsons.length - 1) {
+								$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
+							}
+						} else {
+							//小於本週期時
+							yyW00Qty += (entity["sirqty"] - entity["siokqty"]);
+							$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
+						}
+					} else {
+						//同一週期時
+						yyW00Qty += (entity["sirqty"] - entity["siokqty"]);
+						//Step5-2.最後一筆?
+						if ((pageSN + x) == entityJsons.length - 1) {
+							$(yyW00LastClass).find(".TbodyThYW").text("年-週期:" + yyW00 + "  周-未產總數:" + yyW00Qty);
+						}
+
+					}
 
 					//========有改過的資料========
 					let tagEntity = JSON.parse(entity['tag']);
@@ -1832,6 +1885,17 @@
 				});
 				console.log("start" + new Date());
 			},
+			//本州週期
+			getWeekNumber(date) {
+				let d = new Date(date);
+				d.setHours(0, 0, 0, 0);
+				d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); // 調整到最近的週四
+				let week1 = new Date(d.getFullYear(), 0, 4); // 找到第一週的標準
+				let weekNumber = Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7) + 1;
+				console.log("本周:" + d.getFullYear() + "-W" + String(weekNumber).padStart(2, "0"));
+				return d.getFullYear() + "-W" + String(weekNumber).padStart(2, "0");
+			},
+
 			//==========================初始化==========================
 			destroy() {
 				//websocket離線
