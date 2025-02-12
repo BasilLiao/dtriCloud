@@ -59,6 +59,7 @@ public class ERPAutoCheckService {
 		history.setWhfuser("System(Re_Auto)");
 		history.setWheqty(area != null ? area.getWaerptqty() : 0);
 		history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+		history.setWhpomqty("" + wAsQty);
 		history.setWhcheckin(o.getBilcheckin() == 0 ? "未核單" : "已核單");
 		historyDao.save(history);
 
@@ -97,6 +98,7 @@ public class ERPAutoCheckService {
 		history.setWhfuser("System(Re_Auto)");
 		history.setWheqty(area != null ? area.getWaerptqty() : 0);
 		history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+		history.setWhpomqty("+" + wAsQty);
 		history.setWhcheckin(o.getBslcheckin() == 0 ? "未核單" : "已核單");
 		historyDao.save(history);
 		return o;
@@ -252,6 +254,7 @@ public class ERPAutoCheckService {
 			history.setWhfuser(o.getBilfuser());
 			history.setWheqty(area != null ? area.getWaerptqty() : 0);
 			history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+			history.setWhpomqty("+" + wAsQty);
 			history.setWhcheckin(o.getBilcheckin() == 0 ? "未核單" : "已核單");
 			historyDao.save(history);
 		}
@@ -460,6 +463,7 @@ public class ERPAutoCheckService {
 			history.setWhfuser(o.getBslfuser());
 			history.setWheqty(area != null ? area.getWaerptqty() : 0);
 			history.setWhcqty(area != null ? area.getWatqty() + wAsQty : 0);
+			history.setWhpomqty("" + wAsQty);
 			history.setWhcheckin(o.getBslcheckin() == 0 ? "未核單" : "已核單");
 			historyDao.save(history);
 		}

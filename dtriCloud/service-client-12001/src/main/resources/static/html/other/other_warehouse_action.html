@@ -1507,9 +1507,10 @@
 						let iKey = "";
 						let gKey = "";
 						let valTrNb = x + 1;
+						let valTbodyTr_ = $('.valTbodyTr_' + valTrNb);
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
-							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+							valTbodyTr_.find(' th input').removeAttr("disabled");
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
 							//是否GKEY?
@@ -1523,28 +1524,28 @@
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+								valTbodyTr_.find(' .' + k).text(dateF);
 							} else {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+								valTbodyTr_.find(' .' + k).text(entity[k]);
 							}
 
 							//marks標記?
-							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							valTbodyTr_.find(' input').attr("title", iKey + "_" + gKey);
 							//帶入
 							for (let m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-									$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
+									valTbodyTr_.find(' input').prop("checked", true);
 									break;
 								}
 							}
 						});
 						//急單?
 						if (entity['wasstatus'] == 1) {
-							$('.valTbodyTr_' + valTrNb + ' .wasclasssn').addClass('bg-warning');
+							valTbodyTr_.find(' .wasclasssn').addClass('bg-warning');
 						} else if (entity['wasstatus'] == 2) {
-							$('.valTbodyTr_' + valTrNb + ' .wasclasssn').addClass('bg-danger');
+							valTbodyTr_.find(' .wasclasssn').addClass('bg-danger');
 						} else {
-							$('.valTbodyTr_' + valTrNb + ' .wasclasssn').addClass('bg-warning-30');
+							valTbodyTr_.find(' .wasclasssn').addClass('bg-warning-30');
 						}
 					}
 				}

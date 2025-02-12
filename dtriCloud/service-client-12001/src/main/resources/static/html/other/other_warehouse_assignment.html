@@ -1256,10 +1256,12 @@
 						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
 						let iKey = "";
 						let gKey = "";
+						
 						Object.keys(entity).forEach(function (k) {
 							//欄位計數
 							let valTrNb = x + 1;
-							$('.valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
+							let valTbodyTr_ = $('.valTbodyTr_' + valTrNb);
+							valTbodyTr_.find(' th input').removeAttr("disabled");
 							//是否IKEY?
 							if (entityIKey == k) {iKey = entity[k];}
 							//是否GKEY?
@@ -1273,30 +1275,30 @@
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
+								valTbodyTr_.find( ' .' + k).text(dateF);
 							} else {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
+								valTbodyTr_.find( ' .' + k).text(entity[k]);
 							}
 
 							//marks標記?
-							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							valTbodyTr_.find( ' input').attr("title", iKey + "_" + gKey);
 							//帶入
 							for (let m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-									$('.valTbodyTr_' + valTrNb + ' input').prop("checked", true);
+									valTbodyTr_.find( ' input').prop("checked", true);
 									break;
 								}
 							}
 							//打印
 							if (k == "waspalready" && entity[k] == "未打印") {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
+								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
 							}
 							//完成?
 							if (k == "wasschedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
+								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
 							}
 							if (k == "wascischedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
-								$('.valTbodyTr_' + valTrNb + ' .' + k).addClass("bg-warning");
+								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
 							}
 
 						});

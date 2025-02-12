@@ -69,18 +69,18 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	 [DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	 ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	 (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3') "//
-			// + " (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3' OR
-			// MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
+			// + " (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3') "//
+			+ " (MOCTA.TA011 = '1' OR MOCTA.TA011 = '2' OR MOCTA.TA011 = '3' OR MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
 			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
 			+ "	 AND (MOCTB.TB018 = 'Y' OR MOCTB.TB018 = 'N') "// --核單碼
-			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-90, 112) "//
-			+ "	 OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
+			+ "  AND (:TA001TA002MB001 IS NULL OR (MOCTA.TA001+'-'+TRIM(MOCTA.TA002)+'-'+INVMB.MB001) IN (:TA001TA002MB001))  "// 比對製令單+物料號?
+			+ "  AND (:TA001TA002MB001 IS NULL AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-1, 112) "//
+			+ "	 OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))) "// 今天
 			+ " ORDER BY "//
 			+ "	 MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
 			+ "	 INVMB.MB001 ASC,"// --物料
 			+ "	 MOCTA.TA009 ASC"// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Mocta> findAllByMocta();
+	ArrayList<Mocta> findAllByMocta(String TA001TA002MB001);// 工單號+物料號
 
 }

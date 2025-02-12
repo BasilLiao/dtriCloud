@@ -77,7 +77,7 @@ public class WarehouseActionServiceAc {
 		// Step1.批次分頁
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 9999;
+		int total = 50000;
 		int batch = 0;
 
 		// Step2.排序
@@ -104,6 +104,7 @@ public class WarehouseActionServiceAc {
 		ArrayList<WarehouseActionFront> entitys = new ArrayList<WarehouseActionFront>();
 		ArrayList<WarehouseActionDetailFront> entityDetails = new ArrayList<WarehouseActionDetailFront>();
 		Map<String, Integer> entityChecks = new HashMap<>();
+
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
 		Map<String, WarehouseArea> areaMaps = new HashMap<>();
@@ -126,12 +127,13 @@ public class WarehouseActionServiceAc {
 					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchAction(null, null, null,
 					packageBean.getUserAccount().equals("admin") ? null : packageBean.getUserAccount(), "", shPageable);
-
 			// 領料
 			shippingLists.forEach(sh -> {
+
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
 
+				// 如果是尚未處裡
 				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
@@ -173,9 +175,8 @@ public class WarehouseActionServiceAc {
 //				if (headerKey.equals("A541-231003009")) {
 //					System.out.println(headerKey);
 //				}
-
 				// header
-				if (entityChecks.size() < 50) {
+				if (entityChecks.size() < 100) {
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, 0);
 						// 限制大小50張單
@@ -207,6 +208,7 @@ public class WarehouseActionServiceAc {
 						entitys.add(eh);
 					}
 				}
+				// 登記以刷存取
 				if (entityChecks.containsKey(headerKey)) {
 					entityChecks.put(headerKey, entityChecks.get(headerKey) + 1);
 					// body
@@ -216,8 +218,10 @@ public class WarehouseActionServiceAc {
 
 			// 進料
 			incomingLists.forEach(in -> {
+
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
+				// 如果是尚未處裡
 				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
@@ -254,11 +258,12 @@ public class WarehouseActionServiceAc {
 				e.setSysmdate(in.getSysmdate());
 				e.setSysmuser(in.getSysmuser());
 				e.setSysnote(in.getSysnote());
-				// 限制大小50張單
+				// 限制大小100張單
 				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, 0);
+
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -298,9 +303,9 @@ public class WarehouseActionServiceAc {
 			entitys.forEach(enh -> {
 				if (entityChecks.containsKey(enh.getGid())) {
 					enh.setWasclassname(enh.getWasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
+
 				}
 			});
-
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);
@@ -397,8 +402,12 @@ public class WarehouseActionServiceAc {
 
 			// 領料
 			shippingLists.forEach(sh -> {
+
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn() + "-領料類";
 				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb() + "-領料類";
+				System.out.println(headerKey + ":" + sh.getBslfuser());
+
+				// 如果是尚未處裡
 
 				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
@@ -436,10 +445,11 @@ public class WarehouseActionServiceAc {
 				e.setSysmdate(sh.getSysmdate());
 				e.setSysmuser(sh.getSysmuser());
 				e.setSysnote(sh.getSysnote());
-				if (entityChecks.size() < 50) {
+				if (entityChecks.size() < 100) {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, 0);
+
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -477,9 +487,10 @@ public class WarehouseActionServiceAc {
 			});
 			// 進料
 			incomingLists.forEach(in -> {
+
 				String headerKey = in.getBilclass() + "-" + in.getBilsn() + "-入料類";
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb() + "-入料類";
-
+				// 如果是尚未處裡
 				WarehouseActionDetailFront e = new WarehouseActionDetailFront();
 				e.setId(Key);
 				e.setGid(headerKey);
@@ -520,6 +531,7 @@ public class WarehouseActionServiceAc {
 					// header
 					if (!entityChecks.containsKey(headerKey)) {
 						entityChecks.put(headerKey, 0);
+
 						// 限制大小50張單
 						WarehouseActionFront eh = new WarehouseActionFront();
 						eh.setId(Key);
@@ -554,11 +566,14 @@ public class WarehouseActionServiceAc {
 					// body
 					entityDetails.add(e);
 				}
+
 			});
+
 			// 顯示數量
 			entitys.forEach(enh -> {
 				if (entityChecks.containsKey(enh.getGid())) {
 					enh.setWasclassname(enh.getWasclassname() + "(" + entityChecks.get(enh.getGid()) + ")");
+
 				}
 			});
 
@@ -912,6 +927,7 @@ public class WarehouseActionServiceAc {
 					history.setWhfuser(incomingList.getBilfuser());
 					history.setWheqty(area.getWaerptqty());
 					history.setWhcqty(area.getWatqty());
+					history.setWhpomqty("+" + incomingList.getBilpnqty());
 					history.setWhcheckin(incomingList.getBilcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}
@@ -961,6 +977,7 @@ public class WarehouseActionServiceAc {
 					history.setWhfuser(shippingList.getBslfuser());
 					history.setWheqty(area.getWaerptqty());
 					history.setWhcqty(area.getWatqty());
+					history.setWhpomqty("" + shippingList.getBslpnqty());
 					history.setWhcheckin(shippingList.getBslcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}

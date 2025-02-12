@@ -51,7 +51,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	AND (PURTH.TH030 LIKE 'N' OR PURTH.TH030 LIKE 'Y' ) "// 已結項目 與 未結項目
 			+ "	AND PURTH.TH007 > 0 "// 數量大於0
 			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
-			+ "	AND (PURTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
+			+ "	AND (PURTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-3, 112) "//
 			+ "	OR PURTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//
 			+ "	PURTH.TH001+'-'+PURTH.TH002+'-'+PURTH.TH003 ASC ,"// --進貨單號

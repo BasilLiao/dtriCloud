@@ -874,12 +874,13 @@ public class WarehouseAssignmentServiceAc {
 										WarehouseHistory history = new WarehouseHistory();
 										history.setWhtype("入料(指令:" + action + ")");
 										history.setWhwmslocation(t.getBiltowho());
-										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + // 入料單
-												t.getBilnb() + "*" + t.getBilpnqty());
+										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + t.getBilnb()
+												+ "*" + t.getBilpnqty());// 入料單
 										history.setWhwmpnb(t.getBilpnumber());
 										history.setWhfuser(packageBean.getUserAccount());
 										history.setWheqty(area.getWaerptqty());
 										history.setWhcqty(area.getWatqty());
+										history.setWhpomqty("+" + t.getBilpnqty());
 										history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
 										entityHistories.add(history);
 									}
@@ -949,12 +950,13 @@ public class WarehouseAssignmentServiceAc {
 										history.setWhtype("領料(指令:" + action + ")");
 										history.setWhwmslocation(t.getBslfromwho());
 										history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
-												t.getBslclass() + "-" + t.getBslsn() + "-" + // 領料單
-												t.getBslnb() + "*" + t.getBslpnqty());
+												t.getBslclass() + "-" + t.getBslsn() + "-" + t.getBslnb() + "*"
+												+ t.getBslpnqty());// 領料單
 										history.setWhwmpnb(t.getBslpnumber());
 										history.setWhfuser(packageBean.getUserAccount());
 										history.setWheqty(area.getWaerptqty());
 										history.setWhcqty(area.getWatqty());
+										history.setWhpomqty("" + t.getBslpnqty());
 										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
 										entityHistories.add(history);
 									}
@@ -1027,6 +1029,7 @@ public class WarehouseAssignmentServiceAc {
 									history.setWhfuser(packageBean.getUserAccount());
 									history.setWheqty(area.getWaerptqty());
 									history.setWhcqty(area.getWatqty());
+									history.setWhpomqty("+" + t.getBilpnqty());
 									history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
 									entityHistories.add(history);
 									//
@@ -1089,6 +1092,7 @@ public class WarehouseAssignmentServiceAc {
 									history.setWhfuser(packageBean.getUserAccount());
 									history.setWheqty(area.getWaerptqty());
 									history.setWhcqty(area.getWatqty());
+									history.setWhpomqty("" + t.getBslpnqty());
 									history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
 									entityHistories.add(history);
 									//

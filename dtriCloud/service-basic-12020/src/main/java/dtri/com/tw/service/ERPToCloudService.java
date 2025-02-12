@@ -89,7 +89,12 @@ public class ERPToCloudService {
 
 		o.setSyshnote(m.getTa029());// 生管備註
 		o.setSyshonote(m.getTa054());// 生產注意事項
-		o.setSysstatus(0);// 未完成
+		if (m.getTa011() != null && (m.getTa011().equals("Y") || m.getTa011().equals("y"))) {
+			o.setSysstatus(1);// 已完成
+		} else {
+			o.setSysstatus(0);// 未完成
+		}
+
 		o.setSysmdate(new Date());// 日期
 		return o;
 	}

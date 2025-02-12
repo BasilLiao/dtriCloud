@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,11 +200,11 @@ public class SynchronizeERPService {
 	// ============ A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單 ============
 	public void erpSynchronizeMocta() throws Exception {
 		logger.info("=== erpSynchronizeMocta: 時間:{}", dateFormat.format(new Date()));
-		ArrayList<Mocta> moctas = moctaDao.findAllByMocta();
+		ArrayList<Mocta> moctas = moctaDao.findAllByMocta(null);
 		Map<String, Mocta> erpMaps = new HashMap<>();
 		Map<String, BasicCommandList> commandMaps = new HashMap<>();// BIOS檢查
 		ArrayList<BasicCommandList> commandLists = new ArrayList<BasicCommandList>();
-		ArrayList<BasicCommandList> removeCommandLists = new ArrayList<BasicCommandList>();// [Cloud]儲存(移除)
+		Map<String, BasicCommandList> removeCommandMap = new TreeMap<String, BasicCommandList>();// [Cloud]儲存(移除)
 		int bslnb = 1;
 		String Ta001_ta002 = "";
 		for (Mocta m : moctas) {
@@ -230,16 +231,14 @@ public class SynchronizeERPService {
 		// Step3. 資料整理轉換
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號)
-			String oKey = o.getBclclass() + "-" + o.getBclsn() + "-" + o.getBclpnumber();
-			oKey = oKey.replaceAll("\\s", "");
+			String oKeyClassSn = o.getBclclass() + "-" + o.getBclsn();
+			String oKey = (oKeyClassSn + "-" + o.getBclpnumber()).replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpMaps.containsKey(oKey)) {
 				String nChecksum = erpMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBclfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBclfuser().equals("") || o.getBclfuser().indexOf("System") >= 0))) {
+				if (!o.getChecksum().equals(nChecksum)) {
 					Mocta m = erpMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 資料轉換
@@ -247,8 +246,8 @@ public class SynchronizeERPService {
 					commandLists.add(o);
 				}
 			} else {
-				// 匹配不到->已結案/移除項目->移除
-				removeCommandLists.add(o);// 移除資料;
+				// 可能被移除了?或是被完結了?
+				removeCommandMap.put(oKeyClassSn + "-" + o.getBclpnumber(), o);
 			}
 		});
 		// 全新資料?
@@ -265,9 +264,38 @@ public class SynchronizeERPService {
 				}
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		int batchSize = 5000;
+		List<String> removeCommandMapList = new ArrayList<>(removeCommandMap.keySet());
+		int totalSize = removeCommandMapList.size();
+		//批次檢查
+		for (int i = 0; i < totalSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeCommandMapList.subList(i, Math.min(i + batchSize, totalSize));
+			// 將每個值用單引號包住，並用逗號連接
+			String param = batchList.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+			// 執行 JPA 查詢
+			List<Mocta> removeCheck = moctaDao.findAllByMocta(param);
+
+			// 處理結果
+			removeCheck.forEach(r -> {
+				if ("Y".equalsIgnoreCase(r.getTa011())) { // 忽略大小寫
+					String nKey = r.getTa001_ta002() + "-" + r.getMb001();
+					nKey = nKey.replaceAll("\\s", "");
+
+					// 納入完結更新 -> 不需移除
+					BasicCommandList ok = removeCommandMap.get(nKey);
+					ok.setSysstatus(1);
+					commandLists.add(ok);
+					removeCommandMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicCommandList> removeCommandList = new ArrayList<>(removeCommandMap.values());
+
+		// Step5. 存入資料
+		commandListDao.deleteAll(removeCommandList);
 		commandListDao.saveAll(commandLists);//
-		commandListDao.deleteAll(removeCommandLists);
 		// 檢查新的致令單BIOS?
 		biosService.biosNewOrderCheck(commandMaps);
 
@@ -315,9 +343,10 @@ public class SynchronizeERPService {
 				if (!o.getChecksum().equals(nChecksum)) {
 					Purth m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
+					if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
+							o.getBilfuser().contains("System") || //
+							o.getBilfuser().equals("")//
+					) {
 						String checkSum = m.toString().replaceAll("\\s", "");
 						// 自動恢復(入)
 						if (o.getBilfuser().indexOf("System") >= 0) {
@@ -1954,180 +1983,11 @@ public class SynchronizeERPService {
 
 	// ============ 單據移除(120天以前資料) ============
 	public void remove120DayData() throws Exception {
-		Date countD = Fm_T.to_count(-120, new Date());
-		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD));
-		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD));
-		commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD));
+		Date countD120 = Fm_T.to_count(-120, new Date());
+		//Date countD350 = Fm_T.to_count(-350, new Date());
+		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD120));
+		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD120));
+		//commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD350));
 	}
 
-//	// ============ 同步外包生管平台() ============
-//	public void erpSynchronizeScheduleOutsourcer() throws Exception {
-//		ArrayList<MoctaScheduleOutsourcer> erpOutsourcers = erpOutsourcerDao.findAllByMocta(null, "Y");// 目前ERP有的資料
-//		Map<String, MoctaScheduleOutsourcer> erpMapOutsourcers = new HashMap<String, MoctaScheduleOutsourcer>();// ERP整理後資料
-//		ArrayList<ScheduleOutsourcer> scheduleOutsourcers = scheduleOutsourcerDao.findAllByNotFinish(null);// 尚未結束的
-//		ArrayList<ScheduleOutsourcer> newScheduleOutsourcers = new ArrayList<ScheduleOutsourcer>();// 要更新的
-//		// 資料整理
-//		for (MoctaScheduleOutsourcer one : erpOutsourcers) {
-//			// 避免時間-問題
-//			if (one.getTa009() != null && !one.getTa009().equals(""))
-//				one.setNewone(true);
-//			erpMapOutsourcers.put(one.getTa001_ta002(), one);
-////			//測試用
-////			if(one.getTa001_ta002().equals("A512-240311001")) {
-////				System.out.println(one.getTa001_ta002());
-////			}
-//		}
-//
-//		// 比對資料?
-//		scheduleOutsourcers.forEach(o -> {
-////			//測試用
-////			if(o.getSonb().equals("A512-240311001")) {
-////				System.out.println(o.getSonb());
-////			}
-//			// 有抓取到同樣單據
-//			if (erpMapOutsourcers.containsKey(o.getSonb())) {
-//				erpMapOutsourcers.get(o.getSonb()).setNewone(false);
-//				// sum不同->更新
-//				String sum = erpMapOutsourcers.get(o.getSonb()).toString();
-//				if (!sum.equals(o.getSosum())) {
-//					erpToCloudService.scheduleOutsourcerOne(o, erpMapOutsourcers.get(o.getSonb()), sum);
-//					newScheduleOutsourcers.add(o);
-//				}
-//			} else {
-//				ArrayList<MoctaScheduleOutsourcer> erpOutsourcersEnd = erpOutsourcerDao.findAllByMocta(o.getSonb(),
-//						null);
-//				if (erpOutsourcersEnd.size() == 1) {
-//					// 更新最後一次?
-//					o = erpToCloudService.scheduleOutsourcerOne(o, erpOutsourcersEnd.get(0),
-//							erpOutsourcersEnd.get(0).toString());
-//				}
-//				// 沒比對到?移除?完成?
-//				o.setSysstatus(2);
-//				newScheduleOutsourcers.add(o);
-//			}
-//		});
-//		// 新增?
-//		erpMapOutsourcers.forEach((k, n) -> {
-//			ArrayList<ScheduleOutsourcer> OldEndOne = scheduleOutsourcerDao.findAllByFinish(k, null);
-//			if (n.isNewone()) {
-//				ScheduleOutsourcer outsourcer = new ScheduleOutsourcer();
-//				// 檢查是否有舊資料?
-//				if (OldEndOne.size() > 0) {
-//					outsourcer = OldEndOne.get(0);
-//					outsourcer.setSysstatus(0);// 開啟
-//				}
-//				outsourcer = erpToCloudService.scheduleOutsourcerOne(outsourcer, n, n.toString());
-//				newScheduleOutsourcers.add(outsourcer);
-//			}
-//		});
-//
-//		// 更新資料+建立新資料
-//		scheduleOutsourcerDao.saveAll(newScheduleOutsourcers);
-//		String update = packageService.beanToJson(newScheduleOutsourcers);
-//		JsonObject sendAllData = new JsonObject();
-//		sendAllData.addProperty("update", update);
-//		sendAllData.addProperty("action", "sendAllData");
-//		// 測試 通知Client->Websocket(sendAllUsers)
-//		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
-//		sendTo.setSendAllData(sendAllData.toString());
-//		sendTo.run();
-//	}
-
-	// ============ 同步機種別() ============
-//	public void erpSynchronizeProductModel() throws Exception {
-//		ArrayList<Invma> invmas = invmaDao.findAllByInvma();
-//		ArrayList<BasicProductModel> models = modelDao.findAllBySearch(null, null, null);
-//		ArrayList<BasicProductModel> newModels = new ArrayList<BasicProductModel>();
-//		// 轉換
-//		Map<String, BasicProductModel> mapBpms = new HashMap<String, BasicProductModel>();
-//		models.forEach(y -> {
-//			mapBpms.put(y.getBpmname(), y);
-//		});
-//		// 比對?->如果有->舊的(false)
-//		invmas.forEach(x -> {
-//			// Product model
-//			if (!mapBpms.containsKey(x.getMa003())) {
-//				BasicProductModel newModel = new BasicProductModel();
-//				newModel.setBpmid(null);
-//				newModel.setBpmname(x.getMa003());
-//				newModels.add(newModel);
-//			}
-//		});
-//		modelDao.saveAll(newModels);
-//	}
-	// ============ 同步BOM() ============
-//	public void erpSynchronizeBomIngredients() throws Exception {
-//		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
-//		ArrayList<BasicBomIngredients> boms = basicBomIngredientsDao.findAllByBomList(null, null, null, null, null);
-//		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
-//		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
-//		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
-//		bommds = bommdDao.findAllByBommdFirst();
-////		if (boms.size() > 0) {
-////			bommds = bommdDao.findAllByBommd();
-////		} else {
-////		}
-//		// 檢查資料&更正
-//		for (Bommd bommd : bommds) {
-//			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
-//			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
-//			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
-//			bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
-//			bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
-//			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
-//			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
-//			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
-//		}
-//		// 轉換資料
-//		boms.forEach(o -> {
-//			if (erpBommds.containsKey(o.getBbisnnb())) {
-//				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
-//				String sum = erpBommds.get(o.getBbisnnb()).toString();
-//				if (!sum.equals(o.getChecksum())) {
-//					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
-//					bomNews.add(o);
-//				}
-//			} else {
-//				// 沒比對到?已經移除?
-//				bomRemoves.add(o);
-//			}
-//		});
-//		// 新增
-//		erpBommds.forEach((k, n) -> {
-//			if (n.isNewone()) {
-//				BasicBomIngredients o = new BasicBomIngredients();
-//				String sum = n.toString();
-//				erpToCloudService.bomIngredients(o, n, wMs, sum);
-//				bomNews.add(o);
-//			}
-//		});
-//		// 存入資料
-//		basicBomIngredientsDao.saveAll(bomNews);
-//		basicBomIngredientsDao.deleteAll(bomRemoves);
-//
-//		System.out.println("---");
-//	}
-
-	// 而外執行(外包生管同步)
-//	public class OutsourcerSynchronizeCell implements Runnable {
-//		private String sendAllData;
-//
-//		@Override
-//		public void run() {
-//			try {
-//				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
-//			} catch (Exception e) {
-//				logger.warn(CloudExceptionService.eStktToSg(e));
-//			}
-//		}
-//
-//		public String getSendAllData() {
-//			return sendAllData;
-//		}
-//
-//		public void setSendAllData(String sendAllData) {
-//			this.sendAllData = sendAllData;
-//		}
-//
-//	}
 }

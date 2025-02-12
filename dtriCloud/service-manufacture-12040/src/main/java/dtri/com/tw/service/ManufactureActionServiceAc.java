@@ -580,6 +580,7 @@ public class ManufactureActionServiceAc {
 					history.setWhfuser(shippingList.getBslfuser());
 					history.setWheqty(x.getMaserptqty());
 					history.setWhcqty(x.getMastqty());
+					history.setWhpomqty("");
 					history.setWhcheckin(shippingList.getBslcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}

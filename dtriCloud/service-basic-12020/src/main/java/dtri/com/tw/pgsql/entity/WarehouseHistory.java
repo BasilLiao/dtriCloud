@@ -35,6 +35,7 @@ import jakarta.persistence.Transient;
  *      whmac = "";Mac位置 進行事件內容人<br>
  *      wheqty:ERP 數量<br>
  *      whcqty:Cloud 數量<br>
+ *      whpomqty:正負數<br>
  *      whfuser:完成人<br>
  *      whcheckin:是否核單(未核單/已核單)<br>
  * 
@@ -65,6 +66,7 @@ public class WarehouseHistory {
 		this.whmac = "";
 		this.wheqty = 0;
 		this.whcqty = 0;
+		this.whpomqty = "0";
 
 	}
 
@@ -116,11 +118,13 @@ public class WarehouseHistory {
 	private String whfuser;
 	@Column(name = "wh_checkin", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String whcheckin;
-	
+	@Column(name = "wh_pom_qty", nullable = false, columnDefinition = "varchar(20) default '0'")
+	private String whpomqty;
+
 	@Transient
-	private Date ssyscdate;//起始時間
+	private Date ssyscdate;// 起始時間
 	@Transient
-	private Date esyscdate;//結束時間
+	private Date esyscdate;// 結束時間
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -296,6 +300,20 @@ public class WarehouseHistory {
 
 	public void setEsyscdate(Date esyscdate) {
 		this.esyscdate = esyscdate;
+	}
+
+	/**
+	 * @return the whpomqty
+	 */
+	public String getWhpomqty() {
+		return whpomqty;
+	}
+
+	/**
+	 * @param whpomqty the whpomqty to set
+	 */
+	public void setWhpomqty(String whpomqty) {
+		this.whpomqty = whpomqty;
 	}
 
 }
