@@ -13,16 +13,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig {
 //	@Autowired
 //	JwtAuthenticationFilter jwtAuthenticationFilter;
 	@Autowired
 	CutomerUserDetailsService customerUserDetailsService;
+
+	// 手動補上建構子
+	public WebSecurityConfig(CutomerUserDetailsService customerUserDetailsService) {
+		this.customerUserDetailsService = customerUserDetailsService;
+	}
 
 	/**
 	 * (1)It is used for storing a password <br>

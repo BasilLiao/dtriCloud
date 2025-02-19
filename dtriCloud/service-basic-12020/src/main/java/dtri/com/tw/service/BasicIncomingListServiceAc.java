@@ -197,6 +197,7 @@ public class BasicIncomingListServiceAc {
 				entityDataOld.setBilpnqty(x.getBilpnqty());// 數量
 				entityDataOld.setBilpnaqty(x.getBilpnaqty());// 提前領數量
 				entityDataOld.setBilpngqty(x.getBilpngqty());// 已領取數量
+				entityDataOld.setChecksum(x.getChecksum());
 				entityDataOld.setBilstatus(x.getBilstatus());
 				if (x.getBilfuser().equals("ERP_Remove(Auto)")) {
 					entityDataOld.setBilfuser(x.getBilfuser());// 完成人

@@ -108,9 +108,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTh030().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTh007());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -172,9 +169,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTb004());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -245,9 +239,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTb004());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -318,9 +309,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTg011());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -384,9 +372,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi037().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTi007());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -452,9 +437,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg022().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTg009());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -513,9 +495,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTf028().equals("3")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTg009());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -576,9 +555,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTh027().equals("N") || m.getTh027().equals("3")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTi009());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -640,9 +616,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTi022().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTi009());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -705,9 +678,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTb007());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -778,9 +748,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTb018().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTb007());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -845,9 +812,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTd016().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTd007());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -906,9 +870,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTe010().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTe008());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -969,9 +930,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBilpngqty().equals(0)) {
-//				o.setBilpngqty(m.getTg008());// 已入庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -1031,9 +989,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg047().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTb004());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -1099,9 +1054,6 @@ public class ERPToCloudService {
 		int sysstatus = 0;
 		if (m.getTg010().equals("Y")) {
 			sysstatus = 1;
-//			if (o.getBslpngqty().equals(0)) {
-//				o.setBslpngqty(m.getTf007());// 已領庫量
-//			}
 		}
 		// 資料匹配
 		o.setChecksum(checkSum);
@@ -1208,7 +1160,7 @@ public class ERPToCloudService {
 		// 如果是空的(第一筆)?
 		if (o.getSoscnote().equals("[]") || o.getSoscnote().equals("")) {
 			soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-			soscnoteOne.addProperty("user", m.getCreator());
+			soscnoteOne.addProperty("user", m.getModifier());
 			soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
 			soscnotes.add(soscnoteOne);
 			o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
@@ -1232,7 +1184,7 @@ public class ERPToCloudService {
 			// 確定不同 才能更新
 			if (checkNotSame) {
 				soscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-				soscnoteOne.addProperty("user", m.getCreator());
+				soscnoteOne.addProperty("user", m.getModifier());
 				soscnoteOne.addProperty("content", m.getTa029());// m.getTa054() 不常使用
 				soscnotes.add(soscnoteOne);
 				o.setSoscnote(soscnotes.toString());// 生管備註(格式)人+時間+內容
@@ -1301,7 +1253,7 @@ public class ERPToCloudService {
 		// 如果是空的(第一筆)?
 		if (i.getSiscnote().equals("[]") || i.getSiscnote().equals("")) {
 			siscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-			siscnoteOne.addProperty("user", m.getCreator());
+			siscnoteOne.addProperty("user", m.getModifier());
 			siscnoteOne.addProperty("content", m.getTa054());// m.getTa054() 不常使用
 			siscnotes.add(siscnoteOne);
 			i.setSiscnote(siscnotes.toString());// 生管備註(格式)人+時間+內容
@@ -1325,7 +1277,7 @@ public class ERPToCloudService {
 			// 確定不同 才能更新
 			if (checkNotSame) {
 				siscnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-				siscnoteOne.addProperty("user", m.getCreator());
+				siscnoteOne.addProperty("user", m.getModifier());
 				siscnoteOne.addProperty("content", m.getTa054());// m.getTa054() 不常使用
 				siscnotes.add(siscnoteOne);
 				i.setSiscnote(siscnotes.toString());// 生管備註(格式)人+時間+內容

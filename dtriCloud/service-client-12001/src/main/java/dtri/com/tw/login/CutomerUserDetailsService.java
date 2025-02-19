@@ -16,13 +16,16 @@ import org.springframework.stereotype.Component;
 import dtri.com.tw.pgsql.dao.SystemUserDao;
 import dtri.com.tw.pgsql.entity.SystemGroup;
 import dtri.com.tw.pgsql.entity.SystemUser;
-import lombok.RequiredArgsConstructor;
 
 //https://github.com/Ons-diweni/Spring-Security-6-JWT
 // ---登入時-驗證---[Spring 自動呼叫]
 @Component
-@RequiredArgsConstructor
 public class CutomerUserDetailsService implements UserDetailsService {
+
+	@Autowired
+	public CutomerUserDetailsService(SystemUserDao userDao) {
+		this.userDao = userDao;
+	}
 
 	@Autowired
 	private SystemUserDao userDao;

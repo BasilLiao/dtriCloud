@@ -25,6 +25,7 @@ public interface MoctaScheduleInfactoryDao extends JpaRepository<MoctaScheduleIn
 			+ "  CTA.TA029, "// --製令備註(客戶/國家/訂單)
 			+ "  CTA.TA054, "// --製令-自訂義備註(自動帶出)
 			+ "  CTA.CREATOR, "// --創建工單使用者
+			+ "  CTA.MODIFIER, "// --修改工單使用者
 			+ "  CTA.CREATE_DATE, "// --單據建立時間
 			+ "  CTA.MODI_DATE, "// --單據修改時間
 			+ "  CTA.TA032, "// --加工廠(代號)

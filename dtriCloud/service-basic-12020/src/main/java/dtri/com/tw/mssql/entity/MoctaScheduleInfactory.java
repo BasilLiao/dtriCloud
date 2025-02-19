@@ -69,6 +69,8 @@ public class MoctaScheduleInfactory {
 	private String modidate;// 單據修改時間
 	@Column(name = "CREATOR")
 	private String creator;// 單據建立者
+	@Column(name = "MODIFIER")
+	private String modifier;// 單據修改立者
 
 	// 檢查新的?
 	@Transient
@@ -256,5 +258,19 @@ public class MoctaScheduleInfactory {
 
 	public void setTa013(String ta013) {
 		this.ta013 = ta013;
+	}
+
+	/**
+	 * @return the modifier
+	 */
+	public String getModifier() {
+		return modifier;
+	}
+
+	/**
+	 * @param modifier the modifier to set
+	 */
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
 	}
 }

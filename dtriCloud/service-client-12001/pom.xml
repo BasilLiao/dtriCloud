@@ -83,12 +83,7 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>2.3.1</version>
 		</dependency>
-		<!-- 便利免除GET/SET-->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+
 		<!--資料庫運用-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

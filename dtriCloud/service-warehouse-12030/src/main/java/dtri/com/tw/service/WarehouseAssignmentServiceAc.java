@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -98,18 +100,25 @@ public class WarehouseAssignmentServiceAc {
 		Map<String, Integer> entitySchedulCheckInFinish = new HashMap<>();
 		//
 		List<WarehouseArea> areaLists = areaDao.findAll();
-		Map<String, WarehouseArea> areaMaps = new HashMap<>();
 		//
 		List<WarehouseTypeFilter> typeFilters = filterDao.findAll();
-		Map<String, String> typeFilterMaps = new HashMap<>();
 		// Step3-2.資料區分(一般/細節)
-		areaLists.forEach(a -> {
-			String key = a.getWaaliasawmpnb();// 倉儲+物料號
-			areaMaps.put(key, a);
-		});
-		typeFilters.forEach(t -> {
-			typeFilterMaps.put(t.getWtfcode(), t.getWtfname());
-		});
+//		Map<String, WarehouseArea> areaMaps = new HashMap<>();
+//		areaLists.forEach(a -> {
+//			String key = a.getWaaliasawmpnb();// 倉儲+物料號
+//			areaMaps.put(key, a);
+//		});
+//		Map<String, String> typeFilterMaps = new HashMap<>();
+//		typeFilters.forEach(t -> {
+//			typeFilterMaps.put(t.getWtfcode(), t.getWtfname());
+//		});
+
+		// 會將 Stream 轉換成 Map，需要兩個函數：
+		// Collectors.toMap(物件::keyMapper, valueMapper) 會將 Stream 轉換成 Map，需要兩個函數：
+		Map<String, WarehouseArea> areaMaps = areaLists.stream()
+				.collect(Collectors.toMap(WarehouseArea::getWaaliasawmpnb, Function.identity()));
+		Map<String, String> typeFilterMaps = typeFilters.stream()
+				.collect(Collectors.toMap(WarehouseTypeFilter::getWtfcode, WarehouseTypeFilter::getWtfname));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
@@ -293,10 +302,12 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWastowho(sh.getBsltowho());// 物件(對象)
 					ed.setWasfromwho(sh.getBslfromwho());// 物件(來源)
 					// 倉儲(必須符合格式)
-					if (sh.getBslfromwho().split("_").length > 1) {
-						String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
-						areaKey = areaKey.replaceAll(" ", "");
-						if (areaMaps.containsKey(areaKey)) {
+					String[] fromWhoParts = sh.getBslfromwho().split("_");
+					if (fromWhoParts.length > 1) {
+						String areaKey = (sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber())
+								.replaceAll(" ", "");
+						WarehouseArea area = areaMaps.get(areaKey);
+						if (area != null) {
 							ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
 							ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
 							ed.setWasqcqty(0);// 待驗量
@@ -478,12 +489,15 @@ public class WarehouseAssignmentServiceAc {
 				wassn = searchData.getWasclasssn().split("-")[1];
 			} else {
 				wasclass = searchData.getWasclasssn();
+				if (wasclass == null) {
+					wasclass = "A541";
+				}
 			}
 			// 核准人?
 			if (searchData.getWascuser() == null) {
-				searchData.setWascuser("false");
+				searchData.setWascuser("true");
 			}
-
+			
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
 					searchData.getWasfuser(), searchData.getSysstatus(), searchData.getSyshnote(), inPageable);
@@ -956,7 +970,7 @@ public class WarehouseAssignmentServiceAc {
 										history.setWhfuser(packageBean.getUserAccount());
 										history.setWheqty(area.getWaerptqty());
 										history.setWhcqty(area.getWatqty());
-										history.setWhpomqty("" + t.getBslpnqty());
+										history.setWhpomqty("-" + t.getBslpnqty());
 										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
 										entityHistories.add(history);
 									}
@@ -995,7 +1009,7 @@ public class WarehouseAssignmentServiceAc {
 						switch (action) {
 						case "ReturnSelect":
 							// 要有"已入數量"
-							if (t.getBilpngqty() > 0) {
+							if (t.getBilpngqty() >= 0) {
 								// 更新 儲位物料->有該儲位?
 								Boolean checkOK = false;
 								WarehouseArea area = new WarehouseArea();
@@ -1036,7 +1050,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysmdate(new Date());
 									t.setSysmuser(packageBean.getUserAccount());
 									t.setBilfuser("");
-									t.setSysnote("");
+									t.setSysnote(t.getSysnote().replaceAll("\\[異常:.*?\\]", ""));// [異常:進貨料短少][異常:進貨料多][異常:備品轉][異常:部分領料][異常:庫存量不足]
 									t.setBilpngqty(0);
 								}
 							}
@@ -1061,7 +1075,7 @@ public class WarehouseAssignmentServiceAc {
 						switch (action) {
 						case "ReturnSelect":
 							// 要有"已入數量"
-							if (t.getBslpngqty() > 0) {
+							if (t.getBslpngqty() >= 0) {
 								// 更新 儲位物料->有該儲位?
 								Boolean checkOK = false;
 								WarehouseArea area = new WarehouseArea();
@@ -1099,7 +1113,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysmdate(new Date());
 									t.setSysmuser(packageBean.getUserAccount());
 									t.setBslfuser("");
-									t.setSysnote("");
+									t.setSysnote(t.getSysnote().replaceAll("\\[異常:.*?\\]", ""));// [異常:進貨料短少][異常:進貨料多][異常:備品轉][異常:部分領料][異常:庫存量不足]
 									t.setBslpngqty(0);
 									t.setBslfucheckin(false);
 								}

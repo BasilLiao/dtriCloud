@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,7 +199,7 @@ public class SynchronizeERPService {
 	// ============ A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單 ============
 	public void erpSynchronizeMocta() throws Exception {
 		logger.info("=== erpSynchronizeMocta: 時間:{}", dateFormat.format(new Date()));
-		ArrayList<Mocta> moctas = moctaDao.findAllByMocta(null);
+		ArrayList<Mocta> moctas = moctaDao.findAllByMocta();
 		Map<String, Mocta> erpMaps = new HashMap<>();
 		Map<String, BasicCommandList> commandMaps = new HashMap<>();// BIOS檢查
 		ArrayList<BasicCommandList> commandLists = new ArrayList<BasicCommandList>();
@@ -265,17 +264,15 @@ public class SynchronizeERPService {
 			}
 		});
 		// Step4.確認是否完結 or 被移除?
-		int batchSize = 5000;
+		int batchSize = 500;
 		List<String> removeCommandMapList = new ArrayList<>(removeCommandMap.keySet());
 		int totalSize = removeCommandMapList.size();
-		//批次檢查
+		// 批次檢查
 		for (int i = 0; i < totalSize; i += batchSize) {
 			// 取得當前批次
 			List<String> batchList = removeCommandMapList.subList(i, Math.min(i + batchSize, totalSize));
-			// 將每個值用單引號包住，並用逗號連接
-			String param = batchList.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
 			// 執行 JPA 查詢
-			List<Mocta> removeCheck = moctaDao.findAllByMocta(param);
+			List<Mocta> removeCheck = moctaDao.findAllByMocta(batchList);
 
 			// 處理結果
 			removeCheck.forEach(r -> {
@@ -316,7 +313,7 @@ public class SynchronizeERPService {
 		bilclass.add("A345");
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Purth m : erpInEntitys) {
 			String nKey = m.getTh001_th002() + "-" + m.getTh003();
@@ -334,40 +331,40 @@ public class SynchronizeERPService {
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
+			//long autoRemove = Fm_T.to_diff(new Date(), o.getSyscdate());// 相差幾天?
+			// 測試用
+//			if ((o.getBilclass() + "-" + o.getBilsn()).equals("A341-250213020")) {
+//				System.out.println(new Date() + ":" + o.getSyscdate());
+//			}
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Purth m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-							o.getBilfuser().contains("System") || //
-							o.getBilfuser().equals("")//
-					) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOnePurth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveLists.add(o);
+
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A341") || //
-							o.getBilclass().equals("A342") || //
-							o.getBilclass().equals("A343") || //
-							o.getBilclass().equals("A344") || //
-							o.getBilclass().equals("A345"))) {
-				// 距今日(30天內) /A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/A344 模具進貨單/ A345 無採購進貨單
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -383,6 +380,34 @@ public class SynchronizeERPService {
 				saveLists.add(n);
 			}
 		});
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Purth> removeInCheck = purthDao.findAllByPurth(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTh030()) || "N".equals(r.getTh030())) {
+					// 移除標記
+					String nKey = r.getTh001_th002() + "-" + r.getTh003();
+					nKey = nKey.replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTh030())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
 
 		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
@@ -421,8 +446,8 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 
 		// Step1.資料整理
 		for (Mocte m : erpEntitys) {
@@ -467,47 +492,47 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
+				Mocte m = erpInMaps.get(oKey);
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
-					Mocte m = erpInMaps.get(oKey);
-					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().contains("System")) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveInLists.add(o);
-					} else if (!o.getBilfuser().equals("") && !o.getBilfuser().contains("✪") && //
-							(!o.getBilpnqty().equals(m.getTb005()) || // 數量變化?
-									!o.getBilpnumber().equals(m.getMb001()) || // 物料變化?
-									!o.getBiltowho().contains(m.getTb009()))) {// 庫別變化?
-						// 標記二次修正(數量不同+料號不同+庫別不同)
-						o.setBilfuser("✪ " + o.getBilfuser());
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (bilfuser.contains("System")) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
+				} else if (!bilfuser.equals("") && !bilfuser.contains("✪") && //
+						(!o.getBilpnqty().equals(m.getTb005()) || // 數量變化?
+								!o.getBilpnumber().equals(m.getMb001()) || // 物料變化?
+								!o.getBiltowho().contains(m.getTb009()))) {// 庫別變化?
+					// 標記二次修正(數量不同+料號不同+庫別不同)
+					o.setBilfuser("✪ " + bilfuser);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A561") || o.getBilclass().equals("A571"))) {
-				// 同一天 /A561 廠內退料單/ A571 委外退料單
+
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 //			if (oKey.indexOf("A541-240703007") >= 0) {
 //				System.out.println(oKey);
@@ -518,40 +543,34 @@ public class SynchronizeERPService {
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");// ERP檢查碼
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-
+				Mocte m = erpShMaps.get(oKey);
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
-					Mocte m = erpShMaps.get(oKey);
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					// 尚未領料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().contains("System")) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
-
-					} else if (!o.getBslfuser().equals("") && !o.getBslfuser().contains("✪") && //
-							(!o.getBslpnqty().equals(m.getTb004()) || !o.getBslpnumber().equals(m.getMb001()))) {
-						// 標記二次修正(數量不同+料號不同)
-						o.setBslfuser("✪ " + o.getBslfuser());
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (bslfuser.contains("System")) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+
+				} else if (!bslfuser.equals("") && !bslfuser.contains("✪") && //
+						(!o.getBslpnqty().equals(m.getTb004()) || !o.getBslpnumber().equals(m.getMb001()))) {
+					// 標記二次修正(數量不同+料號不同)
+					o.setBslfuser("✪ " + bslfuser);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A541") || //
-							o.getBslclass().equals("A542") || //
-							o.getBslclass().equals("A543") || //
-							o.getBslclass().equals("A551"))) {
-				// 比對不到資料->移除
-				// 30天/尚未領料 / A541 廠內領料單/ A542 補料單/ A551 委外領料單
+
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud] 全新資料?
@@ -586,12 +605,65 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTe019()) || "N".equals(r.getTe019())) {
+					// 移除標記
+					String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTe019())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				if ("Y".equals(r.getTe019()) || "N".equals(r.getTe019())) {
+					// 移除標記
+					String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTe019())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -614,7 +686,7 @@ public class SynchronizeERPService {
 
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
 
 		// Step1.資料整理
 		for (Moctf m : erpEntitys) {
@@ -634,35 +706,34 @@ public class SynchronizeERPService {
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Moctf m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneMoctf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A581"))) {
-				// A581 生產入庫單
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -678,11 +749,37 @@ public class SynchronizeERPService {
 				saveLists.add(n);
 			}
 		});
-
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Moctf> removeInCheck = moctfDao.findAllByMoctf(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTg022()) || "N".equals(r.getTg022())) {
+					// 移除標記
+					String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTg022())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -705,7 +802,7 @@ public class SynchronizeERPService {
 
 		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Mocth m : erpEntitys) {
 			String nKey = m.getTi001_ti002_ti003();
@@ -724,35 +821,34 @@ public class SynchronizeERPService {
 		entityOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
-				// 尚未領料 or 系統標記 可修改
-				if (!o.getChecksum().equals(nChecksum)) {
+				// 內容不同=>更新
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Mocth m = erpInMaps.get(oKey);
-					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneMocth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A591"))) {
-				// A591 委外進貨單
+
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -769,11 +865,37 @@ public class SynchronizeERPService {
 				saveLists.add(n);
 			}
 		});
-
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Mocth> removeInCheck = mocthDao.findAllByMocth(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTi037()) || "N".equals(r.getTi037())) {
+					// 移除標記
+					String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTi037())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveLists);
 		incomingListDao.saveAll(removeInLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -789,7 +911,7 @@ public class SynchronizeERPService {
 	public void erpSynchronizeInvtg() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
-		ArrayList<Invtg> erpEntitys = invtgDao.findAllByMocth();
+		ArrayList<Invtg> erpEntitys = invtgDao.findAllByInvtg();
 		Map<String, Invtg> erpInMaps = new HashMap<>();
 		Map<String, Invtg> erpShMaps = new HashMap<>();
 		List<String> bilclass = new ArrayList<String>();
@@ -800,8 +922,9 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invtg m : erpEntitys) {
 			String nKey = m.getTg001_tg002_tg003();
@@ -827,70 +950,68 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invtg m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveInLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A141"))) {
-				// A141 庫存借入單
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				// 內容不同=>更新=>尚未領料 or 系統標記 可修改
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invtg m = erpShMaps.get(oKey);
-					// 尚未領料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneInvtg(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A131"))) {
-				// A131 庫存借出單
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -918,12 +1039,62 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Invtg> removeInCheck = invtgDao.findAllByInvtg(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("1".equals(r.getTf028()) || "3".equals(r.getTf028())) {
+					// 移除標記
+					String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+					if ("3".equals(r.getTf028())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Invtg> removeShCheck = invtgDao.findAllByInvtg(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+				// 移除標記
+				if ("1".equals(r.getTf028()) || "3".equals(r.getTf028())) {
+					if ("3".equals(r.getTf028())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -939,7 +1110,7 @@ public class SynchronizeERPService {
 	public void erpSynchronizeInvth() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
-		ArrayList<Invth> erpEntitys = invthDao.findAllByMocth();
+		ArrayList<Invth> erpEntitys = invthDao.findAllByInvth();
 		Map<String, Invth> erpInMaps = new HashMap<>();
 		Map<String, Invth> erpShMaps = new HashMap<>();
 		List<String> bilclass = new ArrayList<String>();
@@ -950,8 +1121,8 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invth m : erpEntitys) {
 			String nKey = m.getTi001_ti002_ti003();
@@ -978,70 +1149,67 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invth m = erpInMaps.get(oKey);
-					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveInLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A151"))) {
-				// 借出歸還A151
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invth m = erpShMaps.get(oKey);
 					// 尚未領料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneInvth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A161"))) {
-				// A161 庫存借出單
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -1069,12 +1237,66 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Invth> removeInCheck = invthDao.findAllByInvth(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTi022()) || "N".equals(r.getTi022())) {
+					// 移除標記
+					String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTi022())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Invth> removeShCheck = invthDao.findAllByInvth(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				if ("Y".equals(r.getTi022()) || "N".equals(r.getTi022())) {
+					// 移除標記
+					String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTi022())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -1090,7 +1312,7 @@ public class SynchronizeERPService {
 	public void erpSynchronizeInvta() throws Exception {
 		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
-		ArrayList<Invta> erpEntitys = invtaDao.findAllByMocta();
+		ArrayList<Invta> erpEntitys = invtaDao.findAllByInvta();
 		Map<String, Invta> erpInMaps = new HashMap<>();
 		Map<String, Invta> erpShMaps = new HashMap<>();
 		List<String> bilclass = new ArrayList<String>();
@@ -1104,8 +1326,8 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		for (Invta m : erpEntitys) {
 			String nKey = m.getTb001_tb002_tb003();
@@ -1119,17 +1341,17 @@ public class SynchronizeERPService {
 //			if(nKey.indexOf("A121-231122005-0001")>=0) {
 //				System.out.println(nKey);
 //			}
-			// 單據性質別:借出歸還A151+借入歸還單A161
-			if (m.getTb001_tb002_tb003().indexOf("A111") >= 0) {
+			// 單據性質別:
+			if (m.getTb001_tb002_tb003().contains("A111")) {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
-			} else if (m.getTb001_tb002_tb003().indexOf("A112") >= 0) {
+			} else if (m.getTb001_tb002_tb003().contains("A112")) {
 				m.setTk000("入料類");
 				m.setTb013(m.getTb012());
 				erpInMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 0);
-			} else if (m.getTb001_tb002_tb003().indexOf("A121") >= 0) {
+			} else if (m.getTb001_tb002_tb003().contains("A121")) {
 				// 轉
 				Invta mIn = new Invta();
 				try {
@@ -1142,7 +1364,7 @@ public class SynchronizeERPService {
 				m.setTk000("領料類");
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
-			} else if (m.getTb001_tb002_tb003().indexOf("A119") >= 0) {// 料號調整單
+			} else if (m.getTb001_tb002_tb003().contains("A119")) {// 料號調整單
 				// 轉
 				if (m.getTb007() < 0) {
 					// 領
@@ -1156,27 +1378,32 @@ public class SynchronizeERPService {
 					erpInMaps.put(nKey, m);
 				}
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
+			}else if (m.getTb001_tb002_tb003().contains("A115")) {
+				//RMA領料
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
 			}
 		}
 
 		// Step2.[ERP vs Cloud]舊資料匹配
 		// 進料
 		entityInOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (o.getBilfuser().equals("ERP_Remove(Auto)") || //
-						(!o.getChecksum().equals(nChecksum)
-								&& (o.getBilfuser().equals("") || o.getBilfuser().indexOf("System") >= 0))) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invta m = erpInMaps.get(oKey);
 					String checkSum = m.toString().replaceAll("\\s", "");
 					// 自動恢復(入)
-					if (o.getBilfuser().contains("System")) {
+					if (bilfuser.contains("System")) {
 						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
 					// 資料轉換
@@ -1185,56 +1412,44 @@ public class SynchronizeERPService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A111") || //
-							o.getBilclass().equals("A112") || //
-							o.getBilclass().equals("A119") || //
-							o.getBilclass().equals("A121"))) {
-				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
-
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
-			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
-
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
-				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				// 內容不同=>更新=>尚未領料 or 系統標記 可修改
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Invta m = erpShMaps.get(oKey);
-					// 尚未領料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneInvta(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A111") || //
-							o.getBslclass().equals("A112") || //
-							o.getBslclass().equals("A119") || //
-							o.getBslclass().equals("A121"))) {
-				// A111 費用領料單/ A112 費用退料單/ A119 料號調整單/ A121 倉庫調撥單
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
-
 		});
 		// Step3.[ERP vs Cloud]全新資料?
 		// 入料
@@ -1269,6 +1484,57 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Invta> removeInCheck = invtaDao.findAllByInvta(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				// 移除標記
+				if ("Y".equalsIgnoreCase(r.getTb018()) || "N".equalsIgnoreCase(r.getTb018())) {
+					String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
+					if ("Y".equals(r.getTb018())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Invta> removeShCheck = invtaDao.findAllByInvta(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				// 移除標記
+				if ("Y".equalsIgnoreCase(r.getTb018()) || "N".equalsIgnoreCase(r.getTb018())) {
+					String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
+					if ("Y".equals(r.getTb018())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+
 		// Step4. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
@@ -1300,8 +1566,8 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		String nKeyCheckSame = "";// 同一張單?
 		for (Bomtd m : erpEntitys) {
@@ -1337,41 +1603,42 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Bomtd m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveInLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A421"))) {
-				// A421 組合單
+
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
 //			if (oKey.indexOf("-240507024") >= 0) {
@@ -1382,29 +1649,27 @@ public class SynchronizeERPService {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Bomtd m = erpShMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneBomtd(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A421"))) {
-				// A421
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -1432,12 +1697,66 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Bomtd> removeInCheck = bomtdDao.findAllByBomtd(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTe010()) || "N".equals(r.getTe010())) {
+					// 移除標記
+					String nKey = r.getTe001_te002_te003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTe010())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Bomtd> removeShCheck = bomtdDao.findAllByBomtd(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				if ("Y".equals(r.getTe010()) || "N".equals(r.getTe010())) {
+					// 移除標記
+					String nKey = r.getTe001_te002_te003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTe010())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -1463,8 +1782,8 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
-		ArrayList<BasicIncomingList> removeInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存(移除)
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
 		String nKeyCheckSame = "";// 同一張單?
 		for (Bomtf m : erpEntitys) {
@@ -1499,71 +1818,69 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Bomtf m = erpInMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBilfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBilfuser().equals("")//
-							|| o.getBilfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(入)
-						if (o.getBilfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveInLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (o.getBilfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBilfuser().equals("") && //
-					(o.getBilclass().equals("A431"))) {
-				// A431 拆解
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.incomingAuto(o);
-				removeInLists.add(o);// 標記:無此資料
+				removeInMap.put(oKey, o);
 			}
 		});
 		// 領料
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Bomtf m = erpShMaps.get(oKey);
 					// 尚未入料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-						String checkSum = m.toString().replaceAll("\\s", "");
-
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneBomtf(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A431"))) {
-				// A431
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud]全新資料?
@@ -1597,12 +1914,65 @@ public class SynchronizeERPService {
 				}
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Bomtf> removeInCheck = bomtfDao.findAllByBomtf(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				if ("Y".equals(r.getTg010()) || "N".equals(r.getTg010())) {
+					// 移除標記
+					String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTg010())) {
+						BasicIncomingList o = removeInMap.get(nKey);
+						o.setBilfuser(o.getBilfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveInLists.add(o);
+					}
+					removeInMap.remove(nKey);
+				}
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Bomtf> removeShCheck = bomtfDao.findAllByBomtf(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				if ("Y".equals(r.getTg010()) || "N".equals(r.getTg010())) {
+					// 移除標記
+					String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTg010())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+
+		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -1626,7 +1996,7 @@ public class SynchronizeERPService {
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
-		ArrayList<BasicShippingList> removeShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
 
 		// Step1.資料整理
 		for (Copth m : erpEntitys) {
@@ -1644,36 +2014,35 @@ public class SynchronizeERPService {
 		entityShOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+單項目號)
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
 				// 內容不同=>更新
-				if (!o.getChecksum().equals(nChecksum)) {
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
 					Copth m = erpShMaps.get(oKey);
 					// 尚未領料 or 系統標記 可修改
-					if (o.getBslfuser().equals("ERP_Remove(Auto)") //
-							|| o.getBslfuser().equals("")//
-							|| o.getBslfuser().contains("System")) {
-
-						String checkSum = m.toString().replaceAll("\\s", "");
-						// 自動恢復(領)
-						if (o.getBslfuser().indexOf("System") >= 0) {
-							erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
-						}
-						// 資料轉換
-						o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);
-						// 自動完成
-						o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
-						saveShLists.add(o);
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (o.getBslfuser().indexOf("System") >= 0) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
 					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneCopth(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+
 				}
-			} else if (Fm_T.to_diff(new Date(), o.getSyscdate()) < 30 && o.getBslfuser().equals("") && //
-					(o.getBslclass().equals("A231") || o.getBslclass().equals("A232"))) {
-				// 30天/尚未領料 / A231/A232 銷貨單
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
 				o = autoRemoveService.shippingAuto(o);
-				removeShLists.add(o);// 標記:無此資料
+				removeShMap.put(oKey, o);
 			}
 		});
 		// Step3.[ERP vs Cloud] 全新資料?
@@ -1694,10 +2063,37 @@ public class SynchronizeERPService {
 				saveShLists.add(n);
 			}
 		});
-		// Step4. 存入資料
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 500;
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Copth> removeShCheck = copthDao.findAllByCopth(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				if ("Y".equals(r.getTg047()) || "N".equals(r.getTg047())) {
+					// 移除標記
+					String nKey = r.getTh001_th002_th003().replaceAll("\\s", "");
+					// 已經完成->標記更新
+					if ("Y".equals(r.getTg047())) {
+						BasicShippingList o = removeShMap.get(nKey);
+						o.setBslfuser(o.getBslfuser().replace("ERP_Remove(Auto)", ""));
+						o.setSysstatus(1);// 完成
+						saveShLists.add(o);
+					}
+					removeShMap.remove(nKey);
+				}
+			});
+		}
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+		// Step5. 存入資料
 		shippingListDao.saveAll(saveShLists);
 		shippingListDao.saveAll(removeShLists);
-		// Step5. 自動結算
+		// Step6. 自動結算
 		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
 		// Step7.重新更新庫存
 		wAsSave = new HashMap<>();
@@ -1981,13 +2377,13 @@ public class SynchronizeERPService {
 		filterDao.saveAll(saveFilters);
 	}
 
-	// ============ 單據移除(120天以前資料) ============
-	public void remove120DayData() throws Exception {
-		Date countD120 = Fm_T.to_count(-120, new Date());
-		//Date countD350 = Fm_T.to_count(-350, new Date());
-		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD120));
-		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD120));
-		//commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD350));
+	// ============ 單據移除(360天以前資料) ============
+	public void remove360DayData() throws Exception {
+		Date countD360 = Fm_T.to_count(-360, new Date());
+		// Date countD350 = Fm_T.to_count(-350, new Date());
+		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD360));
+		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD360));
+		// commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD350));
 	}
 
 }

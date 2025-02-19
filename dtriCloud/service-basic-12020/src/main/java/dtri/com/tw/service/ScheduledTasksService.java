@@ -89,7 +89,7 @@ public class ScheduledTasksService {
 				//庫存儲位同步-可能有新物料
 				synchronizeERPService.erpAllNewAreaSynchronize();//
 				// 移除多於資料()
-				synchronizeERPService.remove120DayData();
+				synchronizeERPService.remove360DayData();
 				// ==================生管機制==================
 				// 外包生管排程(同步)
 				synchronizeScheduledService.erpSynchronizeScheduleOutsourcer();

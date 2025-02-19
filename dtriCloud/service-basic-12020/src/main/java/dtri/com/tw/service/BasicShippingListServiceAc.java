@@ -197,6 +197,7 @@ public class BasicShippingListServiceAc {
 				// 修改
 				entityDataOld.setBslpnqty(x.getBslpnqty());
 				entityDataOld.setBslpnaqty(x.getBslpnaqty());
+				entityDataOld.setChecksum(x.getChecksum());
 				// ERP_Remove(Auto) ?
 				if (entityDataOld.getBslfuser().equals("ERP_Remove(Auto)") && x.getBslfuser().equals("")) {
 					entityDataOld.setBslfuser(x.getBslfuser());
