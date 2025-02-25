@@ -60,6 +60,9 @@ public class ScheduleShortageNotification {
 		this.ssnprimary = 0;
 		this.ssnsnotice = false;
 		this.ssnonotice = false;
+		// 廠內
+		this.ssninotice = false;
+		this.ssnimnotice = false;
 	}
 
 	// 共用型
@@ -109,6 +112,10 @@ public class ScheduleShortageNotification {
 	private Boolean ssnsnotice;
 	@Column(name = "ssn_o_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssnonotice;
+	@Column(name = "ssn_i_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean ssninotice;
+	@Column(name = "ssn_im_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean ssnimnotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -260,5 +267,33 @@ public class ScheduleShortageNotification {
 
 	public void setSsnonotice(Boolean ssnonotice) {
 		this.ssnonotice = ssnonotice;
+	}
+
+	/**
+	 * @return the ssninotice
+	 */
+	public Boolean getSsninotice() {
+		return ssninotice;
+	}
+
+	/**
+	 * @param ssninotice the ssninotice to set
+	 */
+	public void setSsninotice(Boolean ssninotice) {
+		this.ssninotice = ssninotice;
+	}
+
+	/**
+	 * @return the ssnimnotice
+	 */
+	public Boolean getSsnimnotice() {
+		return ssnimnotice;
+	}
+
+	/**
+	 * @param ssnimnotice the ssnimnotice to set
+	 */
+	public void setSsnimnotice(Boolean ssnimnotice) {
+		this.ssnimnotice = ssnimnotice;
 	}
 }

@@ -55,7 +55,7 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 			+ "	BOMTE.TE001 is not null "//
 			+ "	AND BOMTE.TE008 > 0 "//
 			+ " AND BOMTE.TE001='A421' "//
-			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-1, 112) "//
+			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
 			+ "	OR BOMTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " ORDER BY "//
 			+ "	(BOMTE.TE001+'-'+TRIM(BOMTE.TE002)+'-'+BOMTE.TE003)  ASC"// --單號+序號
@@ -107,6 +107,8 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 			+ "	BOMTE.TE001 is not null "//
 			+ "	AND BOMTE.TE008 > 0 "//
 			+ " AND BOMTE.TE001='A421' "//
+			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-600, 112) "//
+			+ "	OR BOMTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " AND (CONCAT(BOMTE.TE001, '-', TRIM(BOMTE.TE002), '-', BOMTE.TE003) IN (:TE001TE002TE003)) "// 比對製令單+序號?
 			+ " ORDER BY "//
 			+ "	(BOMTE.TE001+'-'+TRIM(BOMTE.TE002)+'-'+BOMTE.TE003)  ASC"// --單號+序號

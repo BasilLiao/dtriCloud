@@ -395,6 +395,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_inf + ".S4").hasAuthority(actionRole(schedule_inf, "S5"))// (修改S5)
 				.requestMatchers(HttpMethod.GET, "/websocket/schedule_infactory_client/echo").permitAll()// 前端-請求(Websocket)
 				.requestMatchers(HttpMethod.POST, "/websocket/schedule_infactory_service").permitAll()// 後端-同步使用(Websocket)
+				.requestMatchers(HttpMethod.POST, "/websocket/schedule_infactory_dft_service").permitAll()// 後端-同步使用(取得標記)
 				// ----請求-schedule_shortage_notification-(訪問) ----
 				.requestMatchers(HttpMethod.POST, schedule_shn).hasAuthority(actionRole(schedule_shn, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, schedule_shn + ".AR").hasAuthority(actionRole(schedule_shn, "AR"))// (查詢)

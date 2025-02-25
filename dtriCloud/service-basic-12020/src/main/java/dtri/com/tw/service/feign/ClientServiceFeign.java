@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import dtri.com.tw.shared.PackageBean;
+
 /**
  * @FeignClient value=微服務器名稱 <br>
  *              path=位置<br>
@@ -23,5 +25,9 @@ public interface ClientServiceFeign {
 	// 觸發
 	@RequestMapping(value = { "/websocket/schedule_infactory_service" }, method = RequestMethod.POST)
 	String setInfactorySynchronizeCell(@RequestBody String json);
+
+	// 觸發
+	@RequestMapping(value = { "/websocket/schedule_infactory_dft_service" }, method = RequestMethod.POST)
+	String setInfactorySynchronizeDftCell(@RequestBody String json);
 
 }

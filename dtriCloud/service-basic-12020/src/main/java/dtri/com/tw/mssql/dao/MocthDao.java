@@ -55,7 +55,7 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "	AND MOCTI.TI007 > 0 "// --數量不為0
 			+ " AND (MOCTI.TI001='A591') "// --
 			+ "	AND (MOCTI.TI048 ='N' OR MOCTI.TI048='3') "// --
-			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
+			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
 			+ "	OR MOCTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY"//
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003)   ASC"// --單號+序號
@@ -107,6 +107,8 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "	AND MOCTI.TI007 > 0 "// --數量不為0
 			+ " AND (MOCTI.TI001='A591') "// --
 			+ "	AND (MOCTI.TI048 ='N' OR MOCTI.TI048='3') "// --
+			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-600, 112) "//
+			+ "	OR MOCTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND (CONCAT(MOCTI.TI001, '-', TRIM(MOCTI.TI002), '-', MOCTI.TI003) IN (:TI001TI002TI003)) "// 比對製令單+序號?
 			+ "ORDER BY"//
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003)   ASC"// --單號+序號

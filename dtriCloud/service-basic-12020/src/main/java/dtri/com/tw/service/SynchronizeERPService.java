@@ -282,9 +282,12 @@ public class SynchronizeERPService {
 
 					// 納入完結更新 -> 不需移除
 					BasicCommandList ok = removeCommandMap.get(nKey);
-					ok.setSysstatus(1);
-					commandLists.add(ok);
-					removeCommandMap.remove(nKey);
+					if (ok != null) {
+						System.out.println(nKey);
+						ok.setSysstatus(1);
+						commandLists.add(ok);
+						removeCommandMap.remove(nKey);
+					}
 				}
 			});
 		}
@@ -311,7 +314,7 @@ public class SynchronizeERPService {
 		bilclass.add("A343");
 		bilclass.add("A344");
 		bilclass.add("A345");
-		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// [Cloud]資料
+		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(null, bilclass);// [Cloud]資料
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
@@ -333,11 +336,11 @@ public class SynchronizeERPService {
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
-			//long autoRemove = Fm_T.to_diff(new Date(), o.getSyscdate());// 相差幾天?
+			// long autoRemove = Fm_T.to_diff(new Date(), o.getSyscdate());// 相差幾天?
 			// 測試用
-//			if ((o.getBilclass() + "-" + o.getBilsn()).equals("A341-250213020")) {
-//				System.out.println(new Date() + ":" + o.getSyscdate());
-//			}
+			// if ((o.getBilclass() + "-" + o.getBilsn()).equals("A341-250214020")) {
+			// System.out.println(new Date() + ":" + o.getSyscdate());
+			// }
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
 				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
@@ -441,7 +444,7 @@ public class SynchronizeERPService {
 		bilclass.add("A551");
 		bilclass.add("A561");
 		bilclass.add("A571");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
@@ -458,9 +461,9 @@ public class SynchronizeERPService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			// 測試用
-//			if(nKey.contains("A542-240314004")) {
-//				System.out.println("A542-240314004");
-//			}
+			if (nKey.contains("A541-250224003-0069")) {
+				System.out.println("A541-250224003-0069");
+			}
 
 			m.setNewone(true);
 			// 單別性質(退料類 需抓取 物料領退用量)
@@ -641,6 +644,10 @@ public class SynchronizeERPService {
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
+				// 測試用A541-250224007-0018
+				if (r.getTa026_ta027_ta028().contains("A541-250220014-0001")) {
+					System.out.println("測試:A541-250224007-0018");
+				}
 				if ("Y".equals(r.getTe019()) || "N".equals(r.getTe019())) {
 					// 移除標記
 					String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
@@ -917,7 +924,7 @@ public class SynchronizeERPService {
 		List<String> bilclass = new ArrayList<String>();
 		bilclass.add("A131");
 		bilclass.add("A141");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
@@ -1116,7 +1123,7 @@ public class SynchronizeERPService {
 		List<String> bilclass = new ArrayList<String>();
 		bilclass.add("A151");
 		bilclass.add("A161");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
@@ -1321,7 +1328,7 @@ public class SynchronizeERPService {
 		bilclass.add("A115");
 		bilclass.add("A119");
 		bilclass.add("A121");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();
@@ -1378,8 +1385,8 @@ public class SynchronizeERPService {
 					erpInMaps.put(nKey, m);
 				}
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 2);
-			}else if (m.getTb001_tb002_tb003().contains("A115")) {
-				//RMA領料
+			} else if (m.getTb001_tb002_tb003().contains("A115")) {
+				// RMA領料
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
 			}
 		}
@@ -1561,7 +1568,7 @@ public class SynchronizeERPService {
 		Map<String, Bomtd> erpShMaps = new HashMap<>();
 		List<String> bilclass = new ArrayList<String>();
 		bilclass.add("A421");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
@@ -1777,7 +1784,7 @@ public class SynchronizeERPService {
 		Map<String, Bomtf> erpShMaps = new HashMap<>();
 		List<String> bilclass = new ArrayList<String>();
 		bilclass.add("A431");
-		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
 		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
 		// 存入資料物件
 		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
@@ -2379,10 +2386,10 @@ public class SynchronizeERPService {
 
 	// ============ 單據移除(360天以前資料) ============
 	public void remove360DayData() throws Exception {
-		Date countD360 = Fm_T.to_count(-360, new Date());
+		Date countD150 = Fm_T.to_count(-150, new Date());
 		// Date countD350 = Fm_T.to_count(-350, new Date());
-		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD360));
-		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD360));
+		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD150));
+		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD150));
 		// commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD350));
 	}
 

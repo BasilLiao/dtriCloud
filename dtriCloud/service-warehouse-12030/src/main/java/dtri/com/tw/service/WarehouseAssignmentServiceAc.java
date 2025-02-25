@@ -497,7 +497,7 @@ public class WarehouseAssignmentServiceAc {
 			if (searchData.getWascuser() == null) {
 				searchData.setWascuser("true");
 			}
-			
+
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
 					searchData.getWasfuser(), searchData.getSysstatus(), searchData.getSyshnote(), inPageable);
@@ -869,11 +869,11 @@ public class WarehouseAssignmentServiceAc {
 								areaKey = areaKey.replace("[", "") + "_" + t.getBilpnumber();
 								areaKey = areaKey.replaceAll(" ", "");
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
-								// 倉庫更新數量
-								if (areas.size() > 0) {
+								// 倉庫更新數量+必須完成人空
+								if (areas.size() > 0 && t.getBilfuser().equals("")) {
 									area = areas.get(0);
 									int qty = area.getWatqty();
-									area.setWatqty(qty + t.getBilpnqty());
+									area.setWatqty(qty + (t.getBilpnqty() - t.getBilpngqty()));
 									areaDao.save(area);
 									checkOK = true;
 								}
@@ -940,10 +940,10 @@ public class WarehouseAssignmentServiceAc {
 								areaKey = areaKey.replace("[", "") + "_" + t.getBslpnumber();
 								areaKey = areaKey.replaceAll(" ", "");
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
-								// 倉庫更新數量
-								if (areas.size() > 0) {
+								// 倉庫更新數量+完成人必續空
+								if (areas.size() > 0 && t.getBslfuser().equals("")) {
 									area = areas.get(0);
-									int qty = area.getWatqty() - (t.getBslpnqty() + t.getBslpngqty());// 未取完整?
+									int qty = area.getWatqty() - (t.getBslpnqty() - t.getBslpngqty());// 未取完整?
 									// 檢查:是否足夠扣除[庫存-需領用量+已領用量]
 									if (qty >= 0) {
 										area.setWatqty(qty);

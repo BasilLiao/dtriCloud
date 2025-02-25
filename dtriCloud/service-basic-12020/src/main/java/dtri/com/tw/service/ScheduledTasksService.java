@@ -99,6 +99,8 @@ public class ScheduledTasksService {
 				synchronizeScheduledService.scheduleShortageNotification();
 				// 生管排程寄信通知(測試用)
 				// synchronizeScheduledService.scheduleOutNotification();
+				// 廠內生管排程寄信通知(測試用)
+				// synchronizeScheduledService.scheduleInDftNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();

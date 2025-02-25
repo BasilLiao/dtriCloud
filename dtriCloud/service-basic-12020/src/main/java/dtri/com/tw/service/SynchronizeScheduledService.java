@@ -44,6 +44,7 @@ import dtri.com.tw.pgsql.entity.ScheduleShortageNotification;
 import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.Fm_T;
+import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
@@ -692,6 +693,40 @@ public class SynchronizeScheduledService {
 					.size() == 0) {
 				notificationMailDao.save(readyNeedMail);
 			}
+		}
+	}
+
+	// ============ 廠內排程"異動"通知() ============
+	public void scheduleInDftNotification() throws Exception {
+
+		InfactoryDftCell sendTo = new InfactoryDftCell();
+		JsonObject sendAllData = new JsonObject();
+		sendAllData.addProperty("update", "");
+		sendAllData.addProperty("action", "sendAllData");
+		sendTo.setSendAllData(sendAllData.toString());
+		sendTo.run();
+	}
+
+	// 而外執行(異動調查)
+	public class InfactoryDftCell implements Runnable {
+		private String sendAllData;
+
+		@Override
+		public void run() {
+			try {
+				String getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
+				System.out.println("測試:");
+			} catch (Exception e) {
+				logger.warn(CloudExceptionService.eStktToSg(e));
+			}
+		}
+
+		public String getSendAllData() {
+			return sendAllData;
+		}
+
+		public void setSendAllData(String sendAllData) {
+			this.sendAllData = sendAllData;
 		}
 	}
 }
