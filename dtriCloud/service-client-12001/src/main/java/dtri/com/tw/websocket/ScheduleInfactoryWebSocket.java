@@ -80,6 +80,28 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 		return packageBean;
 	}
 
+	// 給查詢資料取值->且併入包裝內(只有Tag標記的)
+	public static PackageBean getMapInfactoryOnlyTag(PackageBean packageBean) throws Exception {
+		// 資料轉換
+		ArrayList<ScheduleInfactory> entityDatas = new ArrayList<>();
+		ArrayList<ScheduleInfactory> entityOnlyTagDatas = new ArrayList<>();
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			//轉換
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleInfactory>>() {
+					});
+			// 標記修正
+			entityDatas.forEach(x -> {
+				if (mapInfactoryTag.containsKey(x.getSiid())) {
+					x.setTag(mapInfactoryTag.get(x.getSiid()).toString());
+					entityOnlyTagDatas.add(x);
+				}
+			});
+			packageBean.setEntityJson(packageService.beanToJson(entityOnlyTagDatas));
+		}
+		return packageBean;
+	}
+
 	// 收到訊息
 	/**
 	 * @param messageJson {"user":"system","action":"leave/sendAllData/sendOnlyData/sendAllLock/sendAllUnlock",<br>

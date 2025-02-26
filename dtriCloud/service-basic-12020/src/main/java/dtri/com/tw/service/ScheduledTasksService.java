@@ -86,7 +86,7 @@ public class ScheduledTasksService {
 				synchronizeERPService.erpSynchronizeCopth();
 				synchronizeERPService.erpSynchronizePurth();
 				synchronizeERPService.erpSynchronizeWtypeFilter();
-				//庫存儲位同步-可能有新物料
+				// 庫存儲位同步-可能有新物料
 				synchronizeERPService.erpAllNewAreaSynchronize();//
 				// 移除多於資料()
 				synchronizeERPService.remove360DayData();
@@ -100,7 +100,7 @@ public class ScheduledTasksService {
 				// 生管排程寄信通知(測試用)
 				// synchronizeScheduledService.scheduleOutNotification();
 				// 廠內生管排程寄信通知(測試用)
-				// synchronizeScheduledService.scheduleInDftNotification();
+				synchronizeScheduledService.scheduleInDftNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();

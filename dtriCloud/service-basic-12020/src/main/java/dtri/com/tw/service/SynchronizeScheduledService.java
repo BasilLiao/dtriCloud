@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -714,8 +715,13 @@ public class SynchronizeScheduledService {
 		@Override
 		public void run() {
 			try {
-				String getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
-				System.out.println("測試:");
+				// 取得資料
+				PackageBean getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
+				// 資料轉換
+				ArrayList<ScheduleInfactory> sif = packageService.jsonToBean(getData.getEntityJson(),
+						new TypeReference<ArrayList<ScheduleInfactory>>() {
+						});
+				System.out.println("測試:" + sif.size());
 			} catch (Exception e) {
 				logger.warn(CloudExceptionService.eStktToSg(e));
 			}

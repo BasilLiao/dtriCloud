@@ -12,16 +12,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import dtri.com.tw.websocket.ScheduleInfactoryWebSocket;
+import jakarta.annotation.Resource;
 
 @Controller
 public class ScheduleInfactoryControllerAC extends AbstractController {
 
 	@Autowired
 	private ScheduleInfactoryWebSocket webSocket;
+	@Resource
+	ScheduleServiceFeign serviceFeign;
 	@Autowired
 	private PackageService packageService;
 
@@ -68,18 +72,19 @@ public class ScheduleInfactoryControllerAC extends AbstractController {
 	@RequestMapping(value = { "/websocket/schedule_infactory_dft_service" }, method = {
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	String InfactorySynchronizeDft(@RequestBody String jsonObject) {
+	PackageBean InfactorySynchronizeDft(@RequestBody String jsonObject) {
 
 		// Step0.資料準備
-		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();
 		try {
-			// Step1.解包=>(String 轉換 JSON)=>(JSON 轉換 PackageBean)=> 檢查 => Pass
-			JsonObject packageObject = packageService.StringToJson(jsonObject);
-			packageBean = packageService.jsonToBean(packageObject.toString(), PackageBean.class);
-
+			// Step2.基礎資料整理
+			packageBean.setUserAccount("System");// 使用者
+			packageBean.setUserLanguaue("TW");// 語言
+			packageBean.setUserAgentAccount("System");// 使用者(代理)
+			// Step3.執行=>跨服->務執行
+			packageBean = serviceFeign.getScheduleInfactorySearch(packageService.beanToJson(packageBean));
 			// Step4.取得 被動態標記資料->併入
-			packageBean = ScheduleInfactoryWebSocket.getMapInfactoryTag(packageBean);
+			packageBean = ScheduleInfactoryWebSocket.getMapInfactoryOnlyTag(packageBean);
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報
 			e.printStackTrace();
@@ -87,15 +92,7 @@ public class ScheduleInfactoryControllerAC extends AbstractController {
 			packageBean.setInfo(CloudExceptionService.W0000_en_US);
 			packageBean.setInfoColor(CloudExceptionService.ErColor.danger + "");
 		}
-
-		// Step4.打包=>(轉換 PackageBean)=>包裝=>Json
-		try {
-			packageJson = packageService.beanToJson(packageBean);
-		} catch (Exception e) {
-			e.printStackTrace();
-			loggerWarn(eStktToSg(e), loginUser().getUsername());
-		}
-		return "OK";
+		return packageBean;
 	}
 
 	@Override

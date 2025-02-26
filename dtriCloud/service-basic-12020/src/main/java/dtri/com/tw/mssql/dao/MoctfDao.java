@@ -55,7 +55,7 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "WHERE "//
 			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "//
 			+ "	AND MOCTG.TG011 > 0 "// --數量不為0
-			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
+			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-5, 112) "//
 			+ "	OR MOCTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "ORDER BY "//
 			+ "	(MOCTG.TG001+ '-' + TRIM(MOCTG.TG002) +'-'+ MOCTG.TG003)  ASC"// --單號+序號
@@ -107,7 +107,7 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "WHERE "//
 			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "//
 			+ "	AND MOCTG.TG011 > 0 "// --數量不為0
-			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-600, 112) "//
+			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR MOCTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (CONCAT(MOCTG.TG001, '-', TRIM(MOCTG.TG002), '-', MOCTG.TG003) IN (:TG001TG002TG003)) "// 比對製令單+序號?
 			+ "ORDER BY "//

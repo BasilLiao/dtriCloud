@@ -68,12 +68,16 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
+			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-5, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "//
-			+ "	AND MOCTE.TE019 ='N' "//
-			+ "	AND (MOCTE.TE001 = 'A541' OR MOCTE.TE001 = 'A542' "//
-			+ "	OR MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A551' OR MOCTE.TE001 = 'A561' OR  MOCTE.TE001 = 'A571') "//
+			// + " AND MOCTE.TE019 ='N' "//
+			+ "	AND((MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A541')" //
+			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A542')"//
+			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A543')"//
+			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A551')"//
+			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A561')"//
+			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A571')) "//
 			+ "	OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
 			// + " AND TE001+'-'+TRIM(TE002) = 'A542-240529007' "//
 			+ " ORDER BY "//
@@ -134,7 +138,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].INVMB AS INVMB "// --倉庫別
 			+ "	ON MOCTE.TE004 = INVMB.MB001 "//
-			+ "	LEFT JOIN " + "	[DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
+			+ "	LEFT JOIN " //
+			+ "	[DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
 			+ "	ON INVMB.MB017 = CMSMC.MC001 "//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
@@ -144,10 +149,14 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "//
 			// + " AND MOCTE.TE019 ='N' "//
-			+ "	AND (MOCTE.TE001 = 'A541' OR MOCTE.TE001 = 'A542' "//
-			+ "	OR MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A551' OR MOCTE.TE001 = 'A561' OR  MOCTE.TE001 = 'A571') "//
+			+ "	AND (MOCTE.TE001 = 'A541'"//
+			+ " OR MOCTE.TE001 = 'A542'"//
+			+ "	OR MOCTE.TE001 = 'A543'"//
+			+ " OR MOCTE.TE001 = 'A551'"//
+			+ " OR MOCTE.TE001 = 'A561'"//
+			+ " OR MOCTE.TE001 = 'A571') "//
 			+ "	OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
-			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-600, 112) "//
+			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "  OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND(CONCAT(MOCTE.TE001, '-', TRIM(MOCTE.TE002), '-', MOCTE.TE003) IN (:TE001TE002TE003)) "// 比對製令單+序號?
 			// + " AND TE001+'-'+TRIM(TE002) = 'A542-240529007' "//

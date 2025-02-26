@@ -28,6 +28,6 @@ public interface ClientServiceFeign {
 
 	// 觸發
 	@RequestMapping(value = { "/websocket/schedule_infactory_dft_service" }, method = RequestMethod.POST)
-	String setInfactorySynchronizeDftCell(@RequestBody String json);
+	PackageBean setInfactorySynchronizeDftCell(@RequestBody String json);
 
 }
