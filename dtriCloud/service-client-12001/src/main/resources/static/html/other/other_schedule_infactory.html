@@ -160,31 +160,31 @@
 						<div class="row m-0">
 							<!--生管編輯-->
 							<button id="btn_pc" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark disabled">
 								<b>Production<br>control(S1)
 								</b>
 							</button>
 							<!--物控編輯-->
 							<button id="btn_mc" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark disabled">
 								<b>Material<br>control(S2)
 								</b>
 							</button>
 							<!--倉儲編輯-->
 							<button id="btn_wm" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark disabled">
 								<b>Warehouse<br>Management(S3)
 								</b>
 							</button>
 							<!--產線編輯-->
 							<button id="btn_pl" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark disabled">
 								<b>Production<br>line(S4)
 								</b>
 							</button>
 							<!--置亮編輯-->
 							<button id="btn_br" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning disabled">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark disabled">
 								<b>Bright<br>cancel(S5)
 								</b>
 							</button>
@@ -206,15 +206,15 @@
 								</b>
 							</button>
 							<button id="btn_exp_excel" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
 								<b>Export<br>Excel</b>
 							</button>
 							<button id="btn_inp_excel_ex" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
 								<b>Inport<br>Excel Ex</b>
 							</button>
 							<button id="btn_inp_excel" type="button"
-								class="lh-1 col-6 p-1 m-1 btn btn-sm btn-outline-danger">
+								class="lh-1 col-6 p-1 m-1 btn btn-sm btn-outline-dark">
 								<div class="row m-0">
 									<div class="col-4 p-0">Inport<br>Excel</div>
 									<div class="col-8 p-0"><input
@@ -239,13 +239,12 @@
 									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
 									style="font-size: 12px;">only Updata</b>
 							</div>
-							<button id="btn_send" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
 								<b>Query<br>(AR)
 								</b>
 							</button>
 							<button id="btn_clearAll" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -297,8 +296,15 @@
 				<thead class="table-warning fixedCt">
 					<tr class="">
 						<th class="fixedC1">Btn</th>
-						<th class="mfy_sinb_show mfy_sinb fixedC1" style="min-width: 100px;">工單號</th>
-						<th class="mfy_sosc_show mfy_siscstatus" style="min-width: 100px;">生管狀態</th>
+						<th class="mfy_siodate_show mfy_siodate fixedC1" style="width: 120px;">開工日</th>
+						<th class="mfy_sifdate_show mfy_sifdate " style="width: 120px;">完工日</th>
+						<th class="mfy_sinb_show mfy_sinb " style="width: 150px;">工單號</th>
+						<th class="mfy_sipnb_show mfy_sipnb " style="width: 150px;">產品品號</th>
+						<th class="mfy_sipspecifications_show mfy_sipspecifications " style="min-width: 100px;">
+							產品規格</th>
+						<th class="mfy_sirqty_show mfy_sirqty " style="width: 100px;">預計生產數</th>
+						<!---->
+						<th class="mfy_sosc_show mfy_siscstatus" style="width: 100px;">生管狀態</th>
 						<th class="mfy_sosc_show mfy_siscnote" style="min-width: 100px;">生管備註</th>
 						<!--物控-->
 						<th class="mfy_somc_show mfy_simcdate" style="min-width: 100px;">預計齊料日</th>
@@ -312,12 +318,45 @@
 				<tbody class="table-white">
 					<tr id="mfyEx" class="d-none">
 						<th class="mfy_sinb_choose fixedC1"></th>
-						<th class="mfy_sinb_show fixedC1">
+						<th class="mfy_siodate_show fixedC1">
+							<div class="p-1">
+								<input class="mfy_siodate_val col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled" type="text" placeholder="Ex:開工日?">
+							</div>
+						</th>
+						<th class="mfy_sifdate_show ">
+							<div class="p-1">
+								<input class="mfy_sifdate_val col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled" type="text" placeholder="Ex:完工日?">
+							</div>
+						</th>
+						<th class="mfy_sinb_show ">
 							<div class="p-1">
 								<input class="mfy_sinb_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:單別-單號?">
 							</div>
 						</th>
+						<th class="mfy_sipnb_show ">
+							<div class="p-1">
+								<input class="mfy_sipnb_val col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled" type="text" placeholder="Ex:產品品號?">
+							</div>
+						</th>
+						<th class="mfy_sipspecifications_show ">
+							<div class="p-1">
+								<textarea
+									class="mfy_sipspecifications_val col-12 m-0 p-1 border border-dark form-control"
+									rows="6" disabled="disabled"></textarea>
+
+							</div>
+						</th>
+						<th class="mfy_sirqty_show ">
+							<div class="p-1">
+								<input class="mfy_sirqty_val col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled" type="text" placeholder="Ex:預計生產數?">
+							</div>
+						</th>
+						<!---->
 						<th class="mfy_sosc_show">
 							<div class="p-1">
 								<select disabled="disabled"
@@ -1342,7 +1381,12 @@
 					$("#search_c_modify .bi-dash-square").trigger('click');
 				}
 				//顯示標題?
+				$("thead .mfy_siodate_show").removeClass("d-none");
+				$("thead .mfy_sifdate_show").removeClass("d-none");
 				$("thead .mfy_sinb_show").removeClass("d-none");
+				$("thead .mfy_sipnb_show").removeClass("d-none");
+				$("thead .mfy_sipspecifications_show").removeClass("d-none");
+				$("thead .mfy_sirqty_show").removeClass("d-none");
 				switch (order) {
 					case "btn_pc"://生管
 						$("thead .mfy_sofo_show").removeClass("d-none");
@@ -1379,6 +1423,12 @@
 						//資料
 						let siid = $(this).find(".siid").text();
 						let sinb = $(this).find(".sinb").text();
+						let siodate = $(this).find(".siodate").text();
+						let sifdate = $(this).find(".sifdate").text();
+						let sipnb = $(this).find(".sipnb").text();
+						let sipspecifications = $(this).find(".sipspecifications").text();
+						let sirqty = $(this).find(".sirqty").text();
+
 						let sifodate = $(this).find(".sifodate").html().replaceAll("<br>", "\n");
 						sifodate = sifodate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 						let sifokdate = $(this).find(".sifokdate").html().replaceAll("<br>", "\n");
@@ -1389,6 +1439,13 @@
 						let simcnote = "";
 						let siwmnote = "";
 						let simpnote = "";
+						//
+						mfyEx.find(".mfy_siodate_show").removeClass("d-none");
+						mfyEx.find(".mfy_sifdate_show").removeClass("d-none");
+						mfyEx.find(".mfy_sinb_show").removeClass("d-none");
+						mfyEx.find(".mfy_sipnb_show").removeClass("d-none");
+						mfyEx.find(".mfy_sipspecifications_show").removeClass("d-none");
+						mfyEx.find(".mfy_sirqty_show").removeClass("d-none");
 						switch (order) {
 							case "btn_pc"://生管
 								//生館
@@ -1396,7 +1453,6 @@
 									siscnote = $(this).find(".siscnote .notes").first().html().replaceAll("<br>", "\n")
 									siscnote = siscnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sosc_show").removeClass("d-none");
 								mfyEx.find(".mfy_sofo_show").removeClass("d-none")
 								break
@@ -1406,7 +1462,7 @@
 									simcnote = $(this).find(".simcnote .notes").first().html().replaceAll("<br>", "\n");
 									simcnote = simcnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
+
 								mfyEx.find(".mfy_somc_show").removeClass("d-none");
 
 								break;
@@ -1416,7 +1472,7 @@
 									siwmnote = $(this).find(".siwmnote .notes").first().html().replaceAll("<br>", "\n");
 									siwmnote = siwmnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
+
 								mfyEx.find(".mfy_sowm_show").removeClass("d-none");
 								break;
 							case "btn_pl"://製造
@@ -1425,19 +1481,24 @@
 									simpnote = $(this).find(".simpnote .notes").first().html().replaceAll("<br>", "\n");
 									simpnote = simpnote.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 								}
-								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
+
 								mfyEx.find(".mfy_somp_show").removeClass("d-none");
 								break;
 							case "btn_br"://置亮
-
-								mfyEx.find(".mfy_sinb_show").removeClass("d-none");
 								mfyEx.find(".mfy_sobr_show").removeClass("d-none");
 								break;
 						}
 						//資料填入
 						mfyEx.attr("id", siid);
 						mfyEx.addClass(sinb);
-						mfyEx.find(".mfy_sinb_val").val(sinb);
+						mfyEx.find(".mfy_siodate_val").val(siodate);
+						mfyEx.find(".mfy_sifdate_val").val(sifdate);
+						mfyEx.find(".mfy_sinb_val").val(sinb);//製令單
+						mfyEx.find(".mfy_sipnb_val").val(sipnb);
+						mfyEx.find(".mfy_sipspecifications_val").val(sipspecifications);
+						mfyEx.find(".mfy_sirqty_val").val(sirqty);
+
+
 						mfyEx.find(".mfy_sifodate_val").val(sifodate);
 						mfyEx.find(".mfy_sifokdate_val").val(sifokdate);
 						mfyEx.find(".mfy_siscstatus_val").val(siscstatus);

@@ -73,7 +73,7 @@ public class ScheduleInfactoryServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(null, null, null, null, null, null,
-					null, null, null, null, null, 0, pageable);
+					null, null, null, null, null,null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -142,14 +142,22 @@ public class ScheduleInfactoryServiceAc {
 			selectStatusArr.add("已完工_Y");
 			selectStatusArr.add("指定完工_y");
 			selectStatusArr.add("已作廢_V");
-			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sistatus", "Ex:單據狀態?", true, //
+			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sistatus", "Ex:生產狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
 			// Step3-5. 建立查詢項目
 			selectStatusArr = new JsonArray();
 			selectStatusArr.add("未結束_0");
 			selectStatusArr.add("已結束_2");
-			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
+			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:單據狀態?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
+
+			// Step3-5. 建立查詢項目{0: "未確認", 1: "未齊料", 2: "已齊料"};
+			selectStatusArr = new JsonArray();
+			selectStatusArr.add("未確認_0");
+			selectStatusArr.add("未齊料_1");
+			selectStatusArr.add("已齊料_2");
+			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "simcstatus", "Ex:物控狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -175,7 +183,7 @@ public class ScheduleInfactoryServiceAc {
 					searchData.getSipnb(), searchData.getSipname(), searchData.getSipspecifications(),
 					searchData.getSistatus(), searchData.getSifname(), searchData.getSiuname(),
 					searchData.getSifodate(), searchData.getSimcdates(), searchData.getSimcdatee(),
-					searchData.getSimcnote(), searchData.getSysstatus(), pageable);
+					searchData.getSimcnote(), searchData.getSimcstatus(),searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

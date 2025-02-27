@@ -24,17 +24,19 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:simcdates is null or c.simcdate >= :simcdates) and "// 預計齊料(起)
 			+ "(:simcdatee is null or c.simcdate <= :simcdatee) and "// 預計齊料(終)
 			+ "(:simcnote is null or c.simcnote LIKE %:simcnote%) and "// 物控資料
-			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
+			+ "(:simcstatus is null or c.simcstatus = :simcstatus) and "// 物控狀態
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus)") //
 	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, //
 			String sipname, String sipspecifications, //
 			String sistatus, String sifname, String siuname, //
-			String sifodate, String simcdates, String simcdatee, String simcnote, Integer sysstatus, Pageable pageable);
+			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,
+			Pageable pageable);
 
 	// 檢查用
-		@Query("SELECT c FROM ScheduleInfactory c WHERE "//
-				+ "(:sinb is null or c.sinb=:sinb) and "//
-				+ "(:sipnb is null or c.sipnb=:sipnb) ")
-		ArrayList<ScheduleInfactory> findAllByCheck(String sinb, String sipnb, Pageable pageable);
+	@Query("SELECT c FROM ScheduleInfactory c WHERE "//
+			+ "(:sinb is null or c.sinb=:sinb) and "//
+			+ "(:sipnb is null or c.sipnb=:sipnb) ")
+	ArrayList<ScheduleInfactory> findAllByCheck(String sinb, String sipnb, Pageable pageable);
 
 	// 檢查用// 狀態:0=暫停中/1=未生產/2=已發料/3=生產中_Y=已完工/y=指定完工
 	@Query("SELECT c FROM ScheduleInfactory c WHERE "//
