@@ -86,15 +86,21 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 		ArrayList<ScheduleInfactory> entityDatas = new ArrayList<>();
 		ArrayList<ScheduleInfactory> entityOnlyTagDatas = new ArrayList<>();
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
-			//轉換
+			// 轉換
 			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
 					new TypeReference<ArrayList<ScheduleInfactory>>() {
 					});
 			// 標記修正
 			entityDatas.forEach(x -> {
 				if (mapInfactoryTag.containsKey(x.getSiid())) {
-					x.setTag(mapInfactoryTag.get(x.getSiid()).toString());
-					entityOnlyTagDatas.add(x);
+					JsonObject infactoryTag = mapInfactoryTag.get(x.getSiid());
+					// 只登記含有標記的(物控+齊料日)
+					String simcdate = infactoryTag.get("simcdate").getAsString();
+					String simcnote = infactoryTag.get("simcnote").getAsString();
+					if (!simcdate.equals("") || !simcnote.equals("")) {
+						x.setTag(mapInfactoryTag.get(x.getSiid()).toString());
+						entityOnlyTagDatas.add(x);
+					}
 				}
 			});
 			packageBean.setEntityJson(packageService.beanToJson(entityOnlyTagDatas));
@@ -143,7 +149,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 				if (action.equals("sendOnlyData")) {// 單一用戶?
 					sessionOnlyAcc = userAcc;
 				}
-			} else {
+			} else if(!action.equals("sendAllClearShow")){//Server 清除燈號例外
 				// Server 來的要把資料轉換(生館)
 				entityDatas.forEach(n -> {
 					// 生管

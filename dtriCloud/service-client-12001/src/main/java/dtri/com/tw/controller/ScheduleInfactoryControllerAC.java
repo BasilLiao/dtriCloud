@@ -47,7 +47,7 @@ public class ScheduleInfactoryControllerAC extends AbstractController {
 		String action = getJson.get("action").getAsString();
 		String update = getJson.get("update").getAsString();
 		// 進行呼叫廣播給所有人更新資料
-		if (action.equals("sendAllData")) {
+		if (action.equals("sendAllData") || action.equals("sendAllClearShow")) {
 			try {
 				// loggerInf(funName + "[Start]" + jsonObject, "system");
 				// {"user":"system","action":"leave/sendAllData/sendAllLock/sendAllUnlock","update":""}

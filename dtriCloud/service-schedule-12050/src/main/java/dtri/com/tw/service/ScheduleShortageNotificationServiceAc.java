@@ -222,6 +222,8 @@ public class ScheduleShortageNotificationServiceAc {
 				entityDataOld.setSsnsumail(user.getSuemail());
 				entityDataOld.setSsnsnotice(x.getSsnsnotice());// 缺料通知
 				entityDataOld.setSsnonotice(x.getSsnonotice());// 外包排程通知
+				entityDataOld.setSsnimnotice(x.getSsnimnotice());// 廠內排程通知(日)
+				entityDataOld.setSsninotice(x.getSsninotice());// 廠內排程通知(月)
 				saveDatas.add(entityDataOld);
 			}
 		});

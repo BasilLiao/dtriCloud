@@ -1017,14 +1017,14 @@
 								worksheet.getColumn(2).width = 14;
 								worksheet.getColumn(3).width = 16;//製令單號
 								worksheet.getColumn(4).width = 20;
-								worksheet.getColumn(5).width = 20;
-								worksheet.getColumn(6).width = 14;//訂單
-								worksheet.getColumn(7).width = 50;
-								worksheet.getColumn(8).width = 50;
-								worksheet.getColumn(9).width = 14;//預計生產
-								worksheet.getColumn(10).width = 14;
-								worksheet.getColumn(11).width = 14;
-								worksheet.getColumn(12).width = 40;//製令單備註(客戶/國家/訂單/其他)
+								worksheet.getColumn(5).width = 50;
+								worksheet.getColumn(6).width = 50;
+								worksheet.getColumn(7).width = 14;//預計生產
+								worksheet.getColumn(8).width = 14;
+								worksheet.getColumn(9).width = 14;
+								worksheet.getColumn(10).width = 40;//製令單備註(客戶/國家/訂單/其他)
+								worksheet.getColumn(11).width = 20;
+								worksheet.getColumn(12).width = 14;//訂單
 								worksheet.getColumn(13).width = 15;
 								worksheet.getColumn(14).width = 15;
 								worksheet.getColumn(15).width = 60;//生管備註
@@ -1041,7 +1041,7 @@
 								for (let ii = 1; ii <= 24; ii++) {
 									worksheet.getColumn(ii).alignment = alignments;//加工廠
 								}
-								//顏色標記:預計開工日(siodate) <= 預計齊料日(simcdate)
+								//顏色標記:預計開工日(siodate) < 預計齊料日(simcdate)
 								// 比對資料並設定第三格
 								worksheet.eachRow((row, rowIndex) => {
 									if (rowIndex === 1) return; // 跳過第一筆資料 (標題行)
@@ -1050,7 +1050,7 @@
 									const cell6 = row.getCell(6); //客戶訂單
 
 									// 比對資料
-									if (cell8.value && cell1.value && cell8.value >= cell1.value) {
+									if (cell8.value && cell1.value && cell8.value > cell1.value) {
 										cell1.font = {color: {argb: 'FFFF0000'}}; // 紅色
 									}
 									// 如果 cell1 (第 1 欄) 包含 "週期"，則設定黃色背景
@@ -1862,8 +1862,8 @@
 						else {
 							//一般文字
 							cellTrNb.text(fieldValue);
-							if (k == "siodate" && entity["siodate"] <= entity["simcdate"]) {
-								//顏色標記:預計開工日(siodate) <= 預計齊料日(simcdate)
+							if (k == "siodate" && entity["siodate"] < entity["simcdate"]) {
+								//顏色標記:預計開工日(siodate) < 預計齊料日(simcdate)
 								cellTrNb.addClass("text-danger");
 							} else {
 								//時間內 : 取消標記

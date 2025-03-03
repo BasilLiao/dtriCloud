@@ -31,6 +31,8 @@ import jakarta.persistence.Table;
  *      this.ssnsumail = "";關聯帳號MAIL<br>
  *      this.ssnprimary = 0;主要/次要<br>
  *      this.ssnsnotice = false;缺料通知<br>
+ *      this.ssninotice = false;場內生管排程通知(周)<br>
+		this.ssnimnotice = false;場內生管異動通知(日)<br>
  */
 
 @Entity

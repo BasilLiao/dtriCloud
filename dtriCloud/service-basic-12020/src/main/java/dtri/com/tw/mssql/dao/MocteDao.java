@@ -75,7 +75,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	AND((MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A541')" //
 			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A542')"//
 			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A543')"//
-			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A551')"//
+			//+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A551')"//
 			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A561')"//
 			+ "	OR(MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A571')) "//
 			+ "	OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
@@ -152,7 +152,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	AND (MOCTE.TE001 = 'A541'"//
 			+ " OR MOCTE.TE001 = 'A542'"//
 			+ "	OR MOCTE.TE001 = 'A543'"//
-			+ " OR MOCTE.TE001 = 'A551'"//
+			//+ " OR MOCTE.TE001 = 'A551'"//
 			+ " OR MOCTE.TE001 = 'A561'"//
 			+ " OR MOCTE.TE001 = 'A571') "//
 			+ "	OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
