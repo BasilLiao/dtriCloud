@@ -100,7 +100,7 @@ public class ScheduledTasksService {
 				// 生管排程寄信通知(測試用)
 				// synchronizeScheduledService.scheduleOutNotification();
 				// 廠內生管排程寄信通知(測試用)
-				synchronizeScheduledService.scheduleInDftNotification();
+				//synchronizeScheduledService.scheduleInDftNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
@@ -129,6 +129,8 @@ public class ScheduledTasksService {
 	@Scheduled(cron = "0 30 07 * * ? ")
 	public void updateEveryday() {
 		try {
+			// 廠內生管排程寄信通知(測試用)
+			synchronizeScheduledService.scheduleInDftNotification();
 			// BIOS檢查版本
 			synchronizeBiosService.versionCheckBios();
 		} catch (Exception e) {
