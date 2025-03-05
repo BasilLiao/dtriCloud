@@ -355,7 +355,8 @@ public class ScheduleOutsourcerWebSocket implements ApplicationContextAware {
 							}
 						}
 					}
-					if (!n.getSomcstatus().equals(0) && !n.getSomcstatus().equals(o.getSomcstatus())) {
+					if (n.getSomcstatus() != null && !n.getSomcstatus().equals(0)
+							&& !n.getSomcstatus().equals(o.getSomcstatus())) {
 						tagString.addProperty("somcstatus", Fm_T.to_y_M_d(new Date()));
 					}
 					if (!n.getSomcdate().equals("") && !n.getSomcdate().equals(o.getSomcdate())) {

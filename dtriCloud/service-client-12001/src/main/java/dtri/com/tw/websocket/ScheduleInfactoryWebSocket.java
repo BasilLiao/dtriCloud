@@ -149,7 +149,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 				if (action.equals("sendOnlyData")) {// 單一用戶?
 					sessionOnlyAcc = userAcc;
 				}
-			} else if(!action.equals("sendAllClearShow")){//Server 清除燈號例外
+			} else if (!action.equals("sendAllClearShow")) {// Server 清除燈號例外
 				// Server 來的要把資料轉換(生館)
 				entityDatas.forEach(n -> {
 					// 生管
@@ -383,7 +383,8 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 							}
 						}
 					}
-					if (!n.getSimcstatus().equals(0) && !n.getSimcstatus().equals(o.getSimcstatus())) {
+					if (n.getSimcstatus() != null && !n.getSimcstatus().equals(0)
+							&& !n.getSimcstatus().equals(o.getSimcstatus())) {
 						tagString.addProperty("simcstatus", Fm_T.to_y_M_d(new Date()));
 					}
 					if (!n.getSimcdate().equals("") && !n.getSimcdate().equals(o.getSimcdate())) {
@@ -478,6 +479,10 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 			mapInfactory = new LinkedHashMap<Long, ScheduleInfactory>();
 			PageRequest pageable = PageRequest.of(0, 1000, Sort.by(orders));
 			scheduleInfactoryDao.findAllBySearch(null, null, null, null, pageable).forEach(o -> {
+				// 測試用
+				if (o.getSiid() == 264L) {
+					System.out.println(o.getSiid());
+				}
 				mapInfactory.put(o.getSiid(), o);
 			});
 

@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,10 +24,12 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:sifodate is null or c.sifodate LIKE %:sifodate%) and "// 加工廠上線日
 			+ "(:simcdates is null or c.simcdate >= :simcdates) and "// 預計齊料(起)
 			+ "(:simcdatee is null or c.simcdate <= :simcdatee) and "// 預計齊料(終)
-			+ "(:simcnote is null or c.simcnote LIKE %:simcnote%) and "// 物控資料
+			+ "(:simcnote is null or c.simcnote ILIKE %:simcnote%) and "// 物控資料
 			+ "(:simcstatus is null or c.simcstatus = :simcstatus) and "// 物控狀態
-			+ "(:sysstatus is null or c.sysstatus = :sysstatus)") //
-	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, //
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus) and"//
+			+ "(:notsipnb1 is null or c.sipnb NOT LIKE %:notsipnb1%) and"
+			+ "(:notsipnb2 is null or c.sipnb NOT LIKE %:notsipnb2%)")
+	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, String notsipnb1, String notsipnb2, //
 			String sipname, String sipspecifications, //
 			String sistatus, String sifname, String siuname, //
 			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,

@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +74,7 @@ public class ScheduleInfactoryServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(null, null, null, null, null, null,
-					null, null, null, null, null,null, 0, pageable);
+					null, null, null, null, null, null, null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -112,7 +113,7 @@ public class ScheduleInfactoryServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "sinb", "Ex:單別-單號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "sipnb", "Ex:產品品號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "sipnb", "Ex:排除#", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "sipname", "Ex:產品品名?", true, //
@@ -179,11 +180,26 @@ public class ScheduleInfactoryServiceAc {
 				Date simcdatee = new Date(Long.parseLong(searchData.getSimcdatee()));
 				searchData.setSimcdatee(Fm_T.to_yMd_Hms(simcdatee));
 			}
+			List<String> sipnbList = null;
+			String notsipnb1 = null;
+			String notsipnb2 = null;
+			if (searchData.getSipnb() != null && searchData.getSipnb().contains("#")) {
+				sipnbList = new ArrayList<String>();
+				sipnbList = Arrays.asList(searchData.getSipnb().split(" "));
+				notsipnb1 = (sipnbList.size() > 0 && sipnbList.get(0) != null && sipnbList.get(0).contains("#"))
+						? sipnbList.get(0).replaceAll("#", "")
+						: null;
+				notsipnb2 = (sipnbList.size() > 1 && sipnbList.get(1) != null && sipnbList.get(1).contains("#"))
+						? sipnbList.get(1).replaceAll("#", "")
+						: null;
+				searchData.setSipnb(null);
+			}
 			ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(searchData.getSinb(),
-					searchData.getSipnb(), searchData.getSipname(), searchData.getSipspecifications(),
-					searchData.getSistatus(), searchData.getSifname(), searchData.getSiuname(),
-					searchData.getSifodate(), searchData.getSimcdates(), searchData.getSimcdatee(),
-					searchData.getSimcnote(), searchData.getSimcstatus(),searchData.getSysstatus(), pageable);
+					searchData.getSipnb(), notsipnb1, notsipnb2, searchData.getSipname(),
+					searchData.getSipspecifications(), searchData.getSistatus(), searchData.getSifname(),
+					searchData.getSiuname(), searchData.getSifodate(), searchData.getSimcdates(),
+					searchData.getSimcdatee(), searchData.getSimcnote(), searchData.getSimcstatus(),
+					searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -308,7 +324,8 @@ public class ScheduleInfactoryServiceAc {
 				System.out.println("mc=物控");
 				o.setSysmdate(new Date());
 				o.setSysmuser(packageBean.getUserAccount());
-
+				System.out.println(x.getSimcdate() + ":" + o.getSimcdate());
+				Boolean oldSimcdate = x.getSimcdate().equals(o.getSimcdate());
 				if (!x.getSimcdate().equals("")) {
 					Date yMd = Fm_T.toDate(x.getSimcdate());
 					if (yMd.before(new Date())) {// yMd < 今天?=1
@@ -330,6 +347,14 @@ public class ScheduleInfactoryServiceAc {
 						noteOlds.add(noteOne);
 						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 					}
+					// 物控只改日期
+					if (!oldSimcdate) {
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
+						noteOlds.add(noteOne);
+						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
+					}
 				} else {
 					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
 					String contentNew = x.getSimcnote().replaceAll("\n", "");
@@ -338,6 +363,15 @@ public class ScheduleInfactoryServiceAc {
 					boolean checkNotSame = true;
 					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
 					if (contentOld.equals(contentNew)) {
+						// 物控只改日期
+						if (!oldSimcdate) {
+							noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+							noteOne.addProperty("user", packageBean.getUserAccount());
+							noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
+							noteOlds.add(noteOne);
+							o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
+						}
+
 						checkNotSame = false;
 						break;
 					}
