@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -730,7 +731,10 @@ public class SynchronizeScheduledService {
 						new TypeReference<ArrayList<ScheduleInfactory>>() {
 						});
 				System.out.println("測試:" + infactorys.size());
-
+				//排序
+				infactorys.sort(Comparator.comparing(ScheduleInfactory::getSiuname)
+                        .thenComparing(ScheduleInfactory::getSinb));
+				
 				// Step3.整理資料
 				infactorys.forEach(o -> {
 					// ====物控備註====

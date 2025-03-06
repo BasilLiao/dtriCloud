@@ -346,14 +346,15 @@ public class ScheduleInfactoryServiceAc {
 						noteOne.addProperty("content", x.getSimcnote());
 						noteOlds.add(noteOne);
 						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
-					}
-					// 物控只改日期
-					if (!oldSimcdate) {
-						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-						noteOne.addProperty("user", packageBean.getUserAccount());
-						noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
-						noteOlds.add(noteOne);
-						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
+					}else {
+						// 物控只改日期
+						if (!oldSimcdate) {
+							noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+							noteOne.addProperty("user", packageBean.getUserAccount());
+							noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
+							noteOlds.add(noteOne);
+							o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
+						}						
 					}
 				} else {
 					// 取出先前的(最新)-最新資料比對->不同內容->添加新的

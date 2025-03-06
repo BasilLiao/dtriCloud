@@ -39,7 +39,7 @@
 
 	/*Table 查詢框 表格外框線*/
 	#search_c #search_cr table {
-		max-height: 75vh;
+		max-height: 65vh;
 		min-height: 200px;
 		border-collapse: separate;
 		border-spacing: 0px;
@@ -239,12 +239,12 @@
 									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
 									style="font-size: 12px;">only Updata</b>
 							</div>
-							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
+							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Query<br>(AR)
 								</b>
 							</button>
 							<button id="btn_clearAll" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
 								<b>Clear<br>all()
 								</b>
 							</button>
@@ -1711,6 +1711,7 @@
 				console.log("searchReturn");
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
+					$('#searchReportExcel').animate({scrollTop: 0}, 'slow');
 					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);
 					other.data.searchPageSet.total = searchPageSet['total'];
 					other.data.searchPageSet.batch = searchPageSet['batch'];
