@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -34,11 +36,13 @@ import dtri.com.tw.mssql.dao.MoctaScheduleOutsourcerDao;
 import dtri.com.tw.mssql.entity.MoctaScheduleInfactory;
 import dtri.com.tw.mssql.entity.MoctaScheduleOutsourcer;
 import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
+import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.ScheduleOutsourcerDao;
 import dtri.com.tw.pgsql.dao.ScheduleShortageListDao;
 import dtri.com.tw.pgsql.dao.ScheduleShortageNotificationDao;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
+import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.ScheduleOutsourcer;
 import dtri.com.tw.pgsql.entity.ScheduleShortageList;
@@ -71,6 +75,9 @@ public class SynchronizeScheduledService {
 	private ScheduleShortageListDao shortageListDao;
 	@Autowired
 	private BasicNotificationMailDao notificationMailDao;
+
+	@Autowired
+	private BasicShippingListDao shippingListDao;
 
 	@Autowired
 	private ERPToCloudService erpToCloudService;
@@ -181,6 +188,10 @@ public class SynchronizeScheduledService {
 		ArrayList<MoctaScheduleInfactory> erpInfactorys = erpInfactoryDao.findAllByMocta(null, "Y");// 目前ERP有的資料
 		Map<String, MoctaScheduleInfactory> erpMapInfactorys = new HashMap<String, MoctaScheduleInfactory>();// ERP整理後資料
 		ArrayList<ScheduleInfactory> scheduleInfactorys = scheduleInfactoryDao.findAllByNotFinish(null);// 尚未結束的
+		ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByBslclass(null,
+				Arrays.asList("A541", "A542"));// 取得單據
+		Map<String, ArrayList<BasicShippingList>> shippingMaps = new HashMap<String, ArrayList<BasicShippingList>>();// 有比對到的單據
+
 		ArrayList<ScheduleInfactory> newScheduleInfactorys = new ArrayList<ScheduleInfactory>();// 要更新的
 		// 資料整理
 		for (MoctaScheduleInfactory one : erpInfactorys) {
@@ -188,10 +199,10 @@ public class SynchronizeScheduledService {
 			if (one.getTa009() != null && !one.getTa009().equals(""))
 				one.setNewone(true);
 			erpMapInfactorys.put(one.getTa001_ta002(), one);
-//				//測試用
-//				if(one.getTa001_ta002().equals("A512-240311001")) {
-//					System.out.println(one.getTa001_ta002());
-//				}
+			// 測試用
+			// if(one.getTa001_ta002().equals("A512-240311001")) {
+			// System.out.println(one.getTa001_ta002());
+			// }
 		}
 
 		// 比對資料?
@@ -200,6 +211,32 @@ public class SynchronizeScheduledService {
 //				if(o.getSonb().equals("A512-240311001")) {
 //					System.out.println(o.getSonb());
 //				}
+
+			// 倉儲比對
+			// 取得對應的
+			// 領料單A541 -> 判斷打印->(未打印=尚未備料 & 已打印=開始備料 & 都有撿料人=已完成備料)/
+			// 補料單A542 -> (都有撿料人=已完成備料)/
+			ArrayList<BasicShippingList> shNewListsA541 = new ArrayList<BasicShippingList>();
+			ArrayList<BasicShippingList> shNewListsA542 = new ArrayList<BasicShippingList>();
+			String statusA541 = "";
+			String statusA542 = "";
+			Boolean finishA541 = true;
+			for (BasicShippingList bSipl : shippingLists) {
+				if (bSipl.getBslclass().equals("A541") && bSipl.getBslfromcommand().contains(o.getSinb())) {// 匹配製令單號?
+					//測試用
+					if((bSipl.getBslclass()+"-"+bSipl.getBslsn()).equals("A541-250303001")) {
+						System.out.println("A541-250303001"+bSipl.getBslpalready());
+					}
+					shNewListsA541.add(bSipl);
+					if (finishA541) {
+						// 如果 未完成?
+						finishA541 = !bSipl.getBslfuser().equals("");
+					}
+				} else if (bSipl.getBslclass().equals("A542") && bSipl.getBslfromcommand().contains(o.getSinb())) {
+					shNewListsA542.add(bSipl);
+				}
+			}
+
 			// 有抓取到同樣單據
 			if (erpMapInfactorys.containsKey(o.getSinb())) {
 				erpMapInfactorys.get(o.getSinb()).setNewone(false);
@@ -208,6 +245,69 @@ public class SynchronizeScheduledService {
 				if (!sum.equals(o.getSisum())) {
 					erpToCloudService.scheduleInfactoryOne(o, erpMapInfactorys.get(o.getSinb()), sum);
 					newScheduleInfactorys.add(o);
+				}
+				// shNewListsA541.size() > 0 || shNewListsA542.size() > 0
+				if (shNewListsA541.size() > 0) {
+					//測試用
+					if((shNewListsA541.get(0).getBslclass()+"-"+shNewListsA541.get(0).getBslsn()).equals("A541-250303001")) {
+						System.out.println("A541-250303001");
+					}
+					if (shNewListsA541.get(0).getBslpalready() == 1) {// 已打印
+						statusA541 = "開始備料";
+						if (finishA541) {// 已經完成備料?
+							statusA541 = "完成備料";
+						}
+					} else {
+						statusA541 = "尚未備料";
+					}
+					String content = statusA541 + "_" //
+							+ shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn();
+					if (finishA541) {// 已經完成備料?
+						for (BasicShippingList oneBSL : shNewListsA541) {
+							int qtyN = oneBSL.getBslpnqty() - oneBSL.getBslpngqty();
+							if (qtyN > 0 && !oneBSL.getBslfuser().equals("ERP_Remove(Auto)")) {
+								// 缺料標記
+								content += "\n" + oneBSL.getBslpnumber() + " 缺: " + qtyN;
+							}
+						}
+					}
+
+					// 檢料進度不同?
+					JsonArray siwmnotes = new JsonArray();
+					JsonObject siwmnoteOne = new JsonObject();
+					// 如果是空的(第一筆)?
+					if (o.getSiwmnote().equals("[]") || o.getSiwmnote().equals("")) {
+						siwmnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						siwmnoteOne.addProperty("user", "system");
+						siwmnoteOne.addProperty("content", content);
+						siwmnotes.add(siwmnoteOne);
+						o.setSiwmnote(siwmnotes.toString());// 倉儲備註(格式)人+時間+內容
+					} else {
+						// 不是空的(第N筆資料)->取出轉換->比對最新資料
+						siwmnotes = JsonParser.parseString(o.getSiwmnote()).getAsJsonArray();
+
+						// 取出先前的-最新資料比對->不同內容->添加新的
+						JsonArray siwmnoteOld = new JsonArray();
+						siwmnoteOld = JsonParser.parseString(o.getSiwmnote()).getAsJsonArray();
+						String contentNew = content;
+						Boolean checkNotSame = true;
+						// 比對每一筆資料
+						for (JsonElement jsonElement : siwmnoteOld) {
+							String contentOld = jsonElement.getAsJsonObject().get("content").getAsString();
+							if (contentOld.equals(contentNew)) {
+								checkNotSame = false;
+								break;
+							}
+						}
+						// 確定不同 才能更新
+						if (checkNotSame) {
+							siwmnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+							siwmnoteOne.addProperty("user", "system");
+							siwmnoteOne.addProperty("content", contentNew);//
+							siwmnotes.add(siwmnoteOne);
+							o.setSiwmnote(siwmnotes.toString());// 倉儲備註(格式)人+時間+內容
+						}
+					}
 				}
 			} else {
 				ArrayList<MoctaScheduleInfactory> erpInfactorysEnd = erpInfactoryDao.findAllByMocta(o.getSinb(), null);
@@ -731,10 +831,10 @@ public class SynchronizeScheduledService {
 						new TypeReference<ArrayList<ScheduleInfactory>>() {
 						});
 				System.out.println("測試:" + infactorys.size());
-				//排序
-				infactorys.sort(Comparator.comparing(ScheduleInfactory::getSiuname)
-                        .thenComparing(ScheduleInfactory::getSinb));
-				
+				// 排序
+				infactorys.sort(
+						Comparator.comparing(ScheduleInfactory::getSiuname).thenComparing(ScheduleInfactory::getSinb));
+
 				// Step3.整理資料
 				infactorys.forEach(o -> {
 					// ====物控備註====
@@ -833,26 +933,26 @@ public class SynchronizeScheduledService {
 					// 內容
 					String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 							+ "<thead><tr style= 'background-color: aliceblue;'>"//
-							//+ "<th>項次</th>"//
+							// + "<th>項次</th>"//
 							+ "<th style='min-width: 65px;'>預計開工日</th>"//
 							+ "<th style='min-width: 65px;'>預計完工日</th>"//
 							+ "<th style='min-width: 100px;'>製令單號</th>"//
 							+ "<th style='min-width: 100px;'>產品品號</th>"//
-							//+ "<th style='min-width: 100px;'>產品品名</th>"//
+							// + "<th style='min-width: 100px;'>產品品名</th>"//
 							+ "<th style='min-width: 40px;'>預計-生產數</th>"//
-							//+ "<th style='min-width: 40px;'>完成-生產數</th>"//
-							//+ "<th style='min-width: 40px;'>製令單-狀態</th>"//
+							// + "<th style='min-width: 40px;'>完成-生產數</th>"//
+							// + "<th style='min-width: 40px;'>製令單-狀態</th>"//
 							+ "<th style='min-width: 80px;'>製令單-負責人</th>"//
-							//+ "<th style='min-width: 65px;'>生管狀態</th>"//
-							//+ "<th style='min-width: 220px;'>生管備註</th>"//
+							// + "<th style='min-width: 65px;'>生管狀態</th>"//
+							// + "<th style='min-width: 220px;'>生管備註</th>"//
 							+ "<th style='min-width: 65px;'>物控狀態</th>"//
 							+ "<th style='min-width: 65px;'>預計齊料日</th>"//
 							+ "<th style='min-width: 220px;'>物控備註</th>"//
-							//+ "<th style='min-width: 65px;'>倉庫進度</th>"//
-							//+ "<th style='min-width: 65px;'>倉庫備註</th>"//
-							//+ "<th style='min-width: 65px;'>製造進度</th>"//
-							//+ "<th style='min-width: 65px;'>製造備註</th>"//
-							//+ "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
+							// + "<th style='min-width: 65px;'>倉庫進度</th>"//
+							// + "<th style='min-width: 65px;'>倉庫備註</th>"//
+							// + "<th style='min-width: 65px;'>製造進度</th>"//
+							// + "<th style='min-width: 65px;'>製造備註</th>"//
+							// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
 							+ "</tr></thead>"//
 							+ "<tbody>";// 模擬12筆資料
 					int r = 1;
@@ -869,7 +969,7 @@ public class SynchronizeScheduledService {
 						case 2:
 							siscstatus = "已核准流程卡";
 							break;
-						
+
 						}
 						String simcstatus = "";// 物控狀態
 						switch (oss.getSimcstatus()) {
@@ -885,28 +985,28 @@ public class SynchronizeScheduledService {
 						}
 						// 信件資料結構
 						bnmcontent += "<tr>"//
-								//+ "<td>" + (r++) + "</td>"// 項次
+								// + "<td>" + (r++) + "</td>"// 項次
 								+ "<td>" + oss.getSiodate() + "</td>"// 預計-開工日
 								+ "<td>" + oss.getSifdate() + "</td>"// 預計-完工日
 								+ "<td>" + oss.getSinb() + "</td>"// 製令單號
 								+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
-								//+ "<td>" + oss.getSipname() + "</td>"// 產品品名
+								// + "<td>" + oss.getSipname() + "</td>"// 產品品名
 
 								+ "<td>" + oss.getSirqty() + "</td>"// 預計生產數
-								//+ "<td>" + oss.getSiokqty() + "</td>"// 已生產數
+								// + "<td>" + oss.getSiokqty() + "</td>"// 已生產數
 
-								//+ "<td>" + oss.getSistatus() + "</td>"// 製令單-狀態
+								// + "<td>" + oss.getSistatus() + "</td>"// 製令單-狀態
 								+ "<td>" + oss.getSiuname() + "</td>"// 製令單-負責人
-								//+ "<td>" + siscstatus + "</td>"// 生管狀態
-								//+ "<td>" + oss.getSiscnote() + "</td>"// 生管備註
+								// + "<td>" + siscstatus + "</td>"// 生管狀態
+								// + "<td>" + oss.getSiscnote() + "</td>"// 生管備註
 								+ "<td>" + simcstatus + "</td>"// 物控狀態
 								+ "<td>" + oss.getSimcdate() + "</td>"// 預計-齊料日
 								+ "<td>" + oss.getSimcnote() + "</td>"// 物控備註
-								//+ "<td>" + oss.getSiwmprogress() + "</td>"// 倉庫進度
-								//+ "<td>" + oss.getSiwmnote() + "</td>"// 倉庫備註
-								//+ "<td>" + oss.getSimpprogress() + "</td>"// 製造進度
-								//+ "<td>" + oss.getSimpnote() + "</td>"// 製令單-備註
-								//+ "<td>" + oss.getSiywdate() + "</td>"// YYYY(西元年)-W00(週期)
+								// + "<td>" + oss.getSiwmprogress() + "</td>"// 倉庫進度
+								// + "<td>" + oss.getSiwmnote() + "</td>"// 倉庫備註
+								// + "<td>" + oss.getSimpprogress() + "</td>"// 製造進度
+								// + "<td>" + oss.getSimpnote() + "</td>"// 製令單-備註
+								// + "<td>" + oss.getSiywdate() + "</td>"// YYYY(西元年)-W00(週期)
 								+ "</tr>";
 					}
 					bnmcontent += "</tbody></table>";
@@ -917,7 +1017,7 @@ public class SynchronizeScheduledService {
 							.findAllBySearch(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
 							.size() == 0 && infactorys.size() > 0) {
 						notificationMailDao.save(readyNeedMail);
-						//清除掉Tag(廠內)
+						// 清除掉Tag(廠內)
 						String update = packageService.beanToJson(infactorys);
 						JsonObject sendAllData = new JsonObject();
 						sendAllData.addProperty("update", update);

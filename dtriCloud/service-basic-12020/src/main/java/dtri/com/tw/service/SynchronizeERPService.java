@@ -461,9 +461,9 @@ public class SynchronizeERPService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			// 測試用
-//			if (nKey.contains("A541-250224003-0069")) {
-//				System.out.println("A541-250224003-0069");
-//			}
+			if (nKey.contains("A541-250313001-0001")) {
+				System.out.println("A541-250313001-0001");
+			}
 
 			m.setNewone(true);
 			// 單別性質(退料類 需抓取 物料領退用量)
@@ -644,8 +644,8 @@ public class SynchronizeERPService {
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 測試用A541-250224007-0018
-				if (r.getTa026_ta027_ta028().contains("A541-250303001-0060")) {
-					System.out.println("測試:A541-250303001-0060");
+				if (r.getTa026_ta027_ta028().contains("A541-250313001-0001")) {
+					System.out.println("測試:A541-250313001-0001");
 				}
 				if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
 					// 移除標記

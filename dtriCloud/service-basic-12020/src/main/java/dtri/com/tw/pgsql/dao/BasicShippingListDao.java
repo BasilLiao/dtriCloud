@@ -33,4 +33,12 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate) and sysstatus = 1") //
 	ArrayList<BasicShippingList> findAllBySyscdateRemove(Date syscdate);
+
+	@Query("SELECT c FROM BasicShippingList c WHERE "//
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus) "//
+			+ "and (c.bslsuser = '') "//
+			+ "and (COALESCE(:bslclass) is null or c.bslclass IN :bslclass) "//
+			+ "order by c.bslclass asc, c.bslsn asc, c.bslnb asc")
+	ArrayList<BasicShippingList> findAllByBslclass(Integer sysstatus, List<String> bslclass);
+
 }

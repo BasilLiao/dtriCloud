@@ -851,7 +851,8 @@
 				//監聽-備註開啟(促發)
 				$(document).off("mouseenter mouseleave", ".noteShow");
 				$(document).on("mouseenter mouseleave", ".noteShow", function (e) {
-					//console.log($(this)[0].style.height);
+					console.log($(this).parents("tr"));
+					
 					if ($(this)[0].style.height != "300px") {
 						$(this).css("height", "300px");
 						$(this).css("overflow", "auto");
