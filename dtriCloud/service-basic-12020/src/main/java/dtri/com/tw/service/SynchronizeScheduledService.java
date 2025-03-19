@@ -249,8 +249,8 @@ public class SynchronizeScheduledService {
 				// shNewListsA541.size() > 0 || shNewListsA542.size() > 0
 				if (shNewListsA541.size() > 0) {
 					//測試用
-					if((shNewListsA541.get(0).getBslclass()+"-"+shNewListsA541.get(0).getBslsn()).equals("A541-250303001")) {
-						System.out.println("A541-250303001");
+					if((shNewListsA541.get(0).getBslclass()+"-"+shNewListsA541.get(0).getBslsn()).equals("A541-250305008")) {
+						System.out.println("A541-250305008");
 					}
 					if (shNewListsA541.get(0).getBslpalready() == 1) {// 已打印
 						statusA541 = "開始備料";

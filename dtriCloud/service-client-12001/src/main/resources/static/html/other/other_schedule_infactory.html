@@ -239,7 +239,8 @@
 									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
 									style="font-size: 12px;">only Updata</b>
 							</div>
-							<button id="btn_send" type="button" class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+							<button id="btn_send" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Query<br>(AR)
 								</b>
 							</button>
@@ -291,7 +292,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<table style="max-height: 500px;min-height: 200px;"
+			<table style="max-height: 500px;min-height: 175px;"
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered table-responsive table-style shadow-sm">
 				<thead class="table-warning fixedCt">
 					<tr class="">
@@ -346,7 +347,7 @@
 							<div class="p-1">
 								<textarea
 									class="mfy_sipspecifications_val col-12 m-0 p-1 border border-dark form-control"
-									rows="6" disabled="disabled"></textarea>
+									rows="5" disabled="disabled"></textarea>
 
 							</div>
 						</th>
@@ -371,7 +372,7 @@
 						<th class="mfy_sosc_show">
 							<div class="p-1">
 								<textarea class="mfy_siscnote_val col-12 m-0 p-1 border border-dark form-control"
-									rows="1"></textarea>
+									rows="5"></textarea>
 							</div>
 						</th>
 						<!--物控-->
@@ -385,21 +386,21 @@
 						<th class="mfy_somc_show">
 							<div class="p-1">
 								<textarea class="mfy_simcnote_val col-12 m-0 p-1 border border-dark form-control"
-									rows="1"></textarea>
+									rows="5"></textarea>
 							</div>
 						</th>
 						<!--倉儲-->
 						<th class="mfy_sowm_show">
 							<div class="p-1">
 								<textarea class="mfy_siwmnote_val col-12 m-0 p-1 border border-dark form-control"
-									rows="1"></textarea>
+									rows="5"></textarea>
 							</div>
 						</th>
 						<!--產線-->
 						<th class="mfy_somp_show">
 							<div class="p-1">
 								<textarea class="mfy_simpnote_val col-12 m-0 p-1 border border-dark form-control"
-									rows="1"></textarea>
+									rows="5"></textarea>
 							</div>
 						</th>
 						<!--置亮-->
@@ -852,13 +853,21 @@
 				$(document).off("mouseenter mouseleave", ".noteShow");
 				$(document).on("mouseenter mouseleave", ".noteShow", function (e) {
 					console.log($(this).parents("tr"));
-					
+					let thisTr = $(this).parents("tr");
+					//simcnote 
+					//siwmnote 
+					//siscnote 
+					//simpnote
 					if ($(this)[0].style.height != "300px") {
-						$(this).css("height", "300px");
-						$(this).css("overflow", "auto");
+						//$(this).css("height", "300px");
+						//$(this).css("overflow", "auto");
+						thisTr.find(".noteShow").css("height", "300px");
+						thisTr.find(".noteShow").css("overflow", "auto");
 					} else {
-						$(this).css("height", "80px");
-						$(this).css("overflow", "hidden");
+						//$(this).css("height", "80px");
+						//$(this).css("overflow", "hidden");
+						thisTr.find(".noteShow").css("height", "80px");
+						thisTr.find(".noteShow").css("overflow", "hidden");
 					}
 				});
 
@@ -1130,6 +1139,22 @@
 					//console.log(k);
 					$(this).html(k);
 				});
+				//取代"-"
+				searchReportExcel.find('.sifdate').each(function () {
+					$(this).text($(this).text().replaceAll("-", "/"));
+
+				});
+				//取代"-"
+				searchReportExcel.find('.siodate').each(function () {
+					$(this).text($(this).text().replaceAll("-", "/"));
+
+				});
+				//取代"-"
+				searchReportExcel.find('.simcdate').each(function () {
+					$(this).text($(this).text().replaceAll("-", "/"));
+
+				});
+				 
 				//置換資料-倉儲(換行)
 				searchReportExcel.find('.siwmnote').each(function () {
 					let k = "\n"
@@ -1504,16 +1529,16 @@
 						mfyEx.find(".mfy_sifokdate_val").val(sifokdate);
 						mfyEx.find(".mfy_siscstatus_val").val(siscstatus);
 						mfyEx.find(".mfy_siscnote_val").val(siscnote);
-						mfyEx.find(".mfy_siscnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_siscnote_val").attr("rows", "5");
 
 						mfyEx.find(".mfy_simcdate_val").val(simcdate.replaceAll("-", ""));
-						mfyEx.find(".mfy_simcnote_val").val(simcnote);
-						mfyEx.find(".mfy_simcnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_simcnote_val").val("");//simcnote
+						mfyEx.find(".mfy_simcnote_val").attr("rows", "5");
 
 						mfyEx.find(".mfy_siwmnote_val").val(siwmnote);
-						mfyEx.find(".mfy_siwmnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_siwmnote_val").attr("rows", "5");
 						mfyEx.find(".mfy_simpnote_val").val(simpnote);
-						mfyEx.find(".mfy_simpnote_val").attr("rows", "6");
+						mfyEx.find(".mfy_simpnote_val").attr("rows", "5");
 					}
 				});
 				//是否有人使用?/如果已經鎖住 不需要再傳送
