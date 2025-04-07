@@ -131,7 +131,7 @@ public class WarehouseAssignmentServiceAc {
 			 * 0, null, inPageable);
 			 */
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus("A541", null, null, null,
-					"true", null, null, 0, null, shPageable);
+					"true", null, null, null, null, shPageable);
 			// 進料
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
