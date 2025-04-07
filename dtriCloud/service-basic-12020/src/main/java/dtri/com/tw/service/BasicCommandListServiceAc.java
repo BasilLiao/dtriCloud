@@ -73,7 +73,7 @@ public class BasicCommandListServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, null, pageable);
+			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -135,7 +135,7 @@ public class BasicCommandListServiceAc {
 					BasicCommandList.class);
 
 			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(searchData.getBclclass(),
-					searchData.getBclsn(), searchData.getBclpnumber(), pageable);
+					searchData.getBclsn(), searchData.getBclpnumber(), null, pageable);
 			// 如果有小於值
 			entitys.forEach(s -> {
 				if (s.getBclpnqty() < 0) {

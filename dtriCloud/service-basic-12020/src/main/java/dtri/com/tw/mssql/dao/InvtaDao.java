@@ -102,6 +102,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "WHERE "//
 			+ "	INVTB.TB001 is not null"//
 			+ "	AND INVTB.TB007 != 0 "// 數量大於0
+			+ "	AND INVTB.TB018 != 'V' "//
 			+ " AND ((INVTB.TB001 ='A111' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A112'AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A115'AND INVTB.TB018='N') "//

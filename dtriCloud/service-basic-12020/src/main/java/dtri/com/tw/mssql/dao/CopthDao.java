@@ -87,6 +87,7 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 			+ "     LEFT JOIN [DTR_TW].[dbo].PURMA AS PURMA "// --廠商 "
 			+ "     ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE COPTH.TH008 > 0 "//
+			+ " AND (COPTH.TH020!='V') "//
 			+ " AND (COPTH.TH001='A231' OR COPTH.TH001='A232') "//
 			+ " AND (COPTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ " OR COPTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//

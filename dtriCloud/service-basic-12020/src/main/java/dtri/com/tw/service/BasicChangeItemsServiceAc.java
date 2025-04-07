@@ -89,7 +89,7 @@ public class BasicChangeItemsServiceAc {
 			// Step3-1.取得資料(一般/細節)
 			// 製令單
 			ArrayList<BasicCommandList> entitysNew = new ArrayList<BasicCommandList>();
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, "90-320", pageableBC);
+			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, "90-320",1, pageableBC);
 			// Step4-2.資料區分(一般/細節)- 排除重複單號
 			Map<String, Boolean> check = new HashMap<String, Boolean>();
 			entitys.forEach(o -> {
@@ -201,12 +201,12 @@ public class BasicChangeItemsServiceAc {
 			// 複數?
 			for (String bclpn : bclpns) {
 				// 製令單
-				ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, bclpn, pageableBC);
+				ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, bclpn,1, pageableBC);
 				// BOM組成結構
 				ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(null, null, bclpn, null,
 						null, null);
 				// 製令單A521
-				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null,
+				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null,1,
 						pageableBC);
 
 				// BOM而外庫存量儲位

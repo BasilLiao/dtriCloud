@@ -105,8 +105,8 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "WHERE "//
 			+ " MOCTI.TI001 is not null "//
 			+ "	AND MOCTI.TI007 > 0 "// --數量不為0
-			+ " AND (MOCTI.TI001='A591') "// --
-			+ "	AND (MOCTI.TI048 ='N' OR MOCTI.TI048='3') "// --
+			+ " AND (MOCTI.TI001 = 'A591') "// --
+			+ "	AND (MOCTI.TI037 !='V') "// --
 			+ " AND (MOCTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR MOCTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND (CONCAT(MOCTI.TI001, '-', TRIM(MOCTI.TI002), '-', MOCTI.TI003) IN (:TI001TI002TI003)) "// 比對製令單+序號?

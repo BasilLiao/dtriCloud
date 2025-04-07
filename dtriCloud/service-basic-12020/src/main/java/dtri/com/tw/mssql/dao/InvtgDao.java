@@ -101,7 +101,7 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE"//
-			+ "	INVTG.TG022!='V'"//
+			+ "	INVTG.TG022!='V' "//
 			+ "	AND INVTG.TG001 is not null"//
 			+ "	AND INVTG.TG009 > 0 "// 數量大於0
 			+ " AND ((INVTG.TG001='A131' AND (INVTF.TF028='1' OR INVTF.TF028='3')) OR INVTG.TG001='A141') "//

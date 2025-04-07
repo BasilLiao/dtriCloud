@@ -360,8 +360,13 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 //							tagString.addProperty("siscnote", Fm_T.to_y_M_d(new Date()));
 //						}
 //					}
+					// 測試用
+					if (o == null) {
+						System.out.println("o is null");
+					}
+
 					// 物控
-					if (!n.getSimcnote().equals("[]")) {
+					if (o != null && !n.getSimcnote().equals("[]")) {
 						JsonArray simcnotes = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
 						String scnoteNew = n.getSimcnote().replaceAll("\n", "");
 						// 如果是第一筆資料?
@@ -383,7 +388,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 							}
 						}
 					}
-					if (n.getSimcstatus() != null && !n.getSimcstatus().equals(0)
+					if (o != null && n.getSimcstatus() != null && !n.getSimcstatus().equals(0)
 							&& !n.getSimcstatus().equals(o.getSimcstatus())) {
 						tagString.addProperty("simcstatus", Fm_T.to_y_M_d(new Date()));
 					}

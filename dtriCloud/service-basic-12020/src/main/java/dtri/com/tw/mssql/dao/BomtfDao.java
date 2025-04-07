@@ -103,6 +103,7 @@ public interface BomtfDao extends JpaRepository<Bomtf, Long> {
 			+ " WHERE"//
 			+ "	BOMTG.TG001 is not null "//
 			+ "	AND BOMTG.TG008 > 0 "//
+			+ "	AND BOMTG.TG010 != 'V' "//
 			+ " AND BOMTG.TG001 = 'A431' "//
 			+ "	AND (BOMTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR BOMTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//

@@ -106,6 +106,7 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 			+ " WHERE "//
 			+ "	BOMTE.TE001 is not null "//
 			+ "	AND BOMTE.TE008 > 0 "//
+			+ " AND BOMTE.TE010 !='V' "//
 			+ " AND BOMTE.TE001='A421' "//
 			+ "	AND (BOMTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR BOMTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//

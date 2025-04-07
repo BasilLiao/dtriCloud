@@ -102,6 +102,7 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "WHERE "//
 			+ "	INVTI.TI001 is not null "//
 			+ "	AND INVTI.TI009 > 0 "// 數量大於0
+			+ "	AND INVTI.TI022 !='V' "// 
 			+ " AND (INVTI.TI001='A151' OR INVTI.TI001='A161')"//
 			+ "	AND (INVTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR INVTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天

@@ -1,134 +1,132 @@
 <style>
-	/*Table 寬度滾動*/
-	#search_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-	}
+/*Table 寬度滾動*/
+#search_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
 
-	/*Table 自動隱藏*/
-	#search_c .table-responsive th {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#search_c .table-responsive th {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	#search_c .table-responsive td {
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
+#search_c .table-responsive td {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#search_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#search_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	#search_c .fixedCt {
-		position: sticky;
-		top: 0px;
-		z-index: 5;
-	}
+#search_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 
-	/*Table 每隔表格內_框線*/
-	#search_c .table-bordered td,
-	#search_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#search_c .table-bordered td, #search_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 查詢框 表格外框線*/
-	#search_c #search_cr table {
-		max-height: 65vh;
-		min-height: 200px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 查詢框 表格外框線*/
+#search_c #search_cr table {
+	max-height: 65vh;
+	min-height: 200px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 編輯框*/
-	#search_c_modify table {
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 編輯框*/
+#search_c_modify table {
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格外框線*/
-	#search_c #search_dcr table {
-		max-height: 570px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#search_c #search_dcr table {
+	max-height: 570px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格內 背景色*/
-	#search_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#search_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*覆寫換色*/
-	.table-hover>tbody>tr:hover>* {
-		--bs-table-accent-bg: #0d6efd40;
-		color: let(--bs-table-hover-color);
-	}
+/*覆寫換色*/
+.table-hover>tbody>tr:hover>* {
+	--bs-table-accent-bg: #0d6efd40;
+	color: let(--bs-table-hover-color);
+}
 
-	/*標題色彩*/
-	#search_c .title_color {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#search_c .title_color {
+	background-color: #cfe2ff;
+}
 
-	/*直立式呈現邊字*/
-	#search_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#search_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_24*/
-	#search_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#search_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
 
-	#search_c .checkbox_20 {
-		width: 20px;
-		height: 20px;
-	}
+#search_c .checkbox_20 {
+	width: 20px;
+	height: 20px;
+}
 
-	#search_c .checkbox_16 {
-		width: 16px;
-		height: 16px;
-	}
+#search_c .checkbox_16 {
+	width: 16px;
+	height: 16px;
+}
 
-	/**指定靠左*/
-	.sinb,
-	.sipnb,
-	.sipname,
-	.sipspecifications,
-	.siscstatus,
-	.simcstatus,
+/**指定靠左*/
+.sinb, .sipnb, .sipname, .sipspecifications, .siscstatus, .simcstatus,
 	.siuname {
-		text-align: left !important;
-	}
+	text-align: left !important;
+}
 
-	.noteShow {
-		line-height: 16px;
-		font-size: 14px;
-	}
+.noteShow {
+	line-height: 16px;
+	font-size: 14px;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
 	<div id="search_c_item" class="col-12 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			If you want to quickly find specific text: Ctrl+F
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_c_item_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> If you
+			want to quickly find specific text: Ctrl+F
 		</div>
 		<div class="row m-0 collapse show" id="search_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
-			<div id="searchItem" class="col border border-primary  row m-0 p-0 shadow-sm">
+			<div id="searchItem"
+				class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 searchTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="ex_id"
-								name="ex_name" placeholder="Ex:123" autofocus>
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text id="ex_id" name="ex_name" placeholder="Ex:123"
+								autofocus>
 						</div>
 					</div>
 				</div>
@@ -136,7 +134,8 @@
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" id="ex_id2" name="ex_name2">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								id="ex_id2" name="ex_name2">
 								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
 							</select>
 						</div>
@@ -147,13 +146,16 @@
 	</div>
 	<!-- 控制面板 -->
 	<div id="search_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<div class="col-12 col-lg-5 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
@@ -207,19 +209,25 @@
 							</button>
 							<button id="btn_exp_excel" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
-								<b>Export<br>Excel</b>
+								<b>Export<br>Excel
+								</b>
 							</button>
 							<button id="btn_inp_excel_ex" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
-								<b>Inport<br>Excel Ex</b>
+								<b>Inport<br>Excel Ex
+								</b>
 							</button>
 							<button id="btn_inp_excel" type="button"
 								class="lh-1 col-6 p-1 m-1 btn btn-sm btn-outline-dark">
 								<div class="row m-0">
-									<div class="col-4 p-0">Inport<br>Excel</div>
-									<div class="col-8 p-0"><input
-											class="col-12 m-0 p-1 border border-dark form-control-file" type="file"
-											value="" placeholder="Ex:" accept=".xlsx"></div>
+									<div class="col-4 p-0">
+										Inport<br>Excel
+									</div>
+									<div class="col-8 p-0">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control-file"
+											type="file" value="" placeholder="Ex:" accept=".xlsx">
+									</div>
 								</div>
 							</button>
 						</div>
@@ -231,13 +239,13 @@
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_not_sync" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">Not Sync</b>
+									class="m-0 form-check-input checkbox_16 border border-dark">
+								<br> <b style="font-size: 12px;">Not Sync</b>
 							</div>
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_update_auto" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">only Updata</b>
+									class="m-0 form-check-input checkbox_16 border border-dark">
+								<br> <b style="font-size: 12px;">only Updata</b>
 							</div>
 							<button id="btn_send" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -258,9 +266,11 @@
 	</div>
 	<!-- 編輯面板 -->
 	<div id="search_c_modify" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_modify_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_c_modify_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_c_modify_open" class="row m-0 collapse">
 			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Modify </b>
@@ -292,17 +302,18 @@
 					</tr>
 				</tbody>
 			</table>
-			<table style="max-height: 500px;min-height: 175px;"
+			<table style="max-height: 500px; min-height: 175px;"
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered table-responsive table-style shadow-sm">
 				<thead class="table-warning fixedCt">
 					<tr class="">
 						<th class="fixedC1">Btn</th>
-						<th class="mfy_siodate_show mfy_siodate fixedC1" style="width: 120px;">開工日</th>
+						<th class="mfy_siodate_show mfy_siodate fixedC1"
+							style="width: 120px;">開工日</th>
 						<th class="mfy_sifdate_show mfy_sifdate " style="width: 120px;">完工日</th>
 						<th class="mfy_sinb_show mfy_sinb " style="width: 150px;">工單號</th>
 						<th class="mfy_sipnb_show mfy_sipnb " style="width: 150px;">產品品號</th>
-						<th class="mfy_sipspecifications_show mfy_sipspecifications " style="min-width: 100px;">
-							產品規格</th>
+						<th class="mfy_sipspecifications_show mfy_sipspecifications "
+							style="min-width: 100px;">產品規格</th>
 						<th class="mfy_sirqty_show mfy_sirqty " style="width: 100px;">預計生產數</th>
 						<!---->
 						<th class="mfy_sosc_show mfy_siscstatus" style="width: 100px;">生管狀態</th>
@@ -321,25 +332,29 @@
 						<th class="mfy_sinb_choose fixedC1"></th>
 						<th class="mfy_siodate_show fixedC1">
 							<div class="p-1">
-								<input class="mfy_siodate_val col-12 m-0 p-1 border border-dark form-control"
+								<input
+									class="mfy_siodate_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:開工日?">
 							</div>
 						</th>
 						<th class="mfy_sifdate_show ">
 							<div class="p-1">
-								<input class="mfy_sifdate_val col-12 m-0 p-1 border border-dark form-control"
+								<input
+									class="mfy_sifdate_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:完工日?">
 							</div>
 						</th>
 						<th class="mfy_sinb_show ">
 							<div class="p-1">
-								<input class="mfy_sinb_val col-12 m-0 p-1 border border-dark form-control"
+								<input
+									class="mfy_sinb_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:單別-單號?">
 							</div>
 						</th>
 						<th class="mfy_sipnb_show ">
 							<div class="p-1">
-								<input class="mfy_sipnb_val col-12 m-0 p-1 border border-dark form-control"
+								<input
+									class="mfy_sipnb_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:產品品號?">
 							</div>
 						</th>
@@ -353,7 +368,8 @@
 						</th>
 						<th class="mfy_sirqty_show ">
 							<div class="p-1">
-								<input class="mfy_sirqty_val col-12 m-0 p-1 border border-dark form-control"
+								<input
+									class="mfy_sirqty_val col-12 m-0 p-1 border border-dark form-control"
 									disabled="disabled" type="text" placeholder="Ex:預計生產數?">
 							</div>
 						</th>
@@ -371,7 +387,8 @@
 						</th>
 						<th class="mfy_sosc_show">
 							<div class="p-1">
-								<textarea class="mfy_siscnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea
+									class="mfy_siscnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="5"></textarea>
 							</div>
 						</th>
@@ -385,28 +402,32 @@
 						</th>
 						<th class="mfy_somc_show">
 							<div class="p-1">
-								<textarea class="mfy_simcnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea
+									class="mfy_simcnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="5"></textarea>
 							</div>
 						</th>
 						<!--倉儲-->
 						<th class="mfy_sowm_show">
 							<div class="p-1">
-								<textarea class="mfy_siwmnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea
+									class="mfy_siwmnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="5"></textarea>
 							</div>
 						</th>
 						<!--產線-->
 						<th class="mfy_somp_show">
 							<div class="p-1">
-								<textarea class="mfy_simpnote_val col-12 m-0 p-1 border border-dark form-control"
+								<textarea
+									class="mfy_simpnote_val col-12 m-0 p-1 border border-dark form-control"
 									rows="5"></textarea>
 							</div>
 						</th>
 						<!--置亮-->
 						<th class="mfy_sobr_show">
 							<div class="p-1">
-								<input class="mfy_sobr_val col-12 m-0 p-1 border border-dark checkbox_24"
+								<input
+									class="mfy_sobr_val col-12 m-0 p-1 border border-dark checkbox_24"
 									type="checkbox" checked>
 							</div>
 						</th>
@@ -419,9 +440,11 @@
 
 	<!-- 查詢結果 -->
 	<div id="search_cr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_cr_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_cr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
@@ -431,7 +454,8 @@
 					<tr>
 						<th class="fixedC1 markFn" style="min-width: 40px;">
 							<div>
-								<button id="exthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+								<button id="exthAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 									<b>M</b>
 								</button>
 							</div>
@@ -443,17 +467,20 @@
 					<tr class="exTbodyTr d-none">
 						<th class="fixedC1 exTbodyTh markFn" style="max-width: 40px;">
 							<div class="">
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox"
+								<input disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="checkbox"
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
 					</tr>
 					<tr class="exTbodyTrYW d-none">
-						<th colspan="5" class="fixedC1 TbodyThYW" style="background-color: rgb(255, 255, 0);">
-						<th colspan="30" class="TbodyThYWO" style="background-color: rgb(255, 255, 0);">
-						<th colspan="5" class="TbodyThYWO d-none" style="background-color: rgb(255, 255, 0);">
-						</th>
+						<th colspan="5" class="fixedC1 TbodyThYW"
+							style="background-color: rgb(255, 255, 0);">
+						<th colspan="30" class="TbodyThYWO"
+							style="background-color: rgb(255, 255, 0);">
+						<th colspan="5" class="TbodyThYWO d-none"
+							style="background-color: rgb(255, 255, 0);"></th>
 					</tr>
 				</tbody>
 			</table>
@@ -542,7 +569,7 @@
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
-				let check1 = true, check2 = true, check3 = true, check4 = true;
+				let check1 = true, check2 = true, check3 = true, check4 = true,check5 = true,check6 = true,check7 = true;
 				let left = 40;
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
@@ -586,7 +613,29 @@
 						exTbodytd.addClass('fixedC1');
 						exTbodytd.css('left', left + "px");
 						left += resultThead[k].width;
+					}else if (check5 && resultThead[k].show == 1) {
+						check5 = false;
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', left + "px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', left + "px");
+						left += resultThead[k].width;
+					}else if (check6 && resultThead[k].show == 1) {
+						check6 = false;
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', left + "px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', left + "px");
+						left += resultThead[k].width;
+					}else if (check7 && resultThead[k].show == 1) {
+						check7 = false;
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', left + "px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', left + "px");
+						left += resultThead[k].width;
 					}
+					
 					//生館區塊
 					if (resultThead[k].cellName == "sifodate" ||
 						resultThead[k].cellName == "sifokdate" ||

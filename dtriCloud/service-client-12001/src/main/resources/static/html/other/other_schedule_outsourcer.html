@@ -832,12 +832,13 @@
 				$(document).off("mouseenter mouseleave", ".noteShow");
 				$(document).on("mouseenter mouseleave", ".noteShow", function (e) {
 					//console.log($(this)[0].style.height);
+					let thisTr = $(this).parents("tr");
 					if ($(this)[0].style.height != "300px") {
-						$(this).css("height", "300px");
-						$(this).css("overflow", "auto");
+						thisTr.find(".noteShow").css("height", "300px");
+						thisTr.find(".noteShow").css("overflow", "auto");
 					} else {
-						$(this).css("height", "80px");
-						$(this).css("overflow", "hidden");
+						thisTr.find(".noteShow").css("height", "80px");
+						thisTr.find(".noteShow").css("overflow", "hidden");
 					}
 				});
 
