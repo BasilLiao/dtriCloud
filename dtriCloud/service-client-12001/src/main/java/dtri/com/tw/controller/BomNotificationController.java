@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.JsonObject;
 
 import dtri.com.tw.service.feign.BomServiceFeign;
-import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;

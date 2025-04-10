@@ -587,7 +587,7 @@ public class SystemLanguageCellServiceAc {
 						languageJson.addProperty("zh-CN", "备注");
 						languageJson.addProperty("en-US", "Note");
 						languageJson.addProperty("vi-VN", "ghi chú");
-						languageCell.setSlcmtype("textarea");// 編輯屬性
+						languageCell.setSlcmtype("text");// 編輯屬性
 						languageCell.setSlcwidth(200);// 顯示寬度?
 						languageCell.setSyssort(999);
 						break;

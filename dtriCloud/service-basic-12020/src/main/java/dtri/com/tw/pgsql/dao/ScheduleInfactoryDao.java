@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,9 +16,18 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:sinb is null or c.sinb LIKE %:sinb%) and "// 製令單號
 			+ "(:sipnb is null or c.sipnb LIKE %:sipnb%) and "// 產品品號
 			+ "(:sipname is null or c.sipname LIKE %:sipname%) and "// 產品品名
+			+ "(:simcnote is null or c.simcnote LIKE %:simcnote%) and "// 物控備註
 			+ "(c.sysstatus = 0) and "// 正常=0/移除標記=2
 			+ "(:sistatus is null or c.sistatus =:sistatus)") // 狀態: 0=暫停中/1=未生產/2=已發料/3=生產中_Y=已完工/y=指定完工
 	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, String sipname, String sistatus,
+			String simcnote, Pageable pageable);
+
+	// 查詢用(新工單)
+	@Query("SELECT c FROM ScheduleInfactory c WHERE "//
+			+ "(:syscdates is null OR (c.syscdate >= CAST(:syscdates AS timestamp) AND c.syscdate < CAST(:syscdatee AS timestamp))) AND "//時間區間
+			+ "(c.sysstatus = 0) and "// 正常=0/移除標記=2
+			+ "(:sistatus is null or c.sistatus =:sistatus)") // 狀態: 0=暫停中/1=未生產/2=已發料/3=生產中_Y=已完工/y=指定完工
+	ArrayList<ScheduleInfactory> findAllByDateSearch(String syscdates, String syscdatee, String sistatus,
 			Pageable pageable);
 
 	// 檢查用

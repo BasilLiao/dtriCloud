@@ -86,6 +86,8 @@ public class WebSecurityConfig {
 	private static final String schedule_shn = "/ajax/schedule_shortage_notification.basil";
 	private static final String schedule_sph = "/ajax/schedule_production_history.basil";
 	private static final String schedule_spn = "/ajax/schedule_production_notes.basil";
+	//物控
+	private static final String material_rep = "/ajax/material_replacement.basil";
 
 	// BIOS
 	private static final String bios_not = "/ajax/bios_notification.basil";
@@ -420,6 +422,17 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, schedule_spn + ".AU").hasAuthority(actionRole(schedule_spn, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".DD").hasAuthority(actionRole(schedule_spn, "DD"))// (標記移除)
 
+				//物控
+				// ----請求-schedule_production_notes-(訪問) ----
+				.requestMatchers(HttpMethod.POST, material_rep).hasAuthority(actionRole(material_rep, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, material_rep + ".AR").hasAuthority(actionRole(material_rep, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, material_rep + ".ARR").hasAuthority(actionRole(material_rep, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, material_rep + ".AC").hasAuthority(actionRole(material_rep, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, material_rep + ".AU").hasAuthority(actionRole(material_rep, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, material_rep + ".AD").hasAuthority(actionRole(material_rep, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, material_rep + ".DD").hasAuthority(actionRole(material_rep, "DD"))// (標記移除)
+				
+				
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----
 				.requestMatchers(HttpMethod.POST, manufacture_act).hasAuthority(actionRole(manufacture_act, ""))// (轉跳)

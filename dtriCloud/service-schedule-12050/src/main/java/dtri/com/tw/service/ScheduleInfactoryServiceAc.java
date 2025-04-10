@@ -346,24 +346,7 @@ public class ScheduleInfactoryServiceAc {
 						noteOne.addProperty("content", x.getSimcnote());
 						noteOlds.add(noteOne);
 						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
-					}else {
-						// 物控只改日期
-						if (!oldSimcdate) {
-							noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
-							noteOne.addProperty("user", packageBean.getUserAccount());
-							noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
-							noteOlds.add(noteOne);
-							o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
-						}						
-					}
-				} else {
-					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
-					String contentNew = x.getSimcnote().replaceAll("\n", "");
-					noteOlds = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
-					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
-					boolean checkNotSame = true;
-					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-					if (contentOld.equals(contentNew)) {
+					} else {
 						// 物控只改日期
 						if (!oldSimcdate) {
 							noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
@@ -372,7 +355,21 @@ public class ScheduleInfactoryServiceAc {
 							noteOlds.add(noteOne);
 							o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 						}
-
+					}
+				} else {
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
+					String contentNew = x.getSimcnote().replaceAll("\n", "");
+					noteOlds = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
+					//JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
+					boolean checkNotSame = true;
+					//String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					if (contentNew.equals("")) {
+						// 物控只改日期
+						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						noteOne.addProperty("user", packageBean.getUserAccount());
+						noteOne.addProperty("content", x.getSimcdate() + "_" + packageBean.getUserAccount());
+						noteOlds.add(noteOne);
+						o.setSimcnote(noteOlds.toString());// 生管備註(格式)人+時間+內容
 						checkNotSame = false;
 						break;
 					}

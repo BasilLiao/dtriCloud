@@ -361,7 +361,6 @@ public class SynchronizeERPService {
 					// 自動完成
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveLists.add(o);
-
 				}
 			} else if (bilfuser.equals("")) {
 				// 可能移除? 結單?
@@ -393,9 +392,9 @@ public class SynchronizeERPService {
 			List<Purth> removeInCheck = purthDao.findAllByPurth(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
-				String nKey = r.getTh001_th002() + "-" + r.getTh003();
-				nKey = nKey.replaceAll("\\s", "");
-				// 已經完成
+				// 移除標記
+				String nKey = (r.getTh001_th002() + "-" + r.getTh003()).replaceAll("\\s", "");
+				// 已經完成->標記更新
 				if ("Y".equals(r.getTh030())) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
@@ -518,7 +517,6 @@ public class SynchronizeERPService {
 					// 標記二次修正(數量不同+料號不同+庫別不同)
 					o.setBilfuser("✪ " + bilfuser);
 				}
-
 			} else if (bilfuser.equals("")) {
 				// 可能移除? 結單?
 				removeInMap.put(oKey, o);
@@ -558,7 +556,6 @@ public class SynchronizeERPService {
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -607,10 +604,11 @@ public class SynchronizeERPService {
 			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
+				// 移除標記
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
-				BasicIncomingList o = removeInMap.get(nKey);
 				// 已經完成->標記更新
 				if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
+					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
 					saveInLists.add(o);
@@ -626,9 +624,9 @@ public class SynchronizeERPService {
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
-				// 測試用A541-250224007-0018
-//				if (r.getTa026_ta027_ta028().contains("A541-250313001-0001")) {
-//					System.out.println("測試:A541-250313001-0001");
+				// 測試用A541-250401003-0018
+//				if (r.getTa026_ta027_ta028().contains("A541-250401003-0018")) {
+//					System.out.println("測試:A541-250401003-0018");
 //				}
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
 				BasicShippingList o = removeShMap.get(nKey);
@@ -839,7 +837,6 @@ public class SynchronizeERPService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveLists.add(o);
 				}
-
 			} else if (bilfuser.equals("")) {
 				// 可能移除? 結單?
 				removeInMap.put(oKey, o);
@@ -1002,11 +999,9 @@ public class SynchronizeERPService {
 					// 自動完成
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
-
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -1051,6 +1046,7 @@ public class SynchronizeERPService {
 			removeInCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+				// 已經完成->標記更新
 				if ("3".equals(r.getTf028())) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
@@ -1069,8 +1065,9 @@ public class SynchronizeERPService {
 			List<Invtg> removeShCheck = invtgDao.findAllByInvtg(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
-				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 移除標記
+				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
+				// 已經完成->標記更新
 				if ("3".equals(r.getTf028())) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
@@ -1208,7 +1205,6 @@ public class SynchronizeERPService {
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -1449,7 +1445,6 @@ public class SynchronizeERPService {
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -1502,6 +1497,7 @@ public class SynchronizeERPService {
 			removeInCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
+				// 已經完成->標記更新
 				if ("Y".equals(r.getTb018())) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
@@ -1522,6 +1518,7 @@ public class SynchronizeERPService {
 			removeShCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
+				// 已經完成->標記更新
 				if ("Y".equals(r.getTb018())) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
@@ -1633,7 +1630,6 @@ public class SynchronizeERPService {
 					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveInLists.add(o);
 				}
-
 			} else if (bilfuser.equals("")) {
 				// 可能移除? 結單?
 				removeInMap.put(oKey, o);
@@ -1673,7 +1669,6 @@ public class SynchronizeERPService {
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -1882,11 +1877,9 @@ public class SynchronizeERPService {
 					// 自動完成
 					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(o);
-
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -2052,7 +2045,6 @@ public class SynchronizeERPService {
 				}
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
-				o = autoRemoveService.shippingAuto(o);
 				removeShMap.put(oKey, o);
 			}
 		});
@@ -2233,7 +2225,7 @@ public class SynchronizeERPService {
 					// 新舊儲位不同時?
 					if (checkloc && !areaNew.getMc003().equals(areaOld.getWaslocation())) {
 						// 檢查單據修正位置(入料)
-						incomingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null).forEach(in -> {
+						incomingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null, null).forEach(in -> {
 							// 供應對象 要有內容
 							if (in.getBiltowho().split("_").length > 1) {
 								// 倉儲_物料
@@ -2251,7 +2243,7 @@ public class SynchronizeERPService {
 							}
 						});
 						// 檢查單據修正位置(領料)
-						shippingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null).forEach(sh -> {
+						shippingListDao.findAllBySearch(null, null, areaOld.getWawmpnb(), null, null).forEach(sh -> {
 							// 供應來源 要有內容
 							if (sh.getBslfromwho().split("_").length > 1) {
 								// 倉儲_物料

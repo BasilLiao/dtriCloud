@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import dtri.com.tw.service.feign.ScheduleServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;

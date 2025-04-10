@@ -31,6 +31,8 @@ import jakarta.persistence.Table;
  *      this.ssnsumail = "";關聯帳號MAIL<br>
  *      this.ssnprimary = 0;主要/次要<br>
  *      this.ssnsnotice = false;缺料通知<br>
+ *      this.ssninotice = false;場內生管排程通知(周)<br>
+		this.ssnimnotice = false;場內生管異動通知(日)<br>
  */
 
 @Entity
@@ -63,6 +65,7 @@ public class ScheduleShortageNotification {
 		// 廠內
 		this.ssninotice = false;
 		this.ssnimnotice = false;
+		this.ssnnonotice = false;
 	}
 
 	// 共用型
@@ -116,7 +119,10 @@ public class ScheduleShortageNotification {
 	private Boolean ssninotice;
 	@Column(name = "ssn_im_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssnimnotice;
+	@Column(name = "ssn_no_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean ssnnonotice;
 
+	
 	public Date getSyscdate() {
 		return syscdate;
 	}
@@ -295,5 +301,19 @@ public class ScheduleShortageNotification {
 	 */
 	public void setSsnimnotice(Boolean ssnimnotice) {
 		this.ssnimnotice = ssnimnotice;
+	}
+
+	/**
+	 * @return the ssnnonotice
+	 */
+	public Boolean getSsnnonotice() {
+		return ssnnonotice;
+	}
+
+	/**
+	 * @param ssnnonotice the ssnnonotice to set
+	 */
+	public void setSsnnonotice(Boolean ssnnonotice) {
+		this.ssnnonotice = ssnnonotice;
 	}
 }

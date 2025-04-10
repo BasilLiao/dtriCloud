@@ -145,7 +145,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-600, 112) "//
+			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "//
 			// + " AND MOCTE.TE019 ='N' "//
@@ -156,8 +156,6 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ " OR (MOCTE.TE019 !='V' AND MOCTE.TE001 = 'A561')"//
 			+ " OR (MOCTE.TE019 !='V' AND MOCTE.TE001 = 'A571')) "//
 			+ "	OR (MOCTE.TE019 !='V' AND MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
-			+ " AND(MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
-			+ " OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND(CONCAT(MOCTE.TE001, '-', TRIM(MOCTE.TE002), '-', MOCTE.TE003) IN (:TE001TE002TE003)) "// 比對製令單+序號?
 			// + " AND TE001+'-'+TRIM(TE002) = 'A542-240529007' "//
 			+ " ORDER BY "//

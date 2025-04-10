@@ -21,8 +21,10 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilsn is null or c.bilsn LIKE %:bilsn%) and "//
+			+ "(:bilfuser is null or c.bilfuser LIKE %:bilfuser%) and "//
 			+ "(:bilpnumber is null or c.bilpnumber LIKE %:bilpnumber%) ")
-	ArrayList<BasicIncomingList> findAllBySearch(String bilclass, String bilsn, String bilpnumber, Pageable pageable);
+	ArrayList<BasicIncomingList> findAllBySearch(String bilclass, String bilsn, String bilpnumber, String bilfuser,
+			Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass=:bilclass) and "//

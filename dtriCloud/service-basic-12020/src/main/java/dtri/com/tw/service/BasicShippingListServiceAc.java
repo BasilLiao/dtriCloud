@@ -72,7 +72,7 @@ public class BasicShippingListServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(null, null, null, pageable);
+			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -116,6 +116,9 @@ public class BasicShippingListServiceAc {
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "bslpnumber", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "bslfuser", "Ex:人?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -128,7 +131,7 @@ public class BasicShippingListServiceAc {
 					BasicShippingList.class);
 
 			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(searchData.getBslclass(),
-					searchData.getBslsn(), searchData.getBslpnumber(), pageable);
+					searchData.getBslsn(), searchData.getBslpnumber(),searchData.getBslfuser(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

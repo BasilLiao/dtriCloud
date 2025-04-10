@@ -17,9 +17,10 @@ public interface ScheduleShortageNotificationDao extends JpaRepository<ScheduleS
 			+ "(:ssnsnotice is null or c.ssnsnotice = :ssnsnotice) and "// 是否缺料通知
 			+ "(:ssnonotice is null or c.ssnonotice = :ssnonotice) and "// 是否排程通知
 			+ "(:ssnimnotice is null or c.ssnimnotice = :ssnimnotice) and "// 是否排程通知(每日廠內)
+			+ "(:ssnnonotice is null or c.ssnnonotice = :ssnnonotice) and "// 是否新工單通知(每日廠內)
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<ScheduleShortageNotification> findAllBySearch(String ssnnb, String ssnsslerpcuser, Integer sysstatus,
-			Boolean ssnsnotice, Boolean ssnonotice, Boolean ssnimnotice, Pageable pageable);
+			Boolean ssnsnotice, Boolean ssnonotice, Boolean ssnimnotice, Boolean ssnnonotice, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleShortageNotification c WHERE "//

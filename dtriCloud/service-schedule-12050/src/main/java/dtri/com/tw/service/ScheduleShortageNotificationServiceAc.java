@@ -224,6 +224,7 @@ public class ScheduleShortageNotificationServiceAc {
 				entityDataOld.setSsnonotice(x.getSsnonotice());// 外包排程通知
 				entityDataOld.setSsnimnotice(x.getSsnimnotice());// 廠內排程通知(日)
 				entityDataOld.setSsninotice(x.getSsninotice());// 廠內排程通知(月)
+				entityDataOld.setSsnnonotice(x.getSsnnonotice());//場內新工單通知(日)
 				saveDatas.add(entityDataOld);
 			}
 		});

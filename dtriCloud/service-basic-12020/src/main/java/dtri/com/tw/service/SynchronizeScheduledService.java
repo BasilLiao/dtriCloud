@@ -1,6 +1,8 @@
 package dtri.com.tw.service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,7 +27,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -50,7 +51,6 @@ import dtri.com.tw.pgsql.entity.ScheduleShortageNotification;
 import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.Fm_T;
-import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.annotation.Resource;
 
@@ -223,9 +223,9 @@ public class SynchronizeScheduledService {
 			Boolean finishA541 = true;
 			for (BasicShippingList bSipl : shippingLists) {
 				if (bSipl.getBslclass().equals("A541") && bSipl.getBslfromcommand().contains(o.getSinb())) {// 匹配製令單號?
-					//測試用
-					if((bSipl.getBslclass()+"-"+bSipl.getBslsn()).equals("A541-250303001")) {
-						System.out.println("A541-250303001"+bSipl.getBslpalready());
+					// 測試用
+					if ((bSipl.getBslclass() + "-" + bSipl.getBslsn()).equals("A541-250303001")) {
+						System.out.println("A541-250303001" + bSipl.getBslpalready());
 					}
 					shNewListsA541.add(bSipl);
 					if (finishA541) {
@@ -248,8 +248,9 @@ public class SynchronizeScheduledService {
 				}
 				// shNewListsA541.size() > 0 || shNewListsA542.size() > 0
 				if (shNewListsA541.size() > 0) {
-					//測試用
-					if((shNewListsA541.get(0).getBslclass()+"-"+shNewListsA541.get(0).getBslsn()).equals("A541-250305008")) {
+					// 測試用
+					if ((shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn())
+							.equals("A541-250305008")) {
 						System.out.println("A541-250305008");
 					}
 					if (shNewListsA541.get(0).getBslpalready() == 1) {// 已打印
@@ -379,7 +380,7 @@ public class SynchronizeScheduledService {
 		nf_orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
 		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
 		ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearch(null, null, 0, true,
-				null, null, nf_pageable);
+				null, null, null, nf_pageable);
 
 		// Step2. 取得須寄信清單(缺料清單)
 		List<Order> orders = new ArrayList<>();
@@ -497,7 +498,7 @@ public class SynchronizeScheduledService {
 		nf_orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
 		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
 		ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearch(null, null, 0, null,
-				true, null, nf_pageable);
+				true, null, null, nf_pageable);
 		// Step2. 取得須寄信清單(外包排程資料)
 
 		List<Order> os_orders = new ArrayList<>();
@@ -800,8 +801,20 @@ public class SynchronizeScheduledService {
 
 	// ============ 廠內排程"異動"通知() ============
 	public void scheduleInDftNotification() throws Exception {
-
 		InfactoryDftCell sendTo = new InfactoryDftCell();
+		JsonObject sendAllData = new JsonObject();
+		sendAllData.addProperty("update", "");
+		sendAllData.addProperty("action", "sendAllData");
+		sendTo.setSendAllData(sendAllData.toString());
+		sendTo.run();
+
+	}
+
+	// ============ 廠內排程"新單據"通知() ============
+	public void scheduleInDftNewNotification() throws Exception {
+
+		//
+		InfactoryNewDftCell sendTo = new InfactoryNewDftCell();
 		JsonObject sendAllData = new JsonObject();
 		sendAllData.addProperty("update", "");
 		sendAllData.addProperty("action", "sendAllData");
@@ -823,13 +836,20 @@ public class SynchronizeScheduledService {
 				nf_orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
 				PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
 				ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearch(null, null, 0,
-						null, null, true, nf_pageable);
+						null, null, true, null, nf_pageable);
 				// Step2.取得資料
-				PackageBean getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
-				// 資料轉換
-				ArrayList<ScheduleInfactory> infactorys = packageService.jsonToBean(getData.getEntityJson(),
-						new TypeReference<ArrayList<ScheduleInfactory>>() {
-						});
+				// 之前只取亮燈模式
+//				PackageBean getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
+//				// 資料轉換
+//				ArrayList<ScheduleInfactory> infactorys = packageService.jsonToBean(getData.getEntityJson(),
+//						new TypeReference<ArrayList<ScheduleInfactory>>() {
+//				});
+
+				LocalDate yesterday = LocalDate.now().minusDays(1);// 昨天日期
+				String formattedDate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				ArrayList<ScheduleInfactory> infactorys = scheduleInfactoryDao.findAllBySearch(null, null, null, null,
+						"\"date\":\"" + formattedDate, null);
+
 				System.out.println("測試:" + infactorys.size());
 				// 排序
 				infactorys.sort(
@@ -1039,4 +1059,194 @@ public class SynchronizeScheduledService {
 			this.sendAllData = sendAllData;
 		}
 	}
+
+	// 而外執行(新工單調查)
+	public class InfactoryNewDftCell implements Runnable {
+		private String sendAllData;
+
+		@Override
+		public void run() {
+			try {
+				// 寄信通知
+				// Step1. 取得寄信人
+				List<Order> nf_orders = new ArrayList<>();
+				nf_orders.add(new Order(Direction.ASC, "ssnsuname"));// 關聯帳號名稱
+				nf_orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
+				PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
+				ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearch(null, null, 0,
+						null, null, null, true, nf_pageable);
+				// Step2.取得資料
+				// 之前只取亮燈模式
+//				PackageBean getData = serviceFeign.setInfactorySynchronizeDftCell(sendAllData);
+//				// 資料轉換
+//				ArrayList<ScheduleInfactory> infactorys = packageService.jsonToBean(getData.getEntityJson(),
+//						new TypeReference<ArrayList<ScheduleInfactory>>() {
+//				});
+
+				LocalDate yesterday = LocalDate.now().minusDays(1);// 昨天日期
+				String fmYesterdate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00";
+				String fmTodate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 24:00:00";
+				ArrayList<ScheduleInfactory> infactorys = scheduleInfactoryDao.findAllByDateSearch(fmYesterdate,
+						fmTodate, null, null);
+
+				System.out.println("測試:" + infactorys.size());
+				// 排序
+
+				// Step3.整理資料
+				infactorys.forEach(o -> {
+					// 製令單狀態修正
+					switch (o.getSistatus()) {
+					case "0":
+						o.setSistatus("暫停中");
+						break;
+					case "1":
+						o.setSistatus("未生產");
+						break;
+					case "2":
+						o.setSistatus("已發料");
+						break;
+					case "3":
+						o.setSistatus("生產中");
+						break;
+					case "Y":
+						o.setSistatus("已完工");
+						break;
+					case "y":
+						o.setSistatus("指定完工");
+						break;
+					case "V":
+						o.setSistatus("已作廢");
+						break;
+					}
+				});
+				// Step3. 取得寄信模塊
+				// 寄信件對象
+				ArrayList<String> mainUsers = new ArrayList<String>();
+				ArrayList<String> secondaryUsers = new ArrayList<String>();
+				// 寄信對象條件
+				notifications.forEach(r -> {// 沒有設置=全寄信
+					// 主要?次要?
+					if (r.getSsnprimary() == 0) {
+						mainUsers.add(r.getSsnsumail());
+					} else {
+						secondaryUsers.add(r.getSsnsumail());
+					}
+				});// 建立信件->寄信對象必須要大於1位&& 且不是空的
+				if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+					BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+					readyNeedMail.setBnmkind("Production");
+					readyNeedMail.setBnmmail(mainUsers + "");
+					readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+					readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+							+ "Cloud system [Schedule Infactory] Daily Notification of New Work Orders from Yesterday!");
+					// 內容
+					String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+							+ "<thead><tr style= 'background-color: aliceblue;'>"//
+							// + "<th>項次</th>"//
+							+ "<th style='min-width: 65px;'>預計開工日</th>"//
+							+ "<th style='min-width: 65px;'>預計完工日</th>"//
+							+ "<th style='min-width: 100px;'>製令單號</th>"//
+							+ "<th style='min-width: 100px;'>產品品號</th>"//
+							+ "<th style='min-width: 100px;'>產品品名</th>"//
+							+ "<th style='min-width: 40px;'>預計-生產數</th>"//
+							// + "<th style='min-width: 40px;'>完成-生產數</th>"//
+							// + "<th style='min-width: 40px;'>製令單-狀態</th>"//
+							+ "<th style='min-width: 80px;'>製令單-負責人</th>"//
+							// + "<th style='min-width: 65px;'>生管狀態</th>"//
+							// + "<th style='min-width: 220px;'>生管備註</th>"//
+							// + "<th style='min-width: 65px;'>物控狀態</th>"//
+							// + "<th style='min-width: 65px;'>預計齊料日</th>"//
+							// + "<th style='min-width: 220px;'>物控備註</th>"//
+							// + "<th style='min-width: 65px;'>倉庫進度</th>"//
+							// + "<th style='min-width: 65px;'>倉庫備註</th>"//
+							// + "<th style='min-width: 65px;'>製造進度</th>"//
+							// + "<th style='min-width: 65px;'>製造備註</th>"//
+							// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
+							+ "</tr></thead>"//
+							+ "<tbody>";// 模擬12筆資料
+					int r = 1;
+
+					for (ScheduleInfactory oss : infactorys) {
+						String siscstatus = "";// 生管狀態
+						switch (oss.getSiscstatus()) {
+						case 0:
+							siscstatus = "未開注意事項";
+							break;
+						case 1:
+							siscstatus = "已開注意事項";
+							break;
+						case 2:
+							siscstatus = "已核准流程卡";
+							break;
+
+						}
+						String simcstatus = "";// 物控狀態
+						switch (oss.getSimcstatus()) {
+						case 0:
+							simcstatus = "未確認";
+							break;
+						case 1:
+							simcstatus = "未齊料";
+							break;
+						case 2:
+							simcstatus = "已齊料";
+							break;
+						}
+						// 信件資料結構
+						bnmcontent += "<tr>"//
+								// + "<td>" + (r++) + "</td>"// 項次
+								+ "<td>" + oss.getSiodate() + "</td>"// 預計-開工日
+								+ "<td>" + oss.getSifdate() + "</td>"// 預計-完工日
+								+ "<td>" + oss.getSinb() + "</td>"// 製令單號
+								+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
+								+ "<td>" + oss.getSipname() + "</td>"// 產品品名
+
+								+ "<td>" + oss.getSirqty() + "</td>"// 預計生產數
+								// + "<td>" + oss.getSiokqty() + "</td>"// 已生產數
+
+								// + "<td>" + oss.getSistatus() + "</td>"// 製令單-狀態
+								+ "<td>" + oss.getSiuname() + "</td>"// 製令單-負責人
+								// + "<td>" + siscstatus + "</td>"// 生管狀態
+								// + "<td>" + oss.getSiscnote() + "</td>"// 生管備註
+								// + "<td>" + simcstatus + "</td>"// 物控狀態
+								// + "<td>" + oss.getSimcdate() + "</td>"// 預計-齊料日
+								// + "<td>" + oss.getSimcnote() + "</td>"// 物控備註
+								// + "<td>" + oss.getSiwmprogress() + "</td>"// 倉庫進度
+								// + "<td>" + oss.getSiwmnote() + "</td>"// 倉庫備註
+								// + "<td>" + oss.getSimpprogress() + "</td>"// 製造進度
+								// + "<td>" + oss.getSimpnote() + "</td>"// 製令單-備註
+								// + "<td>" + oss.getSiywdate() + "</td>"// YYYY(西元年)-W00(週期)
+								+ "</tr>";
+					}
+					bnmcontent += "</tbody></table>";
+					readyNeedMail.setBnmcontent(bnmcontent);
+
+					// 檢查信件(避免重複)
+					if (notificationMailDao
+							.findAllBySearch(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
+							.size() == 0 && infactorys.size() > 0) {
+						notificationMailDao.save(readyNeedMail);
+						// 清除掉Tag(廠內)
+						String update = packageService.beanToJson(infactorys);
+						JsonObject sendAllData = new JsonObject();
+						sendAllData.addProperty("update", update);
+						sendAllData.addProperty("action", "sendAllClearShow");
+						serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
+					}
+				}
+
+			} catch (Exception e) {
+				logger.warn(CloudExceptionService.eStktToSg(e));
+			}
+		}
+
+		public String getSendAllData() {
+			return sendAllData;
+		}
+
+		public void setSendAllData(String sendAllData) {
+			this.sendAllData = sendAllData;
+		}
+	}
+
 }
