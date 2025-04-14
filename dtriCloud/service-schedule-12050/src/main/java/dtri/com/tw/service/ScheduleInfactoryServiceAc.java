@@ -363,7 +363,7 @@ public class ScheduleInfactoryServiceAc {
 					//JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
 					//String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
-					if (contentNew.equals("")) {
+					if (contentNew.equals("") && !oldSimcdate) {
 						// 物控只改日期
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
 						noteOne.addProperty("user", packageBean.getUserAccount());

@@ -117,10 +117,10 @@ public class MaterialReplacementServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "mrnb", "Ex:物料號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "mrnote", "Ex:物料備註?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "mrsubnote", "Ex:替代料-備註?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "mrsubnote", "Ex:替代料備註?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "mrnote", "Ex:物料說明?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -144,7 +144,7 @@ public class MaterialReplacementServiceAc {
 					MaterialReplacement entityOne = new MaterialReplacement();
 					entityOne.setMrnb(m.getWmpnb());
 					entityOne.setMrname(m.getWmname());
-					entityOne.setMrspecification(m.getWmdescription());
+					entityOne.setMrspecification(m.getWmspecification());
 					entityOne.setMrid(keyId.getAndIncrement());
 					entitys.add(entityOne);
 				});
@@ -155,7 +155,7 @@ public class MaterialReplacementServiceAc {
 								null);
 						if (materials.size() > 0) {
 							r.setMrname(materials.get(0).getWmname());
-							r.setMrspecification(materials.get(0).getWmdescription());
+							r.setMrspecification(materials.get(0).getWmspecification());
 						}
 					}
 				});

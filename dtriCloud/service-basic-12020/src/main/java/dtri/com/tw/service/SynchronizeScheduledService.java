@@ -1143,8 +1143,8 @@ public class SynchronizeScheduledService {
 					String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 							+ "<thead><tr style= 'background-color: aliceblue;'>"//
 							// + "<th>項次</th>"//
-							+ "<th style='min-width: 65px;'>預計開工日</th>"//
-							+ "<th style='min-width: 65px;'>預計完工日</th>"//
+							+ "<th style='min-width: 65px;'>客戶訂單</th>"//
+							+ "<th style='min-width: 100px;'>製令單備註(客/國/訂/其)</th>"//
 							+ "<th style='min-width: 100px;'>製令單號</th>"//
 							+ "<th style='min-width: 100px;'>產品品號</th>"//
 							+ "<th style='min-width: 100px;'>產品品名</th>"//
@@ -1195,8 +1195,8 @@ public class SynchronizeScheduledService {
 						// 信件資料結構
 						bnmcontent += "<tr>"//
 								// + "<td>" + (r++) + "</td>"// 項次
-								+ "<td>" + oss.getSiodate() + "</td>"// 預計-開工日
-								+ "<td>" + oss.getSifdate() + "</td>"// 預計-完工日
+								+ "<td>" + oss.getSicorder() + "</td>"// 客戶訂單
+								+ "<td>" + oss.getSinote() + "</td>"// 製令單備註(客/國/訂/其)
 								+ "<td>" + oss.getSinb() + "</td>"// 製令單號
 								+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
 								+ "<td>" + oss.getSipname() + "</td>"// 產品品名
