@@ -1,37 +1,42 @@
 <style>
-	#print_l {
-		min-height: calc(100vh - 120px);
-	}
+#print_l {
+	min-height: calc(100vh - 120px);
+}
 
-	#print_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+#print_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	#print_c .title_color {
-		background-color: #cfe2ff;
-	}
+#print_c .title_color {
+	background-color: #cfe2ff;
+}
 </style>
 <div id="print_c" class="row p-1 m-0">
 	<!-- 控制面板 -->
 	<div id="print_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#print_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#print_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="print_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<div class="col-6 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Print</div>
 						<div class="row m-0">
-							<button id="btn_print" type="button" onclick="print.methods.printLabel()"
+							<button id="btn_print" type="button"
+								onclick="print.methods.printLabel()"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 								<b>Print Label<br>(AR)
 								</b>
 							</button>
-							<button id="btn_print_header" type="button" onclick="print.methods.printHeader()"
+							<button id="btn_print_header" type="button"
+								onclick="print.methods.printHeader()"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
 								<b>Print<br>Header()
 								</b>
@@ -49,21 +54,28 @@
 		</div>
 	</div>
 	<div class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#print_c_content_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#print_c_content_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="print_c_content_open" class="row p-0 m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
-				style="max-height: calc(100vh - 260px);overflow: auto;">
-				<div id="print_l" class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
+				style="max-height: calc(100vh - 260px); overflow: auto;">
+				<div id="print_l"
+					class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
 					<div id="printContent">
-						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
-						<div id="print_ex" class="noprint border border-info mt-1 mb-1 text-start"
+						<div class="noprint" style="height: 20px">(====vvv 範例
+							vvv====)</div>
+						<div id="print_ex"
+							class="noprint border border-info mt-1 mb-1 text-start"
 							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<div style="border: 1px solid gainsboro;">
-								<div style="display: inline-block; width: 315px; font-stretch: condensed;">
+								<div
+									style="display: inline-block; width: 315px; font-stretch: condensed;">
 									<!-- 物料名 
 									<div class="">
 										<b>物料名：</b><font class="pr_bslpname">10K_1%/0402_THERMISTOR</font>
@@ -71,28 +83,25 @@
 									<!-- 單據 -->
 									<div class="">
 										<font style="font-size: 17px;" class="pr_bslnb">0001</font><b
-											class="pr_type">／領:</b>
-										<font class="pr_bslclass_bslsn">A551-230829006</font><b>：</b>
+											class="pr_type">／領:</b> <font class="pr_bslclass_bslsn">A551-230829006</font><b>：</b>
 										<font class="pr_sysnote">備註</font>
 									</div>
 									<!-- 單據-來源 -->
 									<div class="">
-										<b>製:</b>
-										<font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1] </font>
+										<b>製:</b> <font class="pr_bslfromcommand">[A521-230906001*90-316-T11RD01*1]
+										</font>
 									</div>
 									<!-- 物料號 / 數量  -->
 									<div class="" style="font-size: 15px">
-										<b>料:</b>
-										<font class="pr_bslpnumber">01-255-610073</font>／<b>名:</b>
+										<b>料:</b> <font class="pr_bslpnumber">01-255-610073</font>／<b>名:</b>
 										<font class="pr_bslpname">北泰_7" TP_FPG</font>
 									</div>
 								</div>
 								<div style="display: inline-block; top: 20px" class="pr_qrcode"></div>
 								<!-- 倉儲-位 -->
 								<div class="" style="font-size: 15px; font-stretch: condensed;">
-									<b>量:</b>
-									<font class="pr_bslpnqty">500</font><b class="pr_kind">／源:</b>
-									<font class="pr_bslfromwho" alt="">[A0002_原物料倉]</font>／<b>責:</b>
+									<b>量:</b> <font class="pr_bslpnqty">500</font><b
+										class="pr_kind">／源:</b> <font class="pr_bslfromwho" alt="">[A0002_原物料倉]</font>／<b>責:</b>
 									<font class="pr_user">Nobody</font>
 								</div>
 							</div>
@@ -101,46 +110,60 @@
 
 					</div>
 				</div>
-				<div id="print_m" class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
+				<div id="print_m"
+					class="col-6 border border-info rounded-top p-1 bg-white shadow-sm">
 					<div id="printContent_m">
-						<div class="noprint" style="height: 20px">(====vvv 範例 vvv====)</div>
-						<div id="print_m_ex" class="noprint border border-info mt-1 mb-1 text-start"
+						<div class="noprint" style="height: 20px">(====vvv 範例
+							vvv====)</div>
+						<div id="print_m_ex"
+							class="noprint border border-info mt-1 mb-1 text-start"
 							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
-							<table style="border:1px solid rgb(0, 0, 0);width: 100%; font-size: 50px;">
+							<table
+								style="border: 1px solid rgb(0, 0, 0); width: 100%; font-size: 50px;">
 								<tbody>
 									<tr style="height: 100px;">
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
-											預計(發料日):<div class="pr_wasedate"></div>
+										<td
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 22.5%;">
+											預計(發料日):
+											<div class="pr_wasedate"></div>
 										</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
+										<td
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 30%;">
 											優先順序:</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
+										<td
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 25%;">
 											標記集結:</td>
-										<td style="border:1px solid rgb(0, 0, 0); font-size: 25px;vertical-align: top;">
-											預計(出貨日):<div class="pr_wassdate"></div>
+										<td
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 22.5%;">
+											預計(出貨日):
+											<div class="pr_wassdate"></div>
 										</td>
 									</tr>
-									<tr style="border:1px solid rgb(0, 0, 0);">
-										<td>製令單:</td>
+									<tr style="border: 1px solid rgb(0, 0, 0);">
+										<td>工單:</td>
 										<td class="pr_bslfromcommand" colspan="2">A577-123456789</td>
 										<td class="pr_bslfromcommand_qrcode">QRcode</td>
 									</tr>
-									<tr style="border:1px solid rgb(0, 0, 0);">
+									<tr style="border: 1px solid rgb(0, 0, 0);">
 										<td>品號:</td>
 										<td class="pr_bslfromcommand_sn" colspan="3">90-123-123456</td>
 										<td class=""></td>
 									</tr>
-									<tr style="border:1px solid rgb(0, 0, 0);">
+									<tr style="border: 1px solid rgb(0, 0, 0);">
 										<td>套數:</td>
-										<td class="pr_bslfromcommand_qty" colspan="2" style="text-align:center">100</td>
-										<td class="pr_cell"></td>
+										<td class="pr_bslfromcommand_qty" style="text-align: center">100</td>
+										<td>客戶:</td>
+										<td class="pr_bslfromcommand_client"
+											style="text-align: center"></td>
 									</tr>
-									<tr style="height: 100px;font-size: 35px;">
-										<td>樓層<br>&備註:</td>
-										<td colspan="3" class="pr_syshnote"></td>
+									<tr style="height: 100px; font-size: 30px;">
+										<td>樓層<br>&備註:
+										</td>
+										<td colspan="3" class="pr_syshnote"
+											style="white-space: normal; word-break: break-all;"></td>
 										<td></td>
 									</tr>
-									<tr style="border:1px solid rgb(0, 0, 0);">
+									<tr style="border: 1px solid rgb(0, 0, 0);">
 										<td>料單:</td>
 										<td class="pr_bslclass_bslsn" colspan="2">A577-123456789</td>
 										<td class="pr_bslclass_bslsn_qrcode">QRcode</td>
@@ -288,6 +311,11 @@
 							pr_bslfromwho = pr_bslfromwho.split("_")[1] + "_" + pr_bslfromwho.split("_")[2];
 							print_ex.find(".pr_kind").text("／象:");
 							print_ex.find(".pr_type").text("／退:");
+							if (bslclass_bslsn.includes("A581")) {
+						        // A581
+								print_ex.find(".pr_type").text("／生:");
+						    }
+							
 						}
 
 						print_ex.find(".pr_bslfromwho").text(pr_bslfromwho);//來源
@@ -299,7 +327,7 @@
 						$('#print_l #print_start').after(print_ex);
 
 						//配給A4
-						if (pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] == null && h.wastype != "入料類") {
+						if (pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] == null ) {
 							pr_bslclass_bslsn[print_ex.find(".pr_bslclass_bslsn").text()] = true;
 							var print_m_ex = $('#print_m_ex').clone();
 							var pr_bslfromcommand = pr_bslfrom.split("＊");
@@ -307,9 +335,14 @@
 							print_m_ex.removeClass("noprint");
 							print_m_ex.addClass("printList");
 							print_m_ex.find(".pr_bslclass_bslsn").text(print_ex.find(".pr_bslclass_bslsn").text());//領料單
-							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0]);//製令單
+							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0].replaceAll("_生產入庫單",""));//製令單(特定單據會有需要去除)
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
-							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量
+							if (bslclass_bslsn.includes("A581")) {
+						        // A581
+								print_m_ex.find(".pr_bslfromcommand_sn").text(h.waspnumber);//品號
+						    }
+							 
+							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量 
 							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
 
 

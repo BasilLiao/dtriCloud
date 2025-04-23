@@ -46,7 +46,7 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 			+ "     ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE COPTH.TH008 > 0 "//
 			+ " AND (COPTH.TH001='A231' OR COPTH.TH001='A232') "//
-			+ " AND (COPTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-5, 112) "//
+			+ " AND (COPTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
 			+ " OR COPTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ "ORDER BY (COPTH.TH001+ '-' + TRIM(COPTH.TH002) +'-'+ COPTH.TH003) ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
@@ -89,7 +89,7 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 			+ "WHERE COPTH.TH008 > 0 "//
 			+ " AND (COPTH.TH020!='V') "//
 			+ " AND (COPTH.TH001='A231' OR COPTH.TH001='A232') "//
-			+ " AND (COPTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
+			+ " AND (COPTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
 			+ " OR COPTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ " AND (CONCAT(COPTH.TH001, '-', TRIM(COPTH.TH002), '-', COPTH.TH003) IN (:TH001TH002TH003)) "// 比對製令單+序號?
 			+ "ORDER BY (COPTH.TH001+ '-' + TRIM(COPTH.TH002) +'-'+ COPTH.TH003) ASC"// --單號+序號

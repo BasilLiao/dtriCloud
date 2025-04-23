@@ -1,6 +1,10 @@
 package dtri.com.tw.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,9 @@ public class WarehouseAssignmentController extends AbstractController {
 
 	@Resource
 	BasicServiceFeign serviceBasicFeign;
+
+	@Autowired
+	private DiscoveryClient discoveryClient;
 
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/warehouse_assignment.basil" }, method = {
@@ -140,7 +147,15 @@ public class WarehouseAssignmentController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceBasicFeign.getReSynchronizeDocument(packageService.beanToJson(packageBean));
+
+			List<ServiceInstance> instances = discoveryClient.getInstances("service-basic");
+			boolean check = instances != null && !instances.isEmpty();
+			if (check) {// 有再傳送
+				packageBean = serviceBasicFeign.getReSynchronizeDocument(packageService.beanToJson(packageBean));
+			} else {
+				packageBean.setInfo(CloudExceptionService.W1007_zh_TW);
+				packageBean.setInfoColor(CloudExceptionService.ErColor.warning + "");
+			}
 			loggerInf(funName + "[End]", loginUser().getUsername());
 		} catch (Exception e) {
 			// StepX-2. 未知-故障回報

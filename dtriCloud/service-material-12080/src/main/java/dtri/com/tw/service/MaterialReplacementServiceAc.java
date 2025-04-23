@@ -71,8 +71,12 @@ public class MaterialReplacementServiceAc {
 		orders.add(new Order(Direction.ASC, "mrnb"));// 物料號
 		orders.add(new Order(Direction.DESC, "mrnote"));// 物料備註
 
+		List<Order> ordersW = new ArrayList<>();
+		ordersW.add(new Order(Direction.ASC, "wmpnb"));// 物料號
+
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest pageableW = PageRequest.of(batch, total, Sort.by(ordersW));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
@@ -133,32 +137,45 @@ public class MaterialReplacementServiceAc {
 			MaterialReplacement searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					MaterialReplacement.class);
 
+			HashMap<String, MaterialReplacement> entitysAll = new HashMap<String, MaterialReplacement>();
+			ArrayList<MaterialReplacement> materialsAll = new ArrayList<MaterialReplacement>();
+			// 輔助查詢
 			ArrayList<MaterialReplacement> entitys = materialReplacementDao.findAllBySearch(searchData.getMrnb(),
 					searchData.getMrnote(), searchData.getMrsubnote(), pageable);
-			// 輔助查詢
-			if (entitys.size() == 0) {
-				ArrayList<WarehouseMaterial> materials = materialDao.findAllBySearch(searchData.getMrnb(), null, null,
-						null);
-				AtomicLong keyId = new AtomicLong(100000000L);
+			ArrayList<WarehouseMaterial> materials = materialDao.findAllBySearch(searchData.getMrnb(), null, null,
+					pageableW);
+			AtomicLong keyId = new AtomicLong(100000000L);
+			// 區分 是否只查物料號?
+			if (searchData.getMrnb() != null && searchData.getMrnote() == null && searchData.getMrsubnote() == null) {
+				// 替代
+				entitys.forEach(e -> {
+					entitysAll.put(e.getMrnb(), e);
+				});
+				// 物料
 				materials.forEach(m -> {
 					MaterialReplacement entityOne = new MaterialReplacement();
 					entityOne.setMrnb(m.getWmpnb());
 					entityOne.setMrname(m.getWmname());
 					entityOne.setMrspecification(m.getWmspecification());
 					entityOne.setMrid(keyId.getAndIncrement());
-					entitys.add(entityOne);
+					materialsAll.add(entityOne);
 				});
-			} else {
-				entitys.forEach(r -> {
-					if (r.getMrname().equals("")) {
-						ArrayList<WarehouseMaterial> materials = materialDao.findAllBySearch(r.getMrnb(), null, null,
-								null);
-						if (materials.size() > 0) {
-							r.setMrname(materials.get(0).getWmname());
-							r.setMrspecification(materials.get(0).getWmspecification());
-						}
+				materialsAll.forEach(m -> {
+					// 有匹配到替代料?
+					if (entitysAll.containsKey(m.getMrnb())) {
+						MaterialReplacement entityOne = entitysAll.get(m.getMrnb());
+						m.setMrnb(entityOne.getMrnb());
+						m.setMrname(entityOne.getMrname());
+						m.setMrspecification(entityOne.getMrspecification());
+						m.setMrnote(entityOne.getMrnote());
+						m.setMrsubnote(entityOne.getMrsubnote());
+						m.setMrid(entityOne.getMrid());
 					}
 				});
+				entitys = materialsAll;
+			} else {
+				// 有其他查詢?
+
 			}
 
 			// Step4-2.資料區分(一般/細節)

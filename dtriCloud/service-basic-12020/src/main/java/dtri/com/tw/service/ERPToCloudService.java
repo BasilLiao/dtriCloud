@@ -167,7 +167,8 @@ public class ERPToCloudService {
 			Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
-		if (m.getTc016().equals("N")|| m.getTc016().equals("3")) {
+		// if (m.getTc016().equals("N")|| m.getTc016().equals("3")) {
+		if ("Y".equals(m.getTe019())) {
 			sysstatus = 1;
 		}
 		// 資料匹配
@@ -237,7 +238,8 @@ public class ERPToCloudService {
 			Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
-		if (m.getTc016().equals("3") || m.getTc016().equals("N")) {
+		// if (m.getTc016().equals("3") || m.getTc016().equals("N")) {
+		if (m.getTe019().equals("Y")) {
 			sysstatus = 1;
 		}
 		// 資料匹配

@@ -40,6 +40,9 @@ public class BasicSynchronizeControllerAc extends AbstractControllerAc {
 			loggerInf(funName + "[Start]", packageBean.getUserAccount());
 			if (ScheduledTasksService.isFixDelay_ERPSynchronizeServiceRun()) {
 				serviceAc.fixDelay_ERPSynchronizeService();
+			}else {
+				packageBean.setInfo(CloudExceptionService.W1007_zh_TW);
+				packageBean.setInfoColor(CloudExceptionService.ErColor.warning + "");
 			}
 			loggerInf(funName + "[End]", packageBean.getUserAccount());
 		} catch (JsonProcessingException e) {

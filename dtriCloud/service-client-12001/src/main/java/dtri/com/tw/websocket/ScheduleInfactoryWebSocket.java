@@ -392,7 +392,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 							&& !n.getSimcstatus().equals(o.getSimcstatus())) {
 						tagString.addProperty("simcstatus", Fm_T.to_y_M_d(new Date()));
 					}
-					if (!n.getSimcdate().equals("") && !n.getSimcdate().equals(o.getSimcdate())) {
+					if (o != null && !n.getSimcdate().equals("") && !n.getSimcdate().equals(o.getSimcdate())) {
 						tagString.addProperty("simcdate", Fm_T.to_y_M_d(new Date()));
 					}
 //					// 倉庫

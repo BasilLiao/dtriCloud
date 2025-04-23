@@ -972,12 +972,12 @@ public class WarehouseActionServiceAc {
 					history.setWhwmslocation(shippingList.getBslfromwho());
 					history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
 							shippingList.getBslclass() + "-" + shippingList.getBslsn() + "-" + // 領料單
-							shippingList.getBslnb() + "*" + shippingList.getBslpnqty());
+							shippingList.getBslnb() + "*" + shippingList.getBslpngqty());
 					history.setWhwmpnb(shippingList.getBslpnumber());
 					history.setWhfuser(shippingList.getBslfuser());
 					history.setWheqty(area.getWaerptqty());
 					history.setWhcqty(area.getWatqty());
-					history.setWhpomqty("-" + shippingList.getBslpnqty());
+					history.setWhpomqty("-" + shippingList.getBslpngqty());
 					history.setWhcheckin(shippingList.getBslcheckin() == 0 ? "未核單" : "已核單");
 					entityHistories.add(history);
 				}

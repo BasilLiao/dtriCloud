@@ -18,7 +18,7 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002, W1003, W1004, W1005, W1006
+		E1000, W1000, W1001, W1002, W1003, W1004, W1005, W1006, W1007
 	};
 
 	// 故障語言
@@ -60,6 +60,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1006_zh_TW = "[W1006] 不可修改資料 : ${0} !!";
 	public final static String W1006_en_US = "[W1006] Data cannot be modified : ${0} !!";
 	public final static String W1006_vi_VN = "[W1006] Dữ liệu không thể được sửa đổi : ${0} !!";
+	// 錯誤訊息-服務器尚未開啟
+	public final static String W1007_zh_TW = "[W1007] 服務器忙碌中~請稍後再試!!";
+	public final static String W1007_en_US = "[W1007] The server is busy~Please try again later!!";
+	public final static String W1007_vi_VN = "[W1007] Máy chủ đang bận~Vui lòng thử lại sau!!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {

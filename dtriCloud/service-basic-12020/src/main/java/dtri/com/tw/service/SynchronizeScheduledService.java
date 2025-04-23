@@ -21,6 +21,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -85,6 +87,8 @@ public class SynchronizeScheduledService {
 	private PackageService packageService;
 	@Resource
 	private ClientServiceFeign serviceFeign;
+	@Autowired
+	private DiscoveryClient discoveryClient;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -168,7 +172,11 @@ public class SynchronizeScheduledService {
 		@Override
 		public void run() {
 			try {
-				serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+				List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+				boolean check = instances != null && !instances.isEmpty();
+				if (check) {// 有再傳送
+					serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
+				}
 			} catch (Exception e) {
 				logger.warn(CloudExceptionService.eStktToSg(e));
 			}
@@ -190,7 +198,8 @@ public class SynchronizeScheduledService {
 		ArrayList<ScheduleInfactory> scheduleInfactorys = scheduleInfactoryDao.findAllByNotFinish(null);// 尚未結束的
 		ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByBslclass(null,
 				Arrays.asList("A541", "A542"));// 取得單據
-		Map<String, ArrayList<BasicShippingList>> shippingMaps = new HashMap<String, ArrayList<BasicShippingList>>();// 有比對到的單據
+		// Map<String, ArrayList<BasicShippingList>> shippingMaps = new HashMap<String,
+		// ArrayList<BasicShippingList>>();// 有比對到的單據
 
 		ArrayList<ScheduleInfactory> newScheduleInfactorys = new ArrayList<ScheduleInfactory>();// 要更新的
 		// 資料整理
@@ -219,7 +228,7 @@ public class SynchronizeScheduledService {
 			ArrayList<BasicShippingList> shNewListsA541 = new ArrayList<BasicShippingList>();
 			ArrayList<BasicShippingList> shNewListsA542 = new ArrayList<BasicShippingList>();
 			String statusA541 = "";
-			String statusA542 = "";
+			// String statusA542 = "";
 			Boolean finishA541 = true;
 			for (BasicShippingList bSipl : shippingLists) {
 				if (bSipl.getBslclass().equals("A541") && bSipl.getBslfromcommand().contains(o.getSinb())) {// 匹配製令單號?
@@ -249,10 +258,10 @@ public class SynchronizeScheduledService {
 				// shNewListsA541.size() > 0 || shNewListsA542.size() > 0
 				if (shNewListsA541.size() > 0) {
 					// 測試用
-					if ((shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn())
-							.equals("A541-250305008")) {
-						System.out.println("A541-250305008");
-					}
+//					if ((shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn())
+//							.equals("A541-250305008")) {
+//						System.out.println("A541-250305008");
+//					}
 					if (shNewListsA541.get(0).getBslpalready() == 1) {// 已打印
 						statusA541 = "開始備料";
 						if (finishA541) {// 已經完成備料?
@@ -356,7 +365,11 @@ public class SynchronizeScheduledService {
 		@Override
 		public void run() {
 			try {
-				serviceFeign.setInfactorySynchronizeCell(sendAllData);
+				List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+				boolean check = instances != null && !instances.isEmpty();
+				if (check) {// 有再傳送
+					serviceFeign.setInfactorySynchronizeCell(sendAllData);
+				}
 			} catch (Exception e) {
 				logger.warn(CloudExceptionService.eStktToSg(e));
 			}
@@ -975,22 +988,22 @@ public class SynchronizeScheduledService {
 							// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
 							+ "</tr></thead>"//
 							+ "<tbody>";// 模擬12筆資料
-					int r = 1;
+					// int r = 1;
 
 					for (ScheduleInfactory oss : infactorys) {
-						String siscstatus = "";// 生管狀態
-						switch (oss.getSiscstatus()) {
-						case 0:
-							siscstatus = "未開注意事項";
-							break;
-						case 1:
-							siscstatus = "已開注意事項";
-							break;
-						case 2:
-							siscstatus = "已核准流程卡";
-							break;
-
-						}
+//						String siscstatus = "";// 生管狀態
+//						switch (oss.getSiscstatus()) {
+//						case 0:
+//							siscstatus = "未開注意事項";
+//							break;
+//						case 1:
+//							siscstatus = "已開注意事項";
+//							break;
+//						case 2:
+//							siscstatus = "已核准流程卡";
+//							break;
+//
+//						}
 						String simcstatus = "";// 物控狀態
 						switch (oss.getSimcstatus()) {
 						case 0:
@@ -1042,7 +1055,11 @@ public class SynchronizeScheduledService {
 						JsonObject sendAllData = new JsonObject();
 						sendAllData.addProperty("update", update);
 						sendAllData.addProperty("action", "sendAllClearShow");
-						serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
+						List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+						boolean check = instances != null && !instances.isEmpty();
+						if (check) {// 有再傳送
+							serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
+						}
 					}
 				}
 
@@ -1143,11 +1160,14 @@ public class SynchronizeScheduledService {
 					String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 							+ "<thead><tr style= 'background-color: aliceblue;'>"//
 							// + "<th>項次</th>"//
-							+ "<th style='min-width: 65px;'>客戶訂單</th>"//
+							+ "<th style='min-width: 65px;'>預計開工日</th>"//
+							+ "<th style='min-width: 65px;'>預計完工日</th>"//
+							+ "<th style='min-width: 100px;'>客戶訂單</th>"//
 							+ "<th style='min-width: 100px;'>製令單備註(客/國/訂/其)</th>"//
 							+ "<th style='min-width: 100px;'>製令單號</th>"//
-							+ "<th style='min-width: 100px;'>產品品號</th>"//
+							+ "<th style='min-width: 110px;'>產品品號</th>"//
 							+ "<th style='min-width: 100px;'>產品品名</th>"//
+							+ "<th style='min-width: 100px;'>產品規格</th>"//
 							+ "<th style='min-width: 40px;'>預計-生產數</th>"//
 							// + "<th style='min-width: 40px;'>完成-生產數</th>"//
 							// + "<th style='min-width: 40px;'>製令單-狀態</th>"//
@@ -1164,43 +1184,45 @@ public class SynchronizeScheduledService {
 							// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
 							+ "</tr></thead>"//
 							+ "<tbody>";// 模擬12筆資料
-					int r = 1;
+					// int r = 1;
 
 					for (ScheduleInfactory oss : infactorys) {
-						String siscstatus = "";// 生管狀態
-						switch (oss.getSiscstatus()) {
-						case 0:
-							siscstatus = "未開注意事項";
-							break;
-						case 1:
-							siscstatus = "已開注意事項";
-							break;
-						case 2:
-							siscstatus = "已核准流程卡";
-							break;
-
-						}
-						String simcstatus = "";// 物控狀態
-						switch (oss.getSimcstatus()) {
-						case 0:
-							simcstatus = "未確認";
-							break;
-						case 1:
-							simcstatus = "未齊料";
-							break;
-						case 2:
-							simcstatus = "已齊料";
-							break;
-						}
+//						String siscstatus = "";// 生管狀態
+//						switch (oss.getSiscstatus()) {
+//						case 0:
+//							siscstatus = "未開注意事項";
+//							break;
+//						case 1:
+//							siscstatus = "已開注意事項";
+//							break;
+//						case 2:
+//							siscstatus = "已核准流程卡";
+//							break;
+//
+//						}
+//						String simcstatus = "";// 物控狀態
+//						switch (oss.getSimcstatus()) {
+//						case 0:
+//							simcstatus = "未確認";
+//							break;
+//						case 1:
+//							simcstatus = "未齊料";
+//							break;
+//						case 2:
+//							simcstatus = "已齊料";
+//							break;
+//						}
 						// 信件資料結構
 						bnmcontent += "<tr>"//
 								// + "<td>" + (r++) + "</td>"// 項次
+								+ "<td>" + oss.getSiodate() + "</td>"// 預計開工日
+								+ "<td>" + oss.getSifdate() + "</td>"// 預計完工日
 								+ "<td>" + oss.getSicorder() + "</td>"// 客戶訂單
 								+ "<td>" + oss.getSinote() + "</td>"// 製令單備註(客/國/訂/其)
 								+ "<td>" + oss.getSinb() + "</td>"// 製令單號
 								+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
 								+ "<td>" + oss.getSipname() + "</td>"// 產品品名
-
+								+ "<td>" + oss.getSipspecifications() + "</td>"// 產品規格
 								+ "<td>" + oss.getSirqty() + "</td>"// 預計生產數
 								// + "<td>" + oss.getSiokqty() + "</td>"// 已生產數
 
@@ -1231,7 +1253,11 @@ public class SynchronizeScheduledService {
 						JsonObject sendAllData = new JsonObject();
 						sendAllData.addProperty("update", update);
 						sendAllData.addProperty("action", "sendAllClearShow");
-						serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
+						List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+						boolean check = instances != null && !instances.isEmpty();
+						if (check) {// 有再傳送
+							serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
+						}
 					}
 				}
 

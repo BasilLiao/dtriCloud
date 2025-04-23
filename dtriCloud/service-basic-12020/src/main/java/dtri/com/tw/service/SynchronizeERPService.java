@@ -264,7 +264,7 @@ public class SynchronizeERPService {
 			}
 		});
 		// Step4.確認是否完結 or 被移除?
-		int batchSize = 500;
+		int batchSize = 1500;
 		List<String> removeCommandMapList = new ArrayList<>(removeCommandMap.keySet());
 		int totalSize = removeCommandMapList.size();
 		// 批次檢查
@@ -382,7 +382,7 @@ public class SynchronizeERPService {
 		});
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		// 批次檢查-進料類
 		for (int i = 0; i < totalInSize; i += batchSize) {
@@ -593,7 +593,236 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
+		int totalInSize = removeInMapList.size();
+		int totalShSize = removeShMapList.size();
+		// 批次檢查-進料類
+		for (int i = 0; i < totalInSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
+			// 執行 JPA 查詢
+			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
+			// 處理結果
+			removeInCheck.forEach(r -> {
+				// 移除標記
+				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+				// 已經完成->標記更新
+				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
+				if ("Y".equals(r.getTe019())) {
+					BasicIncomingList o = removeInMap.get(nKey);
+					o.setSysmuser("system");
+					o.setSysstatus(1);// 完成
+					saveInLists.add(o);
+				}
+				removeInMap.remove(nKey);
+			});
+		}
+		// 批次檢查-領料類
+		for (int i = 0; i < totalShSize; i += batchSize) {
+			// 取得當前批次
+			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			// 執行 JPA 查詢
+			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
+			// 處理結果
+			removeShCheck.forEach(r -> {
+				// 測試用A541-250401003-0018
+//				if (r.getTa026_ta027_ta028().contains("A541-250401003-0018")) {
+//					System.out.println("測試:A541-250401003-0018");
+//				}
+				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+				BasicShippingList o = removeShMap.get(nKey);
+				// 已經完成->標記更新
+				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
+				if ("Y".equals(r.getTe019())) {
+					o.setSysmuser("system");
+					o.setSysstatus(1);// 完成
+					saveShLists.add(o);
+				}
+				removeShMap.remove(nKey);
+			});
+		}
+		ArrayList<BasicIncomingList> removeInLists = new ArrayList<>(removeInMap.values());
+		ArrayList<BasicShippingList> removeShLists = new ArrayList<>(removeShMap.values());
+		// 添加:移除標記
+		removeInLists.forEach(r -> {
+			r = autoRemoveService.incomingAuto(r);
+		});
+		removeShLists.forEach(r -> {
+			r = autoRemoveService.shippingAuto(r);
+		});
+
+		// Step5. 存入資料
+		incomingListDao.saveAll(saveInLists);
+		shippingListDao.saveAll(saveShLists);
+		incomingListDao.saveAll(removeInLists);
+		shippingListDao.saveAll(removeShLists);
+		// Step6. 自動結算
+		erpAutoCheckService.settlementAuto(wAsSave, wAsAllNewSave);
+		// Step7.重新更新庫存
+		wAsSave = new HashMap<>();
+		wAs = new HashMap<>();// 庫別清單
+		areaDao.findAll().forEach(x -> {
+			if (!wAs.containsKey(x.getWaaliasawmpnb())) {
+				wAs.put(x.getWaaliasawmpnb(), x);
+			}
+		});
+	}
+
+	// ============ /(A543 超領單)/ A561 廠內退料單 / A571 委外退料單
+	public void erpSynchronizeMocteOnlyA543A561A571() throws Exception {
+		logger.info("===erpSynchronizeMocte: 時間:{}", dateFormat.format(new Date()));
+		// Step0.資料準備
+		ArrayList<Mocte> erpEntitys = mocteDao.findAllByMocteOnlyA543A561A571();
+		Map<String, Mocte> erpInMaps = new HashMap<>();
+		Map<String, Mocte> erpShMaps = new HashMap<>();
+		List<String> bilclass = new ArrayList<String>();
+		bilclass.add("A543");
+		bilclass.add("A561");
+		bilclass.add("A571");
+		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
+		ArrayList<BasicShippingList> entityShOlds = shippingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
+		// 存入資料物件
+		ArrayList<BasicIncomingList> saveInLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
+		ArrayList<BasicShippingList> saveShLists = new ArrayList<BasicShippingList>();// [Cloud]儲存
+		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
+		Map<String, BasicShippingList> removeShMap = new TreeMap<String, BasicShippingList>();// [Cloud]儲存(移除)
+
+		// Step1.資料整理
+		for (Mocte m : erpEntitys) {
+			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
+			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
+			String nKey = m.getTa026_ta027_ta028();
+			//
+			m.setNewone(true);
+			// 單別性質(退料類 需抓取 物料領退用量)
+			String classNb = m.getTa026_ta027_ta028().split("-")[0];
+			if (classNb.equals("A543") || classNb.equals("A561") || classNb.equals("A571")) {
+				m.setTb004(m.getTe005());
+			}
+			// 單據性質別54.廠內領料,55.託外領料,56.廠內退料,57.託外退料
+			if (m.getTc008().equals("54") || m.getTc008().equals("55")) {
+				m.setTk000("領料類");
+				erpShMaps.put(nKey, m);
+				wTFsSave.put(m.getTa026_ta027_ta028().split("-")[0], 1);
+			} else {
+				m.setTk000("入料類");
+				erpInMaps.put(nKey, m);
+				wTFsSave.put(m.getTa026_ta027_ta028().split("-")[0], 0);
+			}
+			// 可能臨時修改
+			if (m.getTb004() == null) {
+				m.setTb004(0);
+			}
+		}
+		// Step2.[ERP vs Cloud]舊資料匹配
+		// 入料
+		entityInOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			String bilfuser = o.getBilfuser();
+			oKey = oKey.replaceAll("\\s", "");
+			// 同一筆資料?
+			if (erpInMaps.containsKey(oKey)) {
+				String nChecksum = erpInMaps.get(oKey).toString().replaceAll("\\s", "");
+				erpInMaps.get(oKey).setNewone(false);// 標記:不是新的
+				Mocte m = erpInMaps.get(oKey);
+				// 內容不同=>更新
+				boolean erp_remove = bilfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bilfuser.equals("") || bilfuser.contains("System"));
+				if (erp_remove || checksum) {
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(入)
+					if (bilfuser.contains("System")) {
+						erpAutoCheckService.incomingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
+					}
+					// 資料轉換
+					o = erpToCloudService.incomingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.incomingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveInLists.add(o);
+				} else if (!bilfuser.equals("") && !bilfuser.contains("✪") && //
+						(!o.getBilpnqty().equals(m.getTb005()) || // 數量變化?
+								!o.getBilpnumber().equals(m.getMb001()) || // 物料變化?
+								!o.getBiltowho().contains(m.getTb009()))) {// 庫別變化?
+					// 標記二次修正(數量不同+料號不同+庫別不同)
+					o.setBilfuser("✪ " + bilfuser);
+				}
+			} else if (bilfuser.equals("")) {
+				// 可能移除? 結單?
+				removeInMap.put(oKey, o);
+			}
+		});
+		// 領料
+		entityShOlds.forEach(o -> {
+			// 基本資料準備:檢碼(單類別+單序號+單項目號)
+			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+			String bslfuser = o.getBslfuser();
+			oKey = oKey.replaceAll("\\s", "");
+			// 比對同一筆資料?->修正
+			if (erpShMaps.containsKey(oKey)) {
+				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");// ERP檢查碼
+				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
+				Mocte m = erpShMaps.get(oKey);
+				// 內容不同=>更新
+				boolean erp_remove = bslfuser.equals("ERP_Remove(Auto)");
+				boolean checksum = !o.getChecksum().equals(nChecksum)
+						&& (bslfuser.equals("") || bslfuser.contains("System"));
+				if (erp_remove || checksum) {
+					// 尚未領料 or 系統標記 可修改
+					String checkSum = m.toString().replaceAll("\\s", "");
+					// 自動恢復(領)
+					if (bslfuser.contains("System")) {
+						erpAutoCheckService.shippingAutoRe(o, wAsSave, wTFs, wCs, wMs, wAs);
+					}
+					// 資料轉換
+					o = erpToCloudService.shippingOneMocte(o, m, checkSum, wTFs, wKs, wAs);
+					// 自動完成
+					o = erpAutoCheckService.shippingAuto(o, wAsSave, wTFs, wCs, wMs, wAs);
+					saveShLists.add(o);
+				} else if (!bslfuser.equals("") && !bslfuser.contains("✪") && //
+						(!o.getBslpnqty().equals(m.getTb004()) || !o.getBslpnumber().equals(m.getMb001()))) {
+					// 標記二次修正(數量不同+料號不同)
+					o.setBslfuser("✪ " + bslfuser);
+				}
+			} else if (bslfuser.equals("")) {
+				// 可能移除? 結單?
+				removeShMap.put(oKey, o);
+			}
+		});
+		// Step3.[ERP vs Cloud] 全新資料?
+		// 入料
+		erpInMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("入料類")) {
+				BasicIncomingList n = new BasicIncomingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				// 資料轉換
+				n = erpToCloudService.incomingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				n = erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
+				saveInLists.add(n);
+			}
+		});
+		// 領料
+		erpShMaps.forEach((key, v) -> {
+			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTe019().equals("N")) {
+				BasicShippingList n = new BasicShippingList();
+				String checkSum = v.toString().replaceAll("\\s", "");
+				n.setChecksum(checkSum);
+				// 資料轉換
+				n = erpToCloudService.shippingOneMocte(n, v, checkSum, wTFs, wKs, wAs);
+				// 自動完成
+				n = erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
+				saveShLists.add(n);
+			}
+		});
+		// Step4.確認是否完結 or 被移除?
+		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
+		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -624,10 +853,6 @@ public class SynchronizeERPService {
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
-				// 測試用A541-250401003-0018
-//				if (r.getTa026_ta027_ta028().contains("A541-250401003-0018")) {
-//					System.out.println("測試:A541-250401003-0018");
-//				}
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
 				BasicShippingList o = removeShMap.get(nKey);
 				// 已經完成->標記更新
@@ -741,7 +966,7 @@ public class SynchronizeERPService {
 		});
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		// 批次檢查-進料類
 		for (int i = 0; i < totalInSize; i += batchSize) {
@@ -858,7 +1083,7 @@ public class SynchronizeERPService {
 		});
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		// 批次檢查-進料類
 		for (int i = 0; i < totalInSize; i += batchSize) {
@@ -1033,7 +1258,7 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -1236,7 +1461,7 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -1484,7 +1709,7 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -1700,7 +1925,7 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -1917,7 +2142,7 @@ public class SynchronizeERPService {
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeInMapList = new ArrayList<>(removeInMap.keySet());
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalInSize = removeInMapList.size();
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-進料類
@@ -2068,7 +2293,7 @@ public class SynchronizeERPService {
 		});
 		// Step4.確認是否完結 or 被移除?
 		List<String> removeShMapList = new ArrayList<>(removeShMap.keySet());
-		int batchSize = 500;
+		int batchSize = 1500;
 		int totalShSize = removeShMapList.size();
 		// 批次檢查-領料類
 		for (int i = 0; i < totalShSize; i += batchSize) {
@@ -2114,7 +2339,7 @@ public class SynchronizeERPService {
 		ArrayList<Invtb> erpEntitys = invtbDao.findAllByMoctb();
 		Map<String, Invtb> erpListMaps = new HashMap<>();
 		Map<String, Invtb> erpItemMaps = new HashMap<>();
-		Map<String, String> erpConfigMaps = new HashMap<>();// A1000+原物料倉
+		Map<String, String> erpConfigMaps = new HashMap<>();// A1500+原物料倉
 
 		erpEntitys.forEach(m -> {
 			// 測試用
@@ -2380,13 +2605,18 @@ public class SynchronizeERPService {
 
 	// ============ 單據移除(360天以前資料) ============
 	public void remove360DayData() throws Exception {
-		Date countD150 = Fm_T.to_count(-40, new Date());
-		// Date countD350 = Fm_T.to_count(-350, new Date());
-		// 進
-		incomingListDao.deleteAll(incomingListDao.findAllBySyscdateRemove(countD150));
+		Date countD60 = Fm_T.to_count(-60, new Date());
+		Date countD90 = Fm_T.to_count(-90, new Date());
+		Date countD600 = Fm_T.to_count(-600, new Date());
 		// 出
-		shippingListDao.deleteAll(shippingListDao.findAllBySyscdateRemove(countD150));
-		// commandListDao.deleteAll(commandListDao.findAllBySyscdateRemove(countD350));
+		ArrayList<BasicShippingList> shRemove = shippingListDao.findAllBySyscdateRemove(countD60);
+		shippingListDao.deleteAll(shRemove);
+		// 進
+		ArrayList<BasicIncomingList> inRemove = incomingListDao.findAllBySyscdateRemove(countD90);
+		incomingListDao.deleteAll(inRemove);
+		// 命令
+		ArrayList<BasicCommandList> coRemove = commandListDao.findAllBySyscdateRemove(countD600);
+		commandListDao.deleteAll(coRemove);
 	}
 
 }

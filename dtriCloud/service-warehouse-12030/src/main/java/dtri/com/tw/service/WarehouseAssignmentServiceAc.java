@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -70,9 +71,7 @@ public class WarehouseAssignmentServiceAc {
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
 		// ========================分頁設置========================
 		// Step1.批次分頁
-		// JsonObject pageSetJson =
-		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 15000;
+		int total = 12500;
 		int batch = 0;
 
 		// Step2.排序
@@ -98,25 +97,8 @@ public class WarehouseAssignmentServiceAc {
 		Map<String, Integer> entitySchedulTotail = new HashMap<>();
 		Map<String, Integer> entitySchedulFinish = new HashMap<>();
 		Map<String, Integer> entitySchedulCheckInFinish = new HashMap<>();
-		//
-		List<WarehouseArea> areaLists = areaDao.findAll();
-		//
 		List<WarehouseTypeFilter> typeFilters = filterDao.findAll();
 		// Step3-2.資料區分(一般/細節)
-//		Map<String, WarehouseArea> areaMaps = new HashMap<>();
-//		areaLists.forEach(a -> {
-//			String key = a.getWaaliasawmpnb();// 倉儲+物料號
-//			areaMaps.put(key, a);
-//		});
-//		Map<String, String> typeFilterMaps = new HashMap<>();
-//		typeFilters.forEach(t -> {
-//			typeFilterMaps.put(t.getWtfcode(), t.getWtfname());
-//		});
-
-		// 會將 Stream 轉換成 Map，需要兩個函數：
-		// Collectors.toMap(物件::keyMapper, valueMapper) 會將 Stream 轉換成 Map，需要兩個函數：
-		Map<String, WarehouseArea> areaMaps = areaLists.stream()
-				.collect(Collectors.toMap(WarehouseArea::getWaaliasawmpnb, Function.identity()));
 		Map<String, String> typeFilterMaps = typeFilters.stream()
 				.collect(Collectors.toMap(WarehouseTypeFilter::getWtfcode, WarehouseTypeFilter::getWtfname));
 
@@ -132,8 +114,9 @@ public class WarehouseAssignmentServiceAc {
 			 */
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus("A541", null, null, null,
 					"true", null, null, null, null, shPageable);
+			LinkedHashSet<String> areaListShIn = new LinkedHashSet<String>();
 			// 進料
-			incomingLists.forEach(in -> {
+			for (BasicIncomingList in : incomingLists) {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
 				WarehouseAssignmentDetailFront ed = new WarehouseAssignmentDetailFront();
@@ -184,12 +167,8 @@ public class WarehouseAssignmentServiceAc {
 				if (in.getBiltowho().split("_").length > 1) {
 					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
 					areaKey = areaKey.replaceAll(" ", "");
-					if (areaMaps.containsKey(areaKey)) {
-						ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-						ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-						ed.setWasqcqty(0);// 待驗量
-						ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
-					}
+					areaListShIn.add(areaKey);
+					ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
 				}
 				// System
 				ed.setSyscdate(in.getSyscdate());
@@ -248,11 +227,10 @@ public class WarehouseAssignmentServiceAc {
 					entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
 					entitySchedulCheckInFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
 				}
-
-			});
+			}
 
 			// 領料
-			shippingLists.forEach(sh -> {
+			for (BasicShippingList sh : shippingLists) {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				if ((entityChecks.size() > 100 && entityChecks.containsKey(headerKey))
 						|| (entityChecks.size() <= 100)) {
@@ -304,15 +282,10 @@ public class WarehouseAssignmentServiceAc {
 					// 倉儲(必須符合格式)
 					String[] fromWhoParts = sh.getBslfromwho().split("_");
 					if (fromWhoParts.length > 1) {
-						String areaKey = (sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber())
-								.replaceAll(" ", "");
-						WarehouseArea area = areaMaps.get(areaKey);
-						if (area != null) {
-							ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-							ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-							ed.setWasqcqty(0);// 待驗量
-							ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
-						}
+						String areaKey = (sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber());
+						areaKey = areaKey.replaceAll(" ", "");
+						areaListShIn.add(areaKey);
+						ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
 					}
 					// System
 					ed.setSyscdate(sh.getSyscdate());
@@ -375,7 +348,7 @@ public class WarehouseAssignmentServiceAc {
 						entitySchedulCheckInFinish.put(headerKey, entitySchedulCheckInFinish.get(headerKey) + 1);
 					}
 				}
-			});
+			}
 			// 進度添加
 			entitys.forEach(h -> {
 				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
@@ -385,7 +358,27 @@ public class WarehouseAssignmentServiceAc {
 							+ entitySchedulTotail.get(h.getWasclasssn()));
 				}
 			});
-
+			// 配對倉儲物料狀況
+			final int BATCH_SIZE = 1500;
+			List<String> areaListShInArr = new ArrayList<>(areaListShIn);
+			List<WarehouseArea> areaLists = new ArrayList<>();
+			for (int i = 0; i < areaListShIn.size(); i += BATCH_SIZE) {
+				// 取得當前批次的子清單
+				List<String> batchShIns = areaListShInArr.subList(i, Math.min(i + BATCH_SIZE, areaListShIn.size()));
+				// 執行查詢
+				List<WarehouseArea> batchResult = areaDao.findAllByWaaliasawmpnb(new ArrayList<>(batchShIns));
+				// 合併結果
+				areaLists.addAll(batchResult);
+			}
+			Map<String, WarehouseArea> areaMaps = areaLists.stream()
+					.collect(Collectors.toMap(WarehouseArea::getWaaliasawmpnb, Function.identity()));
+			entityDetails.forEach(ed -> {
+				if (areaMaps.containsKey(ed.getWasaliaswmpnb())) {
+					ed.setWastqty(areaMaps.get(ed.getWasaliaswmpnb()).getWatqty());// 實際數量
+					ed.setWaserptqty(areaMaps.get(ed.getWasaliaswmpnb()).getWaerptqty());// 帳務數量
+					ed.setWasqcqty(0);// 待驗量
+				}
+			});
 			// 類別(一般模式)
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entitys);
@@ -506,8 +499,9 @@ public class WarehouseAssignmentServiceAc {
 					searchData.getWasfuser(), searchData.getWassmuser(), searchData.getSysstatus(),
 					searchData.getSyshnote(), shPageable);
 			// Step4-2.資料區分(一般/細節)
+			LinkedHashSet<String> areaListShIn = new LinkedHashSet<String>();
 			// 進料
-			incomingLists.forEach(in -> {
+			for (BasicIncomingList in : incomingLists) {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
 				if ((entityChecks.size() > 100 && entityChecks.containsKey(headerKey))
 						|| (entityChecks.size() <= 100)) {
@@ -559,12 +553,8 @@ public class WarehouseAssignmentServiceAc {
 					if (in.getBiltowho().split("_").length > 1) {
 						String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
 						areaKey = areaKey.replaceAll(" ", "");
-						if (areaMaps.containsKey(areaKey)) {
-							ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-							ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-							ed.setWasqcqty(0);// 待驗量
-							ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
-						}
+						areaListShIn.add(areaKey);
+						ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
 					}
 					// System
 					ed.setSyscdate(in.getSyscdate());
@@ -623,11 +613,14 @@ public class WarehouseAssignmentServiceAc {
 						entitySchedulFinish.put(headerKey, entitySchedulFinish.get(headerKey) + 1);
 						entitySchedulCheckInFinish.put(headerKey, entitySchedulCheckInFinish.get(headerKey) + 1);
 					}
+				} else {
+					break;
 				}
-			});
+			}
 
 			// 領料
-			shippingLists.forEach(sh -> {
+
+			for (BasicShippingList sh : shippingLists) {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
 				if ((entityChecks.size() > 100 && entityChecks.containsKey(headerKey))
 						|| (entityChecks.size() <= 100)) {
@@ -682,12 +675,8 @@ public class WarehouseAssignmentServiceAc {
 					if (sh.getBslfromwho().split("_").length > 1) {
 						String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
 						areaKey = areaKey.replaceAll(" ", "");
-						if (areaMaps.containsKey(areaKey)) {
-							ed.setWastqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-							ed.setWaserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-							ed.setWasqcqty(0);// 待驗量
-							ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
-						}
+						areaListShIn.add(areaKey);
+						ed.setWasaliaswmpnb(areaKey);// 倉儲_物料號
 					}
 					// System
 					ed.setSyscdate(sh.getSyscdate());
@@ -749,8 +738,10 @@ public class WarehouseAssignmentServiceAc {
 					if (sh.getBslfucheckin()) {// 集結進度
 						entitySchedulCheckInFinish.put(headerKey, entitySchedulCheckInFinish.get(headerKey) + 1);
 					}
+				} else {
+					break;
 				}
-			});
+			}
 			// 進度添加
 			entitys.forEach(h -> {
 				if (entitySchedulTotail.containsKey(h.getWasclasssn())) {
@@ -758,6 +749,27 @@ public class WarehouseAssignmentServiceAc {
 							+ entitySchedulTotail.get(h.getWasclasssn()));
 					h.setWascischedule(entitySchedulCheckInFinish.get(h.getWasclasssn()) + " / "
 							+ entitySchedulTotail.get(h.getWasclasssn()));
+				}
+			});
+			// 配對倉儲物料狀況
+			final int BATCH_SIZE = 1500;
+			List<String> areaListShInArr = new ArrayList<>(areaListShIn);
+			List<WarehouseArea> areaLists = new ArrayList<>();
+			for (int i = 0; i < areaListShIn.size(); i += BATCH_SIZE) {
+				// 取得當前批次的子清單
+				List<String> batchShIns = areaListShInArr.subList(i, Math.min(i + BATCH_SIZE, areaListShIn.size()));
+				// 執行查詢
+				List<WarehouseArea> batchResult = areaDao.findAllByWaaliasawmpnb(new ArrayList<>(batchShIns));
+				// 合併結果
+				areaLists.addAll(batchResult);
+			}
+			Map<String, WarehouseArea> areaMaps = areaLists.stream()
+					.collect(Collectors.toMap(WarehouseArea::getWaaliasawmpnb, Function.identity()));
+			entityDetails.forEach(ed -> {
+				if (areaMaps.containsKey(ed.getWasaliaswmpnb())) {
+					ed.setWastqty(areaMaps.get(ed.getWasaliaswmpnb()).getWatqty());// 實際數量
+					ed.setWaserptqty(areaMaps.get(ed.getWasaliaswmpnb()).getWaerptqty());// 帳務數量
+					ed.setWasqcqty(0);// 待驗量
 				}
 			});
 
@@ -794,7 +806,7 @@ public class WarehouseAssignmentServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			if (action.equals("ReturnSelect")) {
+			if (action.equals("ReturnSelect") || action.equals("PassAll")) {
 				entityDetailDatas = packageService.jsonToBean(packageBean.getEntityJson(),
 						new TypeReference<ArrayList<WarehouseAssignmentDetailFront>>() {
 						});
@@ -807,32 +819,35 @@ public class WarehouseAssignmentServiceAc {
 			// Step2.資料檢查(PASS)
 			if (action.equals("PassAll")) {
 				// Step2.資料檢查
-				for (WarehouseAssignmentFront entityData : entityDatas) {
+				for (WarehouseAssignmentDetailFront entityData : entityDetailDatas) {
 					// 檢查-數量充足(有資料)
 					String wasClass = entityData.getWasclasssn().split("-")[0];
 					String wasSn = entityData.getWasclasssn().split("-")[1];
-					ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(wasClass, wasSn, null);
-
-					for (BasicShippingList checkData : checkDatas) {
-
-						if (checkData.getBslfromwho().split("_").length > 1) {
-							String areaKey = checkData.getBslfromwho().split("_")[0].replace("[", "") + "_"
-									+ checkData.getBslpnumber();
-							areaKey = areaKey.replaceAll(" ", "");
-							ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
-							// 倉庫不夠?(已經有取?/未取?)
-							int qty = 0;
-							if (checkData.getBslpngqty() - checkData.getBslpnqty() >= 0) {
-								// 已經取
-							} else {
-								// 未取完整+完全未取
-								qty = areas.get(0).getWatqty() - checkData.getBslpnqty() + checkData.getBslpngqty();
-								if (areas.size() > 0 && qty < 0) {
-									throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006,
-											Lan.zh_TW, new String[] { checkData.getBslpnumber() + " Qty is:" + qty });
-								}
+					String wasnb = entityData.getWasnb();
+					ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(wasClass, wasSn, wasnb);
+					if (checkDatas.size() > 0) {
+						BasicShippingList checkData = checkDatas.get(0);
+						String areaKey = checkData.getBslfromwho().split("_")[0].replace("[", "") + "_"
+								+ checkData.getBslpnumber();
+						areaKey = areaKey.replaceAll(" ", "");
+						//
+						ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+						// 倉庫不夠?(已經有取?/未取?)
+						int qty = 0;
+						if (checkData.getBslpngqty() - checkData.getBslpnqty() >= 0) {
+							// 已經取
+						} else {
+							// 未取完整+完全未取
+							qty = areas.get(0).getWatqty() - checkData.getBslpnqty() + checkData.getBslpngqty();
+							if (areas.size() > 0 && qty < 0) {
+								throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+										new String[] { checkData.getBslpnumber() + " Qty is:" + qty });
 							}
 						}
+					} else {
+						// 找不到
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+								new String[] { entityData.getWasclasssn() + entityData.getWasnb() + "" });
 					}
 				}
 			}
@@ -860,47 +875,7 @@ public class WarehouseAssignmentServiceAc {
 						case "Print":
 							t.setBilpalready(1);
 							break;
-						case "PassAll":
-							Boolean checkOK = false;
-							WarehouseArea area = new WarehouseArea();
-							// 更新 儲位物料->有該儲位?
-							if (t.getBiltowho().split("_").length > 1) {
-								String areaKey = t.getBiltowho().split("_")[0];
-								areaKey = areaKey.replace("[", "") + "_" + t.getBilpnumber();
-								areaKey = areaKey.replaceAll(" ", "");
-								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
-								// 倉庫更新數量+必須完成人空
-								if (areas.size() > 0 && t.getBilfuser().equals("")) {
-									area = areas.get(0);
-									int qty = area.getWatqty();
-									area.setWatqty(qty + (t.getBilpnqty() - t.getBilpngqty()));
-									areaDao.save(area);
-									checkOK = true;
-								}
-								// 更新單據+紀錄
-								if (checkOK) {
-									t.setBilcuser(t.getBilcuser().equals("") ? x.getWascuser() : t.getBilcuser());
-									t.setBilpngqty(t.getBilpnqty());
-									if (!t.getBilfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
-										t.setBilfuser(t.getBilfuser().equals("") ? "System(" + x.getWasfuser() + ")"
-												: t.getBilfuser());
-										// 記錄用
-										WarehouseHistory history = new WarehouseHistory();
-										history.setWhtype("入料(指令:" + action + ")");
-										history.setWhwmslocation(t.getBiltowho());
-										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + t.getBilnb()
-												+ "*" + t.getBilpnqty());// 入料單
-										history.setWhwmpnb(t.getBilpnumber());
-										history.setWhfuser(packageBean.getUserAccount());
-										history.setWheqty(area.getWaerptqty());
-										history.setWhcqty(area.getWatqty());
-										history.setWhpomqty("+" + t.getBilpnqty());
-										history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
-										entityHistories.add(history);
-									}
-								}
-							}
-							break;
+
 						case "Urgency":
 							t.setBilstatus(x.getWasstatus());
 							break;
@@ -931,52 +906,7 @@ public class WarehouseAssignmentServiceAc {
 						case "Print":// 打印
 							t.setBslpalready(1);
 							break;
-						case "PassAll":
-							Boolean checkOK = false;
-							WarehouseArea area = new WarehouseArea();
-							// 更新 儲位物料->有該儲位?
-							if (t.getBslfromwho().split("_").length > 1) {
-								String areaKey = t.getBslfromwho().split("_")[0];
-								areaKey = areaKey.replace("[", "") + "_" + t.getBslpnumber();
-								areaKey = areaKey.replaceAll(" ", "");
-								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
-								// 倉庫更新數量+完成人必續空
-								if (areas.size() > 0 && t.getBslfuser().equals("")) {
-									area = areas.get(0);
-									int qty = area.getWatqty() - (t.getBslpnqty() - t.getBslpngqty());// 未取完整?
-									// 檢查:是否足夠扣除[庫存-需領用量+已領用量]
-									if (qty >= 0) {
-										area.setWatqty(qty);
-										areaDao.save(area);
-										checkOK = true;
-									}
-								}
-								// 更新單據+紀錄
-								if (checkOK) {
-									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
-									t.setBslpngqty(t.getBslpnqty());
-									t.setBslfucheckin(true);// 已集結
-									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
-										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + x.getWasfuser() + ")"
-												: t.getBslfuser());
-										// 記錄用
-										WarehouseHistory history = new WarehouseHistory();
-										history.setWhtype("領料(指令:" + action + ")");
-										history.setWhwmslocation(t.getBslfromwho());
-										history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
-												t.getBslclass() + "-" + t.getBslsn() + "-" + t.getBslnb() + "*"
-												+ t.getBslpnqty());// 領料單
-										history.setWhwmpnb(t.getBslpnumber());
-										history.setWhfuser(packageBean.getUserAccount());
-										history.setWheqty(area.getWaerptqty());
-										history.setWhcqty(area.getWatqty());
-										history.setWhpomqty("-" + t.getBslpnqty());
-										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
-										entityHistories.add(history);
-									}
-								}
-							}
-							break;
+
 						case "Urgency":// 急迫
 							t.setBslstatus(x.getWasstatus());
 							break;
@@ -1055,6 +985,47 @@ public class WarehouseAssignmentServiceAc {
 								}
 							}
 							break;
+						case "PassAll":
+							Boolean checkOK = false;
+							WarehouseArea area = new WarehouseArea();
+							// 更新 儲位物料->有該儲位?
+							if (t.getBiltowho().split("_").length > 1) {
+								String areaKey = t.getBiltowho().split("_")[0];
+								areaKey = areaKey.replace("[", "") + "_" + t.getBilpnumber();
+								areaKey = areaKey.replaceAll(" ", "");
+								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+								// 倉庫更新數量+必須完成人空
+								if (areas.size() > 0 && t.getBilfuser().equals("")) {
+									area = areas.get(0);
+									int qty = area.getWatqty();
+									area.setWatqty(qty + (t.getBilpnqty() - t.getBilpngqty()));
+									areaDao.save(area);
+									checkOK = true;
+								}
+								// 更新單據+紀錄
+								if (checkOK) {
+									t.setBilcuser(t.getBilcuser().equals("") ? x.getWascuser() : t.getBilcuser());
+									t.setBilpngqty(t.getBilpnqty());
+									if (!t.getBilfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
+										t.setBilfuser(t.getBilfuser().equals("") ? "System(" + packageBean.getUserAccount() + ")"
+												: t.getBilfuser());
+										// 記錄用
+										WarehouseHistory history = new WarehouseHistory();
+										history.setWhtype("入料(指令:" + action + ")");
+										history.setWhwmslocation(t.getBiltowho());
+										history.setWhcontent(t.getBilclass() + "-" + t.getBilsn() + "-" + t.getBilnb()
+												+ "*" + t.getBilpnqty());// 入料單
+										history.setWhwmpnb(t.getBilpnumber());
+										history.setWhfuser(packageBean.getUserAccount());
+										history.setWheqty(area.getWaerptqty());
+										history.setWhcqty(area.getWatqty());
+										history.setWhpomqty("+" + t.getBilpnqty());
+										history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
+										entityHistories.add(history);
+									}
+								}
+							}
+							break;
 						default:
 							break;
 						}
@@ -1116,6 +1087,52 @@ public class WarehouseAssignmentServiceAc {
 									t.setSysnote(t.getSysnote().replaceAll("\\[異常:.*?\\]", ""));// [異常:進貨料短少][異常:進貨料多][異常:備品轉][異常:部分領料][異常:庫存量不足]
 									t.setBslpngqty(0);
 									t.setBslfucheckin(false);
+								}
+							}
+							break;
+						case "PassAll":
+							Boolean checkOK = false;
+							WarehouseArea area = new WarehouseArea();
+							// 更新 儲位物料->有該儲位?
+							if (t.getBslfromwho().split("_").length > 1) {
+								String areaKey = t.getBslfromwho().split("_")[0];
+								areaKey = areaKey.replace("[", "") + "_" + t.getBslpnumber();
+								areaKey = areaKey.replaceAll(" ", "");
+								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
+								// 倉庫更新數量+完成人必續空
+								if (areas.size() > 0 && t.getBslfuser().equals("")) {
+									area = areas.get(0);	
+									int qty = area.getWatqty() - (t.getBslpnqty() - t.getBslpngqty());// 未取完整?
+									// 檢查:是否足夠扣除[庫存-需領用量+已領用量]
+									if (qty >= 0) {
+										area.setWatqty(qty);
+										areaDao.save(area);
+										checkOK = true;
+									}
+								}
+								// 更新單據+紀錄
+								if (checkOK) {
+									t.setBslcuser(t.getBslcuser().equals("") ? x.getWascuser() : t.getBslcuser());
+									t.setBslpngqty(t.getBslpnqty());
+									t.setBslfucheckin(true);// 已集結
+									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
+										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + packageBean.getUserAccount() + ")"
+												: t.getBslfuser());
+										// 記錄用
+										WarehouseHistory history = new WarehouseHistory();
+										history.setWhtype("領料(指令:" + action + ")");
+										history.setWhwmslocation(t.getBslfromwho());
+										history.setWhcontent(x.getWasfromcommand() + " " + // 製令單
+												t.getBslclass() + "-" + t.getBslsn() + "-" + t.getBslnb() + "*"
+												+ t.getBslpnqty());// 領料單
+										history.setWhwmpnb(t.getBslpnumber());
+										history.setWhfuser(packageBean.getUserAccount());
+										history.setWheqty(area.getWaerptqty());
+										history.setWhcqty(area.getWatqty());
+										history.setWhpomqty("-" + t.getBslpnqty());
+										history.setWhcheckin(t.getBslcheckin() == 0 ? "未核單" : "已核單");
+										entityHistories.add(history);
+									}
 								}
 							}
 							break;

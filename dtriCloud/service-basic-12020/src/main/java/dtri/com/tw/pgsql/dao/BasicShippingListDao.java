@@ -33,7 +33,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
-			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate) and sysstatus = 1") //
+			+ "(cast(:syscdate as date) is null or c.syscdate <= :syscdate)") //
 	ArrayList<BasicShippingList> findAllBySyscdateRemove(Date syscdate);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//

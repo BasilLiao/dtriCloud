@@ -104,7 +104,7 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "	AND INVTI.TI009 > 0 "// 數量大於0
 			+ "	AND INVTI.TI022 !='V' "// 
 			+ " AND (INVTI.TI001='A151' OR INVTI.TI001='A161')"//
-			+ "	AND (INVTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-150, 112) "//
+			+ "	AND (INVTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
 			+ "	OR INVTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND (CONCAT(INVTI.TI001, '-', TRIM(INVTI.TI002), '-', INVTI.TI003) IN (:TI001TI002TI003)) "// 比對製令單+序號?
 			+ "ORDER BY "//

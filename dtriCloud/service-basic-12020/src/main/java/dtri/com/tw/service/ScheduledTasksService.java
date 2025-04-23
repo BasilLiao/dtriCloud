@@ -68,6 +68,7 @@ public class ScheduledTasksService {
 		if (fixDelay_ERPSynchronizeServiceRun) {
 			fixDelay_ERPSynchronizeServiceRun = false;
 			try {
+				long startTime = System.currentTimeMillis(); // 開始時間
 				System.out.println(new Date());
 				// 初始化
 				synchronizeERPService.erpSynchronizeInvtb();
@@ -100,9 +101,9 @@ public class ScheduledTasksService {
 				// 生管排程寄信通知(測試用)
 				// synchronizeScheduledService.scheduleOutNotification();
 				// 廠內生管排程寄信通知(測試用)
-				//synchronizeScheduledService.scheduleInDftNotification();
-				//廠內生管排程 新單據 寄信通知(測試用)
-				//synchronizeScheduledService.scheduleInDftNewNotification();
+				// synchronizeScheduledService.scheduleInDftNotification();
+				// 廠內生管排程 新單據 寄信通知(測試用)
+				// synchronizeScheduledService.scheduleInDftNewNotification();
 				// ==================產品BOM==================
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
@@ -115,14 +116,16 @@ public class ScheduledTasksService {
 				// ==================產品BIOS==================
 				// BIOS檢查機種別
 				synchronizeBiosService.erpSynchronizeProductModeltoBios();
-
+				// 結束
+				long endTime = System.currentTimeMillis(); // 結束時間
+				double durationSeconds = (endTime - startTime) / 1000.0;
+				logger.info("===>>> ERP同步程序完成，總耗時: " + durationSeconds + " 秒");
+				fixDelay_ERPSynchronizeServiceRun = true;
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 				fixDelay_ERPSynchronizeServiceRun = true;
 			}
-			fixDelay_ERPSynchronizeServiceRun = true;
-			System.out.println(new Date());
 		}
 	}
 
@@ -133,7 +136,7 @@ public class ScheduledTasksService {
 		try {
 			// 廠內生管排程寄信通知(測試用)
 			synchronizeScheduledService.scheduleInDftNotification();
-			//廠內生管排程 新單據 寄信通知(測試用)
+			// 廠內生管排程 新單據 寄信通知(測試用)
 			synchronizeScheduledService.scheduleInDftNewNotification();
 			// BIOS檢查版本
 			synchronizeBiosService.versionCheckBios();
@@ -283,11 +286,10 @@ public class ScheduledTasksService {
 				// ============ 借出歸還A151 / 借入歸還單A161 ============
 				// synchronizeService.erpSynchronizeInvth();
 
-				// ============ A541 廠內領料單 / A542 補料單 /(A543 超領單)/ A551 委外領料單 / A561 廠內退料單 /
-				// A571
-				synchronizeERPService.erpSynchronizeMocte();
+				// ============ (A543 超領單)/ A561 廠內退料單 / A571
+				synchronizeERPService.erpSynchronizeMocteOnlyA543A561A571();
 				// ============A581 生產入庫單 ============
-				// synchronizeService.erpSynchronizeMoctf();
+				synchronizeERPService.erpSynchronizeMoctf();
 				// ============ A591 委外進貨單 ============
 				// synchronizeService.erpSynchronizeMocth();
 				// ============ 組合單 / A421 ============
@@ -296,13 +298,12 @@ public class ScheduledTasksService {
 				// synchronizeService.erpSynchronizeBomtf();
 				// ============ A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單 ============
 				// synchronizeService.erpSynchronizePurth();
-
+				fixDelay_ERPSynchronizeServiceRun = true;
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
 				fixDelay_ERPSynchronizeServiceRun = true;
 			}
-			fixDelay_ERPSynchronizeServiceRun = true;
 		}
 	}
 
