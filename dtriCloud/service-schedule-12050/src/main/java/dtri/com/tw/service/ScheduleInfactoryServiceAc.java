@@ -1,6 +1,8 @@
 package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -194,6 +196,15 @@ public class ScheduleInfactoryServiceAc {
 						: null;
 				searchData.setSipnb(null);
 			}
+			// 日期(起)
+			if (searchData.getSimcdates() != null) {
+				searchData.setSimcdates(Fm_T.to_y_M_d(Fm_T.toDate(searchData.getSimcdates())));
+			}
+			// 日期(終)
+			if (searchData.getSimcdatee() != null) {
+				searchData.setSimcdatee(Fm_T.to_y_M_d(Fm_T.toDate(searchData.getSimcdatee())));
+			}
+
 			ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(searchData.getSinb(),
 					searchData.getSipnb(), notsipnb1, notsipnb2, searchData.getSipname(),
 					searchData.getSipspecifications(), searchData.getSistatus(), searchData.getSifname(),
@@ -327,12 +338,23 @@ public class ScheduleInfactoryServiceAc {
 				System.out.println(x.getSimcdate() + ":" + o.getSimcdate());
 				Boolean oldSimcdate = x.getSimcdate().equals(o.getSimcdate());
 				if (!x.getSimcdate().equals("")) {
-					Date yMd = Fm_T.toDate(x.getSimcdate());
-					if (yMd.before(new Date())) {// yMd < 今天?=1
-						// 0=未確認/1未齊料/2已齊料
-						o.setSimcstatus(2);
+					Date simcDate = Fm_T.toDate(x.getSimcdate()); // 預計其料日
+					Date siodate = Fm_T.toDate(o.getSiodate()); // 預計開工日
+					if (simcDate != null && siodate != null) {
+						// 只比對日期（去除時間）
+						LocalDate today = LocalDate.now();
+						LocalDate simcLocal = simcDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						LocalDate siodateLocal = siodate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+						// 預計其料日 < 今天 或 < 開工日
+						if (simcLocal.isBefore(today) || simcLocal.isBefore(siodateLocal)) {
+							o.setSimcstatus(2); // 已齊料
+						} else {
+							o.setSimcstatus(1); // 未齊料
+						}
 					} else {
-						o.setSimcstatus(1);
+						// 若日期無效，建議記錄 log 或指定預設值
+						o.setSimcstatus(0); // 預設未確認
 					}
 					o.setSimcdate(x.getSimcdate());
 				} else {
@@ -357,12 +379,12 @@ public class ScheduleInfactoryServiceAc {
 						}
 					}
 				} else {
-					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
-					String contentNew = x.getSimcnote().replaceAll("\n", "");
-					noteOlds = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
-					//JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
 					boolean checkNotSame = true;
-					//String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
+					String contentNew = x.getSimcnote().replaceAll("\n", "");
+					// 取出先前的(最新)-最新資料比對->不同內容->添加新的
+					noteOlds = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
+					JsonElement noteOld = noteOlds.get(noteOlds.size() - 1).getAsJsonObject();
+					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
 					if (contentNew.equals("") && !oldSimcdate) {
 						// 物控只改日期
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
@@ -373,7 +395,7 @@ public class ScheduleInfactoryServiceAc {
 						checkNotSame = false;
 						break;
 					}
-
+					checkNotSame = !contentNew.equals(contentOld);
 					// 必須不相同+不能是沒輸入值
 					if (checkNotSame && !contentNew.equals("")) {
 						noteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));

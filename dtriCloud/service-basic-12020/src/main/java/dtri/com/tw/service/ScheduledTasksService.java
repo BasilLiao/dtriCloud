@@ -78,7 +78,7 @@ public class ScheduledTasksService {
 				synchronizeERPService.erpSynchronizeInvta();
 				synchronizeERPService.erpSynchronizeInvtg();
 				synchronizeERPService.erpSynchronizeInvth();
-				synchronizeERPService.erpSynchronizeMocta();
+				synchronizeERPService.erpSynchronizeMocta();//u
 				synchronizeERPService.erpSynchronizeMocte();
 				synchronizeERPService.erpSynchronizeMoctf();
 				synchronizeERPService.erpSynchronizeMocth();
@@ -108,7 +108,7 @@ public class ScheduledTasksService {
 				// BOM機種別
 				synchronizeBomService.erpSynchronizeProductModel();
 				// BOM結構同步
-				synchronizeBomService.erpSynchronizeBomIngredients();
+				synchronizeBomService.erpSynchronizeBomIngredients();//u
 				// BOM 檢查歷史紀錄送出mail
 				synchronizeBomService.bomModification();
 				// BOM 規則同步

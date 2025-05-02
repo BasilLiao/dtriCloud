@@ -172,7 +172,7 @@ public class SynchronizeScheduledService {
 		@Override
 		public void run() {
 			try {
-				List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+				List<ServiceInstance> instances = discoveryClient.getInstances("SERVICE-CLIENT");
 				boolean check = instances != null && !instances.isEmpty();
 				if (check) {// 有再傳送
 					serviceFeign.setOutsourcerSynchronizeCell(sendAllData);
@@ -365,7 +365,7 @@ public class SynchronizeScheduledService {
 		@Override
 		public void run() {
 			try {
-				List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+				List<ServiceInstance> instances = discoveryClient.getInstances("SERVICE-CLIENT");
 				boolean check = instances != null && !instances.isEmpty();
 				if (check) {// 有再傳送
 					serviceFeign.setInfactorySynchronizeCell(sendAllData);
@@ -1055,7 +1055,7 @@ public class SynchronizeScheduledService {
 						JsonObject sendAllData = new JsonObject();
 						sendAllData.addProperty("update", update);
 						sendAllData.addProperty("action", "sendAllClearShow");
-						List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+						List<ServiceInstance> instances = discoveryClient.getInstances("SERVICE-CLIENT");
 						boolean check = instances != null && !instances.isEmpty();
 						if (check) {// 有再傳送
 							serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());
@@ -1162,7 +1162,7 @@ public class SynchronizeScheduledService {
 							// + "<th>項次</th>"//
 							+ "<th style='min-width: 65px;'>預計開工日</th>"//
 							+ "<th style='min-width: 65px;'>預計完工日</th>"//
-							+ "<th style='min-width: 100px;'>客戶訂單</th>"//
+							// + "<th style='min-width: 100px;'>客戶訂單</th>"//
 							+ "<th style='min-width: 100px;'>製令單備註(客/國/訂/其)</th>"//
 							+ "<th style='min-width: 100px;'>製令單號</th>"//
 							+ "<th style='min-width: 110px;'>產品品號</th>"//
@@ -1217,7 +1217,7 @@ public class SynchronizeScheduledService {
 								// + "<td>" + (r++) + "</td>"// 項次
 								+ "<td>" + oss.getSiodate() + "</td>"// 預計開工日
 								+ "<td>" + oss.getSifdate() + "</td>"// 預計完工日
-								+ "<td>" + oss.getSicorder() + "</td>"// 客戶訂單
+								// + "<td>" + oss.getSicorder() + "</td>"// 客戶訂單
 								+ "<td>" + oss.getSinote() + "</td>"// 製令單備註(客/國/訂/其)
 								+ "<td>" + oss.getSinb() + "</td>"// 製令單號
 								+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
@@ -1253,7 +1253,7 @@ public class SynchronizeScheduledService {
 						JsonObject sendAllData = new JsonObject();
 						sendAllData.addProperty("update", update);
 						sendAllData.addProperty("action", "sendAllClearShow");
-						List<ServiceInstance> instances = discoveryClient.getInstances("DTRcloud");
+						List<ServiceInstance> instances = discoveryClient.getInstances("SERVICE-CLIENT");
 						boolean check = instances != null && !instances.isEmpty();
 						if (check) {// 有再傳送
 							serviceFeign.setInfactorySynchronizeCell(sendAllData.toString());

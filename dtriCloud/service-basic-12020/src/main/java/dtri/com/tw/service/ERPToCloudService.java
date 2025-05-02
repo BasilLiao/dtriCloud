@@ -1302,7 +1302,7 @@ public class ERPToCloudService {
 		o.setBbispecification(bommd.getMb003());
 		o.setBbidescription(bommd.getMb009());
 		// 子
-		o.setBbiiqty(bommd.getMd006());
+		o.setBbiiqty(bommd.getMd006());//數量
 		o.setBbiisn(bommd.getMd003());
 		o.setBbiiname(bommd.getCmb002());
 		o.setBbiispecification(bommd.getCmb003());

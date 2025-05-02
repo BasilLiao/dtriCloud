@@ -170,6 +170,10 @@ public class MaterialReplacementServiceAc {
 						m.setMrnote(entityOne.getMrnote());
 						m.setMrsubnote(entityOne.getMrsubnote());
 						m.setMrid(entityOne.getMrid());
+						m.setSyscuser(entityOne.getSyscuser());
+						m.setSyscdate(entityOne.getSyscdate());
+						m.setSysmuser(entityOne.getSysmuser());
+						m.setSysmdate(entityOne.getSysmdate());
 					}
 				});
 				entitys = materialsAll;

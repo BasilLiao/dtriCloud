@@ -2605,11 +2605,11 @@ public class SynchronizeERPService {
 
 	// ============ 單據移除(360天以前資料) ============
 	public void remove360DayData() throws Exception {
-		Date countD60 = Fm_T.to_count(-60, new Date());
+		Date countD45 = Fm_T.to_count(-45, new Date());
 		Date countD90 = Fm_T.to_count(-90, new Date());
 		Date countD600 = Fm_T.to_count(-600, new Date());
 		// 出
-		ArrayList<BasicShippingList> shRemove = shippingListDao.findAllBySyscdateRemove(countD60);
+		ArrayList<BasicShippingList> shRemove = shippingListDao.findAllBySyscdateRemove(countD45);
 		shippingListDao.deleteAll(shRemove);
 		// 進
 		ArrayList<BasicIncomingList> inRemove = incomingListDao.findAllBySyscdateRemove(countD90);

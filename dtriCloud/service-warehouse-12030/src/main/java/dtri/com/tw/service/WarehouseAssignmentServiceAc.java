@@ -824,9 +824,15 @@ public class WarehouseAssignmentServiceAc {
 					String wasClass = entityData.getWasclasssn().split("-")[0];
 					String wasSn = entityData.getWasclasssn().split("-")[1];
 					String wasnb = entityData.getWasnb();
-					ArrayList<BasicShippingList> checkDatas = shippingListDao.findAllByCheck(wasClass, wasSn, wasnb);
-					if (checkDatas.size() > 0) {
-						BasicShippingList checkData = checkDatas.get(0);
+					ArrayList<BasicIncomingList> inCheckDatas = new ArrayList<BasicIncomingList>();
+					ArrayList<BasicShippingList> shCheckDatas = new ArrayList<BasicShippingList>();
+					if ("A581".equals(wasClass)) {
+						inCheckDatas = incomingListDao.findAllByCheck(wasClass, wasSn, wasnb);
+					} else {
+						shCheckDatas = shippingListDao.findAllByCheck(wasClass, wasSn, wasnb);
+					}
+					if (shCheckDatas.size() > 0) {
+						BasicShippingList checkData = shCheckDatas.get(0);
 						String areaKey = checkData.getBslfromwho().split("_")[0].replace("[", "") + "_"
 								+ checkData.getBslpnumber();
 						areaKey = areaKey.replaceAll(" ", "");
@@ -844,6 +850,8 @@ public class WarehouseAssignmentServiceAc {
 										new String[] { checkData.getBslpnumber() + " Qty is:" + qty });
 							}
 						}
+					} else if (inCheckDatas.size() > 0) {
+						// 入料~無須檢測
 					} else {
 						// 找不到
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
@@ -1007,7 +1015,8 @@ public class WarehouseAssignmentServiceAc {
 									t.setBilcuser(t.getBilcuser().equals("") ? x.getWascuser() : t.getBilcuser());
 									t.setBilpngqty(t.getBilpnqty());
 									if (!t.getBilfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
-										t.setBilfuser(t.getBilfuser().equals("") ? "System(" + packageBean.getUserAccount() + ")"
+										t.setBilfuser(t.getBilfuser().equals("")
+												? "System(" + packageBean.getUserAccount() + ")"
 												: t.getBilfuser());
 										// 記錄用
 										WarehouseHistory history = new WarehouseHistory();
@@ -1101,7 +1110,7 @@ public class WarehouseAssignmentServiceAc {
 								ArrayList<WarehouseArea> areas = areaDao.findAllByWaaliasawmpnb(areaKey);
 								// 倉庫更新數量+完成人必續空
 								if (areas.size() > 0 && t.getBslfuser().equals("")) {
-									area = areas.get(0);	
+									area = areas.get(0);
 									int qty = area.getWatqty() - (t.getBslpnqty() - t.getBslpngqty());// 未取完整?
 									// 檢查:是否足夠扣除[庫存-需領用量+已領用量]
 									if (qty >= 0) {
@@ -1116,7 +1125,8 @@ public class WarehouseAssignmentServiceAc {
 									t.setBslpngqty(t.getBslpnqty());
 									t.setBslfucheckin(true);// 已集結
 									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
-										t.setBslfuser(t.getBslfuser().equals("") ? "System(" + packageBean.getUserAccount() + ")"
+										t.setBslfuser(t.getBslfuser().equals("")
+												? "System(" + packageBean.getUserAccount() + ")"
 												: t.getBslfuser());
 										// 記錄用
 										WarehouseHistory history = new WarehouseHistory();

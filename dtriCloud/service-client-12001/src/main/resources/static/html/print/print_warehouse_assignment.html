@@ -337,16 +337,14 @@
 							print_m_ex.find(".pr_bslclass_bslsn").text(print_ex.find(".pr_bslclass_bslsn").text());//領料單
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0].replaceAll("_生產入庫單",""));//製令單(特定單據會有需要去除)
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
+							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量 
+							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
 							if (bslclass_bslsn.includes("A581")) {
 						        // A581
 								print_m_ex.find(".pr_bslfromcommand_sn").text(h.waspnumber);//品號
+								print_m_ex.find(".pr_bslfromcommand_qty").text(h.waspnqty);//數量 
 						    }
 							 
-							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量 
-							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
-
-
-
 							dataHeader.forEach(function (hds) {
 								console.log(hds);
 								if (hds.gid == print_ex.find(".pr_bslclass_bslsn").text()) {

@@ -111,18 +111,20 @@ public class SynchronizeBomService {
 	// ============ 同步BOM() ============
 	public void erpSynchronizeBomIngredients() throws Exception {
 		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
-		ArrayList<BasicBomIngredients> boms = basicBomIngredientsDao.findAllByBomList(null, null, null, null, null);
+		ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
 		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
 		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
 		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
 		Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
+		List<String> bbisnnb = new ArrayList<String>();
 		// 物料號
 		materialDao.findAll().forEach(m -> {
 			wMs.put(m.getWmpnb(), m);
 		});
-
-		bommds = bommdDao.findAllByBommdFirst();
-		// 檢查資料&更正
+		// 第一次跑在用 = 沒資料須導入/常態性跑用 = 有資料 區塊性更新
+		// bommds = bommdDao.findAllByBommdFirst();//第一次跑在用
+		bommds = bommdDao.findAllByBommd();// 常態性跑用
+		// ERP -> 檢查資料&更正
 		bommds.forEach(bommd -> {
 			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
 			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
@@ -132,21 +134,26 @@ public class SynchronizeBomService {
 			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
 			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
 			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
+			bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());
 		});
 		// 資料回收
 		bommds = null;
 		// 轉換資料
+
+		// boms = basicBomIngredientsDao.findAllByBomLists(null);//第一次跑在用
+		boms = basicBomIngredientsDao.findAllByBomLists(bbisnnb.toArray(new String[0]));// 常態性跑用
 		boms.forEach(o -> {
 			if (erpBommds.containsKey(o.getBbisnnb())) {
 				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
 				String sum = erpBommds.get(o.getBbisnnb()).toString();
 				if (!sum.equals(o.getChecksum())) {
+					// 更新
 					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
 					bomNews.add(o);
 				}
 			} else {
 				// 沒比對到?已經移除?
-				bomRemoves.add(o);
+				// bomRemoves.add(o);//第一次跑在用
 			}
 		});
 		// 資料回收
@@ -474,7 +481,7 @@ public class SynchronizeBomService {
 			try {
 				List<ServiceInstance> instances = discoveryClient.getInstances("service-bom");
 				boolean check = instances != null && !instances.isEmpty();
-				if (check) {//有再傳送
+				if (check) {// 有再傳送
 					serviceFeign.autoSearchTestAndUpdate(sendAllData);
 				}
 			} catch (Exception e) {

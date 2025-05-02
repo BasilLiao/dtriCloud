@@ -20,6 +20,12 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 	ArrayList<BasicBomIngredients> findAllByBomList(String bbisn, String bbiname, String bbiisn, String bbiiname,
 			String checksum);
 
+	// 查詢清單
+	@Query(value = "SELECT c.* FROM basic_bom_ingredients c WHERE "//
+			+ "(:bbisnnb is null or c.bbi_sn_nb = ANY(:bbisnnb))" //
+			+ "order by c.bbi_sn_nb asc", nativeQuery = true)
+	ArrayList<BasicBomIngredients> findAllByBomLists(String[] bbisnnb);
+
 	// 查詢用
 	@Query("SELECT c FROM BasicBomIngredients c WHERE "//
 			+ "(:bbisn is null or c.bbisn LIKE %:bbisn%) and "//
