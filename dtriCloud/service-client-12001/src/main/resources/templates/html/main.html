@@ -2,36 +2,38 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<title>DTR CLOUD(定誼雲平台)</title>
-	<script src="./thirdparty/js/jquery-3.7.0.min.js"></script>
-	<script src="./thirdparty/js/jquery-ui-1.13.2.min.js"></script>
-	<script src="./thirdparty/js/jquery-qrcode.min.js"></script>
-	<script src="./thirdparty/js/bootstrap-5.2.3.min.js"></script>
-	<script src="./thirdparty/js/bootstrap-datetimepicker.min.js"></script>
+<meta charset="UTF-8">
+<title>DTR CLOUD(定誼雲平台)</title>
+<script src="./thirdparty/js/jquery-3.7.0.min.js"></script>
+<script src="./thirdparty/js/jquery-ui-1.13.2.min.js"></script>
+<script src="./thirdparty/js/jquery-qrcode.min.js"></script>
+<script src="./thirdparty/js/bootstrap-5.2.3.min.js"></script>
+<script src="./thirdparty/js/bootstrap-datetimepicker.min.js"></script>
 
-	<script src="./thirdparty/js/table-exceljs.js"></script>
-	<script src="./thirdparty/js/table-2excel.core.js"></script>
-	<script src="./thirdparty/js/xlsx-0.17.5.min.js"></script>
-	<script src="./thirdparty/js/FileSaver-2.0.5.min.js"></script>
+<script src="./thirdparty/js/table-exceljs.js"></script>
+<script src="./thirdparty/js/table-2excel.core.js"></script>
+<script src="./thirdparty/js/xlsx-0.17.5.min.js"></script>
+<script src="./thirdparty/js/FileSaver-2.0.5.min.js"></script>
 
-	<link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />
-	<link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />
-	<link rel="stylesheet" href="./thirdparty/css/bootstrap-datetimepicker.min.css" />
-	<link rel="stylesheet" href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />
+<link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />
+<link rel="stylesheet"
+	href="./thirdparty/css/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet"
+	href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">
 
 
-	<link rel="icon" type="img/svg" href="./img/icon.png">
-	<style type="text/css">
-		body {
-			background-color: #f8f9fc;
-		}
+<link rel="icon" type="img/svg" href="./img/icon.png">
+<style type="text/css">
+body {
+	background-color: #f8f9fc;
+}
 
-		/*時間格式下移*/
-		.datetimepicker {
-			margin-top: 25px;
-		}
-	</style>
+/*時間格式下移*/
+.datetimepicker {
+	margin-top: 25px;
+}
+</style>
 </head>
 
 <body id="main">
@@ -301,7 +303,12 @@
 		main.methods.reWindowsSize();
 	});
 
-
+	//視窗大小
+	$(document).off("click", ".btn-outline-white");
+	$(document).on("click", ".btn-outline-white", function (event) {
+		main.methods.reWindowsSize();
+		
+	});
 </script>
 
 </html>

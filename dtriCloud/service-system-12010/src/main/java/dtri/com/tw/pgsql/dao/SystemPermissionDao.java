@@ -26,8 +26,7 @@ public interface SystemPermissionDao extends JpaRepository<SystemPermission, Lon
 			+ "WHERE (:spname is null or c.spname LIKE %:spname% ) and "//
 			+ "(:spgname is null or c.spgname LIKE %:spgname% ) and "//
 			+ "(c.spgid !=0L ) and "//
-			+ "(:user='admin' or c.sysstatus = :sysstatus ) "//
-			+ "order by c.spgid asc,c.syssort asc,c.sysmdate desc")
+			+ "(:user='admin' or c.sysstatus = :sysstatus ) ")//
 	ArrayList<SystemPermission> findAllByPermission(String spname, String spgname, Integer sysstatus, String user, Pageable pageable);
 
 	// 查詢是否重複 名稱+群組+權限

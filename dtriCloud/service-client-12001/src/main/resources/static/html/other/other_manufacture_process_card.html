@@ -39,14 +39,6 @@
 	border-spacing: 0px;
 }
 
-/*Table 表格外框線*/
-#search_c #search_dcr table {
-	min-height: 200px;
-	max-height: 320px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
-
 /*Table 表格內 背景色*/
 #search_c .table-white {
 	--bs-table-bg: #fff;
@@ -65,6 +57,23 @@
 
 #search_c .pink_color {
 	background-color: var(--bs-orange);
+}
+/*限用表格*/
+.only_brm {
+	border-right: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+}
+
+.only_br {
+	border-right: 1px solid #000000;
+}
+
+.only_lr {
+	width: 11px;
+	text-align: center;
+	writing-mode: vertical-lr;
+	font-size: 6px;
+	border: 1px solid #000000;
 }
 
 /*直立式呈現邊字*/
@@ -146,18 +155,13 @@
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 				<div
 					class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="col-12 col-lg-4 p-1">
+					<div class="col-12 col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Execution</div>
 							<div class="row m-0">
 								<button id="btn_production" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 									<b>Production<br>import()
-									</b>
-								</button>
-								<button id="btn_bom" type="button"
-									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-									<b>BOM<br>import()
 									</b>
 								</button>
 								<button id="btn_order" type="button"
@@ -173,7 +177,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-6 col-lg-3 p-1">
+					<div class="col-6 col-lg-4 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Action</div>
 							<div class="row m-0">
@@ -187,6 +191,12 @@
 									<b>Save<br>(AU/AC/AD)
 									</b>
 								</button>
+								<div class="lh-1 col p-1 m-1 border border-primary rounded">
+									<input id="btn_save_auto" alt="" title="" type="checkbox"
+										checked="checked"
+										class="m-0 form-check-input checkbox_16 border border-dark">
+									<br> <b style="font-size: 12px;">Auto Print</b>
+								</div>
 								<button id="btn_printerForm" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
 									<b>Print<br>form
@@ -499,202 +509,256 @@
 							class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
 							style="max-height: 686px; overflow: auto;">
 							<div class=""
-								style="height: 880px; width: 600px; min-width: 600px; border: 1px solid #000000; padding: 0px;">
-								<div class="row m-0" style="border: 1px solid #000000;">
-									<div class="col"></div>
-									<div class="col">
-										<h4 style="padding: 5px; margin: 0px; text-align: center;">
-											<b>生產注意事項</b>
-										</h4>
+								style="height: 880px; width: 600px; min-width: 600px; padding: 0px;">
+								<!-- 實體SN值-->
+								<div class="row m-0">
+									<div class="p-0 m-0 only_lr">production: 4F</div>
+									<div class="col p-0 m-0"
+										style="line-height: 20px; border: 1px solid #000000;">
+										<!--  -->
+										<div class="row m-0" style="height: 50px;">
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>M/B</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 176px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>LAN</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 175px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>BAT</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 175px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 50px;">
+											<div class="p-0 only_br"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>IMEI</b>
+											</div>
+											<div class="p-0 only_br" style="width: 176px;"></div>
+											<div class="p-0 only_br"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>WiFi</b>
+											</div>
+											<div class="p-0 only_br" style="width: 175px;"></div>
+											<div class="p-0 only_br"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>SN</b>
+											</div>
+											<div class="p-0 only_br" style="width: 175px;"></div>
+										</div>
 									</div>
-									<div class="col">
-										<div style="font-size: 12px;">Initial Tester</div>
-										<div></div>
+								</div>
+								<!-- 單據基本資料 -->
+								<div class="row m-0">
+									<div class="p-0 m-0 only_lr">Station : [一般]加/組/測/整/包(5站)</div>
+									<div class="col p-0 m-0" style="border: 1px solid #000000;">
+										<div class="row m-0" style="height: 30px;">
+											<div class="p-0 only_brm"
+												style="width: 20px; font-size: 10px; line-height: 15px;">
+												<b>WO No.</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 251px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 45px; font-size: 10px; line-height: 15px;">
+												<b>Order No.</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 270px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0 " style="height: 30px;">
+											<div class="p-0 only_brm" style="width: 271px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 45px; font-size: 12px; line-height: 30px;">
+												<b>Cust.</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 160px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 45px; font-size: 12px; line-height: 30px;">
+												<b>Qty</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 30px;">
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
+												<b>BOM</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 251px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 45px; font-size: 12px; line-height: 15px;">
+												<b>Start Date</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 115px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 45px; font-size: 12px; line-height: 15px;">
+												<b>Ship Date</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 110px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 60px;">
+											<div class="p-0 only_br"
+												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
+												<b>Notice</b>
+											</div>
+											<div class="p-0 only_br" style="width: 566px;"></div>
+										</div>
 									</div>
+								</div>
+								<!-- 版本資料 -->
+								<div class="row m-0">
+									<div class="p-0 m-0 only_lr">PM Owner : Eric</div>
+									<div class="col p-0 m-0"
+										style="border: 1px solid #000000; font-size: 12px; line-height: 18px;">
+										<div class="row m-0" style="height: 18px;">
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>Items</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;">
+												<b>Ver. ／ ECN</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 83px;">
+												<b>Chk By</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>Items</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;">
+												<b>Ver.</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 83px;">
+												<b>Chk By</b>
+											</div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 18px;">
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>M/B</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>Product EC</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 18px;">
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>BIOS</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>MODEL</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0" style="height: 18px;">
+											<div class="p-0 only_br" style="width: 80px;">
+												<b>NVRAM</b>
+											</div>
+											<div class="p-0 only_br" style="width: 130px;"></div>
+											<div class="p-0 only_br" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+											<div class="p-0 only_br" style="width: 80px;">
+												<b>OS</b>
+											</div>
+											<div class="p-0 only_br" style="width: 130px;"></div>
+											<div class="p-0 only_br" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+										</div>
+									</div>
+								</div>
+								<!-- 產品資訊 -->
+								<div class="row m-0" style="height: 440px;">
+									<div class="p-0 m-0 only_lr">PM Owner : Eric</div>
+									<div class="col p-0 m-0"
+										style="border: 1px solid #000000; font-size: 10px; line-height: 15px;">
+										<div class="row m-0" style="height: 15px;">
+											<div class="p-0 only_brm" style="width: 210px;">
+												<b>Product Specifications</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 83px;">
+												<b>Chk By</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 210px;">
+												<b>Product Specifications</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 83px;">
+												<b>Chk By</b>
+											</div>
+										</div>
+										<!-- BOM結構 -->
+										<div class="row m-0"
+											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 20px; font-size: 16px; text-align: left;">
+											<div id="bomItemEx" class="p-0 ms-1 mt-1 only_brm"
+												style="height: 18px; width: 288px;">
+												<b>CPU</b> i7-1165G7 (2)
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- 產線備註+簽名人 -->
+								<div class="row m-0" style="height: 112px;">
+									<div class="p-0 m-0 only_lr">Form# : QR-701-06</div>
+									<div class="col p-0 m-0"
+										style="border: 1px solid #000000; font-size: 10px; line-height: 20px;">
+										<div class="row m-0" style="height: 64px;">
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>Note1</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 273px;"></div>
+											<div class="p-0 only_brm"
+												style="width: 20px; writing-mode: vertical-lr;">
+												<b>Note2</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 273px;"></div>
+										</div>
+										<div class="row m-0" style="height: 15px; line-height: 15px;">
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>Ass'y</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>Burn-in</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>T1</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>T2</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>P1</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>P2</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>QC</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 65px;">
+												<b>RF</b>
+											</div>
+											<div class="p-0 only_brm" style="width: 66px;">
+												<b>PM</b>
+											</div>
+										</div>
 
-								</div>
-								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border: 1px solid #000000; text-align: center;">
-									<div style="width: 10%;">
-										<b>製令</b>
-									</div>
-									<div id="sphpon_val"
-										style="width: 25%; overflow: hidden; text-align: left;"></div>
-									<div style="width: 10%; border-left: 1px solid #000000;">
-										<b>訂單</b>
-									</div>
-									<div id="sphonb_val"
-										style="width: 20%; overflow: hidden; text-align: left;"></div>
-									<div style="width: 15%; border-left: 1px solid #000000;">
-										<b>預計出貨</b>
-									</div>
-									<div id="sphhdate_val"
-										style="width: 20%; overflow: hidden; text-align: left;"></div>
-								</div>
-								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
-									<div style="width: 10%;">
-										<b>客戶</b>
-									</div>
-									<div id="sphoname_val"
-										style="width: 25%; overflow: hidden; text-align: left;"></div>
-									<div style="width: 10%; border-left: 1px solid #000000;">
-										<b>國家</b>
-									</div>
-									<div id="sphocountry_val"
-										style="width: 20%; overflow: hidden; text-align: left;">
-									</div>
-									<div style="width: 15%; border-left: 1px solid #000000;"></div>
-									<div style="width: 20%; overflow: hidden; text-align: left;"></div>
-								</div>
-								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
-									<div style="width: 10%;">
-										<b>品號</b>
-									</div>
-									<div id="sphbpmnb_val"
-										style="width: 25%; overflow: hidden; text-align: left;"></div>
-									<div style="width: 10%; border-left: 1px solid #000000;">
-										<b>型號</b>
-									</div>
-									<div id="sphbpmmodel_val"
-										style="width: 20%; overflow: hidden; text-align: left;">
-									</div>
-									<div style="width: 15%; border-left: 1px solid #000000;">
-										<b>需生產量</b>
-									</div>
-									<div id="sphoqty_val"
-										style="width: 20%; overflow: hidden; text-align: left;"></div>
-								</div>
-								<!--產品資訊-->
-								<div
-									style="border: 1px solid #000000; display: flex; flex-wrap: wrap; justify-content: space-between;">
-									<div
-										style="text-align: center; writing-mode: vertical-lr; text-orientation: upright; font-size: 6px;">
-										產品規格 & 專案經理說明</div>
-									<div style="border-left: 1px solid #000000; width: 98%;">
-										<!--規格內容-->
-										<div id="sphbisitem"
-											style="height: 448px; border-bottom: 1px solid #000000; padding-top: 2px; display: grid; overflow: hidden; grid-template-rows: repeat(20, 1fr); grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); grid-auto-flow: column; gap: 2px; font-size: 14px; white-space: nowrap; font-family: sans-serif; font-stretch: condensed;">
-											<div class="d-none" id="sphbisitemEx_val"
-												style="overflow: hidden; text-align: start; height: 20px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">
-												<b>RAM </b>Ex:RAM,2G,78.A2G72.405,APACER(x2)
-											</div>
-
-										</div>
-										<div id="sphbisitemNot"
-											style="overflow: hidden; height: 50px; border-bottom: 1px solid #000000; display: flex; flex-wrap: wrap; justify-content: start; font-size: 14px;">
-											<span style="height: 16px;"><b>注意!!不裝配:</b></span> <span
-												id="sphbisitemExNot_val" class="d-none"
-												style="margin-left: 5px; height: 16px; border-right: 1px solid #00000060; border-bottom: 1px solid #00000060;">N/A</span>
-										</div>
-										<div
-											style="height: 90px; display: flex; flex-wrap: wrap; justify-content: space-between;">
-											<div style="width: 10%; text-align: center;">
-												<b>專案<br>備註<br>
-													<p style="font-size: 8px; line-height: 8px; margin: 0px;">Project
-														instructions</p>
-												</b>
-											</div>
-											<div style="width: 90%; padding: 2px;">
-												<textarea id="sphpmnote_val"
-													style="width: 100%; font-size: 14px; line-height: 16px;"
-													rows="5" disabled="disabled">「Ex:產品狀態:技轉中」</textarea>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!--生產資訊-->
-								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border: 1px solid #000000;">
-									<div
-										style="text-align: center; writing-mode: vertical-lr; text-orientation: upright; font-size: 6px;">
-										生產管理</div>
-									<div style="border-left: 1px solid #000000; width: 98%;">
-										<div
-											style="height: 70px; border-bottom: 1px solid #000000; display: flex; flex-wrap: wrap; justify-content: space-between;">
-											<div style="width: 10%; text-align: center;">
-												<b>包裝<br>配置
-													<p style="font-size: 8px; line-height: 8px; margin: 0px;">package
-														configuration</p>
-												</b>
-											</div>
-											<div
-												style="width: 90%; display: flex; flex-wrap: wrap; justify-content: space-between; pointer-events: none;">
-												<div id="pkg_checkbox1"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>Power cord</span>
-												</div>
-												<div id="pkg_checkbox2"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>BOG</span>
-												</div>
-												<div id="pkg_checkbox3"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>License</span>
-												</div>
-												<div id="pkg_checkbox4"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>BOX Label</span>
-												</div>
-												<div id="pkg_checkbox5"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>Bulk Pack</span>
-												</div>
-												<div id="pkg_checkbox6"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>Retail Pack</span>
-												</div>
-												<div id="pkg_checkbox7"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>作業系統OS</span>
-												</div>
-												<div id="pkg_checkbox8"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>NA1</span>
-												</div>
-												<div id="pkg_checkbox9"
-													style="width: 33%; text-align: start; font-size: 14px;">
-													<input type="checkbox"> <span>NA2</span>
-												</div>
-											</div>
-										</div>
-										<div
-											style="height: 90px; display: flex; flex-wrap: wrap; justify-content: space-between;">
-											<div style="width: 10%; text-align: center;">
-												<b>生管<br>備註
-													<p style="font-size: 8px; line-height: 8px; margin: 0px;">Production
-														instructions</p>
-												</b>
-											</div>
-											<div style="width: 90%; padding: 2px;">
-												<textarea id="sphscnote_val"
-													style="width: 100%; font-size: 14px; line-height: 16px;"
-													rows="5" disabled="disabled">「Ex:NPI_EE/NPI_NE及PLT人員須到現場確認技轉狀況，產線須提出技轉報告」</textarea>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!--其他資訊-->
-								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border: 1px solid #000000; font-size: 6px;">
-									<div>
-										<span>產品類:</span><span>product/accessories</span>
-									</div>
-									<div>
-										<span>客戶品號:</span><span id="sphobpmnb_val"></span>
-									</div>
-									<div>
-										<span>建單人:</span><span id="fromwho_val"></span>
-									</div>
-									<div>
-										<span>產品負責:</span><span id="sphbpsuser_val"></span>
-									</div>
-									<div>
-										<span>單據模式:</span><span id="bomDefinition_val">一般模式</span>
-									</div>
-									<div>
-										<span>單據編號:</span><span>QR-701-06</span>
 									</div>
 								</div>
 							</div>
@@ -740,47 +804,6 @@
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
 					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<!-- 查詢-細節結果 -->
-	<div id="search_dcr" class="col-12 m-0 p-1">
-		<div
-			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
-				data-bs-toggle="collapse" data-bs-target="#search_dcr_open"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
-		</div>
-		<div id="search_dcr_open" class="row m-0 shadow-sm collapse show">
-			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white">BOM List</b>
-			<table
-				class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary fixedCt">
-					<tr>
-						<th class="fixedC1" style="min-width: 40px;">
-							<div>
-								<button id="exthDetailAll" type="button"
-									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
-									<b>Ｃ</b>
-								</button>
-							</div>
-						</th>
-						<th class="exTheadth d-none" style="min-width: 100px;">N/A</th>
-					</tr>
-				</thead>
-				<tbody class="table-white">
-					<tr class="exDetailTbodyTr">
-						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
-							<div>
-								<input type="radio" alt="row_x" title="IKey_GKey"
-									name="radio_dt"
-									class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-						</th>
-						<td class="exTbodytd d-none" style="max-width: 100px"></td>
-					</tr>
-
 				</tbody>
 			</table>
 		</div>
@@ -895,69 +918,10 @@
 					$('#search_cr_open .exTbodytd').before(exTbodytd);
 				});
 				//Step2.查詢結果標題(細節)-資料
-				check1 = true;
 
-				Object.keys(resultDetailThead).forEach(function (k) {
-					//console.log(k + ' - ' + resultDetailThead[k]);
-					//複製格式
-					let exTheadth = $('#search_dcr_open .exTheadth').clone();
-					let exTbodytd = $('#search_dcr_open .exTbodytd').clone();
-					exTheadth.removeClass('exTheadth');
-					exTheadth.removeClass('d-none')
-					exTheadth.addClass('titTheadth');
-					//
-					exTbodytd.removeClass('exTbodytd');
-					exTbodytd.removeClass('d-none')
-					exTbodytd.addClass('valTbodytd');
-					exTbodytd.addClass(resultDetailThead[k].cellName);
-					//固定第一格式
-					if (check1 && resultDetailThead[k].show == 1) {
-						check1 = false;
-						exTheadth.addClass('fixedC1');
-						exTheadth.css('left', "40px");
-						exTbodytd.addClass('fixedC1');
-						exTbodytd.css('left', "40px");
-					}
-					//如果有翻譯
-					if (resultDetailThead[k].cellLanguage != '') {
-						let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
-						exTheadth.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
-						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
-					} else {
-						exTheadth.text(resultDetailThead[k].cellName);
-						exTheadth.css('minWidth', resultDetailThead[k].width + "px");
-						exTbodytd.css('maxWidth', resultDetailThead[k].width + "px");
-					}
-					//如果隱藏
-					if (resultDetailThead[k].show == 0) {
-						exTheadth.addClass('d-none');
-						exTbodytd.addClass('d-none');
-					}
-					//添加
-					$('#search_dcr_open .exTheadth').before(exTheadth);
-					$('#search_dcr_open .exTbodytd').before(exTbodytd);
-				});
+				//Step3.查詢內容(細節)-格式
+				
 
-				//Step3.查詢內容-格式
-				for (let b = 1; b <= other.data.searchPageSet.pageSize; b++) {
-					let exTbodyTr = $('#search_cr .exTbodyTr').clone();
-					let exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
-					//
-					exTbodyTr.removeClass('exTbodyTr');
-					exTbodyTr.removeClass('d-none');
-					exTbodyTr.addClass('valTbodyTr_' + b);
-					exTbodyTr.find('input').attr("alt", "row_" + b);
-					//
-					exDetailTbodyTr.removeClass('exDetailTbodyTr');
-					exDetailTbodyTr.removeClass('d-none');
-					exDetailTbodyTr.addClass('valTbodyDetailTr_' + b);
-					exDetailTbodyTr.find('input').attr("alt", "row_" + b);
-
-					$('#search_cr .exTbodyTr').before(exTbodyTr);
-					$('#search_dcr .exDetailTbodyTr').before(exDetailTbodyTr);
-
-				}
 				$('#search_cr .exTbodyTr').addClass('d-none');
 				$('#search_cr .exDetailTbodyTr').addClass('d-none');
 
@@ -1080,13 +1044,7 @@
 					let Ikey_Gkey = event.target.title;
 					let check = event.target.checked;
 				});
-				//監聽-選取資料(細節)
-				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
-				$(document).on("change", "#search_c #search_dcr_open .exTbodyTh input", function (event) {
-					console.log("search_dcr_open");
-					let Ikey_Gkey = event.target.title;
-					let check = event.target.checked;
-				});
+				
 				//監聽-全清除資料(一般)
 				$(document).off("click", "#search_c #exthAll");
 				$(document).on("click", "#search_c #exthAll", function (event) {
@@ -1097,77 +1055,8 @@
 						$("#search_cr_open .exTbodyTh").find("input").prop("checked", false);;
 					}
 				});
-				//監聽-全清除資料(細節)
-				$(document).off("click", "#search_c #exthDetailAll");
-				$(document).on("click", "#search_c #exthDetailAll", function (event) {
-					//都有勾選?
-					let clickAll = true;
-					//全部取消?
-					if (clickAll) {
-						$("#search_dcr_open .exTbodyTh").find("input").prop("checked", false);
-					}
-				});
-				//選取BOM
-				$(document).off("click", "#search_c #btn_bom");
-				$(document).on("click", "#search_c #btn_bom", function (event) {
-					console.log("btn_bom");
-					//選取?
-					if ($("#search_dcr_open tbody input:checked").length === 1) {
-						//介面
-						if (!$('#modify_cr_open').hasClass('show')) {
-							$('#modify_cr .btn-outline-white').trigger('click');
-						}
-						//還原
-						//$(".btnAutoOrder input").val("");
-						$(".sphbisitemList").remove();
-						//帶入BOM號
-						let n = $("#search_dcr_open tbody input:checked").attr("alt").replaceAll("row_", "");
-						let entity = $(".valTbodyDetailTr_" + n);
-						//選擇 欄位(編輯)
-						$("#sphbpmnb input").val(entity.find(".bpmnb").text());
-						$("#sphbpmmodel input").val(entity.find(".bpmmodel").text());
-						//產品資訊
-						let bpmbisitem = entity.find(".bpmbisitem").text();//產品資訊
-						let sphbisitemJson = JSON.parse(bpmbisitem);
-						let items = sphbisitemJson['items'];
-						if (items != null) {
-							Object.keys(items).forEach(function (i) {
-								//console.log(items[i]['bisgname'] + ":" + items[i]['bisfname'] + ":" + items[i]['bisqty']);
-								//寫入
-								let bisgname = items[i]['bisgname'];
-								let bisnb = items[i]['bisnb'];
-								let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
-								let bisqty = Number(items[i]['bisqty']);
-								//每個項目(有?沒有?)
-								if (bisqty > 0) {
-									let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
-									let sphbisitemEx = $('#sphbisitemEx_val').clone();
-									sphbisitemEx.removeAttr("id");
-									sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
-									sphbisitemEx.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty);
-									sphbisitemEx.html(htmlc);
-									$('#sphbisitemEx_val').after(sphbisitemEx);
-								} else {
-									let htmlc = '<b> ' + bisgname + ' </b>' + bisfname;
-									let sphbisitemExNot = $('#sphbisitemExNot_val').clone();
-									sphbisitemExNot.removeAttr("id");
-									sphbisitemExNot.removeClass("d-none").addClass("sphbisitemList");
-									sphbisitemExNot.attr("title", bisgname + "<_>" + bisfname + "<_>" + bisnb + "<_>" + bisqty)
-									sphbisitemExNot.html(htmlc);
-									$('#sphbisitemExNot_val').after(sphbisitemExNot);
-								}
-							});
-							//console.log(sphbisitemJson);
-						}
-						//負責人
-						let sysmuser = entity.find(".sysmuser").text();
-						$("#sphbpsuser_val").text(sysmuser);
-						//PM 備註
-						let sysnote = entity.find(".sysnote").text();
-						$("#sphpmnote_val").text(sysnote);
-					}
-
-				});
+				
+				
 				//帶入單據資料
 				$(document).off("click", "#search_c #btn_production");
 				$(document).on("click", "#search_c #btn_production", function (event) {
@@ -1609,16 +1498,7 @@
 				entityJson.sphbpmtypename = "產品BOM";
 				entityJson.sphbpmtype = "1";
 
-				//找尋配對-產品規格
-				let valTbodyDetailTr = "";
-				$("#search_dcr_open .bpmnb").each(function (index) {
-					if ($(this).text() === entityJson.sphbpmnb && entityJson.sphbpmnb != "") {
-						console.log($(this).parent().attr("class"));
-						//配對到後取出
-						valTbodyDetailTr = $(this).parent().attr("class");
-						return null;
-					}
-				});
+				
 				//如果有配對到
 				if (valTbodyDetailTr != "") {
 					//放入->
@@ -1703,9 +1583,7 @@
 				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
 				$('#search_c .exTbodyTh input').prop("checked", false);
 				//版面預設
-				if (!$('#search_dcr_open').hasClass('show')) {
-					$('#search_dcr .btn-outline-white').trigger('click');
-				}
+				
 				if (!$('#search_cr_open').hasClass('show')) {
 					$('#search_cr .btn-outline-white').trigger('click');
 				}
@@ -1917,7 +1795,6 @@
 				//銷毀
 				$(".datetimepicker").remove();
 				$(document).off("input", "#search_c #searchSelectItems");
-				$(document).off("click", "#search_c #btn_bom");
 				$(document).off("click", "#search_c #btn_clearAll");
 				$(document).off("keyup", "#searchItem input");
 				$(document).off("click", "#search_c #btn_send");
@@ -1927,7 +1804,6 @@
 				$(document).off("click", "#search_c #btn_allClear");
 				$(document).off("click", "#search_c #btn_production");
 				//
-				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
 				console.log("other.html(destroy)");
 			},

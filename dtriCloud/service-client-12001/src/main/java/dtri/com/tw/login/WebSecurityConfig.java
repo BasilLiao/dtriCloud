@@ -79,6 +79,9 @@ public class WebSecurityConfig {
 	private static final String warehouse_syn = "/ajax/warehouse_synchronize.basil";
 	// 製造
 	private static final String manufacture_act = "/ajax/manufacture_action.basil";
+	private static final String manufacture_pro = "/ajax/manufacture_process_card.basil";
+	private static final String manufacture_rul = "/ajax/manufacture_rule_number.basil";
+	private static final String manufacture_ser = "/ajax/manufacture_serial_number.basil";
 	// 生管
 	private static final String schedule_sho = "/ajax/schedule_shortage_list.basil";
 	private static final String schedule_out = "/ajax/schedule_outsourcer.basil";
@@ -432,7 +435,6 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".AD").hasAuthority(actionRole(material_rep, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".DD").hasAuthority(actionRole(material_rep, "DD"))// (標記移除)
 				
-				
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----
 				.requestMatchers(HttpMethod.POST, manufacture_act).hasAuthority(actionRole(manufacture_act, ""))// (轉跳)
@@ -440,6 +442,31 @@ public class WebSecurityConfig {
 				.hasAuthority(actionRole(manufacture_act, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.PUT, manufacture_act + ".S1")
 				.hasAuthority(actionRole(manufacture_act, "S1"))// (修改S1)
+				// ----請求-manufacture_process_card-(訪問) ----
+				.requestMatchers(HttpMethod.POST, manufacture_pro).hasAuthority(actionRole(manufacture_pro, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, manufacture_pro + ".AR").hasAuthority(actionRole(manufacture_pro, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_pro + ".ARR").hasAuthority(actionRole(manufacture_pro, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_pro + ".AC").hasAuthority(actionRole(manufacture_pro, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, manufacture_pro + ".AU").hasAuthority(actionRole(manufacture_pro, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, manufacture_pro + ".AD").hasAuthority(actionRole(manufacture_pro, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, manufacture_pro + ".DD").hasAuthority(actionRole(manufacture_pro, "DD"))// (標記移除)
+				// ----請求-manufacture_rule_number-(訪問) ----
+				.requestMatchers(HttpMethod.POST, manufacture_rul).hasAuthority(actionRole(manufacture_rul, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, manufacture_rul + ".AR").hasAuthority(actionRole(manufacture_rul, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_rul + ".ARR").hasAuthority(actionRole(manufacture_rul, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_rul + ".AC").hasAuthority(actionRole(manufacture_rul, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, manufacture_rul + ".AU").hasAuthority(actionRole(manufacture_rul, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, manufacture_rul + ".AD").hasAuthority(actionRole(manufacture_rul, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, manufacture_rul + ".DD").hasAuthority(actionRole(manufacture_rul, "DD"))// (標記移除)
+				// ----請求-manufacture_serial_number-(訪問) ----
+				.requestMatchers(HttpMethod.POST, manufacture_ser).hasAuthority(actionRole(manufacture_ser, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, manufacture_ser + ".AR").hasAuthority(actionRole(manufacture_ser, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_ser + ".ARR").hasAuthority(actionRole(manufacture_ser, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, manufacture_ser + ".AC").hasAuthority(actionRole(manufacture_ser, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, manufacture_ser + ".AU").hasAuthority(actionRole(manufacture_ser, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, manufacture_ser + ".AD").hasAuthority(actionRole(manufacture_ser, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, manufacture_ser + ".DD").hasAuthority(actionRole(manufacture_ser, "DD"))// (標記移除)
+				
 
 				// BIOS版本控管
 				// ----請求-bios_notification-(訪問) ----

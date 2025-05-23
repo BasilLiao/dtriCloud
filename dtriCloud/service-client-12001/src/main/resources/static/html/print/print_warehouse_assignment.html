@@ -146,8 +146,8 @@
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
 										<td>品號:</td>
-										<td class="pr_bslfromcommand_sn" colspan="3">90-123-123456</td>
-										<td class=""></td>
+										<td class="pr_bslfromcommand_sn" colspan="2">90-123-123456</td>
+										<td class="pr_cell"></td>
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
 										<td>套數:</td>
@@ -339,11 +339,6 @@
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量 
 							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
-							if (bslclass_bslsn.includes("A581")) {
-						        // A581
-								print_m_ex.find(".pr_bslfromcommand_sn").text(h.waspnumber);//品號
-								print_m_ex.find(".pr_bslfromcommand_qty").text(h.waspnqty);//數量 
-						    }
 							 
 							dataHeader.forEach(function (hds) {
 								console.log(hds);
@@ -366,15 +361,24 @@
 							print_m_ex.find(".pr_bslfromcommand_qrcode").text("");//
 							print_m_ex.find(".pr_bslclass_bslsn_qrcode").text("");//
 							print_m_ex.css("paddingTop", "25px");
-
+							
+					        // A581
+							if (bslclass_bslsn.includes("A581")) {
+								print_m_ex.find(".pr_bslfromcommand_sn").text(h.waspnumber);//品號
+								print_m_ex.find(".pr_bslfromcommand_qty").text(h.waspnqty);//數量 
+								print_m_ex.find(".pr_wasedate").text("");//預計(發料日):
+								print_m_ex.find(".pr_wassdate").text("");//預計(出貨日):
+						    }
 
 							$('#print_m #print_m_start').after(print_m_ex);
-							//每張A4 列印兩筆
-							var print_m_ex2 = print_m_ex.clone();
-							print_m_ex2.attr("id", print_ex.find(".pr_bslclass_bslsn").text() + "_2");
-							print_m_ex2.removeClass("noprint");
-							print_m_ex2.css("pageBreakAfter", "");
-							$('#print_m #print_m_start').after(print_m_ex2);
+							//每張A4 列印兩筆(除了A581)
+							if (!bslclass_bslsn.includes("A581")) {
+								var print_m_ex2 = print_m_ex.clone();
+								print_m_ex2.attr("id", print_ex.find(".pr_bslclass_bslsn").text() + "_2");
+								print_m_ex2.removeClass("noprint");
+								print_m_ex2.css("pageBreakAfter", "");
+								$('#print_m #print_m_start').after(print_m_ex2);
+							}
 						}
 					});
 					//細節(區分)

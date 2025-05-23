@@ -60,7 +60,11 @@ import jakarta.persistence.Transient;
  *      this.sphscnote = "";生管備註事項<br>
  *      this.sphprnote1 = "";生產事項1<br>
  *      this.sphprnote2 = "";生產事項2<br>
- * 
+ *      this.sphbsh = "";JSON軟硬體版本<br>
+ *      this.sphworkstation = "";// : 工作站清單<br>
+ *      this.sphlable = ""; // : 標籤選擇<br>
+ *      this.sphmfgpartno = ""; // : 工廠認證碼<br>
+ *      this.sphpartno = ""; // : 組件號<br>
  * 
  */
 
@@ -105,6 +109,12 @@ public class ScheduleProductionHistory {
 		this.sphscnote = "";
 		this.sphprnote1 = "";
 		this.sphprnote2 = "";
+		this.sphbsh = "";
+
+		this.sphworkstation = "";// : 工作站清單<br>
+		this.sphlable = ""; // : 標籤選擇<br>
+		this.sphmfgpartno = ""; // : 工廠認證碼<br>
+		this.sphpartno = ""; // : 組件號<br>
 	}
 
 	@PrePersist
@@ -205,11 +215,32 @@ public class ScheduleProductionHistory {
 	private String sphscpackage;
 	@Column(name = "sph_sc_nv", nullable = false, columnDefinition = "text default ''")
 	private String sphscnv;
+	@Column(name = "sph_bsh", nullable = false, columnDefinition = "text default ''")
+	private String sphbsh;
 
 	@Transient
 	private Date ssyscdate;// 起始時間
 	@Transient
 	private Date esyscdate;// 結束時間
+
+	@Column(name = "sph_workstation", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphworkstation;// : 工作站清單<br>
+
+	@Column(name = "sph_lable", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphlable; // : 標籤選擇<br>
+
+	@Column(name = "sph_mfgpartno", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphmfgpartno; // : 工廠認證碼<br>
+
+	@Column(name = "sph_partno", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphpartno; // : 組件號<br>
+
+	// @Transient
+	// private String sphsph; // : 生產紀錄內容(JSON_Array)<br>
+	// @Transient
+	// private String sphbsh; // : 軟硬體版本(JSON_Array)<br>
+	// @Transient
+	// private String sphmrn; // : 規則SN清單(JSON_Array)<br>
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -521,6 +552,46 @@ public class ScheduleProductionHistory {
 
 	public void setSphoqty(Integer sphoqty) {
 		this.sphoqty = sphoqty;
+	}
+
+	public String getSphbsh() {
+		return sphbsh;
+	}
+
+	public void setSphbsh(String sphbsh) {
+		this.sphbsh = sphbsh;
+	}
+
+	public String getSphworkstation() {
+		return sphworkstation;
+	}
+
+	public void setSphworkstation(String sphworkstation) {
+		this.sphworkstation = sphworkstation;
+	}
+
+	public String getSphlable() {
+		return sphlable;
+	}
+
+	public void setSphlable(String sphlable) {
+		this.sphlable = sphlable;
+	}
+
+	public String getSphmfgpartno() {
+		return sphmfgpartno;
+	}
+
+	public void setSphmfgpartno(String sphmfgpartno) {
+		this.sphmfgpartno = sphmfgpartno;
+	}
+
+	public String getSphpartno() {
+		return sphpartno;
+	}
+
+	public void setSphpartno(String sphpartno) {
+		this.sphpartno = sphpartno;
 	}
 
 }

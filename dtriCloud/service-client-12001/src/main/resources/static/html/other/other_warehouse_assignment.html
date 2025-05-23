@@ -1283,44 +1283,47 @@
 							//欄位計數
 							let valTrNb = x + 1;
 							let valTbodyTr_ = $('.valTbodyTr_' + valTrNb);
-							valTbodyTr_.find(' th input').removeAttr("disabled");
+							let valTbodyTr_input = valTbodyTr_.find(' th input');
+							let valTbodyTr_k = valTbodyTr_.find( ' .' + k);
+							let entity_k = entity[k];
+							valTbodyTr_input.removeAttr("disabled");
 							//是否IKEY?
-							if (entityIKey == k) {iKey = entity[k];}
+							if (entityIKey == k) {iKey = entity_k;}
 							//是否GKEY?
-							if (entityGKey == k) {gKey = entity[k];}
+							if (entityGKey == k) {gKey = entity_k;}
 							//是否時間格式?
 							if (entityDateTime.indexOf(k) >= 0) {
-								let dF = new Date(entity[k]);
+								let dF = new Date(entity_k);
 								let dateF = dF.getFullYear() + "-";
 								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
 								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
 								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
 								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								valTbodyTr_.find( ' .' + k).text(dateF);
+								valTbodyTr_k.text(dateF);
 							} else {
-								valTbodyTr_.find( ' .' + k).text(entity[k]);
+								valTbodyTr_k.text(entity_k);
 							}
 
 							//marks標記?
-							valTbodyTr_.find( ' input').attr("title", iKey + "_" + gKey);
+							valTbodyTr_input.attr("title", iKey + "_" + gKey);
 							//帶入
 							for (let m = 0; m < marks.length; m++) {
 								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-									valTbodyTr_.find( ' input').prop("checked", true);
+									valTbodyTr_input.prop("checked", true);
 									break;
 								}
 							}
 							//打印
-							if (k == "waspalready" && entity[k] == "未打印") {
-								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
+							if (k == "waspalready" && entity_k == "未打印") {
+								valTbodyTr_k.addClass("bg-warning");
 							}
 							//完成?
-							if (k == "wasschedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
-								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
+							if (k == "wasschedule" && entity_k.split(" / ")[0] != entity_k.split(" / ")[1]) {
+								valTbodyTr_k.addClass("bg-warning");
 							}
-							if (k == "wascischedule" && entity[k].split(" / ")[0] != entity[k].split(" / ")[1]) {
-								valTbodyTr_.find( ' .' + k).addClass("bg-warning");
+							if (k == "wascischedule" && entity_k.split(" / ")[0] != entity_k.split(" / ")[1]) {
+								valTbodyTr_k.addClass("bg-warning");
 							}
 
 						});

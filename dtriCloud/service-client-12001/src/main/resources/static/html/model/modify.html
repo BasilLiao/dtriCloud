@@ -1,112 +1,116 @@
 <style>
-	/*Table 寬度滾動*/
-	#modify_c .table-responsive {
-		display: block;
-		width: 1px;
-		overflow-x: auto;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 寬度滾動*/
+#modify_c .table-responsive {
+	display: block;
+	width: 1px;
+	overflow-x: auto;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格固定*/
-	#modify_c .f_c_1 {
-		left: 0px;
-		position: sticky;
-		z-index: 3;
-	}
+/*Table 表格固定*/
+#modify_c .f_c_1 {
+	left: 0px;
+	position: sticky;
+	z-index: 3;
+}
 
-	#modify_c .f_c_2 {
-		left: 30px;
-		position: sticky;
-		z-index: 3;
-	}
+#modify_c .f_c_2 {
+	left: 30px;
+	position: sticky;
+	z-index: 3;
+}
 
-	#modify_c .f_c_3 {
-		left: 60px;
-		position: sticky;
-		z-index: 3;
-	}
+#modify_c .f_c_3 {
+	left: 60px;
+	position: sticky;
+	z-index: 3;
+}
 
-	#modify_c .f_c_t {
-		position: sticky;
-		top: 0px;
-		z-index: 5;
-	}
+#modify_c .f_c_t {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 
-	/*Table 自動換行*/
-	#modify_c .table-responsive th,
-	#modify_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動換行*/
+#modify_c .table-responsive th, #modify_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 每隔表格內_框線*/
-	#modify_c .table-bordered td,
-	#modify_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#modify_c .table-bordered td, #modify_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#modify_c #modify_c_batch_revision table {
-		min-height: 95px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#modify_c #modify_c_batch_revision table {
+	min-height: 95px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格外框線*/
-	#modify_c #modify_c_list table {
-		min-height: 95px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#modify_c #modify_c_list table {
+	min-height: 95px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格內 背景色*/
-	#modify_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#modify_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*直立式呈現邊字*/
-	#modify_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#modify_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*標題色彩*/
-	#modify_c .title_color {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#modify_c .title_color {
+	background-color: #cfe2ff;
+}
 
-	/*checkbox_33*/
-	#modify_c .checkbox_33 {
-		width: 33px;
-		height: 33px;
-	}
+/*checkbox_33*/
+#modify_c .checkbox_33 {
+	width: 33px;
+	height: 33px;
+}
 </style>
 
 <div id="modify_c" class="row m-0 p-0">
 	<!-- 批次修正 -->
 	<div class="col-lg-12  p-0 m-0">
 		<div id="modify_c_batch_revision_data" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target=".modify_c_batch_revision_open" aria-expanded="false"
-					style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse"
+					data-bs-target=".modify_c_batch_revision_open"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
-			<div class="row m-0 collapse show modify_c_batch_revision_open" id="">
-				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Data </b>
+			<div class="row m-0 collapse modify_c_batch_revision_open" id="">
+				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch
+					revision Data </b>
 				<div class="col border border-primary m-0 p-0 shadow-sm">
 					<!-- 範例內容 -->
 					<div class="col p-1 m-0 row d-none">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Ex </b>
+						<b
+							class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white">
+							Ex </b>
 						<table id="modify_c_ex"
 							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-primary">
 								<tr>
 									<th id="modify_c_ex_tm" class="f_c_1" style="min-width: 30px;">AD</th>
 									<th id="modify_c_ex_tp" class="f_c_2" style="min-width: 30px;">CP</th>
-									<th id="modify_c_ex_tkey" class="f_c_3" style="min-width: 200px;">Key</th>
+									<th id="modify_c_ex_tkey" class="f_c_3"
+										style="min-width: 200px;">Key</th>
 									<th id="modify_c_ex_th" style="min-width: 200px;">Textarea_text</th>
 									<th style="min-width: 200px;">Input_text</th>
 									<th style="min-width: 200px;">Input_number</th>
@@ -123,7 +127,8 @@
 								<tr>
 									<th id="modify_c_ex_vm" class="f_c_1" style="max-width: 30px;">
 										<div class="col-12 m-0 p-0">
-											<i class="btn btn-outline-danger p-0 bi bi-dash-square d-none"
+											<i
+												class="btn btn-outline-danger p-0 bi bi-dash-square d-none"
 												style="width: 24px; height: 24px;"></i>
 											<div class="d-none"></div>
 											<i class="btn btn-outline-success p-0 bi bi-plus-square"
@@ -132,52 +137,54 @@
 									</th>
 									<th id="modify_c_ex_vp" class="f_c_2" style="max-width: 30px;">
 										<div class="col-12 m-0 p-0">
-											<i class="btn btn-outline-primary p-0 bi bi-stickies" title="_"
-												style="width: 24px; height: 24px;"></i>
+											<i class="btn btn-outline-primary p-0 bi bi-stickies"
+												title="_" style="width: 24px; height: 24px;"></i>
 										</div>
 									</th>
-									<th id="modify_c_ex_vkey" style="max-width: 200px;" class="f_c_3">
+									<th id="modify_c_ex_vkey" style="max-width: 200px;"
+										class="f_c_3">
 										<div class="col-12 m-0 p-1">Key</div>
 									</th>
 									<td style="max-width: 200px" id="modify_c_ex_tt"><textarea
-											class="col-12 m-0 p-1 border border-dark form-control" rows="3"></textarea>
-									</td>
+											class="col-12 m-0 p-1 border border-dark form-control"
+											rows="3"></textarea></td>
 									<td style="max-width: 200px" id="modify_c_ex_it"><input
-											class="col-12 m-0 p-1 border border-dark form-control" type="text" value=""
-											placeholder="Ex:"></td>
+										class="col-12 m-0 p-1 border border-dark form-control"
+										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_in"><input
-											class="col-12 m-0 p-1 border border-dark form-control" type="number"
-											value="" placeholder="Ex:"></td>
+										class="col-12 m-0 p-1 border border-dark form-control"
+										type="number" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_id"><input
-											class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
-											type="text" value="" placeholder="Ex:"></td>
+										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
+										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_t"><input
-											class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
-											type="text" value="" placeholder="Ex:"></td>
+										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
+										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_icb"><input
-											class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33"
-											type="checkbox" value="" placeholder="Ex:"></td>
+										class="col-12 m-0 p-1 border border-dark form-check-input checkbox_33"
+										type="checkbox" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_ic"><input
-											class="col-12 m-0 p-1 border border-dark form-control" type="password"
-											value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_ip">
-										<input class="col-6 m-0 p-1 border border-dark form-control-file" type="file"
-											value="" placeholder="Ex:">
-										<img class="col-6 m-0 p-1" style="width: 120px;">
-									</td>
+										class="col-12 m-0 p-1 border border-dark form-control"
+										type="password" value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_ip"><input
+										class="col-6 m-0 p-1 border border-dark form-control-file"
+										type="file" value="" placeholder="Ex:"> <img
+										class="col-6 m-0 p-1" style="width: 120px;"></td>
 									<td style="max-width: 200px" id="modify_c_ex_ii"><i
-											class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
+										class="col-12 m-0 p-1 btn btn-outline-dark bi bi-cloud-download"></i></td>
 									<td style="max-width: 200px" id="modify_c_ex_st"><select
-											class="col-12 m-0 p-1 border border-dark form-select">
+										class="col-12 m-0 p-1 border border-dark form-select">
 											<option class="modify_st_ex" value="">請選擇(N/A)</option>
-										</select></td>
+									</select></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 					<!-- 表頭批次處理 -->
 					<div id="batchThAll" class="col p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Data </b>
+						<b
+							class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white">
+							Data </b>
 						<table
 							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchThn" class="table-primary">
@@ -192,7 +199,8 @@
 					</div>
 					<!-- 取代批次處理 -->
 					<div id="batchTrhAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
+						<b
+							class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
 							style="font-size: 12px">Replace Data</b>
 						<table
 							class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -210,18 +218,22 @@
 			</div>
 		</div>
 		<div id="modify_c_batch_revision_detail" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target=".modify_c_batch_revision_open" aria-expanded="false"
-					style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse"
+					data-bs-target=".modify_c_batch_revision_open"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse modify_c_batch_revision_open" id="">
-				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch revision Detail </b>
+				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Batch
+					revision Detail </b>
 				<div class="col border border-primary m-0 p-0 shadow-sm">
 					<!-- 表身批次處理 -->
 					<div id="batchTdAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white"> Detail
-						</b>
+						<b
+							class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-success text-white">
+							Detail </b>
 						<table
 							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="batchTdn" class="table-primary">
@@ -237,7 +249,8 @@
 
 					<!-- 取代批次處理 -->
 					<div id="batchTrdAll" class="col-md-12 p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
+						<b
+							class="p-0 m-0 lh-1 wlr border border-danger rounded-start bg-danger text-white"
 							style="font-size: 12px">Replace Detail</b>
 						<table
 							class="col m-0 p-0 border border-danger rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -258,16 +271,20 @@
 
 	<!-- 控制面板 -->
 	<div id="modify_c_controller" class="col-lg-12 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#modify_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#modify_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="modify_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 
 				<div id="" class="col-6 col-lg-3 p-1 ">
-					<div class=" border border-secondary rounded modify_c_batch_revision_open collapse show">
+					<div
+						class=" border border-secondary rounded modify_c_batch_revision_open collapse ">
 						<div class="title_color fw-bolder rounded-top">Batch Data</div>
 						<div class="row m-0">
 							<button id="modify_c_date_overwrite" type="button"
@@ -314,8 +331,8 @@
 				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">State</div>
-						<div id="modify_c_state" title="None_" class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜
-						</div>
+						<div id="modify_c_state" title="None_"
+							class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜</div>
 					</div>
 				</div>
 				<div class="col-6 col-lg-2 p-1">
@@ -341,16 +358,21 @@
 	<form class="p-0" onsubmit="return modify.methods.modifySend();">
 		<!-- 一般多筆修正 -->
 		<div id="modify_c_list" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1  text-start rounded-top bg-info text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#modify_c_list_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1  text-start rounded-top bg-info text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#modify_c_list_open"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse show" id="modify_c_list_open">
 				<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Modify list </b>
-				<div id="modify_data" class="col border border-primary m-0 p-0 shadow-sm">
+				<div id="modify_data"
+					class="col border border-primary m-0 p-0 shadow-sm">
 					<!-- 表頭修正 -->
 					<div id="modifyThAll" class="col p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Data </b>
+						<b
+							class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white">
+							Data </b>
 						<table
 							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="modifyThn" class="f_c_t table-primary">
@@ -363,7 +385,9 @@
 					</div>
 					<!-- 表身批次處理 -->
 					<div id="modifyTdAll" class="col p-1 m-0 row">
-						<b class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white"> Detail </b>
+						<b
+							class="p-0 m-0 lh-1 wlr border border-primary rounded-start bg-info text-white">
+							Detail </b>
 						<table
 							class="col m-0 p-0 border border-primary rounded-end table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead id="modifyTdn" class="f_c_t table-primary">
@@ -375,7 +399,8 @@
 						</table>
 					</div>
 					<!-- 隔一筆群組資料-分隔線 -->
-					<div id="nextOne" class="d-none col-md-12 p-0 m-0 bg-info text-center fw-bold text-white"
+					<div id="nextOne"
+						class="d-none col-md-12 p-0 m-0 bg-info text-center fw-bold text-white"
 						style="font-size: 12px">Next one</div>
 
 				</div>
@@ -962,8 +987,6 @@
 						}
 					}
 				});
-				//上傳檔案?
-
 
 				//清除預設
 				$("#modify_c_date_clearAll").trigger('click');

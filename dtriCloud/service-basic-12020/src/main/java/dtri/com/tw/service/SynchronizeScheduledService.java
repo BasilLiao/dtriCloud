@@ -1103,8 +1103,15 @@ public class SynchronizeScheduledService {
 				LocalDate yesterday = LocalDate.now().minusDays(1);// 昨天日期
 				String fmYesterdate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00";
 				String fmTodate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 24:00:00";
+				
+				
+				List<Order> infactory_sort = new ArrayList<>();
+				infactory_sort.add(new Order(Direction.ASC, "siodate"));// 預計開工日
+				infactory_sort.add(new Order(Direction.ASC, "sinb"));// 製令單
+				PageRequest infactory_pageable = PageRequest.of(0, 9999, Sort.by(infactory_sort));
+				
 				ArrayList<ScheduleInfactory> infactorys = scheduleInfactoryDao.findAllByDateSearch(fmYesterdate,
-						fmTodate, null, null);
+						fmTodate, null, infactory_pageable);
 
 				System.out.println("測試:" + infactorys.size());
 				// 排序

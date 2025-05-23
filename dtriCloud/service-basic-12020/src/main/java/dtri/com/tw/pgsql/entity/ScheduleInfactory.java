@@ -168,7 +168,7 @@ public class ScheduleInfactory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 倉儲區域負責人-清單
+	// 場內排程-清單
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "schedule_infactory_seq")
 	@SequenceGenerator(name = "schedule_infactory_seq", sequenceName = "schedule_infactory_seq", allocationSize = 1)
