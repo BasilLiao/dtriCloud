@@ -101,7 +101,7 @@ public class BomProductManagementServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "bpmid"));// 群組
+		orders.add(new Order(Direction.ASC, "bpmnb"));// 群組
 		// 其他資料格式(同步-BOM成品組成/BOM產品規則/BOM可選擇性項目)
 		List<Order> ordersBBI = new ArrayList<>();
 		ordersBBI.add(new Order(Direction.ASC, "bbisn"));//
@@ -1049,12 +1049,15 @@ public class BomProductManagementServiceAc {
 			});
 			basic.forEach(i -> {
 				String bisnb_bisqty_bisprocess = i.getAsString();
-				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
-				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
-				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
-					// 若不重複則加入
-					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+				// 排除項目是空直
+				if (!bisnb_bisqty_bisprocess.equals("")) {
+					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
+					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
+					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+						// 若不重複則加入
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					}
 				}
 			});
 			// 新的BOM_型號 , 物料_數量_製成別

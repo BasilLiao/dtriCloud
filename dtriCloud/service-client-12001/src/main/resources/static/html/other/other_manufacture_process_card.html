@@ -69,7 +69,7 @@
 }
 
 .only_lr {
-	width: 11px;
+	width: 12px;
 	text-align: center;
 	writing-mode: vertical-lr;
 	font-size: 6px;
@@ -102,6 +102,21 @@
 #search_c .checkbox_16 {
 	width: 16px;
 	height: 16px;
+}
+
+/*編輯流程卡*/
+#modify_card input {
+	line-height: 18px;
+	height: 26px;
+}
+
+#modify_card select {
+	line-height: 18px;
+	height: 26px;
+}
+
+#modify_card {
+	font-size: 14px;
 }
 </style>
 <div id="search_c" class="row p-0 m-0">
@@ -155,18 +170,13 @@
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 				<div
 					class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="col-12 col-lg-3 p-1">
+					<div class="col-12 col-lg-2 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Execution</div>
 							<div class="row m-0">
 								<button id="btn_production" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 									<b>Production<br>import()
-									</b>
-								</button>
-								<button id="btn_order" type="button"
-									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-									<b>Order<br>import(AR)
 									</b>
 								</button>
 								<button id="btn_allClear" type="button"
@@ -243,280 +253,386 @@
 				<div class="col p-0">
 					<div class="row m-0">
 						<!--編輯-->
-						<div class="col-12 col-lg-6 border border-primary row m-0 p-1">
+						<div id="modify_card"
+							class="col-12 col-lg-6 border border-primary row m-0 p-1">
 							<!--1-->
+							<div class="col-12 p-1">
+								<h5 class="m-0 p-0 text-start">
+									<b>Product Information</b>
+								</h5>
+							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="bomDefinition"
+								<div id="sphline"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">model(模式)</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">生產線(PD
+										Line)</div>
 									<div class="p-1">
-										<select class="col-12 m-0 p-1 border border-dark form-select"
+										<select name="sphline"
+											class="col-12 m-0 p-1 border border-dark form-select"
 											required>
-											<option class="" value="bom" selected="selected">一般模式(General)</option>
-											<option class="" value="definition">自定義(Custom)</option>
-											<option class="bg-danger" value="invalid">作廢單據(Invalid)</option>
+											<option class="" value="" selected="selected">請選擇(必填)</option>
+											<option class="" value="4F">五股廠-4F</option>
+											<option class="" value="6F">五股廠-6F</option>
+											<option class="" value="散單">五股廠-散單</option>
+											<option class="" value="外包">外包廠</option>
 										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphpon"
+								<div id="sphworkstation"
 									class="btnAutoOrder border border-secondary rounded">
-									<div
-										class="searchTitle title_color text-success fw-bolder rounded-top">製令單</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">工作站程序(WSP)</div>
 									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:A512-99990101001" required>
+										<select name="sphworkstation"
+											class="col-12 m-0 p-1 border border-dark form-select"
+											required>
+											<option class="" value="" selected="selected">請選擇(必填)</option>
+
+										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphonb"
+								<div id="sphlable"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">訂單號</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">標籤組(LBL
+										Group)</div>
 									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:US110762450" required>
+										<select name="sphlable"
+											class="col-12 m-0 p-1 border border-dark form-select"
+											required>
+											<option class="" value="" selected="selected">請選擇(必填)</option>
+
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphpontype"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">製令單(Type)</div>
+									<div class="p-1">
+										<select name="sphpontype"
+											class="col-12 m-0 p-1 border border-dark form-select"
+											required>
+											<option class="" value="" selected="selected">請選擇(必填)</option>
+											<option class="" value="" disabled="disabled">＝＝＝A511(一般製令單)＝＝＝</option>
+											<option class="" value="A511_has_sn">製令單-新序號</option>
+											<option class="" value="A511_no_sn">製令單-無序號</option>
+											<option class="" value="A511_no_and_has_sn">製令單-可(新序號/無序號)</option>
+											<option class="" value="" disabled="disabled">＝＝＝A521(重工製令單)＝＝＝</option>
+											<option class="" value="A521_has_sn">重工製令單-新序號</option>
+											<option class="" value="A521_old_sn">重工製令單-舊序號續用</option>
+											<option class="" value="A521_no_and_has_sn">重工製令單-可(新序號/無序號)</option>
+											<option class="" value="" disabled="disabled">＝＝＝其他＝＝＝</option>
+											<option class="" value="A522_service">維護製令單-無序號</option>
+											<option class="" value="A431_disassemble">拆解製令單-無序號</option>
+											<option class="" value="A512_outside">委外製令單-無序號</option>
+
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--2-->
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphwarranty"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">保固(Warranty)</div>
+									<div class="p-1">
+										<select name="sphwarranty"
+											class="col-12 m-0 p-1 border border-dark form-select"
+											required>
+											<option class="" value="" selected="selected">請選擇(必填)</option>
+											<option class="" value="1">1 Year</option>
+											<option class="" value="2">2 Year</option>
+											<option class="" value="3">3 Year</option>
+											<option class="" value="4">4 Year</option>
+											<option class="" value="5">5 Year</option>
+											<option class="" value="6">6 Year</option>
+											<option class="" value="7">7 Year</option>
+											<option class="" value="8">8 Year</option>
+											<option class="" value="9">9 Year</option>
+											<option class="" value="10">10 Year</option>
+										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
 								<div id="sphhdate"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">預計出貨</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">投線日(LineInDate)</div>
 									<div class="p-1">
-										<input
+										<input name="sphhdate"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
 											type="date" placeholder="Ex:2090-12-12" required>
 									</div>
 								</div>
 							</div>
-							<!--2-->
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphbpmnb"
+								<div id="sphpartno"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">公司BOM號</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">客戶組件(PartNo)</div>
 									<div class="p-1">
-										<input
+										<input name="sphpartno"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:90-317-R141010" required>
+											type="text" placeholder="Ex:客戶定義:組件號?" required>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphobpmnb"
+								<div id="sphmfgpartno"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">客戶BOM號</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">工廠認證(MFGP
+										No)</div>
 									<div class="p-1">
-										<input
+										<input name="sphmfgpartno"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:313T-51-49">
+											type="text" placeholder="Ex:客戶定義:工廠代號?" required>
 									</div>
 								</div>
 							</div>
-							<div class="col-6 p-1 col-lg-3">
-								<div id="sphbpmmodel"
-									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">機型</div>
-									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:313T" required>
-									</div>
-								</div>
-							</div>
-							<div class="col-6 p-1 col-lg-3">
-								<div id="sphoqty"
-									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">生產數量</div>
-									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="number" value="1" required>
-									</div>
-								</div>
-							</div>
-							<!--3-->
-							<div class="col-6 p-1 col-lg-3">
+							<!-- 3 -->
+							<div class="col-6 p-1 col-lg-6">
 								<div id="sphoname"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">客戶名稱</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">產線備註(Note1)</div>
 									<div class="p-1">
-										<input
+										<textarea name="sphoname"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:DTR?" required>
+											placeholder="Ex:DTR?" required></textarea>
 									</div>
 								</div>
 							</div>
-							<div class="col-6 p-1 col-lg-3">
+							<div class="col-6 p-1 col-lg-6">
 								<div id="sphocountry"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">國家名稱</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">產線備註(Note2)</div>
 									<div class="p-1">
-										<input
+										<textarea name="sphocountry"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:USA?" required>
+											placeholder="Ex:USA?" required></textarea>
 									</div>
 								</div>
 							</div>
-							<!--4:自訂需裝配-->
-							<div class="col-12 p-1"></div>
-							<div class="col-2 p-1">
-								<div class=" border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">Seach-item</div>
-									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" id="searchSelectItems" placeholder="搜尋選項...">
-									</div>
-								</div>
-							</div>
-							<div class="col-5 p-1">
-								<div class=" border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">Product-item</div>
-									<div class="p-1">
-										<select class="col-12 m-0 p-1 border border-dark form-select"
-											id="bom_items" name="bom_items">
-											<option id="selectItemsEx" value="" selected="selected">select(請選擇)</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="col-2 p-1">
-								<div class=" border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">Qty</div>
-									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											value="0" type="number" id="bom_items_qty">
-									</div>
-								</div>
-							</div>
-							<div class="col-3 p-1">
-								<div class=" border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">Add/Remove</div>
-									<div class="p-1">
-										<button id="btn_bom_item_add" type="button"
-											class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-											<b>Add</b>
-										</button>
-										<button id="btn_bom_item_remove" type="button"
-											class="lh-1 col p-1 m-1 btn btn-sm btn-outline-danger">
-											<b>Remove</b>
-										</button>
-									</div>
-								</div>
-							</div>
-							<!--5-->
+							<!-- 4 -->
 							<div class="col-12 p-1">
-								<div class=" border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">備註-包裝說明</div>
-									<div class=" p-1" id="sphscpackage">
-										<div class="row m-0 p-0">
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox1" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="Power cord" type="text" id="sphscpackage_value1"
-													name="sphscpackage_value1">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox2" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="BOG" type="text" id="sphscpackage_value2"
-													name="sphscpackage_value2">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox3" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="License" type="text" id="sphscpackage_value3"
-													name="sphscpackage_value3">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox4" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="BOX Label" type="text" id="sphscpackage_value4"
-													name="sphscpackage_value4">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox5" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="Bulk Pack" type="text" id="sphscpackage_value5"
-													name="sphscpackage_value5">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox6" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="Retail Pack" type="text" id="sphscpackage_value6"
-													name="sphscpackage_value6">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox7" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="作業系統OS" type="text" id="sphscpackage_value7"
-													name="sphscpackage_value7">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox8" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="NA1" type="text" id="sphscpackage_value8"
-													name="sphscpackage_value8">
-											</div>
-											<div class="col-6 col-lg-4 row m-0 p-1">
-												<input
-													class="m-0 form-check-input checkbox_32 border border-dark"
-													id="sphscpackage_checkbox9" alt="" title="" type="checkbox">
-												<input class="col m-0 p-1 border border-dark form-control"
-													value="NA2" type="text" id="sphscpackage_value9"
-													name="sphscpackage_value9">
-											</div>
+								<h5 class="m-0 p-0 text-start">
+									<b>Product serial number configuration</b>
+								</h5>
+							</div>
+							<div class="col-12 p-1 col-lg-12">
+								<div id="sphbpmnbDf"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">標準化-選擇(Default
+										SN)</div>
+									<div class="p-1 row m-0">
+										<div class="col-2 m-0 p-0 pe-1">
+											<select class="col-12 m-0 p-1 border border-dark form-select"
+												required>
+												<option class="defName" value="" selected="selected">請選擇(必填)</option>
+											</select>
+										</div>
+										<div class="col-2 m-0 p-0 pe-1">
+											<input disabled="disabled"
+												class="m-0 p-1 border border-dark form-control searchVal"
+												type="text" placeholder="Ex:[YYWW] 2901" required>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="col-12 p-1">
-								<div id="sphscnote"
+							<div class="col-6 p-1 col-lg-6">
+								<div id="sphonb"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">備註-生管說明</div>
+									<div class="searchTitle pink_color fw-bolder rounded-top">客製化-固定(Cust
+										SN-fixed)</div>
 									<div class="p-1">
-										<textarea
+										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											rows="6" name="sphscnote" placeholder="Ex:3年保固 貼先 4F"
-											required></textarea>
+											type="text" placeholder="Ex:082DW2513" required>
 									</div>
 								</div>
 							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphhdate"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">浮動(float)</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="Ex:0001" required>
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="sphbpmnb"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle pink_color fw-bolder rounded-top">長度(length)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" placeholder="" required>
+									</div>
+								</div>
+							</div>
+
+
+							<!--6-->
+							<div class="col-12 p-1 text-start">
+								<h5 class="m-0 p-0">
+									<b>Product Ver</b>
+								</h5>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_mb_ecn"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">M/B
+										ECN</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:953">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_mb_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">M/B
+										Ver.</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:R1.2.A">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_bios_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">BIOS
+									</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:382DN_0.00.06">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_nvram_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">NVRAM</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:1">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_model_product_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">MODEL</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:382DN-G1-5A">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_ec_product_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">Product
+										EC</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:382DN_0.05">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="m_os_product_ver"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">Product
+										OS</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:Win11_250401">
+									</div>
+								</div>
+							</div>
+							<!--7-->
+							<div class="col-12 p-1 text-start">
+								<h5 class="m-0 p-0">
+									<b>Product Information</b>
+								</h5>
+							</div>
+							<div class="col-6 p-1 col-lg-4">
+								<div id="sphobpmnb"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">公司品號(DTR
+										BOM)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-4">
+								<div id="sphobpmnb"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">客戶品號(Cust
+										BOM)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-4">
+								<div id="sphbpmmodel"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">品名(Product
+										Name)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-12">
+								<div id="sphoqty"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">規格簡述(Specification)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text">
+									</div>
+								</div>
+							</div>
+
 						</div>
 						<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
 						<div id="printNotes"
 							class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
-							style="max-height: 686px; overflow: auto;">
-							<div class=""
-								style="height: 880px; width: 600px; min-width: 600px; padding: 0px;">
+							style="max-height: 755px; overflow: auto;">
+							<div class="text-center "
+								style="height: 860px; width: 600px; min-width: 600px; padding: 0px; break-after: page;">
 								<!-- 實體SN值-->
 								<div class="row m-0">
-									<div class="p-0 m-0 only_lr">production: 4F</div>
+									<div class="f_production p-0 m-0 only_lr">production: 4F</div>
 									<div class="col p-0 m-0"
 										style="line-height: 20px; border: 1px solid #000000;">
 										<!--  -->
-										<div class="row m-0" style="height: 50px;">
+										<div class="row m-0 justify-content-end" style="height: 50px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>M/B</b>
@@ -534,7 +650,7 @@
 											<div class="p-0 only_brm" style="width: 175px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0" style="height: 50px;">
+										<div class="row m-0 justify-content-end" style="height: 50px;">
 											<div class="p-0 only_br"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>IMEI</b>
@@ -555,73 +671,74 @@
 								</div>
 								<!-- 單據基本資料 -->
 								<div class="row m-0">
-									<div class="p-0 m-0 only_lr">Station : [一般]加/組/測/整/包(5站)</div>
+									<div class="f_station p-0 m-0 only_lr">Station :
+										[一般]加/組/測/整/包(5站)</div>
 									<div class="col p-0 m-0" style="border: 1px solid #000000;">
-										<div class="row m-0" style="height: 30px;">
+										<div class="row m-0 justify-content-end" style="height: 30px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; font-size: 10px; line-height: 15px;">
 												<b>WO No.</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 251px;"></div>
+											<div class="f_sphpon p-0 only_brm" style="width: 251px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 10px; line-height: 15px;">
 												<b>Order No.</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 270px;"></div>
+											<div class="f_sphonb p-0 only_brm" style="width: 270px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0 " style="height: 30px;">
-											<div class="p-0 only_brm" style="width: 271px;"></div>
+										<div class="row m-0 justify-content-end" style="height: 30px;">
+											<div class="f_sphpon_qrc p-0 only_brm" style="width: 271px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 30px;">
 												<b>Cust.</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 160px;"></div>
+											<div class="f_sphoname p-0 only_brm" style="width: 160px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 30px;">
 												<b>Qty</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="f_sphoqty p-0 only_brm" style="width: 65px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0" style="height: 30px;">
+										<div class="row m-0 justify-content-end" style="height: 30px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
 												<b>BOM</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 251px;"></div>
+											<div class="f_sphbpmnb p-0 only_brm" style="width: 251px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 15px;">
 												<b>Start Date</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 115px;"></div>
+											<div class="f_spibpmnb p-0 only_brm" style="width: 115px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 15px;">
 												<b>Ship Date</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 110px;"></div>
+											<div class="f_sphhdate p-0 only_brm" style="width: 110px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0" style="height: 60px;">
+										<div class="row m-0 justify-content-end" style="height: 60px;">
 											<div class="p-0 only_br"
 												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
 												<b>Notice</b>
 											</div>
-											<div class="p-0 only_br" style="width: 566px;"></div>
+											<div class="f_sphscnote p-0 only_br" style="width: 566px;"></div>
 										</div>
 									</div>
 								</div>
 								<!-- 版本資料 -->
 								<div class="row m-0">
-									<div class="p-0 m-0 only_lr">PM Owner : Eric</div>
+									<div class="f_pm_owner p-0 m-0 only_lr">PM Owner : Eric</div>
 									<div class="col p-0 m-0"
 										style="border: 1px solid #000000; font-size: 12px; line-height: 18px;">
-										<div class="row m-0" style="height: 18px;">
+										<div class="row m-0 justify-content-end" style="height: 18px;">
 											<div class="p-0 only_brm" style="width: 80px;">
 												<b>Items</b>
 											</div>
 											<div class="p-0 only_brm" style="width: 130px;">
-												<b>Ver. ／ ECN</b>
+												<b>ECN ／ Ver.</b>
 											</div>
 											<div class="p-0 only_brm" style="width: 83px;">
 												<b>Chk By</b>
@@ -630,54 +747,56 @@
 												<b>Items</b>
 											</div>
 											<div class="p-0 only_brm" style="width: 130px;">
-												<b>Ver.</b>
+												<b>Product Ver.</b>
 											</div>
 											<div class="p-0 only_brm" style="width: 83px;">
 												<b>Chk By</b>
 											</div>
 										</div>
 										<!--  -->
-										<div class="row m-0" style="height: 18px;">
+										<div class="row m-0 justify-content-end" style="height: 18px;">
 											<div class="p-0 only_brm" style="width: 80px;">
 												<b>M/B</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 130px;"></div>
-											<div class="p-0 only_brm" style="width: 15px;"></div>
-											<div class="p-0 only_br" style="width: 68px;"></div>
-											<div class="p-0 only_brm" style="width: 80px;">
-												<b>Product EC</b>
-											</div>
-											<div class="p-0 only_brm" style="width: 130px;"></div>
-											<div class="p-0 only_brm" style="width: 15px;"></div>
-											<div class="p-0 only_br" style="width: 68px;"></div>
-										</div>
-										<!--  -->
-										<div class="row m-0" style="height: 18px;">
-											<div class="p-0 only_brm" style="width: 80px;">
-												<b>BIOS</b>
-											</div>
-											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="f_mbecn_ver p-0 only_brm" style="width: 130px;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 											<div class="p-0 only_brm" style="width: 80px;">
 												<b>MODEL</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 130px;"></div>
+											<div class="f_model_product_ver p-0 only_brm"
+												style="width: 130px;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0" style="height: 18px;">
+										<div class="row m-0 justify-content-end" style="height: 18px;">
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>BIOS</b>
+											</div>
+											<div class="f_bios_ver p-0 only_brm" style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+											<div class="p-0 only_brm" style="width: 80px;">
+												<b>EC</b>
+											</div>
+											<div class="f_ec_product_ver p-0 only_brm"
+												style="width: 130px;"></div>
+											<div class="p-0 only_brm" style="width: 15px;"></div>
+											<div class="p-0 only_br" style="width: 68px;"></div>
+										</div>
+										<!--  -->
+										<div class="row m-0 justify-content-end" style="height: 18px;">
 											<div class="p-0 only_br" style="width: 80px;">
 												<b>NVRAM</b>
 											</div>
-											<div class="p-0 only_br" style="width: 130px;"></div>
+											<div class="f_nvram_ver p-0 only_br" style="width: 130px;"></div>
 											<div class="p-0 only_br" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 											<div class="p-0 only_br" style="width: 80px;">
 												<b>OS</b>
 											</div>
-											<div class="p-0 only_br" style="width: 130px;"></div>
+											<div class="f_product_ver p-0 only_br" style="width: 130px;"></div>
 											<div class="p-0 only_br" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 										</div>
@@ -685,10 +804,16 @@
 								</div>
 								<!-- 產品資訊 -->
 								<div class="row m-0" style="height: 440px;">
-									<div class="p-0 m-0 only_lr">PM Owner : Eric</div>
+									<div class="p-0 m-0 only_lr row ">
+										<div class="f_cust p-0" style="height: 140px;">Cust. BOM
+											No.:382DN-G1-5A</div>
+										<div class="f_created p-0" style="height: 140px;">Created
+											On:2025-03-19</div>
+										<div class="f_creator p-0" style="height: 140px;">Creator:JanetLin</div>
+									</div>
 									<div class="col p-0 m-0"
 										style="border: 1px solid #000000; font-size: 10px; line-height: 15px;">
-										<div class="row m-0" style="height: 15px;">
+										<div class="row m-0 justify-content-end" style="height: 15px;">
 											<div class="p-0 only_brm" style="width: 210px;">
 												<b>Product Specifications</b>
 											</div>
@@ -706,30 +831,31 @@
 										<div class="row m-0"
 											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 20px; font-size: 16px; text-align: left;">
 											<div id="bomItemEx" class="p-0 ms-1 mt-1 only_brm"
-												style="height: 18px; width: 288px;">
+												style="height: 18px; width: 288px; line-height: 16px;">
 												<b>CPU</b> i7-1165G7 (2)
 											</div>
 										</div>
 									</div>
 								</div>
 								<!-- 產線備註+簽名人 -->
-								<div class="row m-0" style="height: 112px;">
+								<div class="row m-0" style="height: 92px;">
 									<div class="p-0 m-0 only_lr">Form# : QR-701-06</div>
 									<div class="col p-0 m-0"
 										style="border: 1px solid #000000; font-size: 10px; line-height: 20px;">
-										<div class="row m-0" style="height: 64px;">
+										<div class="row m-0 justify-content-end" style="height: 45px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>Note1</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 273px;"></div>
+											<div class="f_sphprnote1 p-0 only_brm" style="width: 273px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>Note2</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 273px;"></div>
+											<div class="f_sphprnote2 p-0 only_brm" style="width: 273px;"></div>
 										</div>
-										<div class="row m-0" style="height: 15px; line-height: 15px;">
+										<div class="row m-0 justify-content-end"
+											style="height: 15px; line-height: 15px;">
 											<div class="p-0 only_brm" style="width: 65px;">
 												<b>Ass'y</b>
 											</div>
@@ -758,7 +884,18 @@
 												<b>PM</b>
 											</div>
 										</div>
-
+										<div class="row m-0 justify-content-end"
+											style="height: 31px; line-height: 15px;">
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 65px;"></div>
+											<div class="p-0 only_brm" style="width: 66px;"></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -1010,27 +1147,7 @@
 					}
 				}
 				//產品選單項目
-				let resultItems = searchSetJson['resultItems'];
-				resultItems.forEach(function (ik) {
-					let hik = "";
-					let selectItemsEx = $("#selectItemsEx").clone();
-					selectItemsEx.removeAttr("id").addClass("selectItems");
-					if (ik.split("<_>").length === 1) {
-						selectItemsEx.attr("disabled", "disabled");
-						selectItemsEx.val(ik).text(ik);
-					}
-					if (ik.split("<_>").length === 3) {
-						hik = ik.split("<_>")[0];
-						hinb = ik.split("<_>")[2];
-						ik = JSON.parse(ik.split("<_>")[1]).join(', ');
-						selectItemsEx.val(ik).text("(" + hik + ")" + ik);
-						selectItemsEx.attr("title", hik + "<_>" + ik + "<_>" + hinb)
-					}
 
-
-					selectItemsEx.removeAttr("selected");
-					$("#selectItemsEx").before(selectItemsEx);
-				});
 
 				//Step5.帶入資料
 				other.methods.searchReLoad();
@@ -1210,15 +1327,6 @@
 					}
 				});
 
-				//選取現存單據
-				$(document).off("click", "#search_c #btn_order");
-				$(document).on("click", "#search_c #btn_order", function (event) {
-					console.log("btn_order");
-					$("#sphpon").val($("#sphpon input").val());
-					other.data.btn_order = true;//標記自動帶入
-					other.methods.searchSend(0, "order");
-				});
-
 				//清除所有資料
 				$(document).off("click", "#search_c #btn_allClear");
 				$(document).on("click", "#search_c #btn_allClear", function (event) {
@@ -1267,45 +1375,60 @@
 				$(document).on("click", "#search_c #btn_printerForm", function (event) {
 					console.log("btn_printerForm");
 
-					// 獲取 #printNotes 的 HTML 內容
+					// 取得 HTML 模板
 					const content = $("#printNotes").clone();
 					content.children("div").first().css({
-						transform: "scale(1.3)", /* 放大內容 25% */
-						transformOrigin: "top left"
+						zoom: 1.3,
 					});
-					const contentHtml = content.html();
+					
+					const rawHtml = content;
+					
+					const total = 1000;        // 假設總共 1000 筆
+					const batchSize = 200;     // 每批 200 筆
+					let batchIndex = 0;
+					
+					function printBatch() {
+						if (batchIndex * batchSize >= total) return; // 所有都印完了
 
-					// 開啟一個新視窗
-					const printWindow = window.open("", "_blank", "width=800,height=800");
-
-					// 在新視窗中寫入 HTML
-					printWindow.document.open();
-					printWindow.document.write("<!DOCTYPE html>" +
-						"<html>" +
-						"<head><title>打印內容</title>" +
-						'<link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />' +
-						'<link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />' +
-						'<link rel="stylesheet" href="./thirdparty/css/bootstrap-datetimepicker.min.css" />' +
-						'<link rel="stylesheet" href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">' +
-						"<style>" +
-						'body {' +
-						'width: 210mm; /* A4 寬度 */' +
-						'height: 297mm; /* A4 高度 */' +
-						' margin: 0;' +
-						'padding: 0;' +
-						'overflow: hidden;' +
-						'font-family: Arial, sans-serif;' +
-						'}' +
-						"</style>" +
-						"</head>" +
-						"<body>" + contentHtml + "</body>" +
-						"</html>");
-					printWindow.document.close();
-					// 等待新視窗加載完成後打印
-					printWindow.onload = function () {
-						printWindow.print();
-						printWindow.close();
-					};
+						let contentHtml = "";
+						for (let i = 1; i <= batchSize && (batchIndex * batchSize + i) <= total; i++) {
+							rawHtml.find("#form_sphpon").text("數:"+(batchIndex * batchSize + i));
+							contentHtml += rawHtml.html();
+						}
+						
+						// 開啟一個新視窗-> 在新視窗中寫入 HTML
+						let printWindow = window.open("", "_blank", "width=800,height=800");
+						printWindow.document.open();
+						printWindow.document.write("<!DOCTYPE html>" +
+							"<html>" +
+							"<head><title>打印內容</title>" +
+							'<link rel="stylesheet" href="./thirdparty/css/jquery-ui-1.13.2.min.css" />' +
+							'<link rel="stylesheet" href="./thirdparty/css/bootstrap-5.2.3.min.css" />' +
+							'<link rel="stylesheet" href="./thirdparty/css/bootstrap-datetimepicker.min.css" />' +
+							'<link rel="stylesheet" href="./thirdparty/bootstrap-icons-1.10.5/font/bootstrap-icons.min.css">' +
+							"<style>" +
+							'body {width: 210mm; height: 297mm; margin: 0; padding: 0;overflow: auto;font-family: Arial, sans-serif;}' +
+							/*限用表格*/
+							'.only_brm {' +
+							'	border-right: 1px solid #000000;border-bottom: 1px solid #000000;' +
+							'}' +
+							'.only_br {	border-right: 1px solid #000000;}' +
+							'.only_lr {	width: 12px;text-align: center;writing-mode: vertical-lr;font-size: 6px;border: 1px solid #000000;}' +
+							'@media print{.noprint{display:none;}}'+
+							"</style></head><body>"  + contentHtml + "</body>" +
+							"<script type='text/javascript'> console.log('測試');</sc"+"ript>"+
+							"</html>");
+							setTimeout(function () {
+								printWindow.focus(); // 建議先聚焦，某些瀏覽器否則會阻擋
+								printWindow.print();
+								// 延遲 1 秒再印下一批+載完成後打印
+							}, 2000);
+							
+							setTimeout(printBatch, 3000); // 調整間隔時間（列印太快會導致視窗過多）
+						batchIndex++;
+					}
+					
+					printBatch(); // 開始第一批
 				});
 
 				//監聽-查詢

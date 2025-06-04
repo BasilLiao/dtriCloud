@@ -150,19 +150,19 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Execution</div>
 							<div class="row m-0">
+								<button id="btn_order" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>WO No.<br>import(AR)
+									</b>
+								</button>
 								<button id="btn_production" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-									<b>Production<br>import()
+									<b>Prod Rec.<br>import()
 									</b>
 								</button>
 								<button id="btn_bom" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
 									<b>BOM<br>import()
-									</b>
-								</button>
-								<button id="btn_order" type="button"
-									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-									<b>Order<br>import(AR)
 									</b>
 								</button>
 								<button id="btn_allClear" type="button"
@@ -184,7 +184,7 @@
 								</button>
 								<button id="btn_saveForm" type="submit" value="btn_saveForm"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-									<b>Save<br>(AU/AC/AD)
+									<b>Save<br>(AC/AU/DD)
 									</b>
 								</button>
 								<button id="btn_printerForm" type="button"
@@ -242,9 +242,10 @@
 									<div class="p-1">
 										<select class="col-12 m-0 p-1 border border-dark form-select"
 											required>
-											<option class="" value="bom" selected="selected">一般模式(General)</option>
-											<option class="" value="definition">自定義(Custom)</option>
-											<option class="bg-danger" value="invalid">作廢單據(Invalid)</option>
+											<option class="" value="bom" selected="selected">一般模式(General)AC</option>
+											<option class="" value="definition">自定義(Custom)AC</option>
+											<option class="bg-warning" value="invalid">修改單據(Modify)AU</option>
+											<option class="bg-danger" value="invalid">作廢單據(Invalid)DD</option>
 										</select>
 									</div>
 								</div>
@@ -712,7 +713,7 @@
 				data-bs-toggle="collapse" data-bs-target="#search_cr_open"
 				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="search_cr_open" class="row m-0 shadow-sm collapse show">
+		<div id="search_cr_open" class="row m-0 shadow-sm collapse">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white">Production Records</b>
 			<table
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -752,7 +753,7 @@
 				data-bs-toggle="collapse" data-bs-target="#search_dcr_open"
 				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
-		<div id="search_dcr_open" class="row m-0 shadow-sm collapse show">
+		<div id="search_dcr_open" class="row m-0 shadow-sm collapse">
 			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white">BOM List</b>
 			<table
 				class=" col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
@@ -1519,7 +1520,7 @@
 					}
 					$("#pkg_checkbox" + x + " span").text($("#sphscpackage_value" + x).val());
 				}
-				$("#sphscnote_val").text($("#sphscnote textarea").text());
+				$("#sphscnote_val").text($("#sphscnote textarea").val());
 				$("#sphobpmnb_val").text($("#sphobpmnb input").val());
 				//產品資訊內容
 
@@ -1549,7 +1550,7 @@
 				//PM備註?
 				entityJson.sphpmnote = $("#sphpmnote_val").text();
 				//生管備註?
-				entityJson.sphscnote = $("#sphscnote_val").text();
+				entityJson.sphscnote = $("#sphscnote_val").val();
 				entityJson.sphprnv = "";
 				entityJson.sphscnv = "";
 				//生管包裝
@@ -1646,6 +1647,12 @@
 				let searchPageSet = {};
 				let type = "POST";
 				let action = "AC";
+				//可能作廢?
+				if($("#bomDefinition input").val()==='invalid'){
+					action = "DD";					
+				}else if($("#bomDefinition input").val()==='modify'){
+					action = "AU";	
+				}
 				//
 				entityJsons.push(entityJson);
 				data['entityJson'] = JSON.stringify(entityJsons);
@@ -1664,6 +1671,18 @@
 
 			//==========================傳送資料==========================
 			searchSend(batch, order) {
+				//版面預設
+				if (!$('#search_dcr_open').hasClass('show')) {
+					$('#search_dcr .btn-outline-white').trigger('click');
+				}
+				if (!$('#search_cr_open').hasClass('show')) {
+					$('#search_cr .btn-outline-white').trigger('click');
+				}
+				//編輯畫面
+				if ($('#modify_cr_open').hasClass('show') && !other.data.btn_order) {
+					$('#modify_cr .btn-outline-white').trigger('click');
+				}
+				
 				let entityJson = other.data.entityFormatJson;//格式
 				let data = {};
 				let req_data = {};
@@ -1702,17 +1721,6 @@
 				$('#search_c .exTbodyTh input').attr("disabled", "disabled");
 				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
 				$('#search_c .exTbodyTh input').prop("checked", false);
-				//版面預設
-				if (!$('#search_dcr_open').hasClass('show')) {
-					$('#search_dcr .btn-outline-white').trigger('click');
-				}
-				if (!$('#search_cr_open').hasClass('show')) {
-					$('#search_cr .btn-outline-white').trigger('click');
-				}
-				//編輯畫面
-				if ($('#modify_cr_open').hasClass('show') && !other.data.btn_order) {
-					$('#modify_cr .btn-outline-white').trigger('click');
-				}
 
 
 				//Step5.帶入資料

@@ -30,10 +30,10 @@ import jakarta.persistence.Table;
  *      bsh_nb = "";BOM號<br>
  *      bsh_model = "";型號<br>
  *      bsh_c_name = "";客戶名稱<br>
- *      bsh_h_ecn = "";硬體-ECN版本<br>
  *      bsh_s_ec = "";韌體-EC版本<br>
  *      bsh_h_nvram = "";硬體-NVRAM版本<br>
  *      bsh_h_mb = "";硬體-主機板本<br>
+ *      bsh_h_mb_ecn = "";硬體-主機板本-ECN版本<br>
  *      bsh_s_bios = "";韌體-BIOS<br>
  *      bsh_s_os = "";軟體-作業系統<br>
  * 
@@ -99,7 +99,7 @@ public class BomSoftwareHardware {
 		this.bshnb = "";
 		this.bshmodel = "";
 		this.bshcname = "";
-		this.bshhecn = "";
+		this.bshhmbecn = "";
 		this.bshsec = "";
 		this.bshhnvram = "";
 		this.bshhmb = "";
@@ -147,14 +147,14 @@ public class BomSoftwareHardware {
 	private String bshmodel;
 	@Column(name = "bsh_c_name", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bshcname;
-	@Column(name = "bsh_h_ecn", nullable = false, columnDefinition = "varchar(50) default ''")
-	private String bshhecn;
 	@Column(name = "bsh_s_ec", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bshsec;
 	@Column(name = "bsh_h_nvram", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bshhnvram;
 	@Column(name = "bsh_h_mb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bshhmb;
+	@Column(name = "bsh_h_mb_ecn", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bshhmbecn;
 	@Column(name = "bsh_s_bios", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bshsbios;
 	@Column(name = "bsh_s_os", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -288,14 +288,6 @@ public class BomSoftwareHardware {
 		this.bshcname = bshcname;
 	}
 
-	public String getBshhecn() {
-		return bshhecn;
-	}
-
-	public void setBshhecn(String bshhecn) {
-		this.bshhecn = bshhecn;
-	}
-
 	public String getBshsec() {
 		return bshsec;
 	}
@@ -334,6 +326,20 @@ public class BomSoftwareHardware {
 
 	public void setBshsos(String bshsos) {
 		this.bshsos = bshsos;
+	}
+
+	/**
+	 * @return the bshhmbecn
+	 */
+	public String getBshhmbecn() {
+		return bshhmbecn;
+	}
+
+	/**
+	 * @param bshhmbecn the bshhmbecn to set
+	 */
+	public void setBshhmbecn(String bshhmbecn) {
+		this.bshhmbecn = bshhmbecn;
 	}
 
 }

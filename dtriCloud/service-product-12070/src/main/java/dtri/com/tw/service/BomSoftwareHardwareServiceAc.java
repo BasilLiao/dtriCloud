@@ -188,7 +188,7 @@ public class BomSoftwareHardwareServiceAc {
 
 				entityDataOld.setBshnb(x.getBshnb());
 				entityDataOld.setBshcname(x.getBshcname());
-				entityDataOld.setBshhecn(x.getBshhecn());
+				entityDataOld.setBshhmbecn(x.getBshhmbecn());
 				entityDataOld.setBshhnvram(x.getBshhnvram());
 				entityDataOld.setBshhmb(x.getBshhmb());
 				entityDataOld.setBshsbios(x.getBshsbios());

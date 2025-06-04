@@ -1,131 +1,132 @@
 <style>
-	/*Table 寬度滾動*/
-	#other_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-	}
+/*Table 寬度滾動*/
+#other_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
 
-	/*Table 自動隱藏*/
-	#other_c .table-responsive th,
-	#other_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#other_c .table-responsive th, #other_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#other_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#other_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	#other_c .fixedCt {
-		position: sticky;
-		top: 0px;
-		z-index: 5;
-	}
+#other_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 
-	/*Table 每隔表格內_框線*/
-	#other_c .table-bordered td,
-	#other_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#other_c .table-bordered td, #other_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#other_c table {
-		max-height: calc(100vh - 520px);
-		min-height: 200px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#other_c table {
+	max-height: calc(100vh - 520px);
+	min-height: 200px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格內 背景色*/
-	#other_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#other_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*Table 滑鼠-覆寫換色*/
-	.table-hover>tbody>tr:hover>* {
-		--bs-table-accent-bg: #0d6efd40;
-		color: var(--bs-table-hover-color);
-	}
+/*Table 滑鼠-覆寫換色*/
+.table-hover>tbody>tr:hover>* {
+	--bs-table-accent-bg: #0d6efd40;
+	color: var(--bs-table-hover-color);
+}
 
-	/*標題色彩*/
-	.bg_def {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+.bg_def {
+	background-color: #cfe2ff;
+}
 
-	/*標題色彩*/
-	.bg-yellow {
-		background-color: var(--bs-yellow);
-	}
+/*標題色彩*/
+.bg-yellow {
+	background-color: var(--bs-yellow);
+}
 
-	/*標題色彩*/
-	.bg-orange {
-		background-color: var(--bs-orange);
-	}
+/*標題色彩*/
+.bg-orange {
+	background-color: var(--bs-orange);
+}
 
-	.bg-teal {
-		background-color: var(--bs-teal);
-	}
+.bg-teal {
+	background-color: var(--bs-teal);
+}
 
-	/*禁止使用*/
-	.dontUse {
-		pointer-events: none;
-		opacity: 0.5;
-	}
+/*禁止使用*/
+.dontUse {
+	pointer-events: none;
+	opacity: 0.5;
+}
 
-	/*直立式呈現邊字*/
-	#other_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#other_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_24*/
-	#other_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#other_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
 
-	#other_c .checkbox_20 {
-		width: 20px;
-		height: 20px;
-	}
+#other_c .checkbox_20 {
+	width: 20px;
+	height: 20px;
+}
 
-	#other_c .checkbox_16 {
-		width: 16px;
-		height: 16px;
-	}
+#other_c .checkbox_16 {
+	width: 16px;
+	height: 16px;
+}
 
-	/*指定標題色彩*/
-	#other_Detail_BPM_open,
-	#other_Detail_BPR_open .otherTitle {
-		color: white;
-	}
+/*指定標題色彩*/
+#other_Detail_BPM_open, #other_Detail_BPR_open .otherTitle {
+	color: white;
+}
 
-	/*鎖定*/
-	.locked-do {
-		pointer-events: none;
-	}
+/*鎖定*/
+.locked-do {
+	pointer-events: none;
+}
 </style>
 <div id="other_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
 	<div id="other_c_item" class="col-12 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_c_item_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="other_c_item_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
-			<div id="otherItemItem" class="col border border-primary  row m-0 p-0 shadow-sm">
+			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Search </b>
+			<div id="otherItemItem"
+				class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 otherTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="otherTitle  fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="oex_id"
-								name="oex_name" placeholder="Ex:123" autofocus>
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text id="oex_id" name="oex_name" placeholder="Ex:123"
+								autofocus>
 						</div>
 					</div>
 				</div>
@@ -133,33 +134,40 @@
 					<div class=" border border-secondary rounded">
 						<div class="otherTitle  fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" id="oex_id2" name="oex_name2">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								id="oex_id2" name="oex_name2">
 								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
 							</select>
 						</div>
 					</div>
 				</div>
 				<!--BBI(料BOM)-->
-				<div id="BBI" class="col-12 col-lg-4 p-0 row m-0 collapse other_BBI_open">
+				<div id="BBI"
+					class="col-12 col-lg-4 p-0 row m-0 collapse other_BBI_open">
 				</div>
 				<!--BPR(BOM規則)-->
-				<div id="BPR" class="col-12 col-lg-4 p-0 row m-0 collapse other_BPR_open">
+				<div id="BPR"
+					class="col-12 col-lg-4 p-0 row m-0 collapse other_BPR_open">
 				</div>
 				<!--BPM(BOM規格)-->
-				<div id="BPM" class="col-12 col-lg-4 p-0 row m-0 collapse show other_BPM_open">
+				<div id="BPM"
+					class="col-12 col-lg-4 p-0 row m-0 collapse show other_BPM_open">
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- 控制面板 -->
 	<div id="other_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="other_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<!--BBI(同步-BOM成品組成)-->
 				<div class="col-12 col-lg-2 p-1 collapse other_BBI_open">
 					<div class="border border-secondary rounded">
@@ -179,7 +187,7 @@
 					</div>
 				</div>
 				<!--BPR(BOM產品規則)-->
-				<div class="col-12 col-lg-4 p-1 collapse other_Detail_BPR_open">
+				<div class="col-12 col-lg-5 p-1 collapse other_Detail_BPR_open">
 					<div class="border border-secondary rounded">
 						<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
 						<div class="row m-0">
@@ -190,7 +198,7 @@
 							</button>
 							<button id="btn_bpr_back" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Rules<br>Update
+								<b>Rules<br>Back / Update
 								</b>
 							</button>
 							<button id="btn_bpr_save" type="button"
@@ -207,7 +215,7 @@
 					</div>
 				</div>
 				<!--BPM(BOM產品管理)-->
-				<div class="col-12 col-lg-4 p-1 collapse show other_Detail_BPM_open">
+				<div class="col-12 col-lg-5 p-1 collapse show other_Detail_BPM_open">
 					<div class="border border-secondary rounded">
 						<div class="bg-teal fw-bolder rounded-top">Format BOM</div>
 						<div class="row m-0">
@@ -218,7 +226,7 @@
 							</button>
 							<button id="btn_bpm_back" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Format<br>Update
+								<b>Format<br>Back / Update
 								</b>
 							</button>
 							<button id="btn_bpm_save" type="button"
@@ -240,8 +248,8 @@
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_other_send_auto" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">Auto(30s)</b>
+									class="m-0 form-check-input checkbox_16 border border-dark">
+								<br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -261,10 +269,12 @@
 	</div>
 	<!-- 料BOM-查詢結果 -->
 	<div id="other_BBI" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target=".other_BBI_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			From ERP BOM list
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target=".other_BBI_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> From
+			ERP BOM list
 		</div>
 		<div id="other_BBI_open" class="row m-0 collapse other_BBI_open">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
@@ -287,8 +297,9 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_BBI_checkbox" disabled="disabled" alt="row_x" title="IKey_GKey"
-									type="checkbox" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input name="other_BBI_checkbox" disabled="disabled" alt="row_x"
+									title="IKey_GKey" type="checkbox"
+									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -299,10 +310,12 @@
 	</div>
 	<!-- 規則BOM-查詢結果 -->
 	<div id="other_BPR" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target=".other_BPR_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			BOM Rules list
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target=".other_BPR_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> BOM
+			Rules list
 		</div>
 		<div id="other_BPR_open" class="row m-0 collapse other_BPR_open">
 			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Result </b>
@@ -312,7 +325,8 @@
 					<tr>
 						<th class="fixedC1" style="min-width: 40px;">
 							<div>
-								<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+								<button type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 									<b>M</b>
 								</button>
 							</div>
@@ -324,8 +338,9 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_BPR_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
-									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input name="other_BPR_c_detail" disabled="disabled" alt="row_x"
+									title="IKey_GKey" type="radio"
+									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -336,19 +351,25 @@
 	</div>
 	<!-- 查詢-細節結果-BPR -->
 	<div id="other_Detail_BPR_od" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target=".other_Detail_BPR_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			BOM Rules detail
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target=".other_Detail_BPR_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> BOM
+			Rules detail
 		</div>
-		<div id="other_Detail_BPR_open" class="row m-0 collapse other_Detail_BPR_open">
-			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Modify detail </b>
+		<div id="other_Detail_BPR_open"
+			class="row m-0 collapse other_Detail_BPR_open">
+			<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Modify detail
+			</b>
 			<!--BOM項目規則-->
-			<div class="col row m-0 p-0 border border-primary" style="width: 95%;">
+			<div class="col row m-0 p-0 border border-primary"
+				style="width: 95%;">
 				<!--BOM項目清單-->
 				<div id="other_Detail_BPR" class="col-12 col-lg-7 m-0 p-1 row">
 					<!---->
-					<div id="od_bpr_status" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpr_status"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">Status(狀態)</div>
 						<div class="p-1 m-0 bpm_status text-secondary h3">
 							<select class="col-12 m-0 p-1 border border-dark form-select">
@@ -360,24 +381,28 @@
 						</div>
 					</div>
 					<!--PM-->
-					<div id="od_bpr_name" class="col-4 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpr_name"
+						class="col-4 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpr_name</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text name="bpm_nb"
-								placeholder="Ex:90-123-123456">
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text name="bpm_nb" placeholder="Ex:90-123-123456">
 						</div>
 					</div>
-					<div id="od_bpr_model" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpr_model"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpr_model</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text name="bpm_model"
-								placeholder="Ex:303KY Model">
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text name="bpm_model" placeholder="Ex:303KY Model">
 						</div>
 					</div>
-					<div id="od_bpr_type" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpr_type"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpr_type</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" name="bpm_type">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								name="bpm_type">
 								<option value="">請選擇</option>
 								<option value="0">開發BOM</option>
 								<option value="1">產品BOM</option>
@@ -387,11 +412,13 @@
 							</select>
 						</div>
 					</div>
-					<div id="od_bpr_sys_note" class="col-12 m-0 p-0  mt-1 border border-secondary rounded">
+					<div id="od_bpr_sys_note"
+						class="col-12 m-0 p-0  mt-1 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpr_sys_note</div>
 						<div class="p-1">
-							<textarea rows="3" class="col-12 m-0 p-1 border border-dark form-control" name="sys_note"
-								placeholder="Ex:Note"></textarea>
+							<textarea rows="3"
+								class="col-12 m-0 p-1 border border-dark form-control"
+								name="sys_note" placeholder="Ex:Note"></textarea>
 						</div>
 					</div>
 					<!---->
@@ -418,24 +445,27 @@
 											style="width: 24px; height: 24px;"></i>
 									</div>
 								</th>
-								<td class="exTbodytd d-none" style="max-width: 100px">
-									<input class="col-12 m-0 p-1 border border-dark form-control" disabled="disabled">
-								</td>
+								<td class="exTbodytd d-none" style="max-width: 100px"><input
+									class="col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled"></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<div id="other_Detail_BPR_info" class="col-12 col-lg-5 m-0 p-1">
 					<!--bom_parameter_settings(用途:BOM產品參數)-->
-					<div id="other_BPR_BPS" class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
-						<div class="otherTitle bg-info fw-bolder rounded-top">Product parameters(產品自訂參數).</div>
+					<div id="other_BPR_BPS"
+						class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
+						<div class="otherTitle bg-info fw-bolder rounded-top">Product
+							parameters(產品自訂參數).</div>
 						<table style="max-height: 220px;"
 							class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-info fixedCt">
 								<tr>
 									<th class="fixedC1" style="min-width: 40px;">
 										<div>
-											<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+											<button type="button"
+												class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 												<b>M</b>
 											</button>
 										</div>
@@ -460,15 +490,14 @@
 				</div>
 				<!--規則BOM物料細節-查詢結果-->
 				<div id="other_BPR_BIS" class="col-12 col-lg-5 m-0 p-0 pt-1 d-none">
-					<div class="otherTitle bg-orange fw-bolder rounded-top">
-						Bom edit basic conditions
-					</div>
+					<div class="otherTitle bg-orange fw-bolder rounded-top">Bom
+						edit basic conditions</div>
 					<div id="other_BPR_BIS_open" class="row m-0">
 						<b class="p-0 m-0 lh-1 wlr bg-orange text-white"> Result </b>
 						<div class="col m-0 p-0" style="width: 95%;">
 							<table
 								class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm"
-								style="height: 445px;min-height: 445px;">
+								style="height: 445px; min-height: 445px;">
 								<thead class="table-warning  fixedCt">
 									<tr>
 										<th class="fixedC1" style="min-width: 40px;">
@@ -490,8 +519,8 @@
 													style="width: 24px; height: 24px;"></i>
 											</div>
 										</th>
-										<td class="exTbodytd d-none" style="max-width: 100px">
-											<input class="col-12 m-0 p-1 border border-dark form-control">
+										<td class="exTbodytd d-none" style="max-width: 100px"><input
+											class="col-12 m-0 p-1 border border-dark form-control">
 										</td>
 									</tr>
 								</tbody>
@@ -504,10 +533,12 @@
 	</div>
 	<!-- 查詢結果 -->
 	<div id="other_BPM" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-teal text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target=".other_BPM_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			BOM Format list
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-teal text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target=".other_BPM_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> BOM
+			Format list
 		</div>
 		<div id="other_BPM_open" class="row m-0 collapse show other_BPM_open">
 			<b class="p-0 m-0 lh-1 wlr bg-teal text-white"> Result </b>
@@ -530,8 +561,9 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_BPM_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
-									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input name="other_BPM_c_detail" disabled="disabled" alt="row_x"
+									title="IKey_GKey" type="radio"
+									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -542,19 +574,35 @@
 	</div>
 	<!-- 查詢-細節結果-BPM -->
 	<div id="other_Detail_BPM_od" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-teal text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target=".other_Detail_BPM_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
-			BOM Format detail
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-teal text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target=".other_Detail_BPM_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> BOM
+			Format detail
 		</div>
-		<div id="other_Detail_BPM_open" class="row m-0 collapse show other_Detail_BPM_open">
+		<div id="other_Detail_BPM_open"
+			class="row m-0 collapse show other_Detail_BPM_open">
 			<b class="p-0 m-0 lh-1 wlr bg-teal text-white"> Modify detail </b>
 			<!--BOM項目規則-->
-			<div class="col row m-0 p-0 border border-primary" style="width: 95%;">
+			<div class="col row m-0 p-0 border border-primary"
+				style="width: 95%;">
 				<!--BOM項目清單-->
 				<div id="other_Detail_BPM" class="col-12 col-lg-7 m-0 p-1 row">
+					<div id="od_bpm_batch"
+						class="col-2 m-0 p-0 border border-secondary rounded">
+						<div class="otherTitle bg-danger fw-bolder rounded-top">Batch</div>
+						<div class="p-1">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								name="bpm_batch">
+								<option value="" selected="selected">Only one</option>
+								<option value="list">Overwrite</option>
+							</select>
+						</div>
+					</div>
 					<!---->
-					<div id="od_bpm_status" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpm_status"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">Status(狀態)</div>
 						<div class="p-1 m-0 bpm_status text-secondary h3">
 							<select class="col-12 m-0 p-1 border border-dark form-select">
@@ -566,24 +614,28 @@
 						</div>
 					</div>
 					<!--PM-->
-					<div id="od_bpm_model" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpm_model"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpm_model</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text name="bpm_model"
-								placeholder="Ex:303KY Model">
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text name="bpm_model" placeholder="Ex:303KY Model">
 						</div>
 					</div>
-					<div id="od_bpm_nb" class="col-4 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpm_nb"
+						class="col-4 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpm_nb</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text name="bpm_nb"
-								placeholder="Ex:90-123-123456">
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text name="bpm_nb" placeholder="Ex:90-123-123456">
 						</div>
 					</div>
-					<div id="od_bpm_type" class="col-2 m-0 p-0 border border-secondary rounded">
+					<div id="od_bpm_type"
+						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpm_type</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" name="bpm_type">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								name="bpm_type">
 								<option value="">請選擇</option>
 								<option value="0">開發BOM</option>
 								<option value="1">產品BOM</option>
@@ -593,11 +645,14 @@
 							</select>
 						</div>
 					</div>
-					<div id="od_bpm_sys_note" class="col-12 m-0 p-0  mt-1 border border-secondary rounded">
+
+					<div id="od_bpm_sys_note"
+						class="col-12 m-0 p-0  mt-1 border border-secondary rounded">
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpm_sys_note</div>
 						<div class="p-1">
-							<textarea rows="3" class="col-12 m-0 p-1 border border-dark form-control" name="sys_note"
-								placeholder="Ex:Note"></textarea>
+							<textarea rows="3"
+								class="col-12 m-0 p-1 border border-dark form-control"
+								name="sys_note" placeholder="Ex:Note"></textarea>
 						</div>
 					</div>
 					<!---->
@@ -624,25 +679,27 @@
 											style="width: 24px; height: 24px;"></i>
 									</div>
 								</th>
-								<td class="exTbodytd d-none" style="max-width: 100px">
-									<input class="col-12 m-0 p-1 border border-dark form-control" disabled="disabled">
-								</td>
+								<td class="exTbodytd d-none" style="max-width: 100px"><input
+									class="col-12 m-0 p-1 border border-dark form-control"
+									disabled="disabled"></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				<div id="other_Detail_BPM_info" class="col-12 col-lg-5 m-0 p-1">
 					<!--Software&&Hardware-->
-					<div id="other_BSH" class="col-12 m-0 p-0 border border-secondary rounded">
-						<div class="otherTitle bg-primary fw-bolder rounded-top">Software/Firmware/Hardware ver(軟硬韌體版本).
-						</div>
+					<div id="other_BSH"
+						class="col-12 m-0 p-0 border border-secondary rounded">
+						<div class="otherTitle bg-primary fw-bolder rounded-top">Software/Firmware/Hardware
+							ver(軟硬韌體版本).</div>
 						<table style="max-height: 220px;"
 							class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-primary fixedCt">
 								<tr>
 									<th class="fixedC1" style="min-width: 40px;">
 										<div>
-											<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+											<button type="button"
+												class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 												<b>M</b>
 											</button>
 										</div>
@@ -665,15 +722,18 @@
 						</table>
 					</div>
 					<!--bom_parameter_settings(用途:BOM產品參數)-->
-					<div id="other_BPS" class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
-						<div class="otherTitle bg-info fw-bolder rounded-top">Product parameters(產品自訂參數).</div>
+					<div id="other_BPS"
+						class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
+						<div class="otherTitle bg-info fw-bolder rounded-top">Product
+							parameters(產品自訂參數).</div>
 						<table style="max-height: 220px;"
 							class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-info fixedCt">
 								<tr>
 									<th class="fixedC1" style="min-width: 40px;">
 										<div>
-											<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+											<button type="button"
+												class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 												<b>M</b>
 											</button>
 										</div>
@@ -696,15 +756,18 @@
 						</table>
 					</div>
 					<!--生產紀錄-->
-					<div id="other_PPR" class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
-						<div class="otherTitle bg-secondary fw-bolder rounded-top">Production records(生產紀錄).</div>
+					<div id="other_PPR"
+						class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
+						<div class="otherTitle bg-secondary fw-bolder rounded-top">Production
+							records(生產紀錄).</div>
 						<table style="max-height: 220px;"
 							class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 							<thead class="table-warning fixedCt">
 								<tr>
 									<th class="fixedC1" style="min-width: 40px;">
 										<div>
-											<button type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+											<button type="button"
+												class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 												<b>M</b>
 											</button>
 										</div>
@@ -729,9 +792,8 @@
 				</div>
 				<!--規則BOM物料細節-查詢結果-->
 				<div id="other_BIS" class="col-12 col-lg-5 m-0 p-1 d-none">
-					<div class="otherTitle bg-orange fw-bolder rounded-top">
-						Bom edit basic conditions
-					</div>
+					<div class="otherTitle bg-orange fw-bolder rounded-top">Bom
+						edit basic conditions</div>
 					<div id="other_BIS_open" class="row m-0">
 						<b class="p-0 m-0 lh-1 wlr bg-orange text-white"> Result </b>
 						<div class="col m-0 p-0" style="width: 95%;">
@@ -759,8 +821,8 @@
 													style="width: 24px; height: 24px;"></i>
 											</div>
 										</th>
-										<td class="exTbodytd d-none" style="max-width: 100px">
-											<input class="col-12 m-0 p-1 border border-dark form-control">
+										<td class="exTbodytd d-none" style="max-width: 100px"><input
+											class="col-12 m-0 p-1 border border-dark form-control">
 										</td>
 									</tr>
 								</tbody>
@@ -1348,6 +1410,7 @@
 				$(document).on("click", "#other_c button", function (event) {
 					console.log($(event.currentTarget).attr("id"));
 					let clickId = $(event.currentTarget).attr("id");
+					let od_bpm_batch = $("#od_bpm_batch option:selected").val();
 					let bpmStatus = $('#od_bpm_status select');
 					let bprStatus = $('#od_bpr_status select');
 					//點擊動作
@@ -1415,6 +1478,7 @@
 							let whoisbpsnv = "";
 							let whoisbisitem = "";
 							let other_BPM_R = "";
+							$("#od_bpm_batch select").val("");//批次選擇->歸位
 							if (clickId === "btn_bpm_detail" && $("#other_BPM tbody input:checked").length > 0) {
 								checkedBPM_R = $("#other_BPM tbody input:checked").map(function () {
 									return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
@@ -1667,10 +1731,12 @@
 									$("#" + b_p_s + " tbody tr input").val("");
 									$("#" + b_p_s + " tbody tr select").val("");
 									$("#other_Detail_" + b_w + "_od #other_BIS .valTbodyTr").remove();
+									
 									//回至清單->觸發開關->開啟
 									if (!$("#other_" + b_w + "_open").hasClass("show")) {
 										$("#other_" + b_w + " .bi-dash-square").trigger("click");
 									}
+									
 									return false;
 									break;
 							}
@@ -1690,6 +1756,7 @@
 									}
 								});
 							}
+							
 							//回存資料
 							let bpmbisitem = {};//結構化
 							let bpmbasicSort = {};//排序?
@@ -1729,12 +1796,33 @@
 									const result = bis.filter(item => item.bisgid + "" === bisgid);
 									let key = result[0].syssort.toString().padStart(3, '0') + "_sort_" + bisgname + ":" + bisfname;
 									console.log(key);
-									bpmbasicSort[key] = bpmbisitemOne;
+									bpmbasicSort[key] = bpmbisitemOne;//每個規格項目
+									//====批次作業(覆蓋)->***插入比對檢查***====
+									if(od_bpm_batch==="list"){
+										$("#other_BPM tbody tr").each(function () {
+											let thisText = $(this).find('.bpmbisitem').text();
+											if(thisText!=""){
+												let thisJson = JSON.parse(thisText);
+												console.log(thisJson.items);
+												//每一項檢查取代
+												thisJson.items.forEach((o,i) => {
+													if(o.bisgname === bpmbisitemOne.bisgname){
+														thisJson.items[i] = bpmbisitemOne;
+													}
+												});
+												//放回去
+												$(this).find('.bpmbisitem').text(JSON.stringify(thisJson));
+												$(this).find('.bpmnb').addClass('text-warning');
+											}
+										});
+									}
+									
 								} else if (bisid === "0") {
 									//基本資料
 									bpmbisitem.basic = bisnb.split(',').length > 0 ? bisnb.split(',') : [];
 								}
 							});
+							
 							//========排序整理========
 							bpmbasicSort = main.methods.orderedSort(bpmbasicSort);
 							Object.entries(bpmbasicSort).forEach(([key, value]) => {
@@ -1759,18 +1847,21 @@
 								}
 							});
 							console.log(bpmbisitem);
+							
 							//帶回資料
-							if (clickId === "btn_bpm_back") {
-								bpmr_nbParent.find("." + b_w_m + "nb").text($("#od_" + b_w_m + "_nb input").val());
-							} else {
-								bpmr_nbParent.find("." + b_w_m + "name").text($("#od_" + b_w_m + "_name input").val());
+							if(od_bpm_batch!=="list"){//批次作業狀況下例外
+								if (clickId === "btn_bpm_back") {
+									bpmr_nbParent.find("." + b_w_m + "nb").text($("#od_" + b_w_m + "_nb input").val());
+								} else {
+									bpmr_nbParent.find("." + b_w_m + "name").text($("#od_" + b_w_m + "_name input").val());
+								}
+								bpmr_nbParent.find("." + b_w_m + "model").text($("#od_" + b_w_m + "_model input").val());
+								bpmr_nbParent.find("." + b_w_m + "typename").text($("#od_" + b_w_m + "_type option:selected").text());
+								bpmr_nbParent.find("." + b_w_m + "type").text($("#od_" + b_w_m + "_type option:selected").val());
+								bpmr_nbParent.find(".sysnote").text($("#od_" + b_w_m + "_sys_note textarea").val());
+								bpmr_nbParent.find("." + b_w_m + "bisitem").text(JSON.stringify(bpmbisitem));
+								bpmr_nbParent.find("." + b_w_m + "bpsnv").text(JSON.stringify(bpmbpsnv));
 							}
-							bpmr_nbParent.find("." + b_w_m + "model").text($("#od_" + b_w_m + "_model input").val());
-							bpmr_nbParent.find("." + b_w_m + "typename").text($("#od_" + b_w_m + "_type option:selected").text());
-							bpmr_nbParent.find("." + b_w_m + "type").text($("#od_" + b_w_m + "_type option:selected").val());
-							bpmr_nbParent.find(".sysnote").text($("#od_" + b_w_m + "_sys_note textarea").val());
-							bpmr_nbParent.find("." + b_w_m + "bisitem").text(JSON.stringify(bpmbisitem));
-							bpmr_nbParent.find("." + b_w_m + "bpsnv").text(JSON.stringify(bpmbpsnv));
 
 							//初始化
 							if (clickId === "btn_bpm_back") {

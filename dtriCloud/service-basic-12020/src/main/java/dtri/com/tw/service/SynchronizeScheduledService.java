@@ -488,6 +488,7 @@ public class SynchronizeScheduledService {
 					shortageListSaves.add(ssl);
 				}
 				bnmcontent += "</tbody></table>";
+				bnmcontent += "<br><span style='color:red; font-weight:bold;'>※ This is an automated email from the Cloud system. Do not reply。※</span>";
 				readyNeedMail.setBnmcontent(bnmcontent);
 				// 檢查信件(避免重複)
 				if (notificationMailDao.findAllBySearch(null, null, null, k, null, null, null).size() == 0) {
@@ -794,6 +795,7 @@ public class SynchronizeScheduledService {
 						+ "</tr>";
 			}
 			bnmcontent += "</tbody></table>";
+			bnmcontent += "<br><span style='color:red; font-weight:bold;'>※ This is an automated email from the Cloud system. Do not reply。※</span>";
 			readyNeedMail.setBnmcontent(bnmcontent);
 
 			// 輸出到 byte[]
@@ -1043,6 +1045,7 @@ public class SynchronizeScheduledService {
 								+ "</tr>";
 					}
 					bnmcontent += "</tbody></table>";
+					bnmcontent += "<br><span style='color:red; font-weight:bold;'>※ This is an automated email from the Cloud system. Do not reply。※</span>";
 					readyNeedMail.setBnmcontent(bnmcontent);
 
 					// 檢查信件(避免重複)
@@ -1103,13 +1106,12 @@ public class SynchronizeScheduledService {
 				LocalDate yesterday = LocalDate.now().minusDays(1);// 昨天日期
 				String fmYesterdate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 00:00:00";
 				String fmTodate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 24:00:00";
-				
-				
+
 				List<Order> infactory_sort = new ArrayList<>();
 				infactory_sort.add(new Order(Direction.ASC, "siodate"));// 預計開工日
 				infactory_sort.add(new Order(Direction.ASC, "sinb"));// 製令單
 				PageRequest infactory_pageable = PageRequest.of(0, 9999, Sort.by(infactory_sort));
-				
+
 				ArrayList<ScheduleInfactory> infactorys = scheduleInfactoryDao.findAllByDateSearch(fmYesterdate,
 						fmTodate, null, infactory_pageable);
 
@@ -1248,6 +1250,7 @@ public class SynchronizeScheduledService {
 								+ "</tr>";
 					}
 					bnmcontent += "</tbody></table>";
+					bnmcontent += "<br><span style='color:red; font-weight:bold;'>※ This is an automated email from the Cloud system. Do not reply。※</span>";
 					readyNeedMail.setBnmcontent(bnmcontent);
 
 					// 檢查信件(避免重複)

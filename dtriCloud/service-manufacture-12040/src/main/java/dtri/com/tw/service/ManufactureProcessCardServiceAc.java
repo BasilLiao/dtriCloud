@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -33,12 +31,9 @@ import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
-import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.Query;
 
 @Service
 public class ManufactureProcessCardServiceAc {
@@ -153,7 +148,7 @@ public class ManufactureProcessCardServiceAc {
 			selectArr.add("生產中_4");
 			selectArr.add("生產結束_5");
 			searchJsons = packageService.searchSet(searchJsons, selectArr, "sphprogress", "Ex:單據狀態?", true, //
-					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);

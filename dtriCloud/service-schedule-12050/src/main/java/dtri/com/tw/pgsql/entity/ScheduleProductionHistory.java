@@ -44,6 +44,7 @@ import jakarta.persistence.Transient;
  *      this.sphbpsnv = "";產品參數設置 [Name_Value ,.....]<br>
  *      this.sphbpsuser = "";BOM負責人<br>
  *      this.sphpon = "";製令單號<br>
+ *      this.sphpontype = "";製令單號-類型<br>
  *      this.sphonb = "";訂單號<br>
  *      this.sphoname = "";訂單客戶<br>
  *      this.sphocountry = "";訂單國家<br>
@@ -94,12 +95,17 @@ public class ScheduleProductionHistory {
 		this.sphbisitem = "";
 		this.sphbpsnv = "";
 		this.sphbpsuser = "";
-		this.setSphpon("");
+		this.sphpon = "";
+		this.sphpontype = "";
+
 		this.sphonb = "";
 		this.sphoname = "";
 		this.sphocountry = "";
 		this.sphobpmnb = "";
-		this.sphhdate = new Date();
+		this.setSphhdate(new Date());
+		this.setSphsdate(new Date());
+		this.setSphidate(new Date());
+
 		this.sphfrom = "";
 		this.sphstatus = 1;
 		this.sphprogress = 0;
@@ -115,6 +121,8 @@ public class ScheduleProductionHistory {
 		this.sphlable = ""; // : 標籤選擇<br>
 		this.sphmfgpartno = ""; // : 工廠認證碼<br>
 		this.sphpartno = ""; // : 組件號<br>
+		this.sphwarranty = "";// 保固
+		this.sphline = "";// 生產線
 	}
 
 	@PrePersist
@@ -175,6 +183,9 @@ public class ScheduleProductionHistory {
 	//
 	@Column(name = "sph_pon", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
 	private String sphpon;
+	@Column(name = "sph_pon_type", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphpontype;
+
 	@Column(name = "sph_o_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphonb;
 	@Column(name = "sph_o_name", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -188,6 +199,11 @@ public class ScheduleProductionHistory {
 
 	@Column(name = "sph_h_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date sphhdate;
+	@Column(name = "sph_s_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date sphsdate;
+	@Column(name = "sph_i_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date sphidate;
+
 	@Column(name = "sph_from", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphfrom;
 	@Column(name = "sph_status", nullable = false, columnDefinition = "int default 0")
@@ -234,6 +250,12 @@ public class ScheduleProductionHistory {
 
 	@Column(name = "sph_partno", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphpartno; // : 組件號<br>
+
+	@Column(name = "sph_line", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String sphline; // : 生產線<br>
+
+	@Column(name = "sph_warranty", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String sphwarranty; // : 保固年分<br>
 
 	// @Transient
 	// private String sphsph; // : 生產紀錄內容(JSON_Array)<br>
@@ -592,6 +614,76 @@ public class ScheduleProductionHistory {
 
 	public void setSphpartno(String sphpartno) {
 		this.sphpartno = sphpartno;
+	}
+
+	/**
+	 * @return the sphpontype
+	 */
+	public String getSphpontype() {
+		return sphpontype;
+	}
+
+	/**
+	 * @param sphpontype the sphpontype to set
+	 */
+	public void setSphpontype(String sphpontype) {
+		this.sphpontype = sphpontype;
+	}
+
+	/**
+	 * @return the sphline
+	 */
+	public String getSphline() {
+		return sphline;
+	}
+
+	/**
+	 * @param sphline the sphline to set
+	 */
+	public void setSphline(String sphline) {
+		this.sphline = sphline;
+	}
+
+	/**
+	 * @return the sphwarranty
+	 */
+	public String getSphwarranty() {
+		return sphwarranty;
+	}
+
+	/**
+	 * @param sphwarranty the sphwarranty to set
+	 */
+	public void setSphwarranty(String sphwarranty) {
+		this.sphwarranty = sphwarranty;
+	}
+
+	/**
+	 * @return the sphsdate
+	 */
+	public Date getSphsdate() {
+		return sphsdate;
+	}
+
+	/**
+	 * @param sphsdate the sphsdate to set
+	 */
+	public void setSphsdate(Date sphsdate) {
+		this.sphsdate = sphsdate;
+	}
+
+	/**
+	 * @return the sphidate
+	 */
+	public Date getSphidate() {
+		return sphidate;
+	}
+
+	/**
+	 * @param sphidate the sphidate to set
+	 */
+	public void setSphidate(Date sphidate) {
+		this.sphidate = sphidate;
 	}
 
 }
