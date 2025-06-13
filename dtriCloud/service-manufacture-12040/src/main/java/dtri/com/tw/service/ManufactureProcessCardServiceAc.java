@@ -79,7 +79,7 @@ public class ManufactureProcessCardServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<ScheduleProductionHistory> entitys = productionHistoryDao.findAllBySearch(null, null, null, null,
-					null, null, null, pageable);
+					null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -165,7 +165,7 @@ public class ManufactureProcessCardServiceAc {
 
 			// Step4-2.資料區分(一般/細節)
 			ArrayList<ScheduleProductionHistory> entitys = productionHistoryDao.findAllBySearch(searchData.getSphpon(),
-					null, null, null, null, null, null, pageable);
+					searchData.getSphbpmnb(), null, null, searchData.getSphprogress(), null, null, null, pageable);
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
@@ -185,7 +185,7 @@ public class ManufactureProcessCardServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphsdate_sphidate");
 		return packageBean;
 	}
 
@@ -300,7 +300,8 @@ public class ManufactureProcessCardServiceAc {
 			if (x.getSphid() != null) {
 				ScheduleProductionHistory entityDataOld = productionHistoryDao.findById(x.getSphid()).get();
 				int stop = productionHistoryDao
-						.findAllBySearch(entityDataOld.getSphpon(), null, null, null, null, null, null, null).size();
+						.findAllBySearch(entityDataOld.getSphpon(), null, null, null, null, null, null, null, null)
+						.size();
 				entityDataOld.setSysmdate(new Date());
 				entityDataOld.setSysmuser(packageBean.getUserAccount());
 				entityDataOld.setSysstatus(2);

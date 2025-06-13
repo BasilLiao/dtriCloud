@@ -1372,6 +1372,10 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
+			//測試用
+//			if(oKey.equals("A151-250604002-0001")) {
+//				System.out.println(oKey);
+//			}
 			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
@@ -1474,6 +1478,10 @@ public class SynchronizeERPService {
 			removeInCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
+				//測試用
+//				if(nKey.equals("A151-250604002-0001")) {
+//					System.out.println(nKey);
+//				}
 				// 已經完成->標記更新
 				if ("Y".equals(r.getTi022())) {
 					BasicIncomingList o = removeInMap.get(nKey);

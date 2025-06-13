@@ -89,7 +89,7 @@ public class BasicChangeItemsServiceAc {
 			// Step3-1.取得資料(一般/細節)
 			// 製令單
 			ArrayList<BasicCommandList> entitysNew = new ArrayList<BasicCommandList>();
-			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, "90-320",1, pageableBC);
+			ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, "90-320", 1, pageableBC);
 			// Step4-2.資料區分(一般/細節)- 排除重複單號
 			Map<String, Boolean> check = new HashMap<String, Boolean>();
 			entitys.forEach(o -> {
@@ -193,23 +193,37 @@ public class BasicChangeItemsServiceAc {
 					BasicCommandList.class);
 			ArrayList<BasicCommandList> entitysNew = new ArrayList<BasicCommandList>();
 			ArrayList<WarehouseArea> entityDetails = new ArrayList<WarehouseArea>();
-
+			ArrayList<BasicCommandList> entitys = new ArrayList<BasicCommandList>();
 			// 複數?避免為空
 			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
 					? searchData.getBclpnumber().replaceAll("\\s", "").split("/")
 					: new String[] { "90-320" };
 			// 複數?
 			for (String bclpn : bclpns) {
-				// 製令單
-				ArrayList<BasicCommandList> entitys = commandListDao.findAllBySearch(null, null, bclpn,1, pageableBC);
-				// BOM組成結構
-				ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(null, null, bclpn, null,
-						null, null);
-				// 製令單A521
-				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null,1,
+				// 合併一起+標記
+				WarehouseArea newW = new WarehouseArea();
+				newW.setWawmpnb("===" + bclpn + "===");
+				entityDetails.add(newW);
+
+				// * BOM組成結構(遞迴圈)-> 需配對清單->可能多階層
+				ArrayList<BasicBomIngredients> ingredients = loopBasicBomIngredients(bclpn);
+				ingredients.forEach(i -> {
+					// *製令單
+					ArrayList<BasicCommandList> entityWOs = commandListDao.findAllBySearch(null, null, i.getBbiisn(), 1,
+							pageableBC);
+					if (entityWOs.size() > 0) {
+						entitys.addAll(entityWOs);
+					}
+					// *倉庫數量儲位
+					ArrayList<WarehouseArea> entityWAs = areaDao.findAllByWawmpnbNot0(i.getBbiisn(), pageableWA);
+					entityDetails.addAll(entityWAs);
+				});
+
+				// *製令單A521
+				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null, 1,
 						pageableBC);
 
-				// BOM而外庫存量儲位
+				// *BOM而外庫存量儲位
 				Set<String> entityBoms = new HashSet<>();// A521 類型需要再次查詢
 				ArrayList<WarehouseArea> entityDetailsForBom = new ArrayList<WarehouseArea>();
 				ingredients.forEach(bom -> {
@@ -222,17 +236,9 @@ public class BasicChangeItemsServiceAc {
 						entityDetailsForBom.addAll(forBom);
 					}
 				});
-
-				// 倉庫數量儲位
-				ArrayList<WarehouseArea> entityDetail = areaDao.findAllByWawmpnbNot0(bclpn, pageableWA);
-				entityDetail.addAll(entityDetailsForBom);
-
-				// 合併一起+標記
-				WarehouseArea newW = new WarehouseArea();
-				newW.setWawmpnb("===" + bclpn + "===");
-				entityDetails.add(newW);
 				// 合併-與多筆資料
-				entityDetails.addAll(entityDetail);
+				entityDetails.addAll(entityDetailsForBom);
+
 
 				// Step4-2.資料區分(一般/細節)- 排除重複單號
 				Map<String, Boolean> check = new HashMap<String, Boolean>();// <工單號_組物料,true>
@@ -279,6 +285,27 @@ public class BasicChangeItemsServiceAc {
 		packageBean.setEntityDetailIKeyGKey("waid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bcledate_bclfdate_bclsdate");
 		return packageBean;
+	}
+
+	private ArrayList<BasicBomIngredients> loopBasicBomIngredients(String bclpn) {
+		ArrayList<BasicBomIngredients> ingredientFats = new ArrayList<BasicBomIngredients>();
+		// 查詢本階物料
+		ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(null, null, bclpn, null, null,
+				null);
+		for (BasicBomIngredients ids : ingredients) {
+			// 子迴圈
+			ArrayList<BasicBomIngredients> ingredientSons = new ArrayList<BasicBomIngredients>();
+			ingredientSons = loopBasicBomIngredients(ids.getBbisn());
+			if (ingredientSons != null && ingredientSons.size() > 0) {
+				ingredientFats.addAll(ingredientSons);
+			}
+		}
+		// 累計後回傳
+		if (ingredients.size() > 0) {
+			ingredientFats.addAll(ingredients);
+		}
+
+		return ingredientFats;
 	}
 
 	/** 修改資料 */

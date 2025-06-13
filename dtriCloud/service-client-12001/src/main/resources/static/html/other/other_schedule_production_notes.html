@@ -243,9 +243,8 @@
 										<select class="col-12 m-0 p-1 border border-dark form-select"
 											required>
 											<option class="" value="bom" selected="selected">一般模式(General)AC</option>
-											<option class="" value="definition">自定義(Custom)AC</option>
-											<option class="bg-warning" value="invalid">修改單據(Modify)AU</option>
-											<option class="bg-danger" value="invalid">作廢單據(Invalid)DD</option>
+											<option class="" value="definition">客製定義(Custom)AC</option>
+											<option class="bg-danger" value="invalid">作廢單據(Invalid)AD</option>
 										</select>
 									</div>
 								</div>
@@ -1531,7 +1530,12 @@
 				console.log("btn_saveForm");
 				console.log(other.data.entityFormatJson);
 				let entityJson = other.data.entityFormatJson;//格式
-
+				//簡易檢查->避免缺少值
+				if($("#sphpon_val").text()===""){
+					nav_alert.methods.alertshow("warning", "[487] Please Preview first [Warning]!!");
+					return false;
+				}
+				
 				//
 				entityJson.sphpon = $("#sphpon_val").text();//工單
 				entityJson.sphonb = $("#sphonb_val").text();//訂單
@@ -1605,7 +1609,7 @@
 				allContent.basic = basic;
 				allContent.items = items;
 				//放入->
-				entityJson.sphbisitem = allContent;
+				entityJson.sphbisitem = JSON.stringify(allContent);
 				//產品類型
 				entityJson.sphbpmtypename = "產品BOM";
 				entityJson.sphbpmtype = "1";
@@ -1649,9 +1653,8 @@
 				let action = "AC";
 				//可能作廢?
 				if($("#bomDefinition input").val()==='invalid'){
-					action = "DD";					
-				}else if($("#bomDefinition input").val()==='modify'){
-					action = "AU";	
+					action = "AD";		
+					type = "DELETE";
 				}
 				//
 				entityJsons.push(entityJson);
@@ -1689,7 +1692,7 @@
 				let searchPageSet = {};
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
-					console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
+					//console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
 					if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
 						entityJson[$(this).attr("id")] = new Date($(this).val()).getTime();
 					} else {
@@ -1715,7 +1718,7 @@
 			},
 			//==========================資料載入==========================
 			searchReLoad() {
-				console.log("searchReLoad_Start:" + new Date());
+				//console.log("searchReLoad_Start:" + new Date());
 				//還原
 				$('#search_c .valTbodytd').text("");
 				$('#search_c .exTbodyTh input').attr("disabled", "disabled");
@@ -1874,7 +1877,7 @@
 								//console.log(sphbisitemJson);
 							}
 						}
-						console.log(k + ":" + entity[k]);
+						//console.log(k + ":" + entity[k]);
 						//是否時間格式?
 						if (entityDateTime.indexOf(k) >= 0) {
 							let dF = new Date(entity[k]);
@@ -1893,7 +1896,7 @@
 			//==========================回傳接收==========================
 			otherReturn() {
 				//查詢回傳
-				console.log("searchReturn:" + new Date());
+				//console.log("searchReturn:" + new Date());
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
 					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);

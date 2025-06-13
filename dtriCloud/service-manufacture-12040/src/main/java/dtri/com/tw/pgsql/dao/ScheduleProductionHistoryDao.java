@@ -17,11 +17,12 @@ public interface ScheduleProductionHistoryDao extends JpaRepository<ScheduleProd
 			+ "(:sphbpmmodel is null or c.sphbpmmodel LIKE %:sphbpmmodel%) and " //
 			+ "(:sphonb is null or c.sphonb LIKE %:sphonb%) and " //
 			+ "(:sphpon is null or c.sphpon LIKE %:sphpon%) and "//
+			+ "(:sphprogress is null or c.sphprogress = :sphprogress) and "//
 			+ "(cast(:ssyscdate as date) is null or c.syscdate >= :ssyscdate) and " //
 			+ "(cast(:esyscdate as date) is null or c.syscdate <= :esyscdate) and " //
 			+ "(:sysmuser is null or c.sysmuser LIKE %:sysmuser%)") //
-	ArrayList<ScheduleProductionHistory> findAllBySearch(String sphpon,String sphbpmnb, String sphbpmmodel, String sphonb,
-			String sysmuser, Date ssyscdate, Date esyscdate, Pageable pageable);
+	ArrayList<ScheduleProductionHistory> findAllBySearch(String sphpon, String sphbpmnb, String sphbpmmodel,
+			String sphonb, Integer sphprogress, String sysmuser, Date ssyscdate, Date esyscdate, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleProductionHistory c WHERE "//

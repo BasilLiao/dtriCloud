@@ -1055,6 +1055,25 @@
 					$('#search_cr_open .exTbodytd').before(exTbodytd);
 				});
 				//Step2.查詢結果標題(細節)-資料
+				//Step3.查詢內容-格式
+				for (let b = 1; b <= other.data.searchPageSet.pageSize; b++) {
+					let exTbodyTr = $('#search_cr .exTbodyTr').clone();
+					let exDetailTbodyTr = $('#search_dcr .exDetailTbodyTr').clone();
+					//
+					exTbodyTr.removeClass('exTbodyTr');
+					exTbodyTr.removeClass('d-none');
+					exTbodyTr.addClass('valTbodyTr_' + b);
+					exTbodyTr.find('input').attr("alt", "row_" + b);
+					//
+					exDetailTbodyTr.removeClass('exDetailTbodyTr');
+					exDetailTbodyTr.removeClass('d-none');
+					exDetailTbodyTr.addClass('valTbodyDetailTr_' + b);
+					exDetailTbodyTr.find('input').attr("alt", "row_" + b);
+
+					$('#search_cr .exTbodyTr').before(exTbodyTr);
+					$('#search_dcr .exDetailTbodyTr').before(exDetailTbodyTr);
+
+				}
 
 				//Step3.查詢內容(細節)-格式
 				

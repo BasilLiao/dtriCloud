@@ -242,7 +242,7 @@ public class ScheduleProductionNotesServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
 		packageBean.setEntityDetailIKeyGKey("bpmid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate_sphsdate_sphidate");
 		return packageBean;
 	}
 
