@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -191,15 +192,19 @@ public class BasicChangeItemsServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			BasicCommandList searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					BasicCommandList.class);
-			ArrayList<BasicCommandList> entitysNew = new ArrayList<BasicCommandList>();
-			ArrayList<WarehouseArea> entityDetails = new ArrayList<WarehouseArea>();
-			ArrayList<BasicCommandList> entitys = new ArrayList<BasicCommandList>();
+			ArrayList<BasicCommandList> entitys = new ArrayList<BasicCommandList>();// 單據
+			ArrayList<WarehouseArea> entityDetails = new ArrayList<WarehouseArea>();// 倉庫
+
+			LinkedHashMap<String, BasicCommandList> entitysNew = new LinkedHashMap<String, BasicCommandList>();// 不重複
+			LinkedHashMap<String, BasicCommandList> entityMaps = new LinkedHashMap<String, BasicCommandList>();// 不重複(製令單號+序號)
+
 			// 複數?避免為空
 			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
 					? searchData.getBclpnumber().replaceAll("\\s", "").split("/")
 					: new String[] { "90-320" };
 			// 複數?
 			for (String bclpn : bclpns) {
+				LinkedHashMap<String, WarehouseArea> entityDetailMaps = new LinkedHashMap<String, WarehouseArea>();// 不重複(倉別+物料)
 				// 合併一起+標記
 				WarehouseArea newW = new WarehouseArea();
 				newW.setWawmpnb("===" + bclpn + "===");
@@ -212,12 +217,38 @@ public class BasicChangeItemsServiceAc {
 					ArrayList<BasicCommandList> entityWOs = commandListDao.findAllBySearch(null, null, i.getBbiisn(), 1,
 							pageableBC);
 					if (entityWOs.size() > 0) {
-						entitys.addAll(entityWOs);
+						for (BasicCommandList entityWO : entityWOs) {
+							entityMaps.put(
+									entityWO.getBclclass() + "-" + entityWO.getBclsn() + "-" + entityWO.getBclnb(),
+									entityWO);
+						}
+
 					}
 					// *倉庫數量儲位
 					ArrayList<WarehouseArea> entityWAs = areaDao.findAllByWawmpnbNot0(i.getBbiisn(), pageableWA);
-					entityDetails.addAll(entityWAs);
+					if (entityWAs.size() > 0) {
+						for (WarehouseArea entityWA : entityWAs) {
+							entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
+						}
+					}
 				});
+				// *製令單->包含自己
+				ArrayList<BasicCommandList> entityLWOs = commandListDao.findAllBySearch(null, null, bclpn, 1,
+						pageableBC);
+				if (entityLWOs.size() > 0) {
+					for (BasicCommandList entityWO : entityLWOs) {
+						entityMaps.put(entityWO.getBclclass() + "-" + entityWO.getBclsn() + "-" + entityWO.getBclnb(),
+								entityWO);
+					}
+				}
+				// *倉庫數量儲位->包含自己
+				ArrayList<WarehouseArea> entityLWAs = areaDao.findAllByWawmpnbNot0(bclpn, pageableWA);
+				if (entityLWAs.size() > 0) {
+					for (WarehouseArea entityWA : entityLWAs) {
+						entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
+					}
+
+				}
 
 				// *製令單A521
 				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null, 1,
@@ -225,7 +256,6 @@ public class BasicChangeItemsServiceAc {
 
 				// *BOM而外庫存量儲位
 				Set<String> entityBoms = new HashSet<>();// A521 類型需要再次查詢
-				ArrayList<WarehouseArea> entityDetailsForBom = new ArrayList<WarehouseArea>();
 				ingredients.forEach(bom -> {
 					// 登記關聯-成品類
 					entityBoms.add(bom.getBbisn());
@@ -233,24 +263,24 @@ public class BasicChangeItemsServiceAc {
 					ArrayList<WarehouseArea> forBom = areaDao.findAllByWawmpnbNot0(bom.getBbisn(), pageableWA);
 					// 加入到 庫存清單內
 					if (forBom.size() > 0) {
-						entityDetailsForBom.addAll(forBom);
+						for (WarehouseArea entityWA : forBom) {
+							entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
+						}
 					}
-				});
-				// 合併-與多筆資料
-				entityDetails.addAll(entityDetailsForBom);
 
+				});
 
 				// Step4-2.資料區分(一般/細節)- 排除重複單號
 				Map<String, Boolean> check = new HashMap<String, Boolean>();// <工單號_組物料,true>
 				Map<String, Boolean> pnumberCheck = new HashMap<String, Boolean>();// <工單號_成品物料,true>
-				entitys.forEach(o -> {
+				entityMaps.forEach((y, o) -> {
 					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
 					String p = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclproduct();
 					if (!pnumberCheck.containsKey(p) && !check.containsKey(k) && //
 							!o.getSysnote().contains("改") && !o.getSysnote().contains("退")) {
 						check.put(k, true);
 						pnumberCheck.put(p, true);
-						entitysNew.add(o);
+						entitysNew.put(k, o);
 					}
 				});
 				// 而外查詢A521
@@ -259,13 +289,17 @@ public class BasicChangeItemsServiceAc {
 					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber()) && !o.getSysnote().contains("改")
 							&& !o.getSysnote().contains("退")) {
 						check.put(k, true);
-						entitysNew.add(o);
+						entitysNew.put(k, o);
 					}
 				});
+
+				// 倉庫合併-與多筆資料
+				entityDetails.addAll(new ArrayList<>(entityDetailMaps.values()));
 			}
 
 			// 類別(一般模式)
-			String entityJson = packageService.beanToJson(entitysNew);
+			entitys = new ArrayList<>(entitysNew.values());
+			String entityJson = packageService.beanToJson(entitys);
 			String entityDetailJson = packageService.beanToJson(entityDetails);
 			// 資料包裝
 			packageBean.setEntityJson(entityJson);

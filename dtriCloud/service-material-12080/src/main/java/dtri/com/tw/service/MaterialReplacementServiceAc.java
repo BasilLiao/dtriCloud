@@ -139,6 +139,7 @@ public class MaterialReplacementServiceAc {
 
 			HashMap<String, MaterialReplacement> entitysAll = new HashMap<String, MaterialReplacement>();
 			ArrayList<MaterialReplacement> materialsAll = new ArrayList<MaterialReplacement>();
+			ArrayList<MaterialReplacement> entityUpdates = new ArrayList<MaterialReplacement>();// 可能名稱有需要更新
 			// 輔助查詢
 			ArrayList<MaterialReplacement> entitys = materialReplacementDao.findAllBySearch(searchData.getMrnb(),
 					searchData.getMrnote(), searchData.getMrsubnote(), pageable);
@@ -160,13 +161,14 @@ public class MaterialReplacementServiceAc {
 					entityOne.setMrid(keyId.getAndIncrement());
 					materialsAll.add(entityOne);
 				});
+				//替代料
 				materialsAll.forEach(m -> {
 					// 有匹配到替代料?
 					if (entitysAll.containsKey(m.getMrnb())) {
-						MaterialReplacement entityOne = entitysAll.get(m.getMrnb());
+						MaterialReplacement entityOne = entitysAll.get(m.getMrnb());// 替代料表
 						m.setMrnb(entityOne.getMrnb());
-						m.setMrname(entityOne.getMrname());
-						m.setMrspecification(entityOne.getMrspecification());
+						// m.setMrname(entityOne.getMrname());//不要抓取舊的
+						// m.setMrspecification(entityOne.getMrspecification());//不要抓取舊的
 						m.setMrnote(entityOne.getMrnote());
 						m.setMrsubnote(entityOne.getMrsubnote());
 						m.setMrid(entityOne.getMrid());
@@ -174,8 +176,13 @@ public class MaterialReplacementServiceAc {
 						m.setSyscdate(entityOne.getSyscdate());
 						m.setSysmuser(entityOne.getSysmuser());
 						m.setSysmdate(entityOne.getSysmdate());
+						if (!m.getMrname().equals(entityOne.getMrname())
+								|| !m.getMrspecification().equals(entityOne.getMrspecification())) {
+							entityUpdates.add(m);
+						}
 					}
 				});
+				materialReplacementDao.saveAll(entityUpdates);
 				entitys = materialsAll;
 			} else {
 				// 有其他查詢?

@@ -192,6 +192,22 @@ public class ManufactureRuleNumberServiceAc {
 				entityDataOld.setMrnval(x.getMrnval());// 值
 				entityDataOld.setMrn0000c(x.getMrn0000c());// 勾選
 				entityDataOld.setMrnyywwc(x.getMrnyywwc());// 勾選
+				// 處理 mrn0000 欄位（固定4碼格式）
+				String mrn0000 = x.getMrn0000();
+				if (mrn0000 != null) {
+					mrn0000 = mrn0000.length() > 4 ? mrn0000.substring(0, 4)
+							: String.format("%4s", mrn0000).replace(' ', '0');
+					entityDataOld.setMrn0000(mrn0000);
+				}
+
+				// 處理 mrnyyww 欄位（固定4碼格式）
+				String mrnyyww = x.getMrnyyww();
+				if (mrnyyww != null) {
+					mrnyyww = mrnyyww.length() > 4 ? mrnyyww.substring(0, 4)
+							: String.format("%4s", mrnyyww).replace(' ', '0');
+					entityDataOld.setMrnyyww(mrnyyww);
+				}
+
 				if (!x.getMrn0000c()) {
 					entityDataOld.setMrn0000("");
 				}

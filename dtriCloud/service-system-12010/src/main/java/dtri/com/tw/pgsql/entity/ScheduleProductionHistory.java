@@ -32,6 +32,8 @@ import jakarta.persistence.Transient;
  *      this.sphid = 0L;<br>
  *      this.sphbpmnb = "";BOM 的產品號<br>
  *      this.sphbpmmodel = "";BOM 的產品型號<br>
+ *      this.sphname = "";產品名稱<br>
+ *      this.sphspecification = ""//產品規格敘述<br>
  *      this.sphbpmtype = "";產品歸類 0 = 開發BOM/1 = 產品BOM/ 2 = 配件BOM/3 = 半成品BOM/ 3 =
  *      板階BOM<br>
  *      this.sphbpmtypename = "";產品歸類 名稱<br>
@@ -51,6 +53,7 @@ import jakarta.persistence.Transient;
  *      this.sphobpmnb = "";訂單 BOM 的產品號<br>
  *      this.sphoqty = 0;數量<br>
  *      this.sphhdate = "";預計出貨日<br>
+ *      this.sphindate= "";投現日<br>
  *      this.sphfrom = "";規格來源 生管自訂/產品經理<br>
  *      this.sphstatus = 0;["作廢單_0","有效單_1","自訂單_2"]<br>
  *      this.sphprogress = 0;進度
@@ -66,6 +69,7 @@ import jakarta.persistence.Transient;
  *      this.sphlable = ""; // : 標籤選擇<br>
  *      this.sphmfgpartno = ""; // : 工廠認證碼<br>
  *      this.sphpartno = ""; // : 組件號<br>
+ * 
  * 
  */
 
@@ -90,6 +94,7 @@ public class ScheduleProductionHistory {
 		this.sphid = 0L;
 		this.sphbpmnb = "";
 		this.sphbpmmodel = "";
+		this.sphname = "";
 		this.sphbpmtype = "";
 		this.sphbpmtypename = "";
 		this.sphbisitem = "";
@@ -102,9 +107,9 @@ public class ScheduleProductionHistory {
 		this.sphoname = "";
 		this.sphocountry = "";
 		this.sphobpmnb = "";
-		this.setSphhdate(new Date());
-		this.setSphsdate(new Date());
-		this.setSphidate(new Date());
+		this.sphhdate = new Date();
+		this.sphsdate = new Date();
+		this.sphindate = new Date();// 投現日
 
 		this.sphfrom = "";
 		this.sphstatus = 1;
@@ -123,6 +128,7 @@ public class ScheduleProductionHistory {
 		this.sphpartno = ""; // : 組件號<br>
 		this.sphwarranty = "";// 保固
 		this.sphline = "";// 生產線
+		this.sphspecification = "";
 	}
 
 	@PrePersist
@@ -170,6 +176,11 @@ public class ScheduleProductionHistory {
 	private String sphbpmnb;
 	@Column(name = "sph_bpm_model", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphbpmmodel;
+	@Column(name = "sph_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphname;
+	@Column(name = "sph_specification", nullable = false, columnDefinition = "text default ''")
+	private String sphspecification; // : 產品規格敘述<br>
+
 	@Column(name = "sph_bpm_type", nullable = false, columnDefinition = "varchar(10) default ''")
 	private String sphbpmtype;
 	@Column(name = "sph_bpm_type_name", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -201,8 +212,8 @@ public class ScheduleProductionHistory {
 	private Date sphhdate;
 	@Column(name = "sph_s_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date sphsdate;
-	@Column(name = "sph_i_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
-	private Date sphidate;
+	@Column(name = "sph_in_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
+	private Date sphindate;
 
 	@Column(name = "sph_from", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphfrom;
@@ -673,17 +684,45 @@ public class ScheduleProductionHistory {
 	}
 
 	/**
-	 * @return the sphidate
+	 * @return the sphindate
 	 */
-	public Date getSphidate() {
-		return sphidate;
+	public Date getSphindate() {
+		return sphindate;
 	}
 
 	/**
-	 * @param sphidate the sphidate to set
+	 * @param sphindate the sphindate to set
 	 */
-	public void setSphidate(Date sphidate) {
-		this.sphidate = sphidate;
+	public void setSphindate(Date sphindate) {
+		this.sphindate = sphindate;
+	}
+
+	/**
+	 * @return the sphspecification
+	 */
+	public String getSphspecification() {
+		return sphspecification;
+	}
+
+	/**
+	 * @param sphspecification the sphspecification to set
+	 */
+	public void setSphspecification(String sphspecification) {
+		this.sphspecification = sphspecification;
+	}
+
+	/**
+	 * @return the sphname
+	 */
+	public String getSphname() {
+		return sphname;
+	}
+
+	/**
+	 * @param sphname the sphname to set
+	 */
+	public void setSphname(String sphname) {
+		this.sphname = sphname;
 	}
 
 }

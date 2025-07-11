@@ -72,7 +72,7 @@
 	width: 12px;
 	text-align: center;
 	writing-mode: vertical-lr;
-	font-size: 6px;
+	font-size: 8px;
 	border: 1px solid #000000;
 }
 
@@ -201,11 +201,11 @@
 									<b>Save<br>(AU/AC/AD)
 									</b>
 								</button>
-								<div class="lh-1 col p-1 m-1 border border-primary rounded">
+								<div class="lh-1 col p-1 m-1 border border-success rounded">
 									<input id="btn_save_auto" alt="" title="" type="checkbox"
 										checked="checked"
 										class="m-0 form-check-input checkbox_16 border border-dark">
-									<br> <b style="font-size: 12px;">Auto Print</b>
+									<br> <b style="font-size: 12px;">Save -> Print</b>
 								</div>
 								<button id="btn_printerForm" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
@@ -262,7 +262,7 @@
 								</h5>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphline"
+								<div id="c_sphline"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">生產線(PD
 										Line)</div>
@@ -270,31 +270,27 @@
 										<select name="sphline"
 											class="col-12 m-0 p-1 border border-dark form-select"
 											required>
-											<option class="" value="" selected="selected">請選擇(必填)</option>
-											<option class="" value="4F">五股廠-4F</option>
-											<option class="" value="6F">五股廠-6F</option>
-											<option class="" value="散單">五股廠-散單</option>
-											<option class="" value="外包">外包廠</option>
+											<option class="def" value="" selected="selected">請選擇(必填)</option>
 										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphworkstation"
+								<div id="c_sphworkstation"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">工作站程序(WSP)</div>
 									<div class="p-1">
 										<select name="sphworkstation"
 											class="col-12 m-0 p-1 border border-dark form-select"
 											required>
-											<option class="" value="" selected="selected">請選擇(必填)</option>
+											<option class="def" value="" selected="selected">請選擇(必填)</option>
 
 										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphlable"
+								<div id="c_sphlable"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">標籤組(LBL
 										Group)</div>
@@ -302,14 +298,14 @@
 										<select name="sphlable"
 											class="col-12 m-0 p-1 border border-dark form-select"
 											required>
-											<option class="" value="" selected="selected">請選擇(必填)</option>
+											<option class="def" value="" selected="selected">請選擇(必填)</option>
 
 										</select>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphpontype"
+								<div id="c_sphpontype"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">製令單(Type)</div>
 									<div class="p-1">
@@ -336,7 +332,7 @@
 							</div>
 							<!--2-->
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphwarranty"
+								<div id="c_sphwarranty"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">保固(Warranty)</div>
 									<div class="p-1">
@@ -359,57 +355,57 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphhdate"
+								<div id="c_sphindate"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">投線日(LineInDate)</div>
 									<div class="p-1">
-										<input name="sphhdate"
+										<input name="sphindate"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
 											type="date" placeholder="Ex:2090-12-12" required>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphpartno"
+								<div id="c_sphpartno"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">客戶組件(PartNo)</div>
 									<div class="p-1">
 										<input name="sphpartno"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:客戶定義:組件號?" required>
+											type="text" placeholder="Ex:客戶定義:組件號?">
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphmfgpartno"
+								<div id="c_sphmfgpartno"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">工廠認證(MFGP
 										No)</div>
 									<div class="p-1">
 										<input name="sphmfgpartno"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:客戶定義:工廠代號?" required>
+											type="text" placeholder="Ex:客戶定義:工廠代號?">
 									</div>
 								</div>
 							</div>
 							<!-- 3 -->
 							<div class="col-6 p-1 col-lg-6">
-								<div id="sphoname"
+								<div id="c_sphprnote1"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">產線備註(Note1)</div>
 									<div class="p-1">
-										<textarea name="sphoname"
+										<textarea name="sphprnote1"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
 											placeholder="Ex:DTR?" required></textarea>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-6">
-								<div id="sphocountry"
+								<div id="c_sphprnote2"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">產線備註(Note2)</div>
 									<div class="p-1">
-										<textarea name="sphocountry"
+										<textarea name="sphprnote2"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
 											placeholder="Ex:USA?" required></textarea>
 									</div>
@@ -422,30 +418,36 @@
 								</h5>
 							</div>
 							<div class="col-12 p-1 col-lg-12">
-								<div id="sphbpmnbDf"
+								<div id="c_sphbpmnbDf"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">標準化-選擇(Default
 										SN)</div>
 									<div class="p-1 row m-0">
-										<div class="col-2 m-0 p-0 pe-1">
-											<select class="col-12 m-0 p-1 border border-dark form-select"
-												required>
-												<option class="defName" value="" selected="selected">請選擇(必填)</option>
+										<div class="def d-none col-2 m-0 p-0 pe-1">
+											<select name=""
+												class="col-12 m-0 p-1 border border-dark form-select">
+												<option class="defName defoption" value=""
+													selected="selected">請選擇(必填)</option>
 											</select>
 										</div>
-										<div class="col-2 m-0 p-0 pe-1">
-											<input disabled="disabled"
+
+										<div class="col-1 m-0 p-0 pe-1">
+											<input id="mrnyyww" disabled="disabled"
 												class="m-0 p-1 border border-dark form-control searchVal"
-												type="text" placeholder="Ex:[YYWW] 2901" required>
+												type="text" placeholder="[YYWW]">
+										</div>
+										<div class="col-1 m-0 p-0 pe-1">
+											<input id="mrn0000" disabled="disabled"
+												class="m-0 p-1 border border-dark form-control searchVal"
+												type="text" placeholder="[0001]">
 										</div>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-6">
-								<div id="sphonb"
+								<div id="c_sphxnb"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">客製化-固定(Cust
-										SN-fixed)</div>
+									<div class="searchTitle pink_color fw-bolder rounded-top">固定(SN-fixed)</div>
 									<div class="p-1">
 										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
@@ -454,24 +456,24 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphhdate"
+								<div id="c_sphfnb"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle pink_color fw-bolder rounded-top">浮動(float)</div>
 									<div class="p-1">
 										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:0001" required>
+											type="number" placeholder="Ex:0001" required>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="sphbpmnb"
+								<div id="c_sphlength"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle pink_color fw-bolder rounded-top">長度(length)</div>
 									<div class="p-1">
 										<input disabled="disabled"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="" required>
+											type="text" placeholder="">
 									</div>
 								</div>
 							</div>
@@ -484,19 +486,7 @@
 								</h5>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_mb_ecn"
-									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">M/B
-										ECN</div>
-									<div class="p-1">
-										<input
-											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" value="" required placeholder="Ex:953">
-									</div>
-								</div>
-							</div>
-							<div class="col-6 p-1 col-lg-3">
-								<div id="m_mb_ver"
+								<div id="c_mmbver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">M/B
 										Ver.</div>
@@ -508,7 +498,19 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_bios_ver"
+								<div id="c_mmbecn"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">M/B
+										ECN</div>
+									<div class="p-1">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text" value="" required placeholder="Ex:953">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-3">
+								<div id="c_mbiosver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">BIOS
 									</div>
@@ -520,7 +522,7 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_nvram_ver"
+								<div id="c_mnvramver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">NVRAM</div>
 									<div class="p-1">
@@ -531,9 +533,10 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_model_product_ver"
+								<div id="c_pmodelver"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle title_color fw-bolder rounded-top">MODEL</div>
+									<div class="searchTitle title_color fw-bolder rounded-top">Product
+										MODEL</div>
 									<div class="p-1">
 										<input disabled="disabled"
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
@@ -542,7 +545,7 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_ec_product_ver"
+								<div id="c_pecver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">Product
 										EC</div>
@@ -554,7 +557,7 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
-								<div id="m_os_product_ver"
+								<div id="c_posver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">Product
 										OS</div>
@@ -572,7 +575,7 @@
 								</h5>
 							</div>
 							<div class="col-6 p-1 col-lg-4">
-								<div id="sphobpmnb"
+								<div id="c_sphbpmnb"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">公司品號(DTR
 										BOM)</div>
@@ -584,7 +587,7 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-4">
-								<div id="sphobpmnb"
+								<div id="c_sphobpmnb"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">客戶品號(Cust
 										BOM)</div>
@@ -596,7 +599,19 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-4">
-								<div id="sphbpmmodel"
+								<div id="c_sphbpmmodel"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">產品型號(Product
+										Model)</div>
+									<div class="p-1">
+										<input disabled="disabled"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											type="text">
+									</div>
+								</div>
+							</div>
+							<div class="col-6 p-1 col-lg-12">
+								<div id="c_sphname"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">品名(Product
 										Name)</div>
@@ -608,7 +623,7 @@
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-12">
-								<div id="sphoqty"
+								<div id="c_sphspecification"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">規格簡述(Specification)</div>
 									<div class="p-1">
@@ -623,12 +638,13 @@
 						<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
 						<div id="printNotes"
 							class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
-							style="max-height: 755px; overflow: auto;">
+							style="max-height: 820px; overflow: auto;">
 							<div class="text-center "
-								style="height: 860px; width: 600px; min-width: 600px; padding: 0px; break-after: page;">
+								style="height: 910px; width: 600px; min-width: 600px; padding: 0px; break-after: page;">
 								<!-- 實體SN值-->
 								<div class="row m-0">
-									<div class="f_production p-0 m-0 only_lr">production: 4F</div>
+									<div class="f_sphline p-0 m-0 only_lr" title="">production:
+									</div>
 									<div class="col p-0 m-0"
 										style="line-height: 20px; border: 1px solid #000000;">
 										<!--  -->
@@ -665,21 +681,25 @@
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>SN</b>
 											</div>
-											<div class="p-0 only_br" style="width: 175px;"></div>
+											<div class="f_p_sn p-0 only_br" style="width: 175px;">
+												<svg width="180px" height="50px" x="0px" y="0px"></svg>
+											</div>
 										</div>
 									</div>
 								</div>
 								<!-- 單據基本資料 -->
 								<div class="row m-0">
-									<div class="f_station p-0 m-0 only_lr">Station :
-										[一般]加/組/測/整/包(5站)</div>
+									<div class="f_sphworkstation p-0 m-0 only_lr" title="">Station
+										:</div>
 									<div class="col p-0 m-0" style="border: 1px solid #000000;">
-										<div class="row m-0 justify-content-end" style="height: 30px;">
+										<div class="row m-0 justify-content-end"
+											style="height: 30px; line-height: 30px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; font-size: 10px; line-height: 15px;">
 												<b>WO No.</b>
 											</div>
-											<div class="f_sphpon p-0 only_brm" style="width: 251px;"></div>
+											<div class="f_sphpon p-0 only_brm m-0 h4"
+												style="width: 251px; line-height: 30px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 10px; line-height: 15px;">
 												<b>Order No.</b>
@@ -687,31 +707,36 @@
 											<div class="f_sphonb p-0 only_brm" style="width: 270px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0 justify-content-end" style="height: 30px;">
-											<div class="f_sphpon_qrc p-0 only_brm" style="width: 271px;"></div>
+										<div class="row m-0 justify-content-end"
+											style="height: 30px; line-height: 30px;">
+											<div class="f_sphpon_qrc p-0 only_brm" style="width: 271px;">
+												<svg></svg>
+											</div>
 											<div class="p-0 only_brm"
-												style="width: 45px; font-size: 12px; line-height: 30px;">
+												style="width: 45px; font-size: 12px;">
 												<b>Cust.</b>
 											</div>
 											<div class="f_sphoname p-0 only_brm" style="width: 160px;"></div>
 											<div class="p-0 only_brm"
-												style="width: 45px; font-size: 12px; line-height: 30px;">
+												style="width: 45px; font-size: 12px;">
 												<b>Qty</b>
 											</div>
 											<div class="f_sphoqty p-0 only_brm" style="width: 65px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0 justify-content-end" style="height: 30px;">
+										<div class="row m-0 justify-content-end"
+											style="height: 30px; line-height: 30px;">
 											<div class="p-0 only_brm"
-												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
+												style="width: 20px; writing-mode: vertical-lr; font-size: 11px; line-height: 20px;">
 												<b>BOM</b>
 											</div>
-											<div class="f_sphbpmnb p-0 only_brm" style="width: 251px;"></div>
+											<div class="f_sphbpmnb p-0 m-0 h4 only_brm"
+												style="width: 251px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 15px;">
 												<b>Start Date</b>
 											</div>
-											<div class="f_spibpmnb p-0 only_brm" style="width: 115px;"></div>
+											<div class="f_sphsdate p-0 only_brm" style="width: 115px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px; line-height: 15px;">
 												<b>Ship Date</b>
@@ -730,23 +755,23 @@
 								</div>
 								<!-- 版本資料 -->
 								<div class="row m-0">
-									<div class="f_pm_owner p-0 m-0 only_lr">PM Owner : Eric</div>
+									<div class="f_pm_owner p-0 m-0 only_lr">PM :</div>
 									<div class="col p-0 m-0"
-										style="border: 1px solid #000000; font-size: 12px; line-height: 18px;">
+										style="border: 1px solid #000000; font-size: 12px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 										<div class="row m-0 justify-content-end" style="height: 18px;">
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>Items</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 130px;">
-												<b>ECN ／ Ver.</b>
+											<div class="p-0 only_brm" style="width: 150px;">
+												<b>Ver. ／ ECN </b>
 											</div>
 											<div class="p-0 only_brm" style="width: 83px;">
 												<b>Chk By</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>Items</b>
 											</div>
-											<div class="p-0 only_brm" style="width: 130px;">
+											<div class="p-0 only_brm" style="width: 150px;">
 												<b>Product Ver.</b>
 											</div>
 											<div class="p-0 only_brm" style="width: 83px;">
@@ -755,61 +780,65 @@
 										</div>
 										<!--  -->
 										<div class="row m-0 justify-content-end" style="height: 18px;">
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>M/B</b>
 											</div>
-											<div class="f_mbecn_ver p-0 only_brm" style="width: 130px;"></div>
+											<div class="f_mbver_ecn p-0 only_brm"
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>MODEL</b>
 											</div>
 											<div class="f_model_product_ver p-0 only_brm"
-												style="width: 130px;"></div>
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 										</div>
 										<!--  -->
 										<div class="row m-0 justify-content-end" style="height: 18px;">
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>BIOS</b>
 											</div>
-											<div class="f_bios_ver p-0 only_brm" style="width: 130px;"></div>
+											<div class="f_mbiosver p-0 only_brm"
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
-											<div class="p-0 only_brm" style="width: 80px;">
+											<div class="p-0 only_brm" style="width: 60px;">
 												<b>EC</b>
 											</div>
-											<div class="f_ec_product_ver p-0 only_brm"
-												style="width: 130px;"></div>
+											<div class="f_pecver p-0 only_brm"
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_brm" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 										</div>
 										<!--  -->
 										<div class="row m-0 justify-content-end" style="height: 18px;">
-											<div class="p-0 only_br" style="width: 80px;">
+											<div class="p-0 only_br" style="width: 60px;">
 												<b>NVRAM</b>
 											</div>
-											<div class="f_nvram_ver p-0 only_br" style="width: 130px;"></div>
+											<div class="f_nvramver p-0 only_br"
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_br" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
-											<div class="p-0 only_br" style="width: 80px;">
+											<div class="p-0 only_br" style="width: 60px;">
 												<b>OS</b>
 											</div>
-											<div class="f_product_ver p-0 only_br" style="width: 130px;"></div>
+											<div class="f_posver p-0 only_br"
+												style="width: 150px; overflow: hidden;"></div>
 											<div class="p-0 only_br" style="width: 15px;"></div>
 											<div class="p-0 only_br" style="width: 68px;"></div>
 										</div>
 									</div>
 								</div>
 								<!-- 產品資訊 -->
-								<div class="row m-0" style="height: 440px;">
+								<div class="row m-0" style="height: 480px;">
 									<div class="p-0 m-0 only_lr row ">
 										<div class="f_cust p-0" style="height: 140px;">Cust. BOM
-											No.:382DN-G1-5A</div>
+											No.:</div>
 										<div class="f_created p-0" style="height: 140px;">Created
-											On:2025-03-19</div>
-										<div class="f_creator p-0" style="height: 140px;">Creator:JanetLin</div>
+											On:</div>
+										<div class="f_creator p-0" style="height: 140px;">Creator:</div>
 									</div>
 									<div class="col p-0 m-0"
 										style="border: 1px solid #000000; font-size: 10px; line-height: 15px;">
@@ -830,29 +859,32 @@
 										<!-- BOM結構 -->
 										<div class="row m-0"
 											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 20px; font-size: 16px; text-align: left;">
-											<div id="bomItemEx" class="p-0 ms-1 mt-1 only_brm"
-												style="height: 18px; width: 288px; line-height: 16px;">
-												<b>CPU</b> i7-1165G7 (2)
+											<div id="sphbisitemEx_val"
+												class="d-none p-0 ms-1 mt-1 only_brm"
+												style="overflow: hidden; text-align: start; height: 18px; width: 288px; line-height: 16px;">
+												<b>RAM </b>Ex:RAM,2G,78.A2G72.405,APACER(x2)
 											</div>
 										</div>
 									</div>
 								</div>
 								<!-- 產線備註+簽名人 -->
-								<div class="row m-0" style="height: 92px;">
+								<div class="row m-0" style="height: 102px;">
 									<div class="p-0 m-0 only_lr">Form# : QR-701-06</div>
 									<div class="col p-0 m-0"
 										style="border: 1px solid #000000; font-size: 10px; line-height: 20px;">
-										<div class="row m-0 justify-content-end" style="height: 45px;">
+										<div class="row m-0 justify-content-end" style="height: 55px;">
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>Note1</b>
 											</div>
-											<div class="f_sphprnote1 p-0 only_brm" style="width: 273px;"></div>
+											<div class="f_sphprnote1 text-start p-0 only_brm"
+												style="width: 273px; height: 55px; overflow: hidden; word-break: break-word; line-height: 18px; font-size: 15px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 20px; writing-mode: vertical-lr;">
 												<b>Note2</b>
 											</div>
-											<div class="f_sphprnote2 p-0 only_brm" style="width: 273px;"></div>
+											<div class="f_sphprnote2 text-start p-0 only_brm"
+												style="width: 273px; height: 55px; overflow: hidden; word-break: break-word; line-height: 18px; font-size: 15px;"></div>
 										</div>
 										<div class="row m-0 justify-content-end"
 											style="height: 15px; line-height: 15px;">
@@ -1076,8 +1108,6 @@
 				}
 
 				//Step3.查詢內容(細節)-格式
-				
-
 				$('#search_cr .exTbodyTr').addClass('d-none');
 				$('#search_cr .exDetailTbodyTr').addClass('d-none');
 
@@ -1165,9 +1195,77 @@
 							break;
 					}
 				}
+				
 				//產品選單項目
-
-
+				if(searchSetJson['resultMES']!==null){
+					let resultMES = searchSetJson['resultMES'];
+					console.log(resultMES);
+					
+					let wProgram = JSON.parse(resultMES.wProgram);//工作站
+					wProgram.forEach((wP) => {
+						let c_sphworkstation = $('#c_sphworkstation select .def').clone();
+						c_sphworkstation.removeAttr("selected");
+						c_sphworkstation.removeClass("def");
+						c_sphworkstation.val(wP.key);
+						c_sphworkstation.text(wP.value);
+						$('#c_sphworkstation select .def').after(c_sphworkstation);
+					});
+					
+					let gLabel = JSON.parse(resultMES.gLabel);//標籤組
+					gLabel.forEach((gL) => {
+						let c_sphlable = $('#c_sphlable select .def').clone();
+						c_sphlable.removeAttr("selected");
+						c_sphlable.removeClass("def");
+						c_sphlable.val(gL);
+						c_sphlable.text(gL);
+						$('#c_sphlable select .def').after(c_sphlable);
+					});
+					
+					let wLine = JSON.parse(resultMES.wLine);//生產線
+					wLine.forEach((wL) => {
+						let c_sphline = $('#c_sphline select .def').clone();
+						c_sphline.removeAttr("selected");
+						c_sphline.removeClass("def");
+						c_sphline.val(wL);
+						c_sphline.text(wL);
+						$('#c_sphline select .def').after(c_sphline);
+					});
+				}
+				//SN配置規則
+				let resultMRN = searchSetJson['resultMRN']['ManufactureRuleNumber'];
+				console.log(resultMRN);
+				let nowSphbpmnbDf = "";
+				let c_sphbpmnbDf = "";
+				resultMRN.forEach((mrn) => {
+					if(nowSphbpmnbDf !== mrn['mrngname']){
+						nowSphbpmnbDf = mrn['mrngname'];
+						//換下一格?						
+						if(c_sphbpmnbDf!==""){
+							$('#c_sphbpmnbDf .def').before(c_sphbpmnbDf);
+						}
+						c_sphbpmnbDf = $('#c_sphbpmnbDf .def').clone();
+						c_sphbpmnbDf.removeAttr("selected");
+						c_sphbpmnbDf.removeClass("def");
+						c_sphbpmnbDf.removeClass("d-none");
+						c_sphbpmnbDf.addClass("resultMRN");
+					}
+					//內部選項
+					let defOption = c_sphbpmnbDf.find(".defoption").clone();
+					defOption.removeClass("defoption");
+					defOption.removeAttr("selected");
+					defOption.attr("value",mrn['mrnval']);
+					if(mrn['mrn0000c']===true){
+						defOption.attr("mrn0000",mrn['mrn0000']);						
+					}
+					if(mrn['mrnyywwc']===true){
+						defOption.attr("mrnyyww",mrn['mrnyyww']);						
+					}
+					
+					defOption.text(mrn['mrnname']);
+					c_sphbpmnbDf.find(".defoption").after(defOption);
+				});
+				$('#c_sphbpmnbDf .def').before(c_sphbpmnbDf);
+				
 				//Step5.帶入資料
 				other.methods.searchReLoad();
 
@@ -1191,7 +1289,12 @@
 						$("#search_cr_open .exTbodyTh").find("input").prop("checked", false);;
 					}
 				});
-				
+				//長度監聽 產品SN
+				$(document).off("input change paste", "#c_sphxnb input,#c_sphfnb input");
+				$(document).on("input change paste", "#c_sphxnb input,#c_sphfnb input", function (event) {
+					let textLength =  $("#c_sphxnb input").val().length+$("#c_sphfnb input").val().length;
+					$("#c_sphlength input").val(textLength);
+				});
 				
 				//帶入單據資料
 				$(document).off("click", "#search_c #btn_production");
@@ -1205,11 +1308,77 @@
 					}
 					let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
 					let entity = $(".valTbodyTr_" + n);
-					//介面
+					//介面開啟
 					if (!$('#modify_cr_open').hasClass('show')) {
 						$('#modify_cr .btn-outline-white').trigger('click');
 					}
+					//關閉介面
+					if ($('#search_cr_open').hasClass('show')) {
+						$('#search_cr .btn-outline-white').trigger('click');
+					}
+					
+					//帶入資料(預覽畫面)
+					let printNotes = $("#printNotes");
+					printNotes.find(".f_sphpon").text(entity.find(".sphpon").text());//工單
+					printNotes.find(".f_sphbpmnb").text(entity.find(".sphbpmnb").text());//BOM號
+					printNotes.find(".f_model_product_ver").text(entity.find(".sphbpmmodel").text());//產品型號
+					printNotes.find(".f_sphoname").text(entity.find(".sphocountry").text()+"("+entity.find(".sphoname").text()+")");//國家+客戶名稱
+					printNotes.find(".f_sphonb").text(entity.find(".sphonb").text());//訂單號 
+					printNotes.find(".f_sphoqty").text(entity.find(".sphoqty").text());//數量
+					printNotes.find(".f_sphsdate").text(entity.find(".sphsdate").text().split(" ")[0]);//預計開工
+					printNotes.find(".f_sphhdate").text(entity.find(".sphhdate").text().split(" ")[0]);//預計出貨
+					printNotes.find(".f_created").text('Created On: '+other.methods.getTodayDate());//建立日期
+					printNotes.find(".f_creator").text('Creator: '+entity.find(".syscuser").text());//單據負責人
+					printNotes.find(".f_sphscnote").text(entity.find(".sphpmnote").text());//BOM/PM注意事項
+					printNotes.find(".f_pm_owner").text('PM: '+entity.find(".sphbpsuser").text());//BOM負責人
+					
+					//帶入資料(填寫畫面)
+					let modifycard = $("#modify_card");
+					//Product Information
+					modifycard.find("#c_sphindate input").val(entity.find(".sphsdate").text().split(" ")[0]);//實際頭線
+					//產品參數配置Ex:["組件號(Parts No)_Parts No","驗證碼(MFG Part No)_MFG Part No"]
+					let sphbpsnv = JSON.parse(entity.find(".sphbpsnv").text());
+					sphbpsnv.forEach((item) => {
+						if(item!==null){
+							if(item.split("_")[0]!==null && item.split("_")[0] ==="組件號(Parts No)"){
+							modifycard.find("#c_sphpartno input").val(item.split("_")[1]);
+							}
+							if(item.split("_")[0]!==null && item.split("_")[0] ==="驗證碼(MFG Part No)"){
+							modifycard.find("#c_sphmfgpartno input").val(item.split("_")[1]);
+							}
+						}						
+					});
+					
+					//Product Ver
+					modifycard.find("#c_mmbecn input").val(entity.find(".z").text());//
+					modifycard.find("#c_mmbver input").val(entity.find(".z").text());//
+					modifycard.find("#c_mbiosver input").val(entity.find(".z").text());//
+					modifycard.find("#c_mnvramver input").val(entity.find(".z").text());//
 					//
+					modifycard.find("#c_pmodelver input").val(entity.find(".sphbpmmodel").text());//MODEL
+					modifycard.find("#c_pecver input").val(entity.find(".z").text());//EC
+					modifycard.find("#c_posver input").val(entity.find(".z").text());//OS
+					 
+					//Product Information
+					modifycard.find("#c_sphbpmnb input").val(entity.find(".sphbpmnb").text());//公司BOM
+					modifycard.find("#c_sphobpmnb input").val(entity.find(".sphobpmnb").text());//客戶BOM
+					modifycard.find("#c_sphbpmmodel input").val(entity.find(".sphbpmmodel").text());//產品型號
+					modifycard.find("#c_sphname input").val(entity.find(".sphname").text());//產品名稱
+					modifycard.find("#c_sphspecification input").val(entity.find(".sphspecification").text());//產品規格
+					
+					JsBarcode("#printNotes .f_sphpon_qrc svg", entity.find(".sphpon").text(), {//工單Code
+						format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
+						lineColor: "#000",   // 線條顏色
+						width: 1,            // 線條寬度
+						height: 16,          // 條碼高度
+						displayValue: false,   // 是否顯示文字
+						margin: 1,             // 四邊統一邊距（預設是 10）
+						marginTop: 4,           // 上邊距
+						marginBottom: 6,       // 下邊距（若顯示文字，建議拉開一點）
+						marginLeft: 15,         // 左邊距
+						marginRight: 5         // 右邊距
+					 });
+
 					$("#sphpon input").val(entity.find(".sphpon").text());//工單
 					$("#sphonb input").val(entity.find(".sphonb").text());//訂單
 					let dF = new Date(entity.find(".sphhdate").text());
@@ -1386,7 +1555,24 @@
 
 					$("#bomDefinition_val").text("一般模式");
 					$("#sphscnote textarea").text("");
-
+					
+					//表單清除
+					let printNotes = $("#printNotes");
+					printNotes.find(".f_sphpon").text('');//工單
+					printNotes.find(".f_sphbpmnb").text('');//BOM號
+					printNotes.find(".f_model_product_ver").text('');//產品型號
+					printNotes.find(".f_sphoname").text('');//國家+客戶名稱
+					printNotes.find(".f_sphonb").text('');//訂單號 
+					printNotes.find(".f_sphoqty").text('');//數量
+					printNotes.find(".f_sphsdate").text('');//預計開工
+					printNotes.find(".f_sphhdate").text('');//預計出貨
+					printNotes.find(".f_created").text('Created On: ');//建立日期
+					printNotes.find(".f_creator").text('Creator: ');//單據負責人
+					printNotes.find(".f_sphscnote").text('');//BOM/PM注意事項
+					printNotes.find(".f_pm_owner").text('PM: ');//BOM負責人
+					printNotes.find(".f_p_sn svg").text('');//QRCode
+					printNotes.find(".f_sphpon_qrc svg").text('');//QRCode
+					 
 				});
 
 				//監聽-打印
@@ -1402,7 +1588,9 @@
 					
 					const rawHtml = content;
 					
-					const total = 1000;        // 假設總共 1000 筆
+					let c_sphxnbText = $("#c_sphxnb input").val();//固定
+					let c_sphfnbText = parseInt($("#c_sphfnb input").val());//浮動
+					const total = parseInt($('#printNotes .f_sphoqty').text().replace(/,/g, ''));  // 實際數量
 					const batchSize = 200;     // 每批 200 筆
 					let batchIndex = 0;
 					
@@ -1411,8 +1599,33 @@
 
 						let contentHtml = "";
 						for (let i = 1; i <= batchSize && (batchIndex * batchSize + i) <= total; i++) {
-							rawHtml.find("#form_sphpon").text("數:"+(batchIndex * batchSize + i));
+							
+							let c_sphfnbStr = String(c_sphfnbText).padStart(4, '0');
+							//轉Qrcode
+							JsBarcode(rawHtml.find(".f_p_sn svg")[0],c_sphxnbText+c_sphfnbStr, {//產品SN號 Code
+								format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
+								lineColor: "#000",   // 線條顏色
+								width: 0.7,            // 線條寬度
+								height: 25,          // 條碼高度
+								displayValue: true,   // 是否顯示文字
+								margin: 1,             // 四邊統一邊距（預設是 10）
+								marginTop: 8,           // 上邊距
+								marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
+								marginLeft: 10,         // 左邊距
+								marginRight: 2,        // 右邊距
+								fontSize: 12,              // 調整文字大小（預設為 20）
+								font: "Arial",             // 指定字型（可用 CSS 字型名稱）
+								fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
+								textMargin: 3,             // 條碼與文字之間的間距（預設 2）
+								textAlign: "center",       // 對齊方式："left", "center", "right"
+								marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
+							 });
 							contentHtml += rawHtml.html();
+							//位數添加
+							c_sphfnbText+=1;
+							if(c_sphfnbText===10000 || c_sphfnbText===0){
+								c_sphfnbText = 1;
+							}
 						}
 						
 						// 開啟一個新視窗-> 在新視窗中寫入 HTML
@@ -1432,7 +1645,7 @@
 							'	border-right: 1px solid #000000;border-bottom: 1px solid #000000;' +
 							'}' +
 							'.only_br {	border-right: 1px solid #000000;}' +
-							'.only_lr {	width: 12px;text-align: center;writing-mode: vertical-lr;font-size: 6px;border: 1px solid #000000;}' +
+							'.only_lr {	width: 12px;text-align: center;writing-mode: vertical-lr;font-size: 8px;border: 1px solid #000000;}' +
 							'@media print{.noprint{display:none;}}'+
 							"</style></head><body>"  + contentHtml + "</body>" +
 							"<script type='text/javascript'> console.log('測試');</sc"+"ript>"+
@@ -1480,6 +1693,34 @@
 					$("#searchItem select").val("");
 
 				});
+				//監聽-選擇周年度-流水號
+				$(document).off("change", "#c_sphbpmnbDf select");
+				$(document).on("change", "#c_sphbpmnbDf select", function (event) {
+					console.log("c_sphbpmnbDf option");
+					const selectedOption = $(this).find("option:selected");
+					//週期
+					if(selectedOption.attr("mrnyyww")!=null){
+						$('#c_sphbpmnbDf #mrnyyww').val(selectedOption.attr("mrnyyww"));
+					}
+					//序號
+					if(selectedOption.attr("mrn0000")!=null){			
+						$('#c_sphbpmnbDf #mrn0000').val(selectedOption.attr("mrn0000"));
+					}
+					//帶入客製化
+					let selectedValues = "";
+					$('#c_sphbpmnbDf .resultMRN select').each(function () {
+					    selectedValues+=$(this).val();
+					});
+					selectedValues+=$('#c_sphbpmnbDf #mrnyyww').val();
+					$('#c_sphxnb input').val(selectedValues);
+					$('#c_sphfnb input').val($('#c_sphbpmnbDf #mrn0000').val());
+					//觸發感測
+					$('#c_sphxnb input').val(selectedValues).trigger('input');
+					console.log(selectedValues);
+				});
+				
+				
+				
 
 				//時間格式
 				other.methods.datetimepickerDate();
@@ -1526,33 +1767,65 @@
 			btn_intoForm() {
 				//預覽內容
 				console.log("btn_intoForm");
-				//單據內容
-				$("#sphpon_val").text($('#sphpon input').val());//工單
-				$("#sphonb_val").text($('#sphonb input').val());//訂單
-				$("#sphhdate_val").text($('#sphhdate input').val());//出貨日
+				//單據內容				
+				let c_sphlineText = $('#c_sphline select option:selected').text();     // 產線: 選中的顯示文字
+				let c_sphlineValue = $('#c_sphline select').val();                     // 產線:選中的 value
+				$('#printNotes .f_sphline').text('production:'+c_sphlineText);					 
+				$('#printNotes .f_sphline').attr('title',c_sphlineValue);
+				
+				let c_sphworkstationText = $('#c_sphworkstation select option:selected').text();     // 工作站: 選中的顯示文字
+				let c_sphworkstationValue = $('#c_sphworkstation select').val();                     // 工作站:選中的 value
+				$('#printNotes .f_sphworkstation').text('station:'+c_sphworkstationText);
+				$('#printNotes .f_sphworkstation').attr('title',c_sphworkstationValue);
+				//c_sphlable //標籤
+				//c_sphpontype //製令單類
+				//c_sphwarranty //保固
+				$('#printNotes .f_sphsdate').text($('#c_sphindate input').val());//投入時間
 				//
-				$("#sphoname_val").text($('#sphoname input').val());//客戶
-				$("#sphocountry_val").text($('#sphocountry input').val());//國家
-				//
-				$("#sphbpmnb_val").text($('#sphbpmnb input').val());//品號
-				$("#sphbpmmodel_val").text($('#sphbpmmodel input').val());//型號
-				$("#sphoqty_val").text($('#sphoqty input').val());//數量
-				//
-				$("#fromwho_val").text($('#menu_login_name').text());//來自於誰?
-				//自訂?
-
-				//生管備註內容
-				for (let x = 1; x <= 9; x++) {
-					if ($("#sphscpackage_checkbox" + x).prop("checked")) {
-						$("#pkg_checkbox" + x + " input").attr("checked", "checked");
-					} else {
-						$("#pkg_checkbox" + x + " input").removeAttr("checked");
-					}
-					$("#pkg_checkbox" + x + " span").text($("#sphscpackage_value" + x).val());
+				$('#printNotes .f_sphprnote1').text($('#c_sphprnote1 textarea').val());//1.備註資訊
+				$('#printNotes .f_sphprnote2').text($('#c_sphprnote2 textarea').val());//2.備註資訊
+				$('#printNotes .f_sphline').attr('title',c_sphlineValue);//工作站
+				
+				
+				//自定義SN?f_p_sn
+				if($('#c_sphxnb input').val()!=="" && $('#c_sphfnb input').val()!==""){
+					
+					
+					
 				}
-				$("#sphscnote_val").text($("#sphscnote textarea").text());
-				$("#sphobpmnb_val").text($("#sphobpmnb input").val());
-				//產品資訊內容
+				//版本
+				$('#printNotes .f_mbver_ecn').text($('#c_mmbver input').val()+"／"+$('#c_mmbecn input').val());//MB:Ver+EC
+				$('#printNotes .f_mbiosver').text($('#c_mbiosver input').val());//BIOS版本
+				$('#printNotes .f_nvramver').text($('#c_mnvramver input').val());//NVRAM
+				$('#printNotes .f_pecver').text($('#c_pecver input').val());//EC
+				$('#printNotes .f_posver').text($('#c_posver input').val());//OS
+				
+				//SN區間
+				let printNotes = $('#printNotes');//預覽物件
+				let c_sphxnbText = $("#c_sphxnb input").val();//固定
+				let c_sphfnbText = $("#c_sphfnb input").val();//浮動
+				
+				JsBarcode("#printNotes .f_p_sn svg",c_sphxnbText+c_sphfnbText, {//產品SN號 Code
+					format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
+					lineColor: "#000",   // 線條顏色
+					width: 0.7,            // 線條寬度
+					height: 25,          // 條碼高度
+					displayValue: true,   // 是否顯示文字
+					margin: 1,             // 四邊統一邊距（預設是 10）
+					marginTop: 8,           // 上邊距
+					marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
+					marginLeft: 10,         // 左邊距
+					marginRight: 2,        // 右邊距
+					fontSize: 12,              // 調整文字大小（預設為 20）
+					font: "Arial",             // 指定字型（可用 CSS 字型名稱）
+					fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
+					textMargin: 3,             // 條碼與文字之間的間距（預設 2）
+					textAlign: "center",       // 對齊方式："left", "center", "right"
+					marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
+				 });
+				
+				//帶回資料
+				
 
 			},
 			//存檔資料
@@ -1683,7 +1956,14 @@
 				main.methods.ajaxSend(req_data, true);
 				return false;
 			},
-
+			//現在時間
+			getTodayDate() {
+			    const today = new Date();
+			    const yyyy = today.getFullYear();
+			    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始
+			    const dd = String(today.getDate()).padStart(2, '0');
+			    return `${yyyy}-${mm}-${dd}`;
+			},
 			//==========================傳送資料==========================
 			searchSend(batch, order) {
 				let entityJson = other.data.entityFormatJson;//格式
@@ -1936,6 +2216,7 @@
 			destroy() {
 				//銷毀
 				$(".datetimepicker").remove();
+				$(document).off("input change paste", "#c_sphxnb input,#c_sphfnb input");
 				$(document).off("input", "#search_c #searchSelectItems");
 				$(document).off("click", "#search_c #btn_clearAll");
 				$(document).off("keyup", "#searchItem input");

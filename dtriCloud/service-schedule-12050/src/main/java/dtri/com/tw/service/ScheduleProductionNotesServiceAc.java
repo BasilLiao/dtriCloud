@@ -242,7 +242,7 @@ public class ScheduleProductionNotesServiceAc {
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
 		packageBean.setEntityDetailIKeyGKey("bpmid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate_sphsdate_sphidate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphhdate_sphsdate_sphindate");
 		return packageBean;
 	}
 
@@ -280,6 +280,7 @@ public class ScheduleProductionNotesServiceAc {
 					new String[] { "check the fields again." });
 		}
 		String sphpon[] = searchData.getSphpon().split("-");
+		String sphbpmnb = searchData.getSphbpmnb();// 特定BOM號
 		if (sphpon.length == 2) {
 			String bclclass = sphpon[0];
 			String bclsn = sphpon[1];
@@ -299,8 +300,11 @@ public class ScheduleProductionNotesServiceAc {
 				entity.setSysmdate(commandList.getSysmdate());
 				entity.setSyscuser(commandList.getSyscuser());
 				entity.setSysmuser(commandList.getSysmuser());
+
 				entity.setSphid(null);
 				entity.setSphbpmnb(commandList.getBclproduct());// BOM 的產品號
+				entity.setSphname(commandList.getBclpname());// 產品名稱
+				entity.setSphspecification(commandList.getBclpspecification());// 產品規格
 				entity.setSphbpmmodel("");// BOM 的產品型號
 				entity.setSphbpmtype("2");// 產品歸類:0 = 開發BOM/1 = 產品BOM/2 = 配件BOM/3 = 半成品BOM/3 = 板階BOM
 				entity.setSphbpmtypename("產品BOM");// 產品歸類名稱
@@ -327,8 +331,9 @@ public class ScheduleProductionNotesServiceAc {
 				entity.setSphprnote2("");// 製造事項2
 
 				// BOM清單
-				ArrayList<BomProductManagement> managements = managementDao.findAllBySearch(commandList.getBclproduct(),
-						null, null, null, pageableDetail);
+				sphbpmnb = sphbpmnb != null ? sphbpmnb : commandList.getBclproduct();
+				ArrayList<BomProductManagement> managements = managementDao.findAllBySearch(sphbpmnb, null, null, null,
+						pageableDetail);
 				entitys.add(entity);
 				// 如果有匹配到BOM->
 				if (managements.size() > 0) {

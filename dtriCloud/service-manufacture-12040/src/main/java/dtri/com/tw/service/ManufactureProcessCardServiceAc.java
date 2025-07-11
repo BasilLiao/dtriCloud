@@ -1,12 +1,27 @@
 package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +40,7 @@ import dtri.com.tw.pgsql.dao.ManufactureRuleNumberDao;
 import dtri.com.tw.pgsql.dao.ManufactureSerialNumberDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.ManufactureRuleNumber;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -82,6 +98,54 @@ public class ManufactureProcessCardServiceAc {
 					null, null, null, null, pageable);
 
 			// Step3-2.資料區分(一般/細節)
+			// 取得MES配置的標籤與工作站
+			JsonObject setMES = new JsonObject();
+			try {
+				// 1. 建立 JSON 資料
+				JsonObject jsonString = new JsonObject();
+				jsonString.addProperty("action", "get_work_program");
+
+				// 2. Cookie 管理（可選）
+				BasicCookieStore cookieStore = new BasicCookieStore();
+				// 3. 建立支援自簽憑證的 SSL Context
+				SSLContextBuilder builder = new SSLContextBuilder();
+				builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+				SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(builder.build(),
+						NoopHostnameVerifier.INSTANCE // 忽略主機名驗證
+				);
+				// 4. 建立 HttpClient
+				CloseableHttpClient httpclient = HttpClients.custom()//
+						.setSSLSocketFactory(sslConnectionFactory)//
+						.setDefaultCookieStore(cookieStore)//
+						.build();
+
+				// 5. 建立 POST 請求
+				HttpPost request = new HttpPost("https://dtrsvc.dtri.com:8088/dtrimes/ajax/api.basil");
+				request.setHeader("Content-Type", "application/json;charset=UTF-8");
+				request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
+
+				// 6. 發送請求與處理回應
+				CloseableHttpResponse response = httpclient.execute(request);
+				String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+				System.out.println("Response:");
+				System.out.println(responseBody);
+				setMES = (JsonObject) JsonParser.parseString(responseBody);
+			} catch (Exception e) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+						new String[] { "取得 MES 資料 連線失敗!" });
+			}
+			// 取得SN規則清單
+			JsonObject setMRN = new JsonObject();
+			List<Order> orderMRNs = new ArrayList<>();
+			orderMRNs.add(new Order(Direction.ASC, "syssort"));// 排序
+			orderMRNs.add(new Order(Direction.ASC, "mrngid"));// 規則群組
+			orderMRNs.add(new Order(Direction.ASC, "mrnname"));// 規則名稱
+			PageRequest pageableMRN = PageRequest.of(batch, total, Sort.by(orderMRNs));
+			ArrayList<ManufactureRuleNumber> entityMRNs = ruleNumberDao.findAllBySearch(null, null, pageableMRN);
+			String entityJsonMRN = packageService.beanToJson(entityMRNs);
+			setMRN.add("ManufactureRuleNumber", (JsonArray) JsonParser.parseString(entityJsonMRN));
+			//
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
@@ -156,6 +220,8 @@ public class ManufactureProcessCardServiceAc {
 			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
 			searchSetJsonAll.add("resultDetailThead_mrn", resultDetailTJsons_mrn);
 			searchSetJsonAll.add("resultDetailThead_bsh", resultDetailTJsons_bsh);
+			searchSetJsonAll.add("resultMES", setMES);
+			searchSetJsonAll.add("resultMRN", setMRN);
 
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
@@ -185,7 +251,7 @@ public class ManufactureProcessCardServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("sphid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphsdate_sphidate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_sphsdate_sphindate_sphhdate");
 		return packageBean;
 	}
 

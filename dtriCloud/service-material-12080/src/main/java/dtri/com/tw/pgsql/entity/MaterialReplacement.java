@@ -103,6 +103,7 @@ public class MaterialReplacement {
 		this.mrpnote = "";
 		this.mrspecification = "";
 		this.mrsubnote = "";
+		this.mrprove = "";
 	}
 
 	// 共用型

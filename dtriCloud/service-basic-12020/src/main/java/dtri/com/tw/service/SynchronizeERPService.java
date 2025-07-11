@@ -2356,9 +2356,9 @@ public class SynchronizeERPService {
 //			}
 			// 物料號+倉別號+位置
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
-			m.setMb002(m.getMb002().replaceAll("\\s", ""));
-			m.setMb003(m.getMb003().replaceAll("\\s", ""));
-			m.setMb009(m.getMb009().replaceAll("[\\n\\t]", ""));
+			m.setMb002(m.getMb002().replaceAll("[\\n\\r\\t]+", " ").trim());
+			m.setMb003(m.getMb003().replaceAll("[\\n\\r\\t]+", " ").trim());
+			m.setMb009(m.getMb009().replaceAll("[\\n\\r\\t]+", " ").trim());
 			m.setNewone(true);
 			// ERP 倉別異常Null
 			if (m.getMc002() == null) {
@@ -2412,7 +2412,7 @@ public class SynchronizeERPService {
 					o.setWmpnb(ov.getMb001());// 物料號
 					o.setWmname(ov.getMb002());// 物料名稱
 					o.setWmspecification(ov.getMb003());// 物料規格
-					o.setWmdescription(ov.getMb009().replaceAll("[\\n\\t]", ""));// 物料敘述
+					o.setWmdescription(ov.getMb009());// 物料敘述
 					o.setChecksum(checkSum);
 					saveLists.add(o);
 				}
@@ -2427,7 +2427,7 @@ public class SynchronizeERPService {
 				n.setWmpnb(v.getMb001());// 物料號
 				n.setWmname(v.getMb002());// 物料名稱
 				n.setWmspecification(v.getMb003());// 物料規格
-				n.setWmdescription(v.getMb009().replaceAll("[\\n\\t]", ""));// 物料敘述
+				n.setWmdescription(v.getMb009());// 物料敘述
 				saveLists.add(n);
 			}
 		});

@@ -225,6 +225,19 @@ public class SystemUserServiceAc {
 
 			// Step2.資料檢查
 			for (SystemUser entityData : entityDatas) {
+				// 檢查名稱是否有符號
+				boolean hasPunctuation = entityData.getSuename().matches(".*[\\p{Punct}&&[^\\s]]+.*");
+				if (hasPunctuation) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+							new String[] { entityData.getSuename() + " 不可含有標點符號!" });
+				}
+				// 檢查帳號是否有符號
+				boolean hasPunctuationAcc = entityData.getSuaccount().matches(".*[\\p{Punct}\\s]+.*");
+				if (hasPunctuationAcc) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+							new String[] { entityData.getSuaccount() + " 不可含有標點符號!" });
+				}
+
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
 				ArrayList<SystemUser> checkDatas = userDao.findAllBySystemUserCheck(entityData.getSuaccount(), null,
 						null, null);

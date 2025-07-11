@@ -18,7 +18,7 @@ public class CloudExceptionService extends Exception {
 
 	// 故障代號限制
 	public enum ErCode {
-		E1000, W1000, W1001, W1002, W1003, W1004, W1005, W1006, W1007
+		E1000, W1000, W1001, W1002, W1003, W1004, W1005, W1006, W1007, W1008
 	};
 
 	// 故障語言
@@ -64,6 +64,10 @@ public class CloudExceptionService extends Exception {
 	public final static String W1007_zh_TW = "[W1007] 服務器忙碌中~請稍後再試!!";
 	public final static String W1007_en_US = "[W1007] The server is busy~Please try again later!!";
 	public final static String W1007_vi_VN = "[W1007] Máy chủ đang bận~Vui lòng thử lại sau!!";
+	// 錯誤訊息-不正確的資料
+	public final static String W1008_zh_TW = "[W1008] 不正確的資料 : ${0} !!";
+	public final static String W1008_en_US = "[W1008] Incorrect information : ${0} !!";
+	public final static String W1008_vi_VN = "[W1008] Thông tin không chính xác : ${0} !!";
 
 	// Parameterless Constructor
 	public CloudExceptionService() {
