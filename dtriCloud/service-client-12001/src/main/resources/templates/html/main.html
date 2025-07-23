@@ -117,6 +117,7 @@ body {
 	//============共用-方法清單============
 	main.methods = {
 		ajaxSend(req_data, loading) {
+			console.log("ajaxSend:" + new Date());
 			//紀錄是否還在操作時間
 			hiddenTime = new Date().getTime();
 			if (loading) {
@@ -132,7 +133,9 @@ body {
 				contentType: "application/json;charset=UTF-8",
 				dataType: 'json',
 				data: req_data.data,//資料內容
+				timeout: 180000,
 				success(event) {
+					console.log("success:" + new Date());
 					console.log(event);
 					//console.log("Step1.顯示訊息資訊:ajax to success:");
 					var mainAlertM = nav_alert.methods;
@@ -187,6 +190,7 @@ body {
 					$("#loading").addClass("d-none");
 				},
 				error(event) {
+					console.log("error:" + new Date());
 					//console.log("ajax to fail:" + JSON.stringify(event));
 					var mainAlertM = nav_alert.methods;
 					if (event.status == 200) {//沒有session 拒絕

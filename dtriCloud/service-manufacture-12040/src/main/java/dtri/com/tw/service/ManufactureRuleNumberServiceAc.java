@@ -268,7 +268,9 @@ public class ManufactureRuleNumberServiceAc {
 			if (gid == null) {
 				// 是否有建立[manufacture_rule_number_g_seq]?
 				if (ruleNumberDao.checkIfSequenceExists() == 0) {
-					ruleNumberDao.createManufactureRuleNumberGSeq();
+					em.createNativeQuery(
+							"CREATE SEQUENCE manufacture_rule_number_g_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 CACHE 1")
+							.executeUpdate();
 				}
 				gid = ruleNumberDao.getManufactureRuleNumberGSeq();
 				x.setMrngid(gid);

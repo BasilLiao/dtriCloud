@@ -1,129 +1,131 @@
 <style>
-	/*Table 寬度滾動*/
-	#other_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-	}
+/*Table 寬度滾動*/
+#other_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
 
-	/*Table 自動隱藏*/
-	#other_c .table-responsive th,
-	#other_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#other_c .table-responsive th, #other_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#other_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#other_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	#other_c .fixedCt {
-		position: sticky;
-		top: 0px;
-		z-index: 5;
-	}
+#other_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 
-	/*Table 每隔表格內_框線*/
-	#other_c .table-bordered td,
-	#other_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#other_c .table-bordered td, #other_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#other_c #other_cr table {
-		max-height: calc(100vh - 420px);
-		min-height: 200px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#other_c #other_cr table {
+	max-height: calc(100vh - 420px);
+	min-height: 200px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格外框線*/
-	#other_c #other_dcr table {
-		max-height: calc(100vh - 420px);
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#other_c #other_dcr table {
+	max-height: calc(100vh - 420px);
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格內 背景色*/
-	#other_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#other_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*覆寫換色*/
-	.table-hover>tbody>tr:hover>* {
-		--bs-table-accent-bg: #0d6efd40;
-		color: var(--bs-table-hover-color);
-	}
+/*覆寫換色*/
+.table-hover>tbody>tr:hover>* {
+	--bs-table-accent-bg: #0d6efd40;
+	color: var(--bs-table-hover-color);
+}
 
-	/*標題色彩*/
-	#other_c .title_color {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#other_c .title_color {
+	background-color: #cfe2ff;
+}
 
-	/*標題色彩*/
-	#other_dcr .testItem .title_color {
-		background-color: #ffc10747;
-	}
+/*標題色彩*/
+#other_dcr .testItem .title_color {
+	background-color: #ffc10747;
+}
 
-	/*標題色彩*/
-	#other_dcr .groupItem .title_color {
-		background-color: #19875450;
-		;
-	}
+/*標題色彩*/
+#other_dcr .groupItem .title_color {
+	background-color: #19875450;
+	;
+}
 
-	/*禁止使用*/
-	.dontUse {
-		pointer-events: none;
-		opacity: 0.5;
-	}
+/*禁止使用*/
+.dontUse {
+	pointer-events: none;
+	opacity: 0.5;
+}
 
-	/*直立式呈現邊字*/
-	#other_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#other_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_24*/
-	#other_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#other_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
 
-	#other_c .checkbox_20 {
-		width: 20px;
-		height: 20px;
-	}
+#other_c .checkbox_20 {
+	width: 20px;
+	height: 20px;
+}
 
-	#other_c .checkbox_16 {
-		width: 16px;
-		height: 16px;
-	}
+#other_c .checkbox_16 {
+	width: 16px;
+	height: 16px;
+}
 
-	/*鎖定*/
-	.locked-do {
-		pointer-events: none;
-	}
+/*鎖定*/
+.locked-do {
+	pointer-events: none;
+}
 </style>
 <div id="other_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
 	<div id="other_c_item" class="col-12 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_c_item_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="other_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
-			<div id="otherItemItem" class="col border border-primary  row m-0 p-0 shadow-sm">
+			<div id="otherItemItem"
+				class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 otherTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="otherTitle title_color fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="oex_id"
-								name="oex_name" placeholder="Ex:123" autofocus>
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text id="oex_id" name="oex_name" placeholder="Ex:123"
+								autofocus>
 						</div>
 					</div>
 				</div>
@@ -131,7 +133,8 @@
 					<div class=" border border-secondary rounded">
 						<div class="otherTitle title_color fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" id="oex_id2" name="oex_name2">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								id="oex_id2" name="oex_name2">
 								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
 							</select>
 						</div>
@@ -142,13 +145,16 @@
 	</div>
 	<!-- 控制面板 -->
 	<div id="other_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="other_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<!--狀態選擇-->
 				<div class="col-6 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
@@ -211,8 +217,8 @@
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_other_send_auto" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_16 border border-dark"> <br> <b
-									style="font-size: 12px;">Auto(30s)</b>
+									class="m-0 form-check-input checkbox_16 border border-dark">
+								<br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -232,9 +238,11 @@
 	</div>
 	<!-- 查詢結果 -->
 	<div id="other_cr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_cr_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="other_cr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
@@ -257,8 +265,9 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 40px;">
 							<div>
-								<input name="other_cr_c_detail" disabled="disabled" alt="row_x" title="IKey_GKey"
-									type="radio" class="m-0 form-check-input checkbox_24 border border-dark">
+								<input name="other_cr_c_detail" disabled="disabled" alt="row_x"
+									title="IKey_GKey" type="radio"
+									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</th>
 						<td class="exTbodytd d-none" style="max-width: 100px"></td>
@@ -269,12 +278,15 @@
 	</div>
 	<!-- 查詢-細節結果 -->
 	<div id="other_dcr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#other_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#other_dcr_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="other_dcr_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr  bg-warning text-white"> Modify detail </b>
+			<b class="p-0 m-0 lh-1 wlr  bg-warning text-white"> Modify detail
+			</b>
 			<!--項目規則-->
 			<div class="col row m-0 p-0" style="width: 95%;">
 				<!--測試條件-->
@@ -283,9 +295,8 @@
 					<div class="col-6 col-lg-1 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Status(狀)</div>
-							<div id="other_c_state" class="p-1 m-0 text-secondary h3" title="None">
-								None
-							</div>
+							<div id="other_c_state" class="p-1 m-0 text-secondary h3"
+								title="None">None</div>
 						</div>
 					</div>
 					<!--條件接續?-->
@@ -293,7 +304,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">A/R(接續?)</div>
 							<div class="p-1 m-0">
-								<select id="other_w_continue" class="col-12 m-0 p-1 border border-dark form-select"
+								<select id="other_w_continue"
+									class="col-12 m-0 p-1 border border-dark form-select"
 									name="other_w_continue">
 									<option value="" selected="selected">select(請選擇)</option>
 									<option value="<AND>">AND(和)</option>
@@ -305,9 +317,11 @@
 					<!--欄位選擇-->
 					<div class="col-6 col-lg-2 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Test field(測試欄位)</div>
+							<div class="title_color fw-bolder rounded-top">Test
+								field(測試欄位)</div>
 							<div class="p-1 m-0">
-								<select id="other_w_item" class="col-12 m-0 p-1 border border-dark form-select"
+								<select id="other_w_item"
+									class="col-12 m-0 p-1 border border-dark form-select"
 									name="other_w_item">
 									<option value="" selected="selected">select(請選擇)</option>
 									<option value="wmpnb">Materiel(料號)</option>
@@ -323,7 +337,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Conditions(測試條件)</div>
 							<div class="p-1 m-0">
-								<select id="other_w_option" class="col-12 m-0 p-1 border border-dark form-select"
+								<select id="other_w_option"
+									class="col-12 m-0 p-1 border border-dark form-select"
 									name="other_w_option">
 									<option value="" selected="selected">select(請選擇)</option>
 									<option value="AllSame">All same(完全相同)</option>
@@ -345,7 +360,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Value(測試值)</div>
 							<div class="p-1 m-0">
-								<input id="other_w_val" class="col-12 m-0 p-1 border border-dark form-control"
+								<input id="other_w_val"
+									class="col-12 m-0 p-1 border border-dark form-control"
 									type="text" name="where_val" placeholder="Ex:123">
 							</div>
 						</div>
@@ -355,9 +371,12 @@
 					<!--條件清單?-->
 					<div class="col-6 col-lg-4 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Where list(條件清單)</div>
-							<div id="other_w_list" class="p-0 m-0 row" style="line-height: 1;">
-								<div id="other_w_list_ex" class="col-12 p-1 m-0 row border border-secondary d-none"
+							<div class="title_color fw-bolder rounded-top">Where
+								list(條件清單)</div>
+							<div id="other_w_list" class="p-0 m-0 row"
+								style="line-height: 1;">
+								<div id="other_w_list_ex"
+									class="col-12 p-1 m-0 row border border-secondary d-none"
 									title="xxx">
 									<i alt="row_x" title=""
 										class="btn btn-outline-danger p-0 bi bi-dash-square other_w_one"
@@ -376,8 +395,10 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Import(導入)</div>
 							<div class="row p-1 m-0">
-								<div class="col-12 p-1">Auto:<input id="other_bisiauto" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-12 p-1">
+									Auto:<input id="other_bisiauto" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
 							</div>
 						</div>
 					</div>
@@ -386,7 +407,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Group(項組)</div>
 							<div class="p-1 m-0">
-								<input id="other_bisgname" class="col-12 m-0 p-1 border border-dark form-control"
+								<input id="other_bisgname"
+									class="col-12 m-0 p-1 border border-dark form-control"
 									type=text name="other_bisgname" placeholder="Ex:CPU">
 							</div>
 						</div>
@@ -394,10 +416,13 @@
 					<!--群組名稱-->
 					<div class="col-6 col-lg-2 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Field name(欄位名稱)</div>
+							<div class="title_color fw-bolder rounded-top">Field
+								name(欄位名稱)</div>
 							<div class="p-1 m-0">
-								<input id="other_bisgfname" class="col-12 m-0 p-1 border border-dark form-control"
-									type=text name="other_bisgfname" placeholder="Ex:廠商 代數 型號(最多5個 以空格區分)">
+								<input id="other_bisgfname"
+									class="col-12 m-0 p-1 border border-dark form-control"
+									type=text name="other_bisgfname"
+									placeholder="Ex:廠商 代數 型號(最多5個 以空格區分)">
 							</div>
 						</div>
 					</div>
@@ -406,7 +431,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Normalization(正規導入)</div>
 							<div class="p-1 m-0">
-								<select id="other_bisgffield" class="col-12 m-0 p-1 border border-dark form-select"
+								<select id="other_bisgffield"
+									class="col-12 m-0 p-1 border border-dark form-select"
 									name="other_bisgffield">
 									<option value="" selected="selected">select(請選擇)</option>
 									<option value="bisnb">Materiel(料號)</option>
@@ -422,8 +448,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Cutting(切)</div>
 							<div class="p-1 m-0">
-								<select class="col-12 m-0 p-1 border border-dark form-select" id="other_bisgsplit"
-									name="other_bisgsplit">
+								<select class="col-12 m-0 p-1 border border-dark form-select"
+									id="other_bisgsplit" name="other_bisgsplit">
 									<option value="" selected="selected">select(請選擇)</option>
 									<option value=" ">space( 空格)</option>
 									<option value="_">underline(_底線)</option>
@@ -439,28 +465,42 @@
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Sort(排序)</div>
 							<div class="p-1 m-0">
-								<input class="col-12 m-0 p-1 border border-dark form-control" type="number"
-									id="other_syssort" name="other_syssort" placeholder="Ex:1">
+								<input class="col-12 m-0 p-1 border border-dark form-control"
+									type="number" id="other_syssort" name="other_syssort"
+									placeholder="Ex:1">
 							</div>
 						</div>
 					</div>
 					<!--指定單元-->
 					<div class="col-6 col-lg-4 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">Choose rules(開放單元)</div>
+							<div class="title_color fw-bolder rounded-top">Choose
+								rules(開放單元)</div>
 							<div class="row p-1 m-0">
-								<div class="col-2 p-1">開發:<input id="other_bisdevelopment" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
-								<div class="col-2 p-1">板階:<input id="other_bispcb" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
-								<div class="col-2 p-1">半品:<input id="other_bissfproduct" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
-								<div class="col-2 p-1">成品:<input id="other_bisproduct" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
-								<div class="col-2 p-1">配件:<input id="other_bisaccessories" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
-								<div class="col-2 p-1">預設:<input id="other_bisdselect" type="checkbox"
-										class="m-0 form-check-input checkbox_24 border border-dark"></div>
+								<div class="col-2 p-1">
+									開發:<input id="other_bisdevelopment" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
+								<div class="col-2 p-1">
+									板階:<input id="other_bispcb" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
+								<div class="col-2 p-1">
+									半品:<input id="other_bissfproduct" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
+								<div class="col-2 p-1">
+									成品:<input id="other_bisproduct" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
+								<div class="col-2 p-1">
+									配件:<input id="other_bisaccessories" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
+								<div class="col-2 p-1">
+									預設:<input id="other_bisdselect" type="checkbox"
+										class="m-0 form-check-input checkbox_24 border border-dark">
+								</div>
 							</div>
 						</div>
 					</div>
@@ -486,14 +526,15 @@
 								<div>
 									<i alt="row_x" title="IKey_GKey"
 										class="btn btn-outline-danger p-0 bi bi-dash-square "
-										style="width: 24px; height: 24px;"></i>
-									<i alt="row_x" title="IKey_GKey" class="btn btn-outline-primary p-0 bi bi-stickies"
+										style="width: 24px; height: 24px;"></i> <i alt="row_x"
+										title="IKey_GKey"
+										class="btn btn-outline-primary p-0 bi bi-stickies"
 										style="width: 24px; height: 24px;"></i>
 								</div>
 							</th>
-							<td class="exTbodytd d-none" style="max-width: 100px">
-								<input class="col-12 m-0 p-1 border border-dark form-control" disabled="disabled">
-							</td>
+							<td class="exTbodytd d-none" style="max-width: 100px"><input
+								class="col-12 m-0 p-1 border border-dark form-control"
+								disabled="disabled"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -784,7 +825,10 @@
 						$("#other_c #other_c_state").removeClass("text-success");
 						$("#other_c #other_c_state").removeClass("text-warning");
 						$("#other_c #other_c_state").removeClass("text-secondary");
+						$("#other_c #other_dcr_open .groupItem").removeClass("dontUse");
+						$("#other_c #other_dcr_open .testItem").removeClass("dontUse");
 						$("#other_c #other_dcr_open").removeClass("dontUse");
+						
 						$("#other_c #other_c_state").text("None").attr("title", "None");
 						//清除
 						$("#other_c #btn_w_clear").trigger("click");
@@ -803,7 +847,8 @@
 								let bisgid = $(selectedRadio).attr('title').split("_")[1];
 								$("#other_c #other_c_state").addClass("text-secondary");
 								$("#other_c #other_c_state").text("None").attr("title", "None_" + bisgid);
-								$("#other_c #other_dcr_open").addClass("dontUse");
+								$("#other_c #other_dcr_open .groupItem").addClass("dontUse");
+								$("#other_c #other_dcr_open .testItem").addClass("dontUse");
 								other.methods.selectLoad(selectedRadio, "detail");
 							}
 							break;
@@ -982,6 +1027,7 @@
 						exTbodyTr.find('.bisid input').val("");
 						exTbodyTr.find('.bisnb input').val("customize");
 						exTbodyTr.find('.bisname input').val("customize");
+						exTbodyTr.find('.bisfname input').val("customize");
 						exTbodyTr.find('.bisspecifications input').val("customize");
 						exTbodyTr.find('.bisdescription input').val("customize");
 						$('#other_dcr_open .exDetailTbodyTr').before(exTbodyTr);

@@ -95,32 +95,29 @@ public class Fm_T {
 
 	/** get Date to week **/
 	public static int getWeek(Date date) {
-		try {
-			// 今年
-			Date dateNow = new Date();
-			Calendar calNow = Calendar.getInstance(Locale.TAIWAN);
-			calNow.setMinimalDaysInFirstWeek(7);
-			calNow.setTime(dateNow);
-			int yearNow = calNow.get(Calendar.YEAR);
-
-			// 預計日
-			Calendar cal = Calendar.getInstance(Locale.TAIWAN);
-			cal.setMinimalDaysInFirstWeek(7);
-			cal.setTime(date);
-			int year = cal.get(Calendar.YEAR);
-			int month = cal.get(Calendar.MONTH);
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int week = cal.get(Calendar.WEEK_OF_YEAR);
-			// 週期(可能是在每年最後 交替會出現異常 由取代)
-			if (month == 0 && yearNow <= year && day < 7 && week >= 52) {
-				week = 0;
-			}
-
-			return week;
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (date == null) {
+			return 0;
 		}
-		return 0;
+
+		Calendar cal = Calendar.getInstance(Locale.TAIWAN);
+		cal.setFirstDayOfWeek(Calendar.MONDAY); // 設定每週從星期一開始
+		cal.setMinimalDaysInFirstWeek(4); // 至少 4 天才算完整第一週
+		cal.setTime(date);
+
+		int year = cal.get(Calendar.YEAR);
+		int week = cal.get(Calendar.WEEK_OF_YEAR);
+
+		// 修正跨年問題（避免 12 月最後幾天變成下一年的第 1 週）
+		if (week == 1 && cal.get(Calendar.MONTH) == Calendar.DECEMBER) {
+			week = 53; // 設定為上一年的最後一週
+		}
+
+		// 修正 1 月第一週仍屬於上一年的問題（確保從 1 開始）
+		if (cal.get(Calendar.MONTH) == Calendar.JANUARY && week >= 52) {
+			week = 1; // 設為 1 而不是 0
+		}
+
+		return week;
 	}
 
 	/** get Date to Year **/

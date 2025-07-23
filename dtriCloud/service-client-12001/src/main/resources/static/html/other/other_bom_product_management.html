@@ -168,6 +168,27 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+				<!--切換面板 -->
+				<div class="col-12 col-lg-2 p-1  other_change_open">
+					<div class="border border-secondary rounded">
+						<div class="bg-primary fw-bolder rounded-top text-white">UI
+							Switch</div>
+						<div class="row m-0">
+							<button id="btn_erp_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>ERP BOM</b>
+							</button>
+							<button id="btn_rules_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Rules BOM</b>
+							</button>
+							<button id="btn_format_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Format BOM</b>
+							</button>
+						</div>
+					</div>
+				</div>
 				<!--BBI(同步-BOM成品組成)-->
 				<div class="col-12 col-lg-2 p-1 collapse other_BBI_open">
 					<div class="border border-secondary rounded">
@@ -187,57 +208,53 @@
 					</div>
 				</div>
 				<!--BPR(BOM產品規則)-->
-				<div class="col-12 col-lg-5 p-1 collapse other_Detail_BPR_open">
+				<div class="col-12 col-lg-3 p-1 collapse other_Detail_BPR_open">
 					<div class="border border-secondary rounded">
 						<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
 						<div class="row m-0">
 							<button id="btn_bpr_detail" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
-								<b>Rules<br>Modify
-								</b>
+								<b>Modify</b>
 							</button>
 							<button id="btn_bpr_back" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Rules<br>Back / Update
+								<b>Back<br>Update
 								</b>
 							</button>
 							<button id="btn_bpr_save" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Rules<br>Save(AC/AU/DD)
+								<b>Save<br>(AC/AU/DD)
 								</b>
 							</button>
 							<button id="btn_bpr_generate" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
-								<b>Rules<br>generate
-								</b>
+								<b>generate</b>
 							</button>
 						</div>
 					</div>
 				</div>
 				<!--BPM(BOM產品管理)-->
-				<div class="col-12 col-lg-5 p-1 collapse show other_Detail_BPM_open">
+				<div class="col-12 col-lg-3 p-1 collapse show other_Detail_BPM_open">
 					<div class="border border-secondary rounded">
 						<div class="bg-teal fw-bolder rounded-top">Format BOM</div>
 						<div class="row m-0">
 							<button id="btn_bpm_detail" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
-								<b>Format<br>Modify
-								</b>
+								<b>Modify</b>
 							</button>
 							<button id="btn_bpm_back" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Format<br>Back / Update
+								<b>Back<br>Update
 								</b>
 							</button>
 							<button id="btn_bpm_save" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-								<b>Format<br>Save(AC/AU/DD)
+								<b>Save<br>(AC/AU/DD)
 								</b>
 							</button>
 							<button id="btn_bpm_excel" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
-								<b>Export<br>Excel
-								</b>
+								<b>Export Excel</b>
 							</button>
 						</div>
 					</div>
@@ -246,7 +263,8 @@
 					<div class=" border border-secondary rounded">
 						<div class="bg_def fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
-							<div class="lh-1 col p-1 m-1 border border-primary rounded">
+							<div
+								class="d-none lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_other_send_auto" alt="" title="" type="checkbox"
 									class="m-0 form-check-input checkbox_16 border border-dark">
 								<br> <b style="font-size: 12px;">Auto(30s)</b>
@@ -1261,11 +1279,12 @@
 										//切割整理(每個正規化子項目內容)
 										let array = JSON.parse(v['bisfname']);
 										let val = array.join(' , ');
-										bisoption = $('<option></option>').text(val).val(v['bisid']);
-										bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
-										bisoption.attr('title', v['bisnb'] + "<_>" + v['bisname'] + "<_>" + v['bisspecifications'] + "<_>" + v['bissdescripion'] + "<_>" + v['bisgfname']);
-										bisselect.append(bisoption);
-
+										if(val!=="customize"){//customize除外
+											bisoption = $('<option></option>').text(val).val(v['bisid']);
+											bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
+											bisoption.attr('title', v['bisnb'] + "<_>" + v['bisname'] + "<_>" + v['bisspecifications'] + "<_>" + v['bissdescripion'] + "<_>" + v['bisgfname']);
+											bisselect.append(bisoption);							
+										}
 									});
 									bisselect.addClass('form-select');
 									$('#other_Detail_BPM .bisfname').html(bisselect);
@@ -1415,6 +1434,62 @@
 					let bprStatus = $('#od_bpr_status select');
 					//點擊動作
 					switch (clickId) {
+						case "btn_erp_bom":
+							if(!$('#other_BBI_open').hasClass('show')){
+								$('#other_BBI .bi-dash-square').trigger("click");
+							}
+							if($('#other_BPR_open').hasClass('show')){
+								$('#other_BPR .bi-dash-square').trigger("click");
+							}
+							if($('#other_BPM_open').hasClass('show')){
+								$('#other_BPM .bi-dash-square').trigger("click");
+							}
+							//細節關閉
+							if($('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
+							}
+							break;
+						case "btn_rules_bom":
+							if($('#other_BBI_open').hasClass('show')){
+								$('#other_BBI .bi-dash-square').trigger("click");
+							}
+							if(!$('#other_BPR_open').hasClass('show')){
+								$('#other_BPR .bi-dash-square').trigger("click");
+							}
+							if($('#other_BPM_open').hasClass('show')){
+								$('#other_BPM .bi-dash-square').trigger("click");
+							}
+							//細節關閉
+							if($('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
+							}
+							break;
+						case "btn_format_bom":
+							if($('#other_BBI_open').hasClass('show')){
+								$('#other_BBI .bi-dash-square').trigger("click");
+							}
+							if($('#other_BPR_open').hasClass('show')){
+								$('#other_BPR .bi-dash-square').trigger("click");
+							}
+							if(!$('#other_BPM_open').hasClass('show')){
+								$('#other_BPM .bi-dash-square').trigger("click");
+							}
+							//細節關閉
+							if($('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
+							}
+							
+							
+							break;
 						case "btn_bpm_save":
 							let Add = [];
 							let Modify = [];
@@ -1936,7 +2011,21 @@
 									let bpm = $("#other_BPM tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
 									bpm.find(".bpmnb").text(bbisn);
-									bpm.find(".bpmmodel").text("");
+									//型號
+									let bpmmodel = "";
+									if (typeof bbisn === 'string') {
+									    const parts = bbisn.split("-");
+									    if (parts.length === 3) {
+									        const middle = parts[1];         // 中間段，例如 "302"
+									        const last = parts[2];           // 最後段，例如 "P11MUL2"
+									        const firstChar = last.charAt(0) || "";
+									        const fourthChar = last.length >= 4 ? last.charAt(3) : "";
+									        if (firstChar && fourthChar) {
+									            bpmmodel = middle + firstChar + fourthChar;
+									        }
+									    }
+									}
+									bpm.find(".bpmmodel").text(bpmmodel);//
 									bpm.find(".bpmtypename").text("產品BOM");
 									bpm.find(".bpmtype").text("1");
 									bpm.find("input").removeAttr('disabled');
@@ -2037,6 +2126,21 @@
 									let bpr = $("#other_BPR tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
 									bpr.find(".bprname").text(bbisn);
+									//型號
+									let bpmmodel = "";
+									if (typeof bbisn === 'string') {
+									    const parts = bbisn.split("-");
+									    if (parts.length === 3) {
+									        const middle = parts[1];         // 中間段，例如 "302"
+									        const last = parts[2];           // 最後段，例如 "P11MUL2"
+									        const firstChar = last.charAt(0) || "";
+									        const fourthChar = last.length >= 4 ? last.charAt(3) : "";
+									        if (firstChar && fourthChar) {
+									            bpmmodel = middle + firstChar + fourthChar;
+									        }
+									    }
+									}
+									bpr.find(".bprmodel").text(bpmmodel);
 									bpr.find(".bprtypename").text("產品BOM");
 									bpr.find(".bprtype").text("1");
 									bpr.find("input").removeAttr('disabled');
@@ -2666,6 +2770,7 @@
 						}
 					}
 				});
+				
 			},
 			//==========================遞迴結構==========================
 			crossProduct(groups) {

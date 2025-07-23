@@ -61,7 +61,7 @@ public class ERPToCloudService {
 
 		String ta011 = m.getTa011();// --確認結單?1.未生產,2.已發料,3.生產中,Y.已完工,y.指定完工
 		o.setBclerpconfirm("1".equals(ta011) ? "未生產" : "2".equals(ta011) ? "已發料" : "3".equals(ta011) ? "生產中" : //
-				"Y".equalsIgnoreCase(ta011) ? "已完工" : "y".equalsIgnoreCase(ta011) ? "指定完工" : // 不區分大小寫
+				"Y".equals(ta011) ? "已完工" : "y".equals(ta011) ? "指定完工" : // 不區分大小寫
 						"未知狀態" // 預設值
 		);
 

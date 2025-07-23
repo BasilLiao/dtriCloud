@@ -284,6 +284,9 @@ public class SynchronizeERPService {
 					if (ok != null) {
 						System.out.println(nKey);
 						ok.setSysstatus(1);
+						ok.setBclerpconfirm("Y".equals(r.getTa011()) ? "已完工" : "y".equals(r.getTa011()) ? "指定完工" : // 不區分大小寫
+								"未知狀態");
+						ok.setBcltrqty(r.getTa017());
 						commandLists.add(ok);
 					}
 				}
@@ -455,6 +458,7 @@ public class SynchronizeERPService {
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
+			m.setTe014(m.getTe014().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setTa026_ta027_ta028(m.getTa026_ta027_ta028().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
@@ -1372,7 +1376,7 @@ public class SynchronizeERPService {
 		entityInOlds.forEach(o -> {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
-			//測試用
+			// 測試用
 //			if(oKey.equals("A151-250604002-0001")) {
 //				System.out.println(oKey);
 //			}
@@ -1478,7 +1482,7 @@ public class SynchronizeERPService {
 			removeInCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
-				//測試用
+				// 測試用
 //				if(nKey.equals("A151-250604002-0001")) {
 //					System.out.println(nKey);
 //				}
@@ -2048,6 +2052,10 @@ public class SynchronizeERPService {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
 			}
+			if (nKey.equals("A431-250618001-0016")) {
+				System.out.println(nKey);
+			}
+
 		}
 		// Step2.[ERP vs Cloud]舊資料匹配
 		// 入料

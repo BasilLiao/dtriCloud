@@ -53,7 +53,7 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
-			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "//
+			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "//產線須提前印資料
 			+ "	AND MOCTG.TG011 > 0 "// --數量不為0
 			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
 			+ "	OR MOCTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天

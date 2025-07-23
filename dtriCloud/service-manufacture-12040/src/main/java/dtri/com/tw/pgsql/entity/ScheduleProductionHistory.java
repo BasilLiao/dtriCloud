@@ -69,7 +69,8 @@ import jakarta.persistence.Transient;
  *      this.sphlable = ""; // : 標籤選擇<br>
  *      this.sphmfgpartno = ""; // : 工廠認證碼<br>
  *      this.sphpartno = ""; // : 組件號<br>
- * 
+ *      this.sphscnv = //生管參數<br>
+ *      this.sphrsn ="";SN主要規則 <br>
  * 
  */
 
@@ -129,6 +130,7 @@ public class ScheduleProductionHistory {
 		this.sphwarranty = "";// 保固
 		this.sphline = "";// 生產線
 		this.sphspecification = "";
+		this.sphrsn = "";
 	}
 
 	@PrePersist
@@ -176,7 +178,7 @@ public class ScheduleProductionHistory {
 	private String sphbpmnb;
 	@Column(name = "sph_bpm_model", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sphbpmmodel;
-	@Column(name = "sph_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	@Column(name = "sph_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String sphname;
 	@Column(name = "sph_specification", nullable = false, columnDefinition = "text default ''")
 	private String sphspecification; // : 產品規格敘述<br>
@@ -267,6 +269,9 @@ public class ScheduleProductionHistory {
 
 	@Column(name = "sph_warranty", nullable = false, columnDefinition = "varchar(10) default ''")
 	private String sphwarranty; // : 保固年分<br>
+
+	@Column(name = "sph_r_sn", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String sphrsn; // : SN 指定規則<br>
 
 	// @Transient
 	// private String sphsph; // : 生產紀錄內容(JSON_Array)<br>
@@ -627,102 +632,68 @@ public class ScheduleProductionHistory {
 		this.sphpartno = sphpartno;
 	}
 
-	/**
-	 * @return the sphpontype
-	 */
 	public String getSphpontype() {
 		return sphpontype;
 	}
 
-	/**
-	 * @param sphpontype the sphpontype to set
-	 */
 	public void setSphpontype(String sphpontype) {
 		this.sphpontype = sphpontype;
 	}
 
-	/**
-	 * @return the sphline
-	 */
 	public String getSphline() {
 		return sphline;
 	}
 
-	/**
-	 * @param sphline the sphline to set
-	 */
 	public void setSphline(String sphline) {
 		this.sphline = sphline;
 	}
 
-	/**
-	 * @return the sphwarranty
-	 */
 	public String getSphwarranty() {
 		return sphwarranty;
 	}
 
-	/**
-	 * @param sphwarranty the sphwarranty to set
-	 */
 	public void setSphwarranty(String sphwarranty) {
 		this.sphwarranty = sphwarranty;
 	}
 
-	/**
-	 * @return the sphsdate
-	 */
 	public Date getSphsdate() {
 		return sphsdate;
 	}
 
-	/**
-	 * @param sphsdate the sphsdate to set
-	 */
 	public void setSphsdate(Date sphsdate) {
 		this.sphsdate = sphsdate;
 	}
 
-	/**
-	 * @return the sphindate
-	 */
 	public Date getSphindate() {
 		return sphindate;
 	}
 
-	/**
-	 * @param sphindate the sphindate to set
-	 */
 	public void setSphindate(Date sphindate) {
 		this.sphindate = sphindate;
 	}
 
-	/**
-	 * @return the sphspecification
-	 */
 	public String getSphspecification() {
 		return sphspecification;
 	}
 
-	/**
-	 * @param sphspecification the sphspecification to set
-	 */
 	public void setSphspecification(String sphspecification) {
 		this.sphspecification = sphspecification;
 	}
 
-	/**
-	 * @return the sphname
-	 */
 	public String getSphname() {
 		return sphname;
 	}
 
-	/**
-	 * @param sphname the sphname to set
-	 */
 	public void setSphname(String sphname) {
 		this.sphname = sphname;
+	}
+
+	public String getSphrsn() {
+		return sphrsn;
+	}
+
+	public void setSphrsn(String sphrsn) {
+		this.sphrsn = sphrsn;
 	}
 
 }

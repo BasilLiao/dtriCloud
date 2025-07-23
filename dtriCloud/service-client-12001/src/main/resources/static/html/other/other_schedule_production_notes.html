@@ -638,7 +638,7 @@
 											<div style="width: 90%; padding: 2px;">
 												<textarea id="sphpmnote_val"
 													style="width: 100%; font-size: 14px; line-height: 16px;"
-													rows="5" disabled="disabled">「Ex:產品狀態:技轉中」</textarea>
+													rows="5" disabled="disabled"></textarea>
 											</div>
 										</div>
 									</div>
@@ -1199,7 +1199,7 @@
 							//console.log(sphbisitemJson);
 						}
 						//負責人
-						let sysmuser = entity.find(".sysmuser").text();
+						let sysmuser = entity.find(".sphbpsuser").text();
 						$("#sphbpsuser_val").text(sysmuser);
 						//PM 備註
 						let sysnote = entity.find(".sysnote").text();
@@ -1293,7 +1293,7 @@
 						//console.log(sphbisitemJson);
 					}
 					//負責人
-					let sysmuser = entity.find(".sysmuser").text();
+					let sysmuser = entity.find(".sphbpsuser").text();
 					$("#sphbpsuser_val").text(sysmuser);
 					//PM 備註
 					let sphpmnote = entity.find(".sphpmnote").text();
@@ -1632,11 +1632,11 @@
 						itemsOnedel = true;
 					}
 					// 抓取標題						
-					let title = $(this).attr("title").split("<_>")[0].trim();
-					//內容
-					let content = $(this).attr("title").split("<_>")[1]; // 如果有括號數量，取括號前部分
-					let contentArray = content.split(",").map(item => item.trim());// 將內容以逗號分隔並移除前後空格
-					let jsonArray = JSON.stringify(contentArray);
+					let rawTitle = $(this).attr("title") || "";
+					let titleArray = rawTitle.split("<_>").map(s => s.trim()); // 去除每項前後空白
+					let titleString = JSON.stringify(titleArray); // 若需轉為 JSON 字串
+					let bisfnameArray = titleArray[1].split(",").map(s => s.trim());
+					let bisfnameString = JSON.stringify(bisfnameArray); // 若需轉為 JSON 字串
 					//物料號
 					let bisNumber = $(this).attr("title").split("<_>")[2];
 					delList.set(bisNumber, itemsOnedel);
@@ -1644,13 +1644,13 @@
 					let quantity = $(this).attr("title").split("<_>")[3];
 					//資料格式
 					let itemsOne = {};
-					itemsOne.bisfname = title;//項目名稱
+					itemsOne.bisfname = bisfnameString;//項目名稱
 					itemsOne.bisgfname = "";
 					itemsOne.bisgid = "0";
-					itemsOne.bisgname = jsonArray;//項目組名稱
+					itemsOne.bisgname = titleArray[0];//項目組名稱
 					itemsOne.bisid = "0";
 					itemsOne.bisname = "";
-					itemsOne.bisnb = bisNumber;//物料號
+					itemsOne.bisnb = titleArray[2];//物料號
 					itemsOne.bisprocess = "";
 					itemsOne.bisqty = quantity + "";//數量
 					itemsOne.bissdescripion = "";

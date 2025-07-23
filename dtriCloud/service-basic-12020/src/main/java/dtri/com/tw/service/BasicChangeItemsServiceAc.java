@@ -3,11 +3,11 @@ package dtri.com.tw.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,107 +194,98 @@ public class BasicChangeItemsServiceAc {
 					BasicCommandList.class);
 			ArrayList<BasicCommandList> entitys = new ArrayList<BasicCommandList>();// 單據
 			ArrayList<WarehouseArea> entityDetails = new ArrayList<WarehouseArea>();// 倉庫
-
-			LinkedHashMap<String, BasicCommandList> entitysNew = new LinkedHashMap<String, BasicCommandList>();// 不重複
-			LinkedHashMap<String, BasicCommandList> entityMaps = new LinkedHashMap<String, BasicCommandList>();// 不重複(製令單號+序號)
+			LinkedHashMap<String, BasicCommandList> entitysNew = new LinkedHashMap<String, BasicCommandList>();// 不重複(單據)
 
 			// 複數?避免為空
 			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
 					? searchData.getBclpnumber().replaceAll("\\s", "").split("/")
 					: new String[] { "90-320" };
 			// 複數?
-			for (String bclpn : bclpns) {
-				LinkedHashMap<String, WarehouseArea> entityDetailMaps = new LinkedHashMap<String, WarehouseArea>();// 不重複(倉別+物料)
-				// 合併一起+標記
+			for (String bclpn : bclpns) {// 初始化與提示記錄
+				LinkedHashMap<String, WarehouseArea> entityDetailMaps = new LinkedHashMap<>();
+				LinkedHashMap<String, BasicCommandList> entityMaps = new LinkedHashMap<>();
+
+				// 標記查詢料號起始
 				WarehouseArea newW = new WarehouseArea();
 				newW.setWawmpnb("===" + bclpn + "===");
 				entityDetails.add(newW);
 
-				// * BOM組成結構(遞迴圈)-> 需配對清單->可能多階層
-				ArrayList<BasicBomIngredients> ingredients = loopBasicBomIngredients(bclpn);
-				ingredients.forEach(i -> {
-					// *製令單
-					ArrayList<BasicCommandList> entityWOs = commandListDao.findAllBySearch(null, null, i.getBbiisn(), 1,
-							pageableBC);
-					if (entityWOs.size() > 0) {
-						for (BasicCommandList entityWO : entityWOs) {
-							entityMaps.put(
-									entityWO.getBclclass() + "-" + entityWO.getBclsn() + "-" + entityWO.getBclnb(),
-									entityWO);
-						}
+				// Step 1: 查詢 BOM 所有母項 (逆展開)
+				List<BasicBomIngredients> ingredients = bomIngredientsDao.findBomParents(bclpn);
+				Set<String> isns = ingredients.stream().map(BasicBomIngredients::getBbiisn).collect(Collectors.toSet());
 
-					}
-					// *倉庫數量儲位
-					ArrayList<WarehouseArea> entityWAs = areaDao.findAllByWawmpnbNot0(i.getBbiisn(), pageableWA);
-					if (entityWAs.size() > 0) {
-						for (WarehouseArea entityWA : entityWAs) {
-							entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
-						}
-					}
-				});
-				// *製令單->包含自己
-				ArrayList<BasicCommandList> entityLWOs = commandListDao.findAllBySearch(null, null, bclpn, 1,
-						pageableBC);
-				if (entityLWOs.size() > 0) {
-					for (BasicCommandList entityWO : entityLWOs) {
-						entityMaps.put(entityWO.getBclclass() + "-" + entityWO.getBclsn() + "-" + entityWO.getBclnb(),
-								entityWO);
-					}
+				// Step 2: 批次查詢相關製令單與倉儲資料
+				List<BasicCommandList> entityWOs = commandListDao
+						.findAllByBclpnumberInAndSysstatusNot(new ArrayList<>(isns), 1);
+				List<WarehouseArea> entityWAs = areaDao
+						.findAllByWawmpnbInAndWaerptqtyGreaterThanZero(new ArrayList<>(isns));
+
+				// Step 3: 將資料轉為 Map，避免重複
+				for (BasicCommandList wo : entityWOs) {
+					String key = wo.getBclclass() + "-" + wo.getBclsn() + "-" + wo.getBclnb();
+					//測試用
+//					if(key.equals("A511-250506014-0164")) {
+//						System.out.println(key);
+//					}
+					entityMaps.putIfAbsent(key, wo);
 				}
-				// *倉庫數量儲位->包含自己
-				ArrayList<WarehouseArea> entityLWAs = areaDao.findAllByWawmpnbNot0(bclpn, pageableWA);
-				if (entityLWAs.size() > 0) {
-					for (WarehouseArea entityWA : entityLWAs) {
-						entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
-					}
-
+				for (WarehouseArea wa : entityWAs) {
+					entityDetailMaps.putIfAbsent(wa.getWaaliasawmpnb(), wa);
 				}
 
-				// *製令單A521
-				ArrayList<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null, 1,
-						pageableBC);
+				// Step 4: 查詢自己製令與儲位資料（含自身）
+				List<BasicCommandList> entityLWOs = commandListDao.findAllBySearch(null, null, bclpn, 1, pageableBC);
+				for (BasicCommandList wo : entityLWOs) {
+					String key = wo.getBclclass() + "-" + wo.getBclsn() + "-" + wo.getBclnb();
+					entityMaps.putIfAbsent(key, wo);
+				}
 
-				// *BOM而外庫存量儲位
-				Set<String> entityBoms = new HashSet<>();// A521 類型需要再次查詢
-				ingredients.forEach(bom -> {
-					// 登記關聯-成品類
-					entityBoms.add(bom.getBbisn());
-					//
-					ArrayList<WarehouseArea> forBom = areaDao.findAllByWawmpnbNot0(bom.getBbisn(), pageableWA);
-					// 加入到 庫存清單內
-					if (forBom.size() > 0) {
-						for (WarehouseArea entityWA : forBom) {
-							entityDetailMaps.put(entityWA.getWaaliasawmpnb(), entityWA);
-						}
+				List<WarehouseArea> entityLWAs = areaDao.findAllByWawmpnbNot0(bclpn, pageableWA);
+				for (WarehouseArea wa : entityLWAs) {
+					entityDetailMaps.putIfAbsent(wa.getWaaliasawmpnb(), wa);
+				}
+
+				// Step 5: 查詢 A521 製令單
+				List<BasicCommandList> entityA521s = commandListDao.findAllBySearch("A521", null, null, 1, pageableBC);
+
+				// Step 6: 額外查詢 BOM 成品項庫存
+				Set<String> entityBoms = ingredients.stream().map(BasicBomIngredients::getBbisn)
+						.collect(Collectors.toSet());
+				for (String bomSn : entityBoms) {
+					List<WarehouseArea> forBom = areaDao.findAllByWawmpnbNot0(bomSn, pageableWA);
+					for (WarehouseArea wa : forBom) {
+						entityDetailMaps.putIfAbsent(wa.getWaaliasawmpnb(), wa);
 					}
+				}
 
-				});
+				// Step 7: 工單排重過濾
+				Map<String, Boolean> check = new HashMap<>();
+				Map<String, Boolean> pnumberCheck = new HashMap<>();
 
-				// Step4-2.資料區分(一般/細節)- 排除重複單號
-				Map<String, Boolean> check = new HashMap<String, Boolean>();// <工單號_組物料,true>
-				Map<String, Boolean> pnumberCheck = new HashMap<String, Boolean>();// <工單號_成品物料,true>
-				entityMaps.forEach((y, o) -> {
-					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
-					String p = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclproduct();
-					if (!pnumberCheck.containsKey(p) && !check.containsKey(k) && //
-							!o.getSysnote().contains("改") && !o.getSysnote().contains("退")) {
+				for (Map.Entry<String, BasicCommandList> entry : entityMaps.entrySet()) {
+					BasicCommandList o = entry.getValue();
+					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();// 工單別-工單號-物料號
+					String p = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclproduct();// 工單別-工單號-產品號
+					if (!pnumberCheck.containsKey(p) && !check.containsKey(k) && !o.getSysnote().contains("改")
+							&& !o.getSysnote().contains("退")) {
 						check.put(k, true);
 						pnumberCheck.put(p, true);
 						entitysNew.put(k, o);
 					}
-				});
-				// 而外查詢A521
-				entityA521s.forEach(o -> {
+				}
+
+				// Step 8: A521 額外補入符合條件者
+				for (BasicCommandList o : entityA521s) {
 					String k = o.getBclclass() + "-" + o.getBclsn() + "_" + o.getBclpnumber();
 					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber()) && !o.getSysnote().contains("改")
 							&& !o.getSysnote().contains("退")) {
 						check.put(k, true);
 						entitysNew.put(k, o);
 					}
-				});
+				}
 
-				// 倉庫合併-與多筆資料
-				entityDetails.addAll(new ArrayList<>(entityDetailMaps.values()));
+				// Step 9: 合併倉庫明細資料
+				entityDetails.addAll(entityDetailMaps.values());
 			}
 
 			// 類別(一般模式)
@@ -319,27 +310,6 @@ public class BasicChangeItemsServiceAc {
 		packageBean.setEntityDetailIKeyGKey("waid_");
 		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_bcledate_bclfdate_bclsdate");
 		return packageBean;
-	}
-
-	private ArrayList<BasicBomIngredients> loopBasicBomIngredients(String bclpn) {
-		ArrayList<BasicBomIngredients> ingredientFats = new ArrayList<BasicBomIngredients>();
-		// 查詢本階物料
-		ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(null, null, bclpn, null, null,
-				null);
-		for (BasicBomIngredients ids : ingredients) {
-			// 子迴圈
-			ArrayList<BasicBomIngredients> ingredientSons = new ArrayList<BasicBomIngredients>();
-			ingredientSons = loopBasicBomIngredients(ids.getBbisn());
-			if (ingredientSons != null && ingredientSons.size() > 0) {
-				ingredientFats.addAll(ingredientSons);
-			}
-		}
-		// 累計後回傳
-		if (ingredients.size() > 0) {
-			ingredientFats.addAll(ingredients);
-		}
-
-		return ingredientFats;
 	}
 
 	/** 修改資料 */

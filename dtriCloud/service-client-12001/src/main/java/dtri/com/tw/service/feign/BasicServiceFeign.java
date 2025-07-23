@@ -15,7 +15,7 @@ import dtri.com.tw.shared.PackageBean;
  * 
  **/
 @Component
-@FeignClient(value = "SERVICE-BASIC", path = "service-basic")
+@FeignClient(value = "SERVICE-BASIC", path = "service-basic", configuration = FeignConfig.class)
 public interface BasicServiceFeign {
 	// ================================同步:重新同步單據================================
 	@RequestMapping(value = { "/basicSynchronize/getReSynchronize" }, method = RequestMethod.POST)

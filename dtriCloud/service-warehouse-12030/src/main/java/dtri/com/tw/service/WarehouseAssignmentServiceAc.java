@@ -851,11 +851,18 @@ public class WarehouseAssignmentServiceAc {
 							}
 						}
 					} else if (inCheckDatas.size() > 0) {
+						// 必須以核單
+						if (inCheckDatas.get(0).getBilcheckin() == 0) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+									new String[] { " Not yet verified : " + entityData.getWasclasssn() + "-"
+											+ entityData.getWasnb() });
+						}
+
 						// 入料~無須檢測
 					} else {
 						// 找不到
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
-								new String[] { entityData.getWasclasssn() + entityData.getWasnb() + "" });
+								new String[] { entityData.getWasclasssn() + "-" + entityData.getWasnb() });
 					}
 				}
 			}

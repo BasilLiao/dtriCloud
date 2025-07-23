@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import dtri.com.tw.pgsql.entity.ManufactureRuleNumber;
@@ -29,10 +28,6 @@ public interface ManufactureRuleNumberDao extends JpaRepository<ManufactureRuleN
 	// 取得G_ID
 	@Query(value = "SELECT NEXTVAL('manufacture_rule_number_g_seq')", nativeQuery = true)
 	Long getManufactureRuleNumberGSeq();
-
-	@Modifying
-	@Query(value = "CREATE SEQUENCE manufacture_rule_number_g_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 CACHE 1 ", nativeQuery = true)
-	void createManufactureRuleNumberGSeq();
 
 	@Query(value = "SELECT COUNT(*)	FROM pg_class WHERE relname = 'manufacture_rule_number_g_seq' AND relkind = 'S'", nativeQuery = true)
 	int checkIfSequenceExists();

@@ -20,11 +20,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
@@ -57,6 +59,9 @@ public class ScheduleProductionNotesServiceAc {
 
 	@Autowired
 	private BomItemSpecificationsDao specificationsDao;
+
+	@Autowired
+	private BasicBomIngredientsDao bomIngredientsDao;
 
 	// @Autowired
 	// private EntityManager em;
@@ -442,11 +447,21 @@ public class ScheduleProductionNotesServiceAc {
 		if (oldData != null) {
 			historyDao.save(oldData);
 		}
-		entityDatas.forEach(a -> {
-			a.setSyscuser(packageBean.getUserAccount());
-			a.setSyscdate(new Date());
-			a.setSphprogress(2);
-			a.setSphid(null);
+		entityDatas.forEach(e -> {
+			e.setSyscuser(packageBean.getUserAccount());
+			e.setSyscdate(new Date());
+			e.setSphprogress(2);
+			e.setSphid(null);
+			// 是否沒有產品品號?
+			if (e.getSphname() == null || e.getSphname().equals("")) {
+				ArrayList<BasicBomIngredients> ingredients = bomIngredientsDao.findAllBySearch(e.getSphbpmnb(), null,
+						null, null, null, null);
+				if (ingredients.size() > 0) {
+					e.setSphname(ingredients.get(0).getBbiname());
+					e.setSphspecification(ingredients.get(0).getBbispecification());
+				}
+			}
+
 		});
 		historyDao.saveAll(entityDatas);
 		return packageBean;

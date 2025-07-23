@@ -1,6 +1,7 @@
 package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,8 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 			+ "(:wawmpnb is null or c.wawmpnb  LIKE %:wawmpnb%) and " //
 			+ "(c.waerptqty >0) ")
 	ArrayList<WarehouseArea> findAllByWawmpnbNot0(String wawmpnb, Pageable pageable);
+
+	@Query("SELECT c FROM WarehouseArea c WHERE c.wawmpnb IN :wawmpnbs AND c.waerptqty > 0")
+	List<WarehouseArea> findAllByWawmpnbInAndWaerptqtyGreaterThanZero(List<String> wawmpnbs);
 
 }

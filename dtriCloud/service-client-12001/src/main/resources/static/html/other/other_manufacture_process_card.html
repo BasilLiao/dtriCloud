@@ -187,7 +187,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-6 col-lg-4 p-1">
+					<div class="col-6 col-lg-5 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Action</div>
 							<div class="row m-0">
@@ -198,7 +198,7 @@
 								</button>
 								<button id="btn_saveForm" type="submit" value="btn_saveForm"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-									<b>Save<br>(AU/AC/AD)
+									<b>Save<br>(AU)
 									</b>
 								</button>
 								<div class="lh-1 col p-1 m-1 border border-success rounded">
@@ -210,6 +210,11 @@
 								<button id="btn_printerForm" type="button"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
 									<b>Print<br>form
+									</b>
+								</button>
+								<button id="btn_unlockForm" type="submit" value="btn_unlockForm"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+									<b>Unlock<br>(AU)
 									</b>
 								</button>
 							</div>
@@ -431,15 +436,15 @@
 											</select>
 										</div>
 
-										<div class="col-1 m-0 p-0 pe-1">
+										<div class="col-2 m-0 p-0 pe-1">
 											<input id="mrnyyww" disabled="disabled"
 												class="m-0 p-1 border border-dark form-control searchVal"
-												type="text" placeholder="[YYWW]">
+												type="text" placeholder="年周[YYWW]">
 										</div>
-										<div class="col-1 m-0 p-0 pe-1">
+										<div class="col-2 m-0 p-0 pe-1">
 											<input id="mrn0000" disabled="disabled"
 												class="m-0 p-1 border border-dark form-control searchVal"
-												type="text" placeholder="[0001]">
+												type="text" placeholder="流水號[0001]">
 										</div>
 									</div>
 								</div>
@@ -489,7 +494,7 @@
 								<div id="c_mmbver"
 									class="btnAutoOrder border border-secondary rounded">
 									<div class="searchTitle title_color fw-bolder rounded-top">M/B
-										Ver.</div>
+										Ver</div>
 									<div class="p-1">
 										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
@@ -716,7 +721,8 @@
 												style="width: 45px; font-size: 12px;">
 												<b>Cust.</b>
 											</div>
-											<div class="f_sphoname p-0 only_brm" style="width: 160px;"></div>
+											<div class="f_sphoname p-0 only_brm"
+												style="overflow: hidden; height: 31px; width: 160px;"></div>
 											<div class="p-0 only_brm"
 												style="width: 45px; font-size: 12px;">
 												<b>Qty</b>
@@ -749,7 +755,8 @@
 												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
 												<b>Notice</b>
 											</div>
-											<div class="f_sphscnote p-0 only_br" style="width: 566px;"></div>
+											<div class="f_sphscnote p-0 only_br text-start"
+												style="width: 566px;"></div>
 										</div>
 									</div>
 								</div>
@@ -858,7 +865,7 @@
 										</div>
 										<!-- BOM結構 -->
 										<div class="row m-0"
-											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 20px; font-size: 16px; text-align: left;">
+											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 20px; font-size: 14px; text-align: left;">
 											<div id="sphbisitemEx_val"
 												class="d-none p-0 ms-1 mt-1 only_brm"
 												style="overflow: hidden; text-align: start; height: 18px; width: 288px; line-height: 16px;">
@@ -1255,10 +1262,11 @@
 					defOption.removeAttr("selected");
 					defOption.attr("value",mrn['mrnval']);
 					if(mrn['mrn0000c']===true){
-						defOption.attr("mrn0000",mrn['mrn0000']);						
+						defOption.attr("mrn0000",mrn['mrn0000']);
+						defOption.attr("mrnid",mrn['mrnid']);
 					}
 					if(mrn['mrnyywwc']===true){
-						defOption.attr("mrnyyww",mrn['mrnyyww']);						
+						defOption.attr("mrnyyww",mrn['mrnyyww']);
 					}
 					
 					defOption.text(mrn['mrnname']);
@@ -1335,29 +1343,59 @@
 					//帶入資料(填寫畫面)
 					let modifycard = $("#modify_card");
 					//Product Information
-					modifycard.find("#c_sphindate input").val(entity.find(".sphsdate").text().split(" ")[0]);//實際頭線
+					if(entity.find(".sphindate").text()===""){
+						modifycard.find("#c_sphindate input").val(entity.find(".sphsdate").text().split(" ")[0]);//預投產					
+					}else{
+						modifycard.find("#c_sphindate input").val(entity.find(".sphindate").text().split(" ")[0]);//實際頭線
+					}
+					$('#c_sphline select').val(entity.find(".sphline").text());
+					$('#c_sphworkstation select').val(entity.find(".sphworkstation").text());
+					$('#c_sphlable select').val(entity.find(".sphlable").text());
+					$('#c_sphpontype select').val(entity.find(".sphpontype").text());
+					$('#c_sphwarranty select').val(entity.find(".sphwarranty").text());
+					
 					//產品參數配置Ex:["組件號(Parts No)_Parts No","驗證碼(MFG Part No)_MFG Part No"]
-					let sphbpsnv = JSON.parse(entity.find(".sphbpsnv").text());
-					sphbpsnv.forEach((item) => {
-						if(item!==null){
-							if(item.split("_")[0]!==null && item.split("_")[0] ==="組件號(Parts No)"){
-							modifycard.find("#c_sphpartno input").val(item.split("_")[1]);
-							}
-							if(item.split("_")[0]!==null && item.split("_")[0] ==="驗證碼(MFG Part No)"){
-							modifycard.find("#c_sphmfgpartno input").val(item.split("_")[1]);
-							}
-						}						
-					});
+					if(entity.find(".sphbpsnv").text()!==""){
+						let sphbpsnv = JSON.parse(entity.find(".sphbpsnv").text());
+						sphbpsnv.forEach((item) => {
+							if(item!==null){
+								if(item.split("_")[0]!==null && item.split("_")[0] ==="組件號(Parts No)"){
+								modifycard.find("#c_sphpartno input").val(item.split("_")[1]);
+								}
+								if(item.split("_")[0]!==null && item.split("_")[0] ==="驗證碼(MFG Part No)"){
+								modifycard.find("#c_sphmfgpartno input").val(item.split("_")[1]);
+								}
+							}						
+						});						
+					}
+					if(entity.find(".sphmfgpartno").text()!==""){
+						modifycard.find("#c_sphmfgpartno input").val(entity.find(".sphmfgpartno").text());
+					}
+					if(entity.find(".sphpartno").text()!==""){
+						modifycard.find("#c_sphpartno input").val(entity.find(".sphpartno").text());
+					}
 					
 					//Product Ver
-					modifycard.find("#c_mmbecn input").val(entity.find(".z").text());//
-					modifycard.find("#c_mmbver input").val(entity.find(".z").text());//
-					modifycard.find("#c_mbiosver input").val(entity.find(".z").text());//
-					modifycard.find("#c_mnvramver input").val(entity.find(".z").text());//
+					let sphbsh = entity.find(".sphbsh").text();
+					if(sphbsh!==null &&sphbsh!==''){
+						let pr_s_item = JSON.parse(sphbsh)['pr_s_item'];
+						if(pr_s_item!=null){
+							modifycard.find("#c_mbiosver input").val(pr_s_item["BIOS"]);//BIOS
+							modifycard.find("#c_mnvramver input").val(pr_s_item["NV_RAM"]);//NV_RAM
+							modifycard.find("#c_mmbver input").val(pr_s_item["MB_Ver"]);//MB_Ver
+							modifycard.find("#c_mmbecn input").val(pr_s_item["MB_ECN"]);//MB_ECN
+							
+							modifycard.find("#c_pecver input").val(pr_s_item["EC"]);//EC
+							modifycard.find("#c_posver input").val(pr_s_item["OS"]);//OS
+							modifycard.find("#c_pmodelver input").val(pr_s_item["Model"]);//model
+							//
+							modifycard.find("#c_sphprnote1 textarea").val(pr_s_item["Note1"]);//Note1
+							modifycard.find("#c_sphprnote2 textarea").val(pr_s_item["Note2"]);//Note2				
+						}
+					}
+					
 					//
 					modifycard.find("#c_pmodelver input").val(entity.find(".sphbpmmodel").text());//MODEL
-					modifycard.find("#c_pecver input").val(entity.find(".z").text());//EC
-					modifycard.find("#c_posver input").val(entity.find(".z").text());//OS
 					 
 					//Product Information
 					modifycard.find("#c_sphbpmnb input").val(entity.find(".sphbpmnb").text());//公司BOM
@@ -1531,12 +1569,15 @@
 					$("#sphbpmnb_val").text("");//品號
 					$("#sphbpmmodel_val").text("");//型號
 					$("#sphoqty_val").text("");//數量
-
+					//
+					$("#c_sphbpmnbDf select").val("");//切換預設
+					
+					
 					//
 					$(".btnAutoOrder input").val("");
 					$(".sphbisitemList").remove();
-					$("#sphscnote_val").text("「Ex:NPI_EE/NPI_NE及PLT人員須到現場確認技轉狀況，產線須提出技轉報告」");
-					$("#sphpmnote_val").text("「Ex:產品狀態:技轉中」");
+					//$("#sphscnote_val").text("「Ex:NPI_EE/NPI_NE及PLT人員須到現場確認技轉狀況，產線須提出技轉報告」");
+					//$("#sphpmnote_val").text("「Ex:產品狀態:技轉中」");
 					//選項
 					for (let x = 1; x <= 9; x++) {
 						$("#sphscpackage_checkbox" + x).prop("checked", false);
@@ -1590,6 +1631,8 @@
 					
 					let c_sphxnbText = $("#c_sphxnb input").val();//固定
 					let c_sphfnbText = parseInt($("#c_sphfnb input").val());//浮動
+					let c_sphfnbLength = $("#c_sphfnb input").val().length;//長度
+					let maxValue = Math.pow(10, c_sphfnbLength) - 1;//次方-1 Ex:99999
 					const total = parseInt($('#printNotes .f_sphoqty').text().replace(/,/g, ''));  // 實際數量
 					const batchSize = 200;     // 每批 200 筆
 					let batchIndex = 0;
@@ -1598,11 +1641,28 @@
 						if (batchIndex * batchSize >= total) return; // 所有都印完了
 
 						let contentHtml = "";
+						// 防呆：確保長度合理
+						if (!Number.isInteger(c_sphfnbLength) || c_sphfnbLength <= 0) {
+						    console.warn("無效的 c_sphfnbLength，已預設為 4");
+						    c_sphfnbLength = 4;
+						}
+						
 						for (let i = 1; i <= batchSize && (batchIndex * batchSize + i) <= total; i++) {
-							
-							let c_sphfnbStr = String(c_sphfnbText).padStart(4, '0');
-							//轉Qrcode
-							JsBarcode(rawHtml.find(".f_p_sn svg")[0],c_sphxnbText+c_sphfnbStr, {//產品SN號 Code
+							//c_sphfnbText->補0->c_sphfnbStr 
+							let c_sphfnbStr = String(c_sphfnbText).padStart(c_sphfnbLength, '0');
+							let fullCode = c_sphxnbText + c_sphfnbStr;
+							// 防呆：確保條碼內容非空
+						    if (!fullCode || fullCode.length === 0) {
+						        console.warn("條碼內容為空，已跳過");
+						        continue;
+						    }
+						    // 取得 svg 元素並清除舊內容
+						    let svgElement = rawHtml.find(".f_p_sn svg")[0];
+						    while (svgElement.firstChild) {
+						        svgElement.removeChild(svgElement.firstChild);
+						    }
+							//轉Qrcode 
+							JsBarcode(svgElement, fullCode, {//產品SN號 Code
 								format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
 								lineColor: "#000",   // 線條顏色
 								width: 0.7,            // 線條寬度
@@ -1620,12 +1680,13 @@
 								textAlign: "center",       // 對齊方式："left", "center", "right"
 								marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
 							 });
-							contentHtml += rawHtml.html();
-							//位數添加
-							c_sphfnbText+=1;
-							if(c_sphfnbText===10000 || c_sphfnbText===0){
-								c_sphfnbText = 1;
-							}
+							// 儲存條碼 HTML
+						    contentHtml += rawHtml.html()
+							// 累加，並檢查是否超過最大值
+						    c_sphfnbText++;
+						    if (c_sphfnbText > maxValue) {
+						        c_sphfnbText = 1;
+						    }
 						}
 						
 						// 開啟一個新視窗-> 在新視窗中寫入 HTML
@@ -1718,10 +1779,6 @@
 					$('#c_sphxnb input').val(selectedValues).trigger('input');
 					console.log(selectedValues);
 				});
-				
-				
-				
-
 				//時間格式
 				other.methods.datetimepickerDate();
 
@@ -1759,11 +1816,12 @@
 				if (action === "btn_intoForm") {
 					other.methods.btn_intoForm();
 				} else if (action === "btn_saveForm") {
-					other.methods.btn_saveForm();
+					other.methods.btn_saveForm(3);
+				}else if (action === "btn_unlockForm") {
+					other.methods.btn_saveForm(2);
 				}
-
 			},
-			//預覽資料
+			//預覽資料// 完成->流程卡(準備生產)=3 (生產中)=4 (生產結束)=5
 			btn_intoForm() {
 				//預覽內容
 				console.log("btn_intoForm");
@@ -1787,18 +1845,13 @@
 				$('#printNotes .f_sphline').attr('title',c_sphlineValue);//工作站
 				
 				
-				//自定義SN?f_p_sn
-				if($('#c_sphxnb input').val()!=="" && $('#c_sphfnb input').val()!==""){
-					
-					
-					
-				}
 				//版本
 				$('#printNotes .f_mbver_ecn').text($('#c_mmbver input').val()+"／"+$('#c_mmbecn input').val());//MB:Ver+EC
 				$('#printNotes .f_mbiosver').text($('#c_mbiosver input').val());//BIOS版本
 				$('#printNotes .f_nvramver').text($('#c_mnvramver input').val());//NVRAM
 				$('#printNotes .f_pecver').text($('#c_pecver input').val());//EC
 				$('#printNotes .f_posver').text($('#c_posver input').val());//OS
+				$('#printNotes .f_model_product_ver').text($('#c_pmodelver input').val());//型號
 				
 				//SN區間
 				let printNotes = $('#printNotes');//預覽物件
@@ -1825,112 +1878,88 @@
 				 });
 				
 				//帶回資料
+				let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
+				let entity = $(".valTbodyTr_" + n);
+					
+				//軟體配置
+				let pr_s = {};
+				let pr_s_item = {};
+				pr_s_item["BIOS"] = $('#c_mbiosver input').val();
+				pr_s_item["NV_RAM"] = $('#c_mnvramver input').val();
+				pr_s_item["MB_Ver"] = $('#c_mmbver input').val();
+				pr_s_item["MB_ECN"] = $('#c_mmbecn input').val();
+				pr_s_item["OS"] = $('#c_posver input').val();
+				pr_s_item["EC"] = $('#c_pecver input').val();
 				
-
+				pr_s_item["Model"] = $('#c_pmodelver input').val();
+				pr_s_item["Note1"] =  $('#c_sphprnote1 textarea').val();
+				pr_s_item["Note2"] =  $('#c_sphprnote2 textarea').val();
+				pr_s["pr_s_item"] = pr_s_item;
+				entity.find(".sphbsh").text(JSON.stringify(pr_s));//軟硬體
+				//
+				entity.find(".sphssn").text(c_sphxnbText+c_sphfnbText);//開始SN
+				let f_sphoqty = parseInt($('#printNotes .f_sphoqty').text());//開始SN+數量 
+				f_sphoqty = parseInt(c_sphfnbText)+f_sphoqty;
+				f_sphoqty = String(f_sphoqty).padStart(4, '0');//補足4位數 
+				entity.find(".sphesn").text(c_sphxnbText+f_sphoqty);//結束SN
+				//
+				entity.find(".sphindate").text($('#c_sphindate input').val());//實際投入時間
+				entity.find(".sphline").text($('#c_sphline select').val());//產線選擇
+				entity.find(".sphworkstation").text($('#c_sphworkstation select').val());//工作站選擇
+				entity.find(".sphlable").text($('#c_sphlable select').val());//標籤選擇
+				entity.find(".sphpontype").text($('#c_sphpontype select').val());//製令單選擇
+				entity.find(".sphwarranty").text($('#c_sphwarranty select').val());//保固選擇
+				//
+				entity.find(".sphprnote1").text($('#c_sphprnote1 textarea').val());//note1
+				entity.find(".sphprnote2").text($('#c_sphprnote2 textarea').val());//note2
+				//
+				entity.find(".sphpartno").text($('#c_sphpartno input').val());//
+				entity.find(".sphmfgpartno").text($('#c_sphmfgpartno input').val());//工廠認證(MFGPNo)
+				
+				entity.find(".sphrsn").text("");
+				//SN選定?
+				let c_sn = true;
+				$("#c_sphbpmnbDf select").each(function (index) {
+					let mrnid = $(this).find('option:selected').attr('mrnid');
+					if(mrnid !== null && mrnid !== undefined){
+						entity.find(".sphrsn").text(mrnid+"_"+$('#c_sphxnb input').val()+"_"+$('#c_sphfnb input').val());//SN規則ID_固定_浮動
+						c_sn = false;
+					}
+				});
+				//自訂?
+				if(c_sn){
+					entity.find(".sphrsn").text("_"+$('#c_sphxnb input').val()+"_"+$('#c_sphfnb input').val());
+				}
+				
+			
+				
 			},
 			//存檔資料
-			btn_saveForm() {
+			btn_saveForm(sphprogress) {
 				//預覽內容
 				console.log("btn_saveForm");
 				console.log(other.data.entityFormatJson);
-				let entityJson = other.data.entityFormatJson;//格式
-
+				let entityJson = other.data.entityFormatJson;
+				let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
+				let entity = $(".valTbodyTr_" + n);
+				let entityDateTime = other.data.entityDateTime;
+				//解鎖?鎖定?
+				entity.find(".sphprogress").text(sphprogress);
 				//
-				entityJson.sphpon = $("#sphpon_val").text();//工單
-				entityJson.sphonb = $("#sphonb_val").text();//訂單
-				entityJson.sphhdate = new Date($("#sphhdate_val").text().trim()).getTime();//出貨日2025-02-21
-				//
-				entityJson.sphoname = $("#sphoname_val").text();//客戶;
-				entityJson.sphocountry = $("#sphocountry_val").text();//國家
-				//
-				entityJson.sphbpmnb = $("#sphbpmnb_val").text();//品號
-				entityJson.sphbpmmodel = $("#sphbpmmodel_val").text();//型號
-				entityJson.sphoqty = Number($("#sphoqty_val").text());//數量
-				//
-				entityJson.sphbpsuser = $("#fromwho_val").text();//來自於誰?(PM)
-				entityJson.sphfrom = $("#bomDefinition_val").text();//自訂單據?一般單據?
-				entityJson.sphobpmnb = $("#sphobpmnb_val").text(); //客戶BOM號
-				//PM備註?
-				entityJson.sphpmnote = $("#sphpmnote_val").text();
-				//生管備註?
-				entityJson.sphscnote = $("#sphscnote_val").text();
-				entityJson.sphprnv = "";
-				entityJson.sphscnv = "";
-				//生管包裝
-				let sphscpackages = [];
-				for (let x = 1; x <= 9; x++) {
-					let sphscpackage_checkbox = $("#pkg_checkbox" + x + " input:checked").length > 0;
-					let sphscpackage_value = $("#pkg_checkbox" + x + " span").text();
-					sphscpackages.push(sphscpackage_value + "<_>" + sphscpackage_checkbox);
-				}
-				entityJson.sphscpackage = JSON.stringify(sphscpackages);
-				//產品規格-存入資料<格式>
-				let allContent = {};
-				let basic = [];
-				let items = [];
-				let delList = new Map();
-				console.log("格式化內容");
-				//格式化
-				$(".sphbisitemList").each(function (index) {
-					let htmlContent = $(this).html();
-					//標記移除?
-					let itemsOnedel = false;
-					if (htmlContent.includes("</del>")) {
-						$(this).find("del").contents().unwrap();
-						itemsOnedel = true;
+				$(entity).find('.valTbodytd').each(function (index) {
+					let className = $(this).attr('class').replaceAll("fixedC1", "").replaceAll("d-none", "").replaceAll("valTbodytd", "").replaceAll(" ", "");
+					let val = $(this).text();
+					//是否時間格式?
+					if (entityDateTime.indexOf(className) >= 0) {
+						entityJson[className] =	new Date(val).getTime();
+					}else{
+						entityJson[className] = val;					
 					}
-					// 抓取標題						
-					let title = $(this).attr("title").split("<_>")[0].trim();
-					//內容
-					let content = $(this).attr("title").split("<_>")[1]; // 如果有括號數量，取括號前部分
-					let contentArray = content.split(",").map(item => item.trim());// 將內容以逗號分隔並移除前後空格
-					let jsonArray = JSON.stringify(contentArray);
-					//物料號
-					let bisNumber = $(this).attr("title").split("<_>")[2];
-					delList.set(bisNumber, itemsOnedel);
-					//解析數量
-					let quantity = $(this).attr("title").split("<_>")[3];
-					//資料格式
-					let itemsOne = {};
-					itemsOne.bisfname = title;//項目名稱
-					itemsOne.bisgfname = "";
-					itemsOne.bisgid = "0";
-					itemsOne.bisgname = jsonArray;//項目組名稱
-					itemsOne.bisid = "0";
-					itemsOne.bisname = "";
-					itemsOne.bisnb = bisNumber;//物料號
-					itemsOne.bisprocess = "";
-					itemsOne.bisqty = quantity + "";//數量
-					itemsOne.bissdescripion = "";
-					itemsOne.del = itemsOnedel;//移除標記
-					items.push(itemsOne);
+					console.log(className+":"+val);
 				});
-				allContent.basic = basic;
-				allContent.items = items;
-				//放入->
-				entityJson.sphbisitem = allContent;
-				//產品類型
-				entityJson.sphbpmtypename = "產品BOM";
-				entityJson.sphbpmtype = "1";
-
 				
-				//如果有配對到
-				if (valTbodyDetailTr != "") {
-					//放入->
-					entityJson.sphbisitem = $("." + valTbodyDetailTr).find(".bpmbisitem").text();
-					let sphbisitemCheck = JSON.parse(entityJson.sphbisitem);
-					sphbisitemCheck.items.forEach((item, index) => {
-						let bisnbKey = sphbisitemCheck.items[index].bisnb;
-						if (delList.has(bisnbKey)) {
-							let val = delList.get(bisnbKey);
-							sphbisitemCheck.items[index].del = val
-						}
-					});
-					entityJson.sphbisitem = JSON.stringify(sphbisitemCheck);
-					//產品類型
-					entityJson.sphbpmtypename = $("." + valTbodyDetailTr).find(".bpmtypename").text();
-					entityJson.sphbpmtype = $("." + valTbodyDetailTr).find(".bpmtype").text();
-				}
+				
+				
 				//傳送準備
 				console.log("modifySend:" + new Date());
 				let entityFormatJson = {};
@@ -1939,8 +1968,8 @@
 				let data = {};
 				let req_data = {};
 				let searchPageSet = {};
-				let type = "POST";
-				let action = "AC";
+				let type = "PUT";
+				let action = "AU";
 				//
 				entityJsons.push(entityJson);
 				data['entityJson'] = JSON.stringify(entityJsons);
@@ -2198,7 +2227,6 @@
 					//Step5.帶入資料
 					if (main.resq_data['entityJson'] != "") {
 						other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
-
 					}
 					if (main.resq_data['entityDetailJson'] != "") {
 						other.data.searchPageSet.entityDetailJsons = JSON.parse(main.resq_data['entityDetailJson']);
@@ -2208,6 +2236,30 @@
 			},
 			otherModifyReturn() {
 				console.log("otherModifyReturn");
+				let whois = main.resq_data['callBackValue'];
+				//是存檔才更新
+				if(whois==="Save"){
+					//帶回資料
+					let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
+					let entity = $(".valTbodyTr_" + n);				
+					//成功後須更新選項值
+					$("#c_sphbpmnbDf select").each(function (index) {
+						let mrnid = $(this).find('option:selected').attr('mrnid');
+						if(mrnid !== null && mrnid !== undefined){
+							//取得目前選項
+							let mrn0000 = parseInt($(this).find('option:selected').attr('mrn0000')) || 0;
+							let sphoqty = parseInt(entity.find(".sphoqty").text()) || 0;
+							let result = mrn0000 + sphoqty + 1;
+							// 若超過 9999，模擬循環從 0001 開始
+							result = result % 10000;
+							if (result === 0) result = 1;
+
+							// 補 4 碼 0 的字串
+							let resultStr = result.toString().padStart(4, '0');
+							$(this).find('option:selected').attr('mrn0000',resultStr);
+						}
+					});
+				}
 				$("#btn_send").trigger('click');
 				$('#btn_allClear').trigger('click');
 

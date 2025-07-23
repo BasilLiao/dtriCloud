@@ -2,6 +2,7 @@ package dtri.com.tw.pgsql.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,7 +30,10 @@ public interface BasicCommandListDao extends JpaRepository<BasicCommandList, Lon
 			+ "(:bclsn is null or c.bclsn LIKE %:bclsn%) and "//
 			+ "(:sysstatus is null or c.sysstatus != :sysstatus) and "//
 			+ "(:bclpnumber is null or c.bclpnumber LIKE %:bclpnumber% or c.bclproduct LIKE %:bclpnumber%) ")
-	ArrayList<BasicCommandList> findAllBySearch(String bclclass, String bclsn, String bclpnumber,Integer sysstatus, Pageable pageable);
+	ArrayList<BasicCommandList> findAllBySearch(String bclclass, String bclsn, String bclpnumber, Integer sysstatus,
+			Pageable pageable);
+
+	ArrayList<BasicCommandList> findAllByBclpnumberInAndSysstatusNot(List<String> bclpnumber, Integer sysstatus);
 
 	@Query("SELECT c FROM BasicCommandList c WHERE "//
 			+ "(:bclclass is null or c.bclclass=:bclclass) and "//

@@ -35,18 +35,6 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			+ "(:bbiispecification is null or c.bbiispecification LIKE %:bbiispecification%) ")
 	ArrayList<BasicBomIngredients> findAllBySearch(String bbisn, String bbiname, String bbiisn, String bbiiname,
 			String bbiispecification, Pageable pageable);
-	//展BOM用
-	@Query(value = """
-			    WITH RECURSIVE bom_up AS (
-			        SELECT * FROM basic_bom_ingredients WHERE bbi_i_sn = :bbiisn
-			        UNION ALL
-			        SELECT b.*
-			        FROM basic_bom_ingredients b
-			        INNER JOIN bom_up t ON b.bbi_i_sn = t.bbi_sn
-			    )
-			    SELECT * FROM bom_up
-			""", nativeQuery = true)
-	ArrayList<BasicBomIngredients> findBomParents(String bbiisn);
 
 	// 檢查用
 	@Query("SELECT c FROM BasicBomIngredients c WHERE "//
