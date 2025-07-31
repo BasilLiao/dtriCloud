@@ -320,9 +320,22 @@ public class ScheduleProductionNotesServiceAc {
 				entity.setSphbpsuser("");// BOM負責人
 				entity.setSphpon(searchData.getSphpon());// 製令單號
 				entity.setSphoqty(commandList.getBclpnqty());// 需生產數
-				entity.setSphonb(sysnot[2] != null ? sysnot[2] : "");// 訂單號
-				entity.setSphoname(sysnot[0] != null ? sysnot[0] : "");// 訂單客戶
-				entity.setSphocountry(sysnot[1] != null ? sysnot[1] : "");// 訂單國家
+				// 預設值
+				String defaultSphonb = "";
+				String defaultSphoname = "";
+				String defaultSphocountry = "";
+
+				// 檢查陣列長度與元素是否為 null，避免發生例外
+				if (sysnot != null) {
+				    entity.setSphoname(sysnot.length > 0 && sysnot[0] != null ? sysnot[0] : defaultSphoname);     // 客戶
+				    entity.setSphocountry(sysnot.length > 1 && sysnot[1] != null ? sysnot[1] : defaultSphocountry); // 國家
+				    entity.setSphonb(sysnot.length > 2 && sysnot[2] != null ? sysnot[2] : defaultSphonb);         // 訂單號
+				} else {
+				    // 若 sysnot 本身就是 null
+				    entity.setSphoname(defaultSphoname);
+				    entity.setSphocountry(defaultSphocountry);
+				    entity.setSphonb(defaultSphonb);
+				}
 				entity.setSphobpmnb("");// 訂單 BOM的產品號
 				entity.setSphhdate(commandList.getBclsdate());// 預計出貨日
 				entity.setSphfrom("");// 規格來源:生管自訂/產品經理

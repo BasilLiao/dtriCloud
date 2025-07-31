@@ -40,11 +40,15 @@ public interface MoctaScheduleOutsourcerDao extends JpaRepository<MoctaScheduleO
 			+ "     LEFT JOIN [DTR_TW].[dbo].PURMA AS PUR ON (PUR.MA001 = CTA.TA032) "// --
 			+ "WHERE "// --
 			+ "	(:ta013 is null OR CTA.TA013 = :ta013) "// -- 作廢狀態Y/N/V
-			+ "	AND ((:ta001ta002 is null AND (CTA.TA011 = '1' OR CTA.TA011 = '2' OR CTA.TA011 = '3')) "
-			+ " OR REPLACE(CTA.TA001+'-'+CTA.TA002, ' ', '') = :ta001ta002 ) "// --
-			+ " AND (CTA.TA006 LIKE '81-105%' OR CTA.TA006 = '81-228-582070') "// --
-			+ " AND ((CTA.TA001 = 'A511') OR (CTA.TA001= 'A521') "// -- 廠內 一般/重工製令單
-			+ "	OR (CTA.TA001 = 'A512') OR (CTA.TA001= 'A522')) "// -- 廠外 一般/重工製令單
+			+ "	AND ("
+			+ "		(:ta001ta002 is null AND (CTA.TA011 = '1' OR CTA.TA011 = '2' OR CTA.TA011 = '3')) "//
+			+ " 	OR REPLACE(CTA.TA001+'-'+CTA.TA002, ' ', '') = :ta001ta002 "//
+			+ "	) "// --
+			+ " AND ( "//--
+			+ " 	(CTA.TA001 IN ('A511', 'A521', 'A512', 'A522') AND (CTA.TA006 LIKE '81-105%' OR CTA.TA006 = '81-228-582070')) "// --因為外包單據 還需要 給廠內作業 導致特定物料在廠內出現 & 
+			+ " 	OR "
+			+ "		(CTA.TA001 IN ('A512', 'A522') AND (CTA.TA006 LIKE '90-%')) "// -- 廠內 一般/重工製令單 && -- 廠外 一般/重工製令單 
+			+ " ) "// -- 如果還有客製化 配置管理
 			+ "ORDER BY "// --
 			+ "	CTA.TA001+CTA.TA002 ASC "// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值

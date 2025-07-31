@@ -233,7 +233,7 @@ public class ManufactureRuleNumberServiceAc {
 	}
 
 	/** 新增資料 */
-	// @Transactional
+	@Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
 		// =======================資料準備=======================
 		ArrayList<ManufactureRuleNumber> entityDatas = new ArrayList<>();
@@ -258,34 +258,29 @@ public class ManufactureRuleNumberServiceAc {
 		}
 
 		// =======================資料整理=======================
+		// 是否有建立[manufacture_rule_number_g_seq]?
+		if (ruleNumberDao.checkIfSequenceExists() == 0) {
+			em.createNativeQuery(
+					"CREATE SEQUENCE manufacture_rule_number_g_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 CACHE 1")
+					.executeUpdate();
+		}
 		// 資料Data
-		ArrayList<ManufactureRuleNumber> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 新增
 			x.setMrnid(null);
 			Long gid = x.getMrngid();
-			// 如果是全新的
-			if (gid == null) {
-				// 是否有建立[manufacture_rule_number_g_seq]?
-				if (ruleNumberDao.checkIfSequenceExists() == 0) {
-					em.createNativeQuery(
-							"CREATE SEQUENCE manufacture_rule_number_g_seq START WITH 1 INCREMENT BY 1 MINVALUE 1 CACHE 1")
-							.executeUpdate();
-				}
+			// 如果有舊的名稱一樣?
+			ArrayList<ManufactureRuleNumber> oldGroup = ruleNumberDao.findAllByCheck(x.getMrngname(), null, null);
+			if (oldGroup.size() > 0) {
+				x.setMrngname(oldGroup.get(0).getMrngname());
+				x.setSyssort(oldGroup.get(0).getSyssort());
+				x.setMrngid(oldGroup.get(0).getMrngid());
+			} else {
+				// 如果是全新的?
 				gid = ruleNumberDao.getManufactureRuleNumberGSeq();
 				x.setMrngid(gid);
-			} else {
-				// 如果不是新的 是用複製的
-				ArrayList<ManufactureRuleNumber> oldGroup = ruleNumberDao.findAllByMrngid(gid);
-				if (oldGroup.size() > 0) {
-					x.setMrngname(oldGroup.get(0).getMrngname());
-					x.setSyssort(oldGroup.get(0).getSyssort());
-				} else {
-					// 任何複製 可能意外?不執行
-					return;
-				}
-
 			}
+
 			// 掛載-流水號
 			if (x.getMrn0000c()) {
 				x.setMrn0000("0001");
@@ -307,11 +302,11 @@ public class ManufactureRuleNumberServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			x.setSysheader(false);
-			saveDatas.add(x);
+			ruleNumberDao.save(x);
+
 		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		ruleNumberDao.saveAll(saveDatas);
 		return packageBean;
 	}
 

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BasicCommandListDao;
@@ -136,31 +137,45 @@ public class BasicChangeItemsServiceAc {
 			mapLanguages.forEach((k, v) -> {
 				if (k.equals("bclproduct")) {// 成品號
 					v.setSyssort(0);
-				} else if (k.equals("bclclass")) {// 工單別
+				} else if (k.equals("sysnote")) {// 成品品名+單據備註
+					JsonObject sslanguage = JsonParser.parseString(v.getSllanguage()).getAsJsonObject();
+					sslanguage.addProperty("zh-TW", "產品資訊");
+					v.setSllanguage(sslanguage.toString());
 					v.setSyssort(1);
-				} else if (k.equals("bclsn")) {// 工單號
+				} else if (k.equals("bclclass")) {// 工單別
 					v.setSyssort(2);
-				} else if (k.equals("bclnb")) {// 序號
+				} else if (k.equals("bclsn")) {// 工單號
 					v.setSyssort(3);
-				} else if (k.equals("bclpnumber")) {// 物料號
+				} else if (k.equals("bclnb")) {// 序號
 					v.setSyssort(4);
-				} else if (k.equals("bclpname")) {// 物料品名
+				} else if (k.equals("bclpnumber")) {// 物料號
 					v.setSyssort(5);
-				} else if (k.equals("bclpspecification")) {// 物料規格
+				} else if (k.equals("bclpname")) {// 物料品名
 					v.setSyssort(6);
-				} else if (k.equals("bclsdate")) {// 預計出貨日
+				} else if (k.equals("bclpspecification")) {// 物料規格
 					v.setSyssort(7);
-				} else if (k.equals("bclerpcuser")) {// 開單人
+				} else if (k.equals("bclsdate")) {// 預計出貨日
 					v.setSyssort(8);
-				} else if (k.equals("bcltqty")) {// 需生產數
+				} else if (k.equals("bclerpcuser")) {// 開單人
 					v.setSyssort(9);
-				} else if (k.equals("bcltrqty")) {// 已生產數
+				} else if (k.equals("bcltqty")) {// 需生產數
 					v.setSyssort(10);
-				} else if (k.equals("bclerpconfirm")) {// 確認碼
+				} else if (k.equals("bcltrqty")) {// 已生產數
 					v.setSyssort(11);
+				} else if (k.equals("bclerpconfirm")) {// 確認碼
+					v.setSyssort(12);
 				} else {
 					v.setSlcshow(0);
 				}
+			});
+			mapLanguagesDetail.forEach((k, v) -> {
+				if (k.equals("sysnote")) {// 成品品名+單據備註
+					JsonObject sslanguage = JsonParser.parseString(v.getSllanguage()).getAsJsonObject();
+					sslanguage.addProperty("zh-TW", "物料資訊");
+					v.setSllanguage(sslanguage.toString());
+					v.setSlcwidth(480);
+					v.setSyssort(1);
+				} 
 			});
 
 			// Step3-4. 欄位設置
@@ -223,7 +238,13 @@ public class BasicChangeItemsServiceAc {
 				// Step 3: 將資料轉為 Map，避免重複
 				for (BasicCommandList wo : entityWOs) {
 					String key = wo.getBclclass() + "-" + wo.getBclsn() + "-" + wo.getBclnb();
-					//測試用
+					// 補上其他產品資訊
+					ArrayList<BasicBomIngredients> boms = bomIngredientsDao.findAllByBomList(wo.getBclproduct(), null,
+							null, null, null);
+					if (boms.size() > 0) {
+						wo.setSysnote(boms.get(0).getBbiname());
+					}
+					// 測試用
 //					if(key.equals("A511-250506014-0164")) {
 //						System.out.println(key);
 //					}
@@ -237,11 +258,23 @@ public class BasicChangeItemsServiceAc {
 				List<BasicCommandList> entityLWOs = commandListDao.findAllBySearch(null, null, bclpn, 1, pageableBC);
 				for (BasicCommandList wo : entityLWOs) {
 					String key = wo.getBclclass() + "-" + wo.getBclsn() + "-" + wo.getBclnb();
+					// 補上其他產品資訊
+					ArrayList<BasicBomIngredients> boms = bomIngredientsDao.findAllByBomList(wo.getBclproduct(), null,
+							null, null, null);
+					if (boms.size() > 0) {
+						wo.setSysnote(boms.get(0).getBbiname());
+					}
 					entityMaps.putIfAbsent(key, wo);
 				}
 
 				List<WarehouseArea> entityLWAs = areaDao.findAllByWawmpnbNot0(bclpn, pageableWA);
 				for (WarehouseArea wa : entityLWAs) {
+					// 補上其他產品資訊
+					ArrayList<BasicBomIngredients> boms = bomIngredientsDao.findAllByBomList(wa.getWawmpnb(), null,
+							null, null, null);
+					if (boms.size() > 0) {
+						wa.setSysnote(boms.get(0).getBbiname());
+					}
 					entityDetailMaps.putIfAbsent(wa.getWaaliasawmpnb(), wa);
 				}
 
@@ -254,6 +287,12 @@ public class BasicChangeItemsServiceAc {
 				for (String bomSn : entityBoms) {
 					List<WarehouseArea> forBom = areaDao.findAllByWawmpnbNot0(bomSn, pageableWA);
 					for (WarehouseArea wa : forBom) {
+						// 補上其他產品資訊
+						ArrayList<BasicBomIngredients> boms = bomIngredientsDao.findAllByBomList(wa.getWawmpnb(), null,
+								null, null, null);
+						if (boms.size() > 0) {
+							wa.setSysnote(boms.get(0).getBbiname());
+						}
 						entityDetailMaps.putIfAbsent(wa.getWaaliasawmpnb(), wa);
 					}
 				}
@@ -280,6 +319,12 @@ public class BasicChangeItemsServiceAc {
 					if (!check.containsKey(k) && entityBoms.contains(o.getBclpnumber()) && !o.getSysnote().contains("改")
 							&& !o.getSysnote().contains("退")) {
 						check.put(k, true);
+						// 補上其他產品資訊
+						ArrayList<BasicBomIngredients> boms = bomIngredientsDao.findAllByBomList(o.getBclproduct(),
+								null, null, null, null);
+						if (boms.size() > 0) {
+							o.setSysnote(boms.get(0).getBbiname());
+						}
 						entitysNew.put(k, o);
 					}
 				}

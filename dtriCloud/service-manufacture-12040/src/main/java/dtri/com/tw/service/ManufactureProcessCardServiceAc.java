@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -21,7 +19,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -151,7 +148,7 @@ public class ManufactureProcessCardServiceAc {
 						.build();
 
 				// 5. 建立 POST 請求
-				HttpPost request = new HttpPost("https://dtrsvc.dtri.com:8088/dtrimes/ajax/api.basil");
+				HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil");
 				request.setHeader("Content-Type", "application/json;charset=UTF-8");
 				request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
 
@@ -377,6 +374,7 @@ public class ManufactureProcessCardServiceAc {
 					entityDataOld.setSphprogress(x.getSphprogress());// 進度 完成ERP工單(準備物料)=1 完成注意事項(預約生產)=2完成->流程卡(準備生產)=3
 																		// (生產中)=4 (生產結束)=5
 					entityDataOld.setSphrsn(x.getSphrsn());// 序號規則
+					entityDataOld.setSphpmnote(x.getSphpmnote());// 製造 PM添加備註
 					// 更新或新增SN清單
 					ArrayList<ManufactureSerialNumber> numbers = serialNumberDao.findAllBySearch(null, x.getSphpon(),
 							null, null);
@@ -558,7 +556,9 @@ public class ManufactureProcessCardServiceAc {
 								.build();
 
 						// 5. 建立 POST 請求
-						HttpPost request = new HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
+						// HttpPost request = new
+						// HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
+						HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil");
 						request.setHeader("Content-Type", "application/json;charset=UTF-8");
 						request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
 

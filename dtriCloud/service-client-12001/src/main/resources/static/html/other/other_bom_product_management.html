@@ -168,27 +168,7 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<!--切換面板 -->
-				<div class="col-12 col-lg-2 p-1  other_change_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-primary fw-bolder rounded-top text-white">UI
-							Switch</div>
-						<div class="row m-0">
-							<button id="btn_erp_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>ERP BOM</b>
-							</button>
-							<button id="btn_rules_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Rules BOM</b>
-							</button>
-							<button id="btn_format_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Format BOM</b>
-							</button>
-						</div>
-					</div>
-				</div>
+
 				<!--BBI(同步-BOM成品組成)-->
 				<div class="col-12 col-lg-2 p-1 collapse other_BBI_open">
 					<div class="border border-secondary rounded">
@@ -255,6 +235,27 @@
 							<button id="btn_bpm_excel" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
 								<b>Export Excel</b>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!--切換面板 -->
+				<div class="col-12 col-lg-2 p-1  other_change_open">
+					<div class="border border-secondary rounded">
+						<div class="bg-primary fw-bolder rounded-top text-white">UI
+							Switch</div>
+						<div class="row m-0">
+							<button id="btn_erp_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>ERP BOM</b>
+							</button>
+							<button id="btn_rules_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Rules BOM</b>
+							</button>
+							<button id="btn_format_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Format BOM</b>
 							</button>
 						</div>
 					</div>
@@ -1435,60 +1436,13 @@
 					//點擊動作
 					switch (clickId) {
 						case "btn_erp_bom":
-							if(!$('#other_BBI_open').hasClass('show')){
-								$('#other_BBI .bi-dash-square').trigger("click");
-							}
-							if($('#other_BPR_open').hasClass('show')){
-								$('#other_BPR .bi-dash-square').trigger("click");
-							}
-							if($('#other_BPM_open').hasClass('show')){
-								$('#other_BPM .bi-dash-square').trigger("click");
-							}
-							//細節關閉
-							if($('#other_Detail_BPR_open').hasClass('show')){
-								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
-							}
-							if($('#other_Detail_BPM_open').hasClass('show')){
-								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
-							}
+							$('#other_BBI .bi-dash-square').trigger("click");
 							break;
 						case "btn_rules_bom":
-							if($('#other_BBI_open').hasClass('show')){
-								$('#other_BBI .bi-dash-square').trigger("click");
-							}
-							if(!$('#other_BPR_open').hasClass('show')){
-								$('#other_BPR .bi-dash-square').trigger("click");
-							}
-							if($('#other_BPM_open').hasClass('show')){
-								$('#other_BPM .bi-dash-square').trigger("click");
-							}
-							//細節關閉
-							if($('#other_Detail_BPR_open').hasClass('show')){
-								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
-							}
-							if($('#other_Detail_BPM_open').hasClass('show')){
-								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
-							}
+							$('#other_BPR .bi-dash-square').trigger("click");
 							break;
 						case "btn_format_bom":
-							if($('#other_BBI_open').hasClass('show')){
-								$('#other_BBI .bi-dash-square').trigger("click");
-							}
-							if($('#other_BPR_open').hasClass('show')){
-								$('#other_BPR .bi-dash-square').trigger("click");
-							}
-							if(!$('#other_BPM_open').hasClass('show')){
-								$('#other_BPM .bi-dash-square').trigger("click");
-							}
-							//細節關閉
-							if($('#other_Detail_BPR_open').hasClass('show')){
-								$('#other_Detail_BPR_od .bi-dash-square').trigger("click");
-							}
-							if($('#other_Detail_BPM_open').hasClass('show')){
-								$('#other_Detail_BPM_od .bi-dash-square').trigger("click");
-							}
-							
-							
+							$('#other_BPM .bi-dash-square').trigger("click");
 							break;
 						case "btn_bpm_save":
 							let Add = [];

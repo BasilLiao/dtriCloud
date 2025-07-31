@@ -394,6 +394,17 @@
 								</div>
 							</div>
 							<!-- 3 -->
+							<div class="col-12 p-1 col-lg-12">
+								<div id="c_sphpmnote"
+									class="btnAutoOrder border border-secondary rounded">
+									<div class="searchTitle title_color fw-bolder rounded-top">產品備註(Notice)</div>
+									<div class="p-1">
+										<textarea name="sphpmnote"
+											class="col-12 m-0 p-1 border border-dark form-control searchVal"
+											placeholder="Ex:USA?" required></textarea>
+									</div>
+								</div>
+							</div>
 							<div class="col-6 p-1 col-lg-6">
 								<div id="c_sphprnote1"
 									class="btnAutoOrder border border-secondary rounded">
@@ -416,6 +427,7 @@
 									</div>
 								</div>
 							</div>
+
 							<!-- 4 -->
 							<div class="col-12 p-1">
 								<h5 class="m-0 p-0 text-start">
@@ -543,7 +555,7 @@
 									<div class="searchTitle title_color fw-bolder rounded-top">Product
 										MODEL</div>
 									<div class="p-1">
-										<input disabled="disabled"
+										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
 											type="text" value="" required placeholder="Ex:382DN-G1-5A">
 									</div>
@@ -643,9 +655,9 @@
 						<!--預覽:因為需要開立打印視窗 所以使用原始Style-->
 						<div id="printNotes"
 							class="justify-content-center row col-12 col-lg-6 border border-primary m-0 p-1"
-							style="max-height: 820px; overflow: auto;">
+							style="max-height: 920px; overflow: auto;">
 							<div class="text-center "
-								style="height: 910px; width: 600px; min-width: 600px; padding: 0px; break-after: page;">
+								style="height: 880px; width: 600px; min-width: 600px; padding: 0px; break-after: page;">
 								<!-- 實體SN值-->
 								<div class="row m-0">
 									<div class="f_sphline p-0 m-0 only_lr" title="">production:
@@ -727,7 +739,8 @@
 												style="width: 45px; font-size: 12px;">
 												<b>Qty</b>
 											</div>
-											<div class="f_sphoqty p-0 only_brm" style="width: 65px;"></div>
+											<div class="f_sphoqty p-0 only_brm"
+												style="width: 65px; font-weight: bold;"></div>
 										</div>
 										<!--  -->
 										<div class="row m-0 justify-content-end"
@@ -755,7 +768,7 @@
 												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
 												<b>Notice</b>
 											</div>
-											<div class="f_sphscnote p-0 only_br text-start"
+											<div class="f_sphpmnote p-0 only_br text-start"
 												style="width: 566px;"></div>
 										</div>
 									</div>
@@ -839,7 +852,7 @@
 									</div>
 								</div>
 								<!-- 產品資訊 -->
-								<div class="row m-0" style="height: 480px;">
+								<div class="row m-0" style="height: 450px;">
 									<div class="p-0 m-0 only_lr row ">
 										<div class="f_cust p-0" style="height: 140px;">Cust. BOM
 											No.:</div>
@@ -1337,8 +1350,11 @@
 					printNotes.find(".f_sphhdate").text(entity.find(".sphhdate").text().split(" ")[0]);//預計出貨
 					printNotes.find(".f_created").text('Created On: '+other.methods.getTodayDate());//建立日期
 					printNotes.find(".f_creator").text('Creator: '+entity.find(".syscuser").text());//單據負責人
-					printNotes.find(".f_sphscnote").text(entity.find(".sphpmnote").text());//BOM/PM注意事項
 					printNotes.find(".f_pm_owner").text('PM: '+entity.find(".sphbpsuser").text());//BOM負責人
+					//
+					printNotes.find(".f_sphpmnote").text(entity.find(".sphpmnote").text()) ;//BOM/PM注意事項
+					
+					
 					
 					//帶入資料(填寫畫面)
 					let modifycard = $("#modify_card");
@@ -1348,6 +1364,7 @@
 					}else{
 						modifycard.find("#c_sphindate input").val(entity.find(".sphindate").text().split(" ")[0]);//實際頭線
 					}
+					//
 					$('#c_sphline select').val(entity.find(".sphline").text());
 					$('#c_sphworkstation select').val(entity.find(".sphworkstation").text());
 					$('#c_sphlable select').val(entity.find(".sphlable").text());
@@ -1390,9 +1407,10 @@
 							modifycard.find("#c_pmodelver input").val(pr_s_item["Model"]);//model
 							//
 							modifycard.find("#c_sphprnote1 textarea").val(pr_s_item["Note1"]);//Note1
-							modifycard.find("#c_sphprnote2 textarea").val(pr_s_item["Note2"]);//Note2				
+							modifycard.find("#c_sphprnote2 textarea").val(pr_s_item["Note2"]);//Note2									
 						}
 					}
+					modifycard.find("#c_sphpmnote textarea").val(entity.find(".sphpmnote").text());//BOM/PM注意事項
 					
 					//
 					modifycard.find("#c_pmodelver input").val(entity.find(".sphbpmmodel").text());//MODEL
@@ -1609,7 +1627,7 @@
 					printNotes.find(".f_sphhdate").text('');//預計出貨
 					printNotes.find(".f_created").text('Created On: ');//建立日期
 					printNotes.find(".f_creator").text('Creator: ');//單據負責人
-					printNotes.find(".f_sphscnote").text('');//BOM/PM注意事項
+					printNotes.find(".f_sphpmnote").text('');//BOM/PM注意事項
 					printNotes.find(".f_pm_owner").text('PM: ');//BOM負責人
 					printNotes.find(".f_p_sn svg").text('');//QRCode
 					printNotes.find(".f_sphpon_qrc svg").text('');//QRCode
@@ -1842,6 +1860,8 @@
 				//
 				$('#printNotes .f_sphprnote1').text($('#c_sphprnote1 textarea').val());//1.備註資訊
 				$('#printNotes .f_sphprnote2').text($('#c_sphprnote2 textarea').val());//2.備註資訊
+				$('#printNotes .f_sphpmnote').text($('#c_sphpmnote textarea').val());//產品備註資訊
+				
 				$('#printNotes .f_sphline').attr('title',c_sphlineValue);//工作站
 				
 				
@@ -1894,6 +1914,7 @@
 				pr_s_item["Model"] = $('#c_pmodelver input').val();
 				pr_s_item["Note1"] =  $('#c_sphprnote1 textarea').val();
 				pr_s_item["Note2"] =  $('#c_sphprnote2 textarea').val();
+				
 				pr_s["pr_s_item"] = pr_s_item;
 				entity.find(".sphbsh").text(JSON.stringify(pr_s));//軟硬體
 				//
@@ -1902,6 +1923,7 @@
 				f_sphoqty = parseInt(c_sphfnbText)+f_sphoqty;
 				f_sphoqty = String(f_sphoqty).padStart(4, '0');//補足4位數 
 				entity.find(".sphesn").text(c_sphxnbText+f_sphoqty);//結束SN
+				entity.find(".sphpmnote").text($('#c_sphscnote textarea').val());//PM備註
 				//
 				entity.find(".sphindate").text($('#c_sphindate input').val());//實際投入時間
 				entity.find(".sphline").text($('#c_sphline select').val());//產線選擇
@@ -1912,6 +1934,7 @@
 				//
 				entity.find(".sphprnote1").text($('#c_sphprnote1 textarea').val());//note1
 				entity.find(".sphprnote2").text($('#c_sphprnote2 textarea').val());//note2
+				entity.find(".sphpmnote").text($('#c_sphpmnote textarea').val());//noties PM備註
 				//
 				entity.find(".sphpartno").text($('#c_sphpartno input').val());//
 				entity.find(".sphmfgpartno").text($('#c_sphmfgpartno input').val());//工廠認證(MFGPNo)

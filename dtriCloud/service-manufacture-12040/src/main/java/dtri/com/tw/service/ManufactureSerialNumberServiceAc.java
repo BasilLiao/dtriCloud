@@ -63,8 +63,8 @@ public class ManufactureSerialNumberServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "msnssn"));// 開始序號
 		orders.add(new Order(Direction.ASC, "msnmodel"));// 產品型號
-		orders.add(new Order(Direction.DESC, "msnssn"));// 開始序號
 
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));

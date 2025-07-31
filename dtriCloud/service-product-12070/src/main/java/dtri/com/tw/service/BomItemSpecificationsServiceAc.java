@@ -71,7 +71,7 @@ public class BomItemSpecificationsServiceAc {
 		orders.add(new Order(Direction.ASC, "bisnb"));// 物料號
 
 		// 一般模式
-		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
+		PageRequest pageable = PageRequest.of(batch, 10000, Sort.by(orders));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
