@@ -150,7 +150,7 @@ public class BomProductManagementServiceAc {
 			// 資料整理(BBI-限制200筆)
 			Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
 			int indexBBI = 0;
-			while (entityBBI.size() > indexBBI && entityBBIMap.size() <= 100) {
+			while (entityBBI.size() > indexBBI && entityBBIMap.size() <= 200) {
 				ArrayList<BasicBomIngredients> ingredients = new ArrayList<BasicBomIngredients>();
 				BasicBomIngredients bbi = entityBBI.get(indexBBI);
 				if (entityBBIMap.containsKey(bbi.getBbisn())) {
@@ -410,25 +410,35 @@ public class BomProductManagementServiceAc {
 				BasicBomIngredients searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 						BasicBomIngredients.class);
 				// ERP_料BOM
-				PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
+				//PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
 				String bbisn = searchData.getBbisn();
 				String bbiname = searchData.getBbiname();
-				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch(bbisn, bbiname, null, null,
-						null, pageableBBI);
+				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findFlattenedBomLevel2ByBbisn(bbisn, bbiname);
 				// 資料整理(BBI-限制200筆)
 				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
 				int indexBBI = 0;
 				while (entityBBI.size() > indexBBI && entityBBIMap.size() <= 100) {
+
 					ArrayList<BasicBomIngredients> ingredients = new ArrayList<BasicBomIngredients>();
+					// ArrayList<BasicBomIngredients> bbiisn92 = new
+					// ArrayList<BasicBomIngredients>();
 					BasicBomIngredients bbi = entityBBI.get(indexBBI);
+					// 如果有已經存過? 取得已存入產品->子項目再加入 該產品
 					if (entityBBIMap.containsKey(bbi.getBbisn())) {
 						ingredients = entityBBIMap.get(bbi.getBbisn());
-						ingredients.add(bbi);
-						entityBBIMap.put(bbi.getBbisn(), ingredients);
-					} else {
-						ingredients.add(bbi);
-						entityBBIMap.put(bbi.getBbisn(), ingredients);
 					}
+					// 可能有92皆- bbi 是你的物件
+					// String bbiisn = bbi.getBbiisn();
+//					if (bbiisn != null &&(bbiisn.startsWith("92-")|| bbiisn.startsWith("81-"))) {
+//						bbiisn92 = ingredientsDao.findAllBySearch(bbiisn, null, null, null, null, null);
+//						for (BasicBomIngredients b92 : bbiisn92) {
+//							b92.setBbisn(bbi.getBbisn());
+//							ingredients.add(b92);
+//						}
+//					}
+					//
+					ingredients.add(bbi);
+					entityBBIMap.put(bbi.getBbisn(), ingredients);
 					indexBBI++;
 				}
 				ArrayList<BasicBomIngredients> entityBBIh = new ArrayList<BasicBomIngredients>();
