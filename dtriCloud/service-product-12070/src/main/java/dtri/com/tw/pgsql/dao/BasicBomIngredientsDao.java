@@ -32,77 +32,65 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			String bbiispecification, Pageable pageable);
 
 	@Query(value = """
-			SELECT
-			    merged.*
-			FROM (
-			    -- 第一階
+			-- 使用遞迴展開 BOM 結構，並針對子項描述包含「正規化」的項目做過濾
+			WITH RECURSIVE bom_tree AS (
+
+			    -- 🔹 第一層（初始階）: 從特定成品料號展開第一層 BOM
 			    SELECT
-			        b1.bbi_id,
-			       		b1.bbi_sn,
-			            b1.bbi_nb,
-			            b1.bbi_sn_nb,
-			            b1.bbi_name,
-			            b1.bbi_specification,
-			            b1.bbi_description,
-			            b1.bbi_i_sn,
-			            b1.bbi_i_name,
-			            b1.bbi_i_specification,
-			            b1.bbi_i_description,
-			            b1.bbi_i_process,
-			            b1.bbi_i_qty,
-			            b1.bbi_i_s_erp,
-			            b1.sys_c_date,
-			            b1.sys_c_user,
-			            b1.sys_m_date,
-			            b1.sys_m_user,
-			            b1.sys_o_date,
-			            b1.sys_o_user,
-			            b1.sys_header,
-			            b1.sys_status,
-			            b1.sys_sort,
-			            b1.sys_note,
-			            b1.check_sum
-			    FROM basic_bom_ingredients b1
-			    WHERE (:bbisn IS NULL or b1.bbi_sn LIKE CONCAT(:bbisn, '%'))
-			    	AND (:bbiname IS NULL or b1.bbi_name LIKE CONCAT(:bbiname, '%'))
+			        b.*,                                          -- 取得該筆 BOM 所有欄位
+			        1 AS level,                                   -- 記錄階層層數，第一層為 1
+			        b.bbi_sn AS root_bbi_sn,                      -- 記錄此展開樹的起始成品料號（根）   
+			         CAST(b.bbi_i_sn AS TEXT) AS current_bbi_path -- 初始化目前展開路徑為子項料號
+			    FROM basic_bom_ingredients b
+			    WHERE (:bbisn IS NULL OR b.bbi_sn LIKE CONCAT('%', :bbisn, '%'))             -- ✅ 限定從指定的成品料號開始展開
+					AND (:bbiname IS NULL OR b.bbi_name LIKE  CONCAT('%', :bbiname, '%')) 
+				
 			    UNION ALL
-			    -- 第二階（明確列欄位數與順序）
+
+			    -- 🔁 遞迴展開其他階層：以上一層的子項作為下一層的父項繼續展開
 			    SELECT
-						b2.bbi_id,
-			       		b1.bbi_sn,         -- ⬅️ 覆蓋這一欄
-			           	(b2.bbi_sn ||'->'||b2.bbi_nb )AS bbi_nb,
-			            b2.bbi_sn_nb,
-			            b2.bbi_name,
-			            b2.bbi_specification,
-			            b2.bbi_description,
-			            b2.bbi_i_sn,
-			            b2.bbi_i_name,
-			            b2.bbi_i_specification,
-			            b2.bbi_i_description,
-			            b2.bbi_i_process,
-			            b2.bbi_i_qty,
-			            b2.bbi_i_s_erp,
-			            b2.sys_c_date,
-			            b2.sys_c_user,
-			            b2.sys_m_date,
-			            b2.sys_m_user,
-			            b2.sys_o_date,
-			            b2.sys_o_user,
-			            b2.sys_header,
-			            b2.sys_status,
-			            b2.sys_sort,
-			            b2.sys_note,
-			            b2.check_sum
-			    FROM basic_bom_ingredients b1
-			    JOIN basic_bom_ingredients b2 ON b1.bbi_i_sn = b2.bbi_sn
-			    WHERE (:bbisn IS NULL or b1.bbi_sn LIKE CONCAT(:bbisn, '%'))
-			    	AND (:bbiname IS NULL or b1.bbi_name LIKE CONCAT(:bbiname, '%'))
-			      	AND (b2.bbi_sn LIKE '92-%' OR b2.bbi_sn LIKE '81-%')
-				  	AND (b2.bbi_i_sn NOT LIKE 'ECN')
-			) AS merged
-			ORDER BY bbi_sn ASC, bbi_nb ASC
-			LIMIT 50000;""", nativeQuery = true)
-	ArrayList<BasicBomIngredients> findFlattenedBomLevel2ByBbisn(@Param("bbisn") String bbisn,
+			        b.*,                                          -- 同樣取出所有欄位
+			        bt.level + 1 AS level,                        -- 階層加 1
+			        bt.root_bbi_sn,                               -- 維持展開樹的根料號
+			        (bt.current_bbi_path || ' → ' || b.bbi_i_sn)  -- 更新展開路徑：加上本層子項料號
+			    FROM basic_bom_ingredients b
+			    INNER JOIN bom_tree bt ON b.bbi_sn = bt.bbi_i_sn  -- 🔗 關鍵：將上一層的子項對應為本層的父項
+			    WHERE bt.level < 5                               -- ✅ 限制展開最大階層深度為 10 層（避免無限遞迴）
+			      AND position(b.bbi_i_sn in bt.current_bbi_path) = 0  -- ✅ 防止循環展開（例如 A → B → A）
+			)
+
+			-- 📄 最終輸出：只顯示子項描述中含「正規化」關鍵字的那些節點記錄
+			SELECT
+			    t.bbi_id,               -- 主鍵 ID
+			    t.root_bbi_sn AS bbi_sn,               -- 成品料號（父項）
+			    t.bbi_nb,               -- 成品批號
+			    t.bbi_sn_nb,            -- 成品批次編號（唯一鍵）
+			    t.bbi_name,             -- 成品名稱
+			    t.bbi_specification,    -- 成品規格
+			    t.bbi_description,      -- 成品描述
+			    t.bbi_i_sn,             -- 零件料號（子項）
+			    t.bbi_i_name,           -- 零件名稱
+			    t.bbi_i_specification,  -- 零件規格
+			    t.bbi_i_description,    -- 零件描述（🌟搜尋關鍵欄位）
+			    t.bbi_i_process,        -- 零件製程
+			    t.bbi_i_qty,            -- 零件用量
+			    t.bbi_i_s_erp,          -- 來源 ERP 編號
+			    t.sys_c_date, t.sys_c_user,   -- 建立時間與人員
+			    t.sys_m_date, t.sys_m_user,   -- 修改時間與人員
+			    t.sys_o_date, t.sys_o_user,   -- 最後操作時間與人員
+			    t.sys_header,           -- 是否為表頭
+			    t.sys_status,           -- 狀態
+			    t.sys_sort,             -- 排序編號
+			    t.sys_note,             -- 備註
+			    t.check_sum            -- 校驗碼
+			    --t.level,                -- 遞迴層級
+			    --t.current_bbi_path      -- 展開路徑（顯示展開歷程）
+			FROM bom_tree t
+			WHERE t.bbi_i_description LIKE '%正規化%'  -- ✅ 只回傳描述中含「正規化」的節點
+			OR t.level = 1 
+			--ORDER BY t.root_bbi_sn, t.level, t.current_bbi_path;  -- 排序顯示：根料號 → 階層 → 展開路徑
+			""", nativeQuery = true)
+	ArrayList<BasicBomIngredients> findFlattenedBomLevel(@Param("bbisn") String bbisn,
 			@Param("bbiname") String bbiname);
 
 	// 檢查用

@@ -413,7 +413,7 @@ public class BomProductManagementServiceAc {
 				//PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
 				String bbisn = searchData.getBbisn();
 				String bbiname = searchData.getBbiname();
-				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findFlattenedBomLevel2ByBbisn(bbisn, bbiname);
+				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findFlattenedBomLevel(bbisn, bbiname);
 				// 資料整理(BBI-限制200筆)
 				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
 				int indexBBI = 0;
