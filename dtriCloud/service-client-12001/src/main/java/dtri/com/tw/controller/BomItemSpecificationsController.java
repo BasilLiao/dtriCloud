@@ -252,10 +252,10 @@ public class BomItemSpecificationsController extends AbstractController {
 	@RequestMapping(value = { "/ajax/bom_item_specifications.basil.AU" }, method = { RequestMethod.PUT })
 	String modify(@RequestBody String jsonObject) {
 		// 顯示方法
-		String funName = new Object() {
-		}.getClass().getEnclosingMethod().getName();
-		sysFunction(funName);
-
+		//String funName = new Object() {
+		//}.getClass().getEnclosingMethod().getName();
+		//sysFunction(funName);
+		String funName = "modify";
 		// Step0.資料準備
 		String packageJson = "{}";
 		PackageBean packageBean = new PackageBean();

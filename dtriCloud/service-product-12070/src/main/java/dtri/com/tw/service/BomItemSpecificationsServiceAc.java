@@ -583,6 +583,7 @@ public class BomItemSpecificationsServiceAc {
 		// Step3.一般資料->寫入
 		Long bisgid = entityDatas.get(0).getBisgid();
 		ArrayList<BomItemSpecifications> oldDatas = specificationsDao.findAllByBisgid(entityDatas.get(0).getBisgid());
+		ArrayList<BomItemSpecifications> saveDatasNewUpdate = new ArrayList<>();
 		ArrayList<BomItemSpecifications> saveDatasUpdate = new ArrayList<>();
 		ArrayList<BomItemSpecifications> saveDatasRemove = new ArrayList<>();
 		Map<Long, BomItemSpecifications> entityMapDatas = new HashMap<Long, BomItemSpecifications>();
@@ -599,7 +600,7 @@ public class BomItemSpecificationsServiceAc {
 				c.setSyscuser(packageBean.getUserAccount());
 				c.setSysheader(false);
 				c.setSysstatus(0);
-				saveDatasUpdate.add(c);
+				saveDatasNewUpdate.add(c);
 			} else {
 				entityMapDatas.put(c.getBisid(), c);
 			}
@@ -647,8 +648,11 @@ public class BomItemSpecificationsServiceAc {
 
 		// =======================資料儲存=======================
 		// 資料Data
-		specificationsDao.saveAll(saveDatasUpdate);
 		specificationsDao.deleteAll(saveDatasRemove);
+		specificationsDao.flush(); // <- 強制立即同步刪除到資料庫
+		specificationsDao.saveAll(saveDatasUpdate);
+		specificationsDao.flush(); // <- 強制立即同步刪除到資料庫
+		specificationsDao.saveAll(saveDatasNewUpdate);
 		return packageBean;
 	}
 

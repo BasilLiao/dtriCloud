@@ -193,7 +193,7 @@
 						<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
 						<div class="row m-0">
 							<button id="btn_bpr_detail" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
 								<b>Modify</b>
 							</button>
 							<button id="btn_bpr_back" type="button"
@@ -219,7 +219,7 @@
 						<div class="bg-teal fw-bolder rounded-top">Format BOM</div>
 						<div class="row m-0">
 							<button id="btn_bpm_detail" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-warning">
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
 								<b>Modify</b>
 							</button>
 							<button id="btn_bpm_back" type="button"
@@ -1677,30 +1677,40 @@
 							let b_w = "";
 							let b_w_m = "";
 							let b_p_s = "";
-							if (clickId === "btn_bpm_back") {
+							if (clickId === "btn_bpm_back") {	
 								//異常觸發?是否選取?
 								od_bpmr_nb = $('#od_bpm_nb input').val();
 								od_bpmr_model = $('#od_bpm_model input').val();
 								od_bpmr_type = $('#od_bpm_type option:selected').val();
 								checkedsize = $("#other_BPM tbody input:checked").length;
-								//標記顏色
-								bpmr_nbParent = $("#other_BPM tbody input:checked").parent().parent().parent();
-								bpmr_nbParent.find(".bpmnb").removeClass("text-success").removeClass("text-warning").removeClass("text-danger");
-								b_w = "BPM";
-								b_w_m = "bpm";
-								b_p_s = "other_BPS";
+								//有沒有資料?
+								if(od_bpmr_nb!=""){
+									//標記顏色
+									bpmr_nbParent = $("#other_BPM tbody input:checked").parent().parent().parent();
+									bpmr_nbParent.find(".bpmnb").removeClass("text-success").removeClass("text-warning").removeClass("text-danger");
+									b_w = "BPM";
+									b_w_m = "bpm";
+									b_p_s = "other_BPS";									
+								}else{
+									break;
+								}
 							} else {
 								//異常觸發?是否選取?
 								od_bpmr_nb = $('#od_bpr_name input').val();
 								od_bpmr_model = $('#od_bpr_model input').val();
 								od_bpmr_type = $('#od_bpr_type option:selected').val();
 								checkedsize = $("#other_BPR tbody input:checked").length;
-								//標記顏色
-								bpmr_nbParent = $("#other_BPR tbody input:checked").parent().parent().parent();
-								bpmr_nbParent.find(".bprname").removeClass("text-success").removeClass("text-warning").removeClass("text-danger");
-								b_w = "BPR";
-								b_w_m = "bpr";
-								b_p_s = "other_BPR_BPS";
+								//有沒有資料?
+								if(od_bpmr_nb!=""){
+									//標記顏色
+									bpmr_nbParent = $("#other_BPR tbody input:checked").parent().parent().parent();
+									bpmr_nbParent.find(".bprname").removeClass("text-success").removeClass("text-warning").removeClass("text-danger");
+									b_w = "BPR";
+									b_w_m = "bpr";
+									b_p_s = "other_BPR_BPS";
+								}else{
+									break;
+								}
 							}
 							switch ($("#other_Detail_" + b_w + " #od_" + b_w_m + "_status select").val()) {
 								case "Add":
