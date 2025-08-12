@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -410,51 +411,72 @@ public class BomProductManagementServiceAc {
 				BasicBomIngredients searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 						BasicBomIngredients.class);
 				// ERP_料BOM
-				//PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
+
 				String bbisn = searchData.getBbisn();
 				String bbiname = searchData.getBbiname();
-				ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findFlattenedBomLevel(bbisn, bbiname);
-				// 資料整理(BBI-限制200筆)
-				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new TreeMap<String, ArrayList<BasicBomIngredients>>();
-				int indexBBI = 0;
-				while (entityBBI.size() > indexBBI && entityBBIMap.size() <= 100) {
-
-					ArrayList<BasicBomIngredients> ingredients = new ArrayList<BasicBomIngredients>();
-					// ArrayList<BasicBomIngredients> bbiisn92 = new
-					// ArrayList<BasicBomIngredients>();
-					BasicBomIngredients bbi = entityBBI.get(indexBBI);
-					// 如果有已經存過? 取得已存入產品->子項目再加入 該產品
-					if (entityBBIMap.containsKey(bbi.getBbisn())) {
-						ingredients = entityBBIMap.get(bbi.getBbisn());
+				PageRequest pageableBBI = PageRequest.of(0, 50000, Sort.by(ordersBBI));
+				// 先查詢有哪些BOM->每一個查詢展BOM(因為JPA 與 原生SQL 有技術上的匹配不到)
+				ArrayList<BasicBomIngredients> bbisnList = ingredientsDao.findAllBySearch(bbisn, bbiname, null, null,
+						null, pageableBBI);
+				Map<String, BasicBomIngredients> bbisnMap = new TreeMap<String, BasicBomIngredients>();
+				for (BasicBomIngredients bbis : bbisnList) {
+					// 沒有?最多100筆
+					if (!bbisnMap.containsKey(bbis.getBbisn()) && bbisnMap.size() <= 100) {
+						bbisnMap.put(bbis.getBbisn(), bbis);
 					}
-					// 可能有92皆- bbi 是你的物件
-					// String bbiisn = bbi.getBbiisn();
-//					if (bbiisn != null &&(bbiisn.startsWith("92-")|| bbiisn.startsWith("81-"))) {
-//						bbiisn92 = ingredientsDao.findAllBySearch(bbiisn, null, null, null, null, null);
-//						for (BasicBomIngredients b92 : bbiisn92) {
-//							b92.setBbisn(bbi.getBbisn());
-//							ingredients.add(b92);
-//						}
-//					}
-					//
-					ingredients.add(bbi);
-					entityBBIMap.put(bbi.getBbisn(), ingredients);
-					indexBBI++;
+					// 100筆資料後 跳出
+					if (bbisnMap.size() == 100) {
+						break;
+					}
 				}
+				// 每個查詢
+				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new HashMap<String, ArrayList<BasicBomIngredients>>();
+
+				for (Entry<String, BasicBomIngredients> entry : bbisnMap.entrySet()) {
+					String k = entry.getKey();
+					// BasicBomIngredients v = entry.getValue();
+					ArrayList<BasicBomIngredients> entityOneBBI = ingredientsDao.findFlattenedBomLevel(k, null);
+					if (entityOneBBI != null && !entityOneBBI.isEmpty()) {
+						// 對應異常(主BOM 會因多筆查詢導致 前BOM項目蓋去後BOM項目)
+						ArrayList<BasicBomIngredients> correctionNew = new ArrayList<BasicBomIngredients>();
+						for (int i = 0; i < entityOneBBI.size(); i++) {
+							BasicBomIngredients corrected = new BasicBomIngredients();
+							BasicBomIngredients original = entityOneBBI.get(i);
+							corrected.setBbiid(original.getBbiid());
+							corrected.setBbinb(original.getBbinb());
+							corrected.setBbisn(k); // <-- 在這裡，為新物件設定正確的 bbi_sn
+							corrected.setBbisnnb(original.getBbisnnb());
+							corrected.setBbiname(original.getBbiname());
+							corrected.setSysnote(original.getSysnote());
+							corrected.setBbiisn(original.getBbiisn());
+							corrected.setBbiiqty(original.getBbiiqty());
+							corrected.setBbiidescription(original.getBbiidescription());
+							corrected.setBbiiname(original.getBbiiname());
+							corrected.setBbiiserp(original.getBbiiserp());
+							corrected.setBbiiprocess(original.getBbiiprocess());
+							corrected.setBbiiqty(original.getBbiiqty());
+							corrected.setBbiispecification(original.getBbiispecification());
+							System.out.println((i + 1) + " : " + corrected.getBbisn() + " : " + corrected.getBbiisn()
+									+ " : " + corrected.getSysnote());
+							correctionNew.add(corrected);
+						}
+						// 彙整->分類->把每次查到的結果加到總集合
+						entityBBIMap.put(k, correctionNew);
+					}
+				}
+
+				// 資料整理(BBI-限制100筆)
 				ArrayList<BasicBomIngredients> entityBBIh = new ArrayList<BasicBomIngredients>();
 				ArrayList<BasicBomIngredients> entityBBId = new ArrayList<BasicBomIngredients>();
-				// 資料整理(BBI-限制200筆)
-				entityBBIMap.forEach((k, v) -> {
-					v.forEach(d -> {
-						entityBBId.add(d);// d
-					});
-					BasicBomIngredients h = new BasicBomIngredients();
-					h.setBbiname(v.get(0).getBbiname());
-					h.setBbispecification(v.get(0).getBbispecification());
-					h.setBbidescription(v.get(0).getBbidescription());
-					h.setBbisn(v.get(0).getBbisn());
-					entityBBIh.add(h);// h
+
+				bbisnMap.forEach((k, v) -> {
+					// ERP Header
+					entityBBIh.add(v);// h
+					// ERP Body
+					entityBBId.addAll(entityBBIMap.get(k));// b
+
 				});
+
 				// 資料放入
 				String entityJsonBBI = packageService.beanToJson(entityBBIh);
 				String entityDetailJsonBBI = packageService.beanToJson(entityBBId);
@@ -487,6 +509,7 @@ public class BomProductManagementServiceAc {
 			}
 
 		}
+
 		// ========================配置共用參數========================
 		// Step5. 取得資料格式/(主KEY/群組KEY)
 		// 資料格式

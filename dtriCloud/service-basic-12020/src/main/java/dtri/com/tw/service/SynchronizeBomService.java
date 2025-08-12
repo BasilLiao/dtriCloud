@@ -109,68 +109,84 @@ public class SynchronizeBomService {
 	}
 
 	// ============ 同步BOM() ============
-	public void erpSynchronizeBomIngredients() throws Exception {
-		ArrayList<Bommd> bommds = new ArrayList<Bommd>();
-		ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
-		ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
-		ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
-		Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
-		Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
-		List<String> bbisnnb = new ArrayList<String>();
-		// 物料號
-		materialDao.findAll().forEach(m -> {
-			wMs.put(m.getWmpnb(), m);
-		});
-		// 第一次跑在用 = 沒資料須導入/常態性跑用 = 有資料 區塊性更新
-		// bommds = bommdDao.findAllByBommdFirst();//第一次跑在用
-		bommds = bommdDao.findAllByBommd();// 常態性跑用
-		// ERP -> 檢查資料&更正
-		bommds.forEach(bommd -> {
-			bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
-			bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
-			bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
-			bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
-			bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
-			bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
-			bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
-			erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
-			bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());
-		});
-		// 資料回收
-		bommds = null;
-		// 轉換資料
+	public static boolean erpSBIWorking = false;
 
-		// boms = basicBomIngredientsDao.findAllByBomLists(null);//第一次跑在用
-		boms = basicBomIngredientsDao.findAllByBomLists(bbisnnb.toArray(new String[0]));// 常態性跑用
-		boms.forEach(o -> {
-			if (erpBommds.containsKey(o.getBbisnnb())) {
-				erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
-				String sum = erpBommds.get(o.getBbisnnb()).toString();
-				if (!sum.equals(o.getChecksum())) {
-					// 更新
-					erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+	public synchronized void erpSynchronizeBomIngredients(boolean synAll) throws Exception {
+		try {
+			erpSBIWorking = true;
+			ArrayList<Bommd> bommds = new ArrayList<Bommd>();
+			ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
+			ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
+			ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
+			Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
+			Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
+			List<String> bbisnnb = new ArrayList<String>();
+			// 物料號
+			materialDao.findAll().forEach(m -> {
+				wMs.put(m.getWmpnb(), m);
+			});
+			// 第一次跑在用 = 沒資料須導入/常態性跑用 = 有資料 區塊性更新
+			if (synAll) {
+				bommds = bommdDao.findAllByBommdFirst();// 第一次跑在用
+			} else {
+				bommds = bommdDao.findAllByBommd();// 常態性跑用
+			}
+			// ERP -> 檢查資料&更正
+			bommds.forEach(bommd -> {
+				bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
+				bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
+				bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
+				bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
+				bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
+				bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
+				bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+				erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
+				bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());
+			});
+			// 資料回收
+			bommds = null;
+			// 轉換資料
+			if (synAll) {
+				boms = basicBomIngredientsDao.findAllByBomListsFirst();// 第一次跑在用
+			} else {
+				String[] bbisnnbs = bbisnnb.toArray(new String[0]);
+				boms = basicBomIngredientsDao.findAllByBomLists(bbisnnbs);// 常態性跑用
+			}
+			boms.forEach(o -> {
+				if (erpBommds.containsKey(o.getBbisnnb())) {
+					erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
+					String sum = erpBommds.get(o.getBbisnnb()).toString();
+					if (!sum.equals(o.getChecksum())) {
+						// 更新
+						erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+						bomNews.add(o);
+					}
+				} else {
+					// 沒比對到?已經移除?
+					bomRemoves.add(o);// 第一次跑在用
+				}
+			});
+			// 資料回收
+			boms = null;
+			// 新增
+			erpBommds.forEach((k, n) -> {
+				if (n.isNewone()) {
+					BasicBomIngredients o = new BasicBomIngredients();
+					String sum = n.toString();
+					erpToCloudService.bomIngredients(o, n, wMs, sum);
 					bomNews.add(o);
 				}
-			} else {
-				// 沒比對到?已經移除?
-				// bomRemoves.add(o);//第一次跑在用
-			}
-		});
-		// 資料回收
-		boms = null;
-		// 新增
-		erpBommds.forEach((k, n) -> {
-			if (n.isNewone()) {
-				BasicBomIngredients o = new BasicBomIngredients();
-				String sum = n.toString();
-				erpToCloudService.bomIngredients(o, n, wMs, sum);
-				bomNews.add(o);
-			}
-		});
-		// 存入資料
-		basicBomIngredientsDao.saveAll(bomNews);
-		basicBomIngredientsDao.deleteAll(bomRemoves);
-		System.out.println("---");
+			});
+			// 存入資料
+			basicBomIngredientsDao.saveAll(bomNews);
+			basicBomIngredientsDao.deleteAll(bomRemoves);
+			System.out.println("---");
+			erpSBIWorking = false;
+
+		} catch (Exception e) {
+			erpSBIWorking = false;
+			throw (e);// 再往外拋
+		}
 	}
 
 	// ============ BOM是否有異動修正() ============

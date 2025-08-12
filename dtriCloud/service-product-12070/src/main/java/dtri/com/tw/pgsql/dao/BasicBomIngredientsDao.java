@@ -40,9 +40,10 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			        b.*,                                          -- 取得該筆 BOM 所有欄位
 			        1 AS level,                                   -- 記錄階層層數，第一層為 1
 			        b.bbi_sn AS root_bbi_sn,                      -- 記錄此展開樹的起始成品料號（根）   
-			         CAST(b.bbi_i_sn AS TEXT) AS current_bbi_path -- 初始化目前展開路徑為子項料號
+			        CAST(b.bbi_sn ||' → ' ||  CAST(b.bbi_id AS TEXT) AS TEXT) AS root_bbi_id,   -- 記錄此展開樹的起始成品ID（根）  
+			        CAST((b.bbi_sn || ' → ' || b.bbi_i_sn) AS TEXT) AS current_bbi_path 		-- 初始化目前展開路徑為子項料號
 			    FROM basic_bom_ingredients b
-			    WHERE (:bbisn IS NULL OR b.bbi_sn LIKE CONCAT('%', :bbisn, '%'))             -- ✅ 限定從指定的成品料號開始展開
+			    WHERE (:bbisn IS NULL OR b.bbi_sn LIKE CONCAT('%', :bbisn, '%'))             	-- ✅ 限定從指定的成品料號開始展開
 					AND (:bbiname IS NULL OR b.bbi_name LIKE  CONCAT('%', :bbiname, '%')) 
 				
 			    UNION ALL
@@ -52,11 +53,14 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			        b.*,                                          -- 同樣取出所有欄位
 			        bt.level + 1 AS level,                        -- 階層加 1
 			        bt.root_bbi_sn,                               -- 維持展開樹的根料號
+			        bt.root_bbi_id,								  -- 維持展開樹的父 ID
 			        (bt.current_bbi_path || ' → ' || b.bbi_i_sn)  -- 更新展開路徑：加上本層子項料號
 			    FROM basic_bom_ingredients b
 			    INNER JOIN bom_tree bt ON b.bbi_sn = bt.bbi_i_sn  -- 🔗 關鍵：將上一層的子項對應為本層的父項
+			    
 			    WHERE bt.level < 5                               -- ✅ 限制展開最大階層深度為 10 層（避免無限遞迴）
 			      AND position(b.bbi_i_sn in bt.current_bbi_path) = 0  -- ✅ 防止循環展開（例如 A → B → A）
+			      AND b.bbi_i_qty >0 --組成用量要大於0
 			)
 
 			-- 📄 最終輸出：只顯示子項描述中含「正規化」關鍵字的那些節點記錄
@@ -81,13 +85,27 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			    t.sys_header,           -- 是否為表頭
 			    t.sys_status,           -- 狀態
 			    t.sys_sort,             -- 排序編號
-			    t.sys_note,             -- 備註
-			    t.check_sum            -- 校驗碼
-			    --t.level,                -- 遞迴層級
-			    --t.current_bbi_path      -- 展開路徑（顯示展開歷程）
+			  --  t.sys_note,             -- 備註
+			    t.check_sum,            -- 校驗碼
+			    t.level,                -- 遞迴層級
+			    t.current_bbi_path AS sys_note      -- 展開路徑（顯示展開歷程）
 			FROM bom_tree t
-			WHERE t.bbi_i_description LIKE '%正規化%'  -- ✅ 只回傳描述中含「正規化」的節點
-			OR t.level = 1 -- 保留這個篩選條件，以顯示所有第一層物料
+			WHERE t.bbi_i_qty > 0 --數量大於0
+				AND  (t.bbi_i_description LIKE '%正規化%'  -- ✅ 只回傳描述中含「正規化」的節點
+				OR t.level = 1) -- 保留這個篩選條件，以顯示所有第一層物料
+				-- 根據 level 和 current_bbi_path 添加的條件
+				AND (
+			       	-- 對於 level = 2，current_bbi_path 必須包含 '92-' 或 '81-' 開頭
+				    (t.level = 2 AND (t.current_bbi_path LIKE '53-%' OR t.current_bbi_path LIKE '92-%' OR t.current_bbi_path LIKE '81-%'))
+				    -- 對於 level = 3，current_bbi_path 必須包含任意兩項 '92-'、'81-'、'53-'
+				    OR (t.level = 3 AND (
+				        (t.current_bbi_path LIKE '%92-%' AND t.current_bbi_path LIKE '%81-%') OR
+				        (t.current_bbi_path LIKE '%92-%' AND t.current_bbi_path LIKE '%53-%') OR
+				        (t.current_bbi_path LIKE '%81-%' AND t.current_bbi_path LIKE '%53-%')
+				    ))
+				    -- 保留其他層級的資料，不進行過濾
+				    OR t.level = 1
+				)
 			ORDER BY t.root_bbi_sn ASC, t.bbi_i_sn ASC  -- 排序顯示：根料號 → 階層 → 展開路徑
 			""", nativeQuery = true)
 	ArrayList<BasicBomIngredients> findFlattenedBomLevel(@Param("bbisn") String bbisn,

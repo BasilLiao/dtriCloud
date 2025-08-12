@@ -115,9 +115,10 @@
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
 				data-bs-toggle="collapse" data-bs-target="#other_c_item_open"
 				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				<b class="p-0 m-0 lh-1 bg-primary text-white"> Search </b>
 		</div>
 		<div id="other_c_item_open" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Search </b>
+			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"></b>
 			<div id="otherItemItem"
 				class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-6 otherTextEx col-md-1 p-1 d-none">
@@ -168,7 +169,27 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-
+				<!--切換面板 -->
+				<div class="col-12 col-lg-2 p-1  other_change_open">
+					<div class="border border-secondary rounded">
+						<div class="bg-primary fw-bolder rounded-top text-white">UI
+							Switch</div>
+						<div class="row m-0">
+							<button id="btn_erp_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+								<b>ERP BOM</b>
+							</button>
+							<button id="btn_rules_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Rules BOM</b>
+							</button>
+							<button id="btn_format_bom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Format BOM</b>
+							</button>
+						</div>
+					</div>
+				</div>
 				<!--BBI(同步-BOM成品組成)-->
 				<div class="col-12 col-lg-2 p-1 collapse other_BBI_open">
 					<div class="border border-secondary rounded">
@@ -239,27 +260,7 @@
 						</div>
 					</div>
 				</div>
-				<!--切換面板 -->
-				<div class="col-12 col-lg-2 p-1  other_change_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-primary fw-bolder rounded-top text-white">UI
-							Switch</div>
-						<div class="row m-0">
-							<button id="btn_erp_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>ERP BOM</b>
-							</button>
-							<button id="btn_rules_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Rules BOM</b>
-							</button>
-							<button id="btn_format_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Format BOM</b>
-							</button>
-						</div>
-					</div>
-				</div>
+
 				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="bg_def fw-bolder rounded-top">Search</div>
@@ -1259,8 +1260,8 @@
 									bisselect.append(bisoption);
 									bisname.forEach(function (v) {
 										// 每項目組+子項目
-										if (bisgfname !== v['bisgfname']) {
-											bisgfname = v['bisgfname'];
+										if (bisgfname !== v['bisgid']) {
+											bisgfname = v['bisgid'];
 											bisoption = $('<option></option>').text(v['bisgfname']).val("");
 											bisoption.css("textAlign", "center");
 											bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
@@ -1276,11 +1277,13 @@
 											bisoptionNo.attr('title', "<_><_><_>");
 											bisselect.append(bisoptionYes);
 											bisselect.append(bisoptionNo);
+											console.log("基本Yes / No :"+bisgfname);
 										}
+										
 										//切割整理(每個正規化子項目內容)
 										let array = JSON.parse(v['bisfname']);
 										let val = array.join(' , ');
-										if(val!=="customize"){//customize除外
+										if(!val.includes("customize")){//customize除外
 											bisoption = $('<option></option>').text(val).val(v['bisid']);
 											bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
 											bisoption.attr('title', v['bisnb'] + "<_>" + v['bisname'] + "<_>" + v['bisspecifications'] + "<_>" + v['bissdescripion'] + "<_>" + v['bisgfname']);
@@ -1436,13 +1439,64 @@
 					//點擊動作
 					switch (clickId) {
 						case "btn_erp_bom":
-							$('#other_BBI .bi-dash-square').trigger("click");
+							//開啟
+							if(!$('#other_BBI_open').hasClass('show')){
+								$('#other_BBI div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BPR_open').hasClass('show')){
+								$('#other_BPR div').first().find('.bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BPM_open').hasClass('show')){
+								$('#other_BPM div').first().find('.bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od div').first().find('.bi-dash-square').trigger("click");
+							}
 							break;
 						case "btn_rules_bom":
-							$('#other_BPR .bi-dash-square').trigger("click");
+							//開啟
+							if(!$('#other_BPR_open').hasClass('show')){
+								$('#other_BPR div').first().find('.bi-dash-square').trigger("click");
+							}
+							if(!$('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BBI_open').hasClass('show')){
+								$('#other_BBI div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BPM_open').hasClass('show')){
+								$('#other_BPM div').first().find('.bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od div').first().find('.bi-dash-square').trigger("click");
+							}
 							break;
 						case "btn_format_bom":
-							$('#other_BPM .bi-dash-square').trigger("click");
+							//開啟
+							if(!$('#other_BPM_open').hasClass('show')){
+								$('#other_BPM div').first().find('.bi-dash-square').trigger("click");
+							}
+							if(!$('#other_Detail_BPM_open').hasClass('show')){
+								$('#other_Detail_BPM_od div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BBI_open').hasClass('show')){
+								$('#other_BBI div').first().find('.bi-dash-square').trigger("click");
+							}
+							//關閉
+							if($('#other_BPR_open').hasClass('show')){
+								$('#other_BPR div').first().find('.bi-dash-square').trigger("click");
+							}
+							if($('#other_Detail_BPR_open').hasClass('show')){
+								$('#other_Detail_BPR_od div').first().find('.bi-dash-square').trigger("click");
+							}
 							break;
 						case "btn_bpm_save":
 							let Add = [];
@@ -1998,10 +2052,17 @@
 									bpmbisitem.items = [];
 									bpmbisitem.basic = [];
 									let bpmbisitemOne = {}
+									let nbs = 1;
 									entityJsons.forEach(s => {
+										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
+											//測試用
+											if('01-116-370013'===s['bbiisn']){
+												console.log("01-116-370013");
+											}
 										if (s['bbisn'] === bbisn) {
-											//console.log(s['bbiisn']);
+											console.log(nbs+":"+s['bbisn']+":"+s['bbiisn']);
+											nbs+=1;
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
 											bisname.forEach(bs => {
@@ -2012,13 +2073,13 @@
 													bpmbisitemOne.bisgid = bs['bisgid'];
 													bpmbisitemOne.bisnb = bs['bisnb'];
 													bpmbisitemOne.bisname = bs['bisname'];
-													bpmbisitemOne.bisqty = 1;
 													bpmbisitemOne.bisgname = bs['bisgname'];
 													bpmbisitemOne.bisgfname = bs['bisgfname'];
 													bpmbisitemOne.bisfname = bs['bisfname'];
-													bpmbisitemOne.bisprocess = s['bbiiprocess'];
 													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
-													bpmbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort"] = bpmbisitemOne;
+													bpmbisitemOne.bisqty = s['bbiiqty'];
+													bpmbisitemOne.bisprocess = s['bbiiprocess'];
+													bpmbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort_"+bs['bisgid']] = bpmbisitemOne;
 													//
 													checkIsbasic = false;
 													return false;
@@ -2116,7 +2177,7 @@
 									rulesEntityJsons.forEach(s => {
 										//取得該成品BOM下的 物料匹配
 										if (s['bbisn'] === bbisn) {
-											//console.log(s['bbiisn']);
+											console.log(s['bbiisn']);
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
 											bisname.forEach(bs => {
@@ -2127,12 +2188,12 @@
 													bprbisitemOne.bisgid = bs['bisgid'];
 													bprbisitemOne.bisnb = bs['bisnb'];
 													bprbisitemOne.bisname = bs['bisname'];
-													bprbisitemOne.bisqty = 1;
 													bprbisitemOne.bisgname = bs['bisgname'];
 													bprbisitemOne.bisgfname = bs['bisgfname'];
 													bprbisitemOne.bisfname = bs['bisfname'];
-													bprbisitemOne.bisprocess = s['bbiiprocess'];
 													bprbisitemOne.bissdescripion = bs['bissdescripion'];
+													bprbisitemOne.bisqty = s['bbiiqty'];
+													bprbisitemOne.bisprocess = s['bbiiprocess'];
 													bprbisitemOne.biswhere = [];//物料號_正負_數量,.....
 													bprbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort"] = bprbisitemOne;
 													//
@@ -2424,8 +2485,7 @@
 					let checkBPM = selectPePe.parent().parent().parent().attr("id") === "other_Detail_BPM";
 					//選擇了-群組項目
 					if ($(this.parentElement).hasClass("bisgname")) {
-						//該列資料的-子選項
-						let bisfnames = selectPePe.find(".bisfname option");
+						
 						//console.log(bisfnames);
 						//還原
 						selectPePe.find(".bisfname .bisgid_0").prop('selected', true);
@@ -2438,15 +2498,20 @@
 						selectPePe.find(".bisqty input").removeAttr("disabled");
 						selectPePe.find(".bisfname select").removeAttr("disabled");
 						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
-						//選項顯示/不顯示
-						bisfnames.each((index) => {
-							let bisfnameOne = $(bisfnames[index]);
-							if (bisfnameOne.hasClass("bisgid_" + selected.val())) {
-								bisfnameOne.removeClass("d-none");
-							} else if (!bisfnameOne.hasClass("d-none") && !bisfnameOne.hasClass("bisgid_0")) {
-								bisfnameOne.addClass("d-none");
-							}
+
+						//複製						
+						let optionExs = $("#other_Detail_BPM_od .exDetailTbodyTr .bisfname option");
+						let clonedOptions = $('<select class="form-select"></select>');  // 創建新的 select 元素
+						optionExs.each((index, bisfname) => {
+						    if ($(bisfname).hasClass("bisgid_" + selected.val())) {
+						        let bisfnameOne = $(bisfname).clone();  // 複製選項
+						        bisfnameOne.removeClass("d-none");  // 顯示該選項
+						        clonedOptions.append(bisfnameOne);   // 把選項放入新的 select 中
+						    }
 						});
+						//該列資料的-子選項
+						selectPePe.find(".bisfname").html(clonedOptions);
+						
 						//如果是Basic 另外處裡
 						if (selectPePe.find(".bisgname select").val() === "0") {
 							selectPePe.find(".bisfname select").val("0");
@@ -2684,7 +2749,8 @@
 								//不含有+不能是空
 								if (!readySelect.includes(check.val()) && check.val() != "") {
 									//console.log(check.val());
-									detailTbodyTr.find(".bisgname select").val(check.val()).focus().trigger('change');
+									detailTbodyTr.find(".bisgname select").val(check.val()).focus().trigger('change');//項目
+									detailTbodyTr.find(".bisqty input").val(1);
 									return false;
 								}
 							});
@@ -2721,6 +2787,17 @@
 						$(this.parentElement.parentElement.parentElement).remove();
 					}
 				});
+				//=====查詢快速編輯=====雙點
+				$(document).off("dblclick", "#other_BPM_open tbody .exTbodyTh input");
+				$(document).on("dblclick", "#other_BPM_open tbody .exTbodyTh input", function (e) {
+					$('#btn_bpm_detail').trigger("click");
+				});
+				//=====查詢快速編輯=====雙點
+				$(document).off("dblclick", "#other_BPR_open tbody .exTbodyTh input");
+				$(document).on("dblclick", "#other_BPR_open tbody .exTbodyTh input", function (e) {
+					$('#btn_bpr_detail').trigger("click");
+				});
+				
 				//=====查詢面板=====輸入Enter-條件
 				$(document).off("keyup", "#other_c input");
 				$(document).on("keyup", "#other_c input", function (e) {
@@ -3261,6 +3338,8 @@
 				$(document).off("input", "#other_Detail_BPM_open input,select,textarea");
 				$(document).off("input", "#other_BPM tbody td");
 				$(document).off("click", "#other_c button");
+				$(document).off("dblclick", "#other_BPM_open tbody .exTbodyTh input");
+				$(document).off("dblclick", "#other_BPR_open tbody .exTbodyTh input");
 
 				console.log("other.html(destroy)");
 			},

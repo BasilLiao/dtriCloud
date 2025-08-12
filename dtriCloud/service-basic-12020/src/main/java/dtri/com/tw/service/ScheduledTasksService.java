@@ -114,7 +114,9 @@ public class ScheduledTasksService {
 			// BOM機種別
 			synchronizeBomService.erpSynchronizeProductModel();
 			// BOM結構同步
-			synchronizeBomService.erpSynchronizeBomIngredients();// u
+			if (!SynchronizeBomService.erpSBIWorking) {
+				synchronizeBomService.erpSynchronizeBomIngredients(false);// u
+			}
 			// BOM 檢查歷史紀錄送出mail
 			synchronizeBomService.bomModification();
 			// BOM 規則同步

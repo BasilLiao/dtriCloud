@@ -55,6 +55,8 @@ public class BasicBomIngredientsServiceAc {
 	private WarehouseMaterialDao warehouseMaterialDao;
 
 	@Autowired
+	private SynchronizeBomService synchronizeBomService;
+	@Autowired
 	private EntityManager em;
 
 	/** 取得資料 */
@@ -113,7 +115,7 @@ public class BasicBomIngredientsServiceAc {
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bbisn", "Ex:主BOM料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bbisn", "Ex:主BOM料號?BOMsynAll?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "bbiname", "Ex:主BOM品名?", true, //
@@ -137,6 +139,14 @@ public class BasicBomIngredientsServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			BasicBomIngredients searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					BasicBomIngredients.class);
+
+			// 特殊促發(BOMsynAll) 重新全部同步BOM
+			if (searchData.getBbisn().equals("BOMsynAll")) {
+				// BOM結構同步
+				if (!SynchronizeBomService.erpSBIWorking) {
+					synchronizeBomService.erpSynchronizeBomIngredients(true);// u
+				}
+			}
 
 			ArrayList<BasicBomIngredients> entitys = bomIngredientsDao.findAllBySearch(searchData.getBbisn(),
 					searchData.getBbiname(), searchData.getBbiisn(), searchData.getBbiname(),
@@ -371,13 +381,13 @@ public class BasicBomIngredientsServiceAc {
 			cellName = cellName.replace("sys_o", "sys_o_");
 			cellName = cellName.replace("bbi", "bbi_");
 			cellName = cellName.replace("bbi_snnb", "bbi_sn_nb");
-			
+
 			cellName = cellName.replace("bbi_isn", "bbi_i_sn");
 			cellName = cellName.replace("bbi_iname", "bbi_i_name");
 			cellName = cellName.replace("bbi_ispecification", "bbi_i_specification");
 			cellName = cellName.replace("bbi_idescription", "bbi_i_description");
 			cellName = cellName.replace("bbi_iprocess", "bbi_i_process");
-			
+
 			cellName = cellName.replace("bbi_iqty", "bbi_i_qty");
 			cellName = cellName.replace("bbi_iserp", "bbi_i_s_erp");
 			cellName = cellName.replace("checksum", "check_sum");

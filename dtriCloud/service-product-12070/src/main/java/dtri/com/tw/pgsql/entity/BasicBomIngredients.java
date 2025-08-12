@@ -131,6 +131,7 @@ public class BasicBomIngredients {
 	@Column(name = "bbi_i_s_erp", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bbiiserp;
 
+
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
 
@@ -333,5 +334,6 @@ public class BasicBomIngredients {
 	public void setBbiiprocess(String bbiiprocess) {
 		this.bbiiprocess = bbiiprocess;
 	}
+
 
 }
