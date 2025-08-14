@@ -465,10 +465,54 @@ public class BomProductManagementServiceAc {
 					}
 				}
 
+				
+//				//會異常-> 每個查詢
+//				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new HashMap<String, ArrayList<BasicBomIngredients>>();
+//				ArrayList<BasicBomIngredients> entityBBIs = ingredientsDao.findFlattenedBomLevel(bbisn, bbiname);
+//				int i = 0;
+//				for (BasicBomIngredients entityOneBBI : entityBBIs) {
+//					ArrayList<BasicBomIngredients> correctionNew = new ArrayList<BasicBomIngredients>();
+//					BasicBomIngredients corrected = new BasicBomIngredients();
+//					BasicBomIngredients original = entityOneBBI;
+//					corrected.setBbiid(original.getBbiid());
+//					corrected.setBbinb(original.getBbinb());
+//					corrected.setBbisn(original.getBbisn()); // <-- 在這裡，為新物件設定正確的 bbi_sn
+//					corrected.setBbisnnb(original.getBbisnnb());
+//					corrected.setBbiname(original.getBbiname());
+//					corrected.setSysnote(original.getSysnote());
+//					corrected.setBbiisn(original.getBbiisn());
+//					corrected.setBbiiqty(original.getBbiiqty());
+//					corrected.setBbiidescription(original.getBbiidescription());
+//					corrected.setBbiiname(original.getBbiiname());
+//					corrected.setBbiiserp(original.getBbiiserp());
+//					corrected.setBbiiprocess(original.getBbiiprocess());
+//					corrected.setBbiiqty(original.getBbiiqty());
+//					corrected.setBbiispecification(original.getBbiispecification());
+//					// 顯示
+//					System.out.println((i += 1) + " : " + corrected.getBbisn() + " : " + corrected.getBbiisn() + " : "
+//							+ corrected.getSysnote());
+//					// 有重複?
+//					if (entityBBIMap.containsKey(entityOneBBI.getBbisn())) {
+//						correctionNew = entityBBIMap.get(entityOneBBI.getBbisn());
+//						correctionNew.add(corrected);
+//						entityBBIMap.put(corrected.getBbisn(), correctionNew);
+//					} else {
+//						correctionNew.add(corrected);
+//						entityBBIMap.put(corrected.getBbisn(), correctionNew);
+//					}
+//					// 數量上限100
+//					if (entityBBIMap.size() >= 100) {
+//						break;
+//					}
+//				}
+			
+				
+				
+
 				// 資料整理(BBI-限制100筆)
 				ArrayList<BasicBomIngredients> entityBBIh = new ArrayList<BasicBomIngredients>();
 				ArrayList<BasicBomIngredients> entityBBId = new ArrayList<BasicBomIngredients>();
-
+				//分類整粒
 				bbisnMap.forEach((k, v) -> {
 					// ERP Header
 					entityBBIh.add(v);// h
@@ -476,7 +520,6 @@ public class BomProductManagementServiceAc {
 					entityBBId.addAll(entityBBIMap.get(k));// b
 
 				});
-
 				// 資料放入
 				String entityJsonBBI = packageService.beanToJson(entityBBIh);
 				String entityDetailJsonBBI = packageService.beanToJson(entityBBId);

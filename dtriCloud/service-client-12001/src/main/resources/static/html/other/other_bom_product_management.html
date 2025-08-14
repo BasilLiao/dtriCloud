@@ -32,9 +32,13 @@
 }
 
 /*Table 表格外框線*/
-#other_c table {
+#other_BPM_open table:first-of-type, #other_BPR_open table:first-of-type,
+	#other_BBI_open table:first-of-type {
 	max-height: calc(100vh - 760px);
-	min-height: 200px;
+	min-height: 280px;
+}
+
+#other_c table {
 	border-collapse: separate;
 	border-spacing: 0px;
 }
@@ -114,8 +118,8 @@
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
 				data-bs-toggle="collapse" data-bs-target="#other_c_item_open"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
-				<b class="p-0 m-0 lh-1 bg-primary text-white"> Search </b>
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> <b
+				class="p-0 m-0 lh-1 bg-primary text-white"> Search </b>
 		</div>
 		<div id="other_c_item_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"></b>
@@ -169,98 +173,104 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<!--切換面板 -->
-				<div class="col-12 col-lg-2 p-1  other_change_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-primary fw-bolder rounded-top text-white">UI
-							Switch</div>
-						<div class="row m-0">
-							<button id="btn_erp_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
-								<b>ERP BOM</b>
-							</button>
-							<button id="btn_rules_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>Rules BOM</b>
-							</button>
-							<button id="btn_format_bom" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Format BOM</b>
-							</button>
+				<div class="col-12 col-lg-10 row m-0 p-0 justify-content-start">
+					<!--切換面板 -->
+					<div class="col-12 col-lg-3 p-1  other_change_open">
+						<div class="border border-secondary rounded">
+							<div class="bg_def fw-bolder rounded-top">UI Switch</div>
+							<div class="row m-0">
+								<button id="btn_erp_bom" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
+									<b>ERP <br>BOM
+									</b>
+								</button>
+								<button id="btn_rules_bom" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+									<b>Rules <br>BOM
+									</b>
+								</button>
+								<button id="btn_format_bom" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>Format <br>BOM
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<!--BBI(同步-BOM成品組成)-->
+					<div class="col-12 col-lg-3 p-1 collapse other_BBI_open">
+						<div class="border border-secondary rounded">
+							<div class="bg-info fw-bolder rounded-top">ERP BOM</div>
+							<div class="row m-0">
+								<button id="btn_bbi_format" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>ERP BOM<br>to Format
+									</b>
+								</button>
+								<button id="btn_bbi_rules" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+									<b>ERP BOM<br>to Rules
+									</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<!--BPR(BOM產品規則)-->
+					<div class="col-12 col-lg-4 p-1 collapse other_Detail_BPR_open">
+						<div class="border border-secondary rounded">
+							<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
+							<div class="row m-0">
+								<button id="btn_bpr_detail" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Modify</b>
+								</button>
+								<button id="btn_bpr_back" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Back<br>Update
+									</b>
+								</button>
+								<button id="btn_bpr_save" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+									<b>Save<br>(AC/AU/DD)
+									</b>
+								</button>
+								<button id="btn_bpr_generate" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
+									<b>generate</b>
+								</button>
+							</div>
+						</div>
+					</div>
+					<!--BPM(BOM產品管理)-->
+					<div
+						class="col-12 col-lg-4 p-1 collapse show other_Detail_BPM_open">
+						<div class="border border-secondary rounded">
+							<div class="bg-teal fw-bolder rounded-top">Format BOM</div>
+							<div class="row m-0">
+								<button id="btn_bpm_detail" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Modify</b>
+								</button>
+								<button id="btn_bpm_back" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
+									<b>Back<br>Update
+									</b>
+								</button>
+								<button id="btn_bpm_save" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
+									<b>Save<br>(AC/AU/DD)
+									</b>
+								</button>
+								<button id="btn_bpm_excel" type="button"
+									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
+									<b>Export<br> Excel
+									</b>
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
-				<!--BBI(同步-BOM成品組成)-->
-				<div class="col-12 col-lg-2 p-1 collapse other_BBI_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-info fw-bolder rounded-top">ERP BOM</div>
-						<div class="row m-0">
-							<button id="btn_bbi_rules" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
-								<b>ERP BOM<br>to Rules
-								</b>
-							</button>
-							<button id="btn_bbi_format" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>ERP BOM<br>to Format
-								</b>
-							</button>
-						</div>
-					</div>
-				</div>
-				<!--BPR(BOM產品規則)-->
-				<div class="col-12 col-lg-3 p-1 collapse other_Detail_BPR_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-yellow fw-bolder rounded-top">Rules BOM</div>
-						<div class="row m-0">
-							<button id="btn_bpr_detail" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Modify</b>
-							</button>
-							<button id="btn_bpr_back" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Back<br>Update
-								</b>
-							</button>
-							<button id="btn_bpr_save" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Save<br>(AC/AU/DD)
-								</b>
-							</button>
-							<button id="btn_bpr_generate" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
-								<b>generate</b>
-							</button>
-						</div>
-					</div>
-				</div>
-				<!--BPM(BOM產品管理)-->
-				<div class="col-12 col-lg-3 p-1 collapse show other_Detail_BPM_open">
-					<div class="border border-secondary rounded">
-						<div class="bg-teal fw-bolder rounded-top">Format BOM</div>
-						<div class="row m-0">
-							<button id="btn_bpm_detail" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Modify</b>
-							</button>
-							<button id="btn_bpm_back" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-								<b>Back<br>Update
-								</b>
-							</button>
-							<button id="btn_bpm_save" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-success">
-								<b>Save<br>(AC/AU/DD)
-								</b>
-							</button>
-							<button id="btn_bpm_excel" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
-								<b>Export Excel</b>
-							</button>
-						</div>
-					</div>
-				</div>
-
+				<!--查詢-->
 				<div class="col-6 col-lg-2 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="bg_def fw-bolder rounded-top">Search</div>
@@ -1240,13 +1250,22 @@
 									bisgname.forEach(function (v) {
 										// 檢查 <select> 裡面是否已經有相同的 bisgid 
 										if (bisgselect.find('option[value="' + v['bisgid'] + '"]').length === 0) {
-											bisgoption = $('<option class="o_' + v['bisgname'] + '" ></option>').text(v['bisgname']).val(v['bisgid']);
+											let bisgoption = $("<option>")
+										    .attr({
+										        class: "o_" + v['bisgname'],
+										        alt: v['bisdselect'],
+										        sort: v['syssort']
+										    })
+										    .text(v.bisgname)
+										    .val(v.bisgid);
 											bisgselect.append(bisgoption);
 										}
 									});
 									//Basic
 									bisgoption = $('<option></option>').text("Basic").val("0");
+									bisgoption.prop("disabled", true); // 顯示但無法選擇
 									bisgselect.append(bisgoption);
+									
 
 									bisgselect.addClass('form-select');
 									$('#other_Detail_BPM .bisgname').html(bisgselect);
@@ -1695,6 +1714,9 @@
 								detailTbodyTr.appendTo($("#other_c #other_Detail_" + whois + " tbody"));
 								detailTbodyTr.find(".bisgname select").val("0").focus().trigger('change');
 								detailTbodyTr.find(".bisnb input").val(whoisbisitem.basic);
+								detailTbodyTr.find(".bisgname select").prop("disabled", true); // 顯示但無法選擇
+								detailTbodyTr.find(".bisfname select").prop("disabled", true); // 顯示但無法選擇
+								detailTbodyTr.find(".bisqty input").prop("disabled", true); // 顯示但無法選擇
 
 								//配色(BPM/BPR)
 								if (whois === "BPM") {
@@ -2022,7 +2044,25 @@
 								let bisname = other.data.otherItemPageSet.entityOther['BIS'];
 								//所有 取得的資料(料BOM)
 								let entityJsons = other.data.otherItemPageSet.entityOther['BBIDetail'];
-								//每一項
+								//取得 項目群組
+								let optionsMap = {};
+								$("#other_Detail_BPM_od .exDetailTbodyTr select.form-select option").each(function() {
+									let val = $(this).val();
+									let defselect = $(this).attr("alt");//預設必選
+								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目
+								        let key = $(this).attr("sort").trim().toString().padStart(3, '0') + "_sort_"+$(this).val().trim(); // 用 text 當 key
+								        optionsMap[key] = {
+								            class: $(this).attr("class") || "",
+								            alt: $(this).attr("alt") || "",
+								            sort: $(this).attr("sort") || "",
+								            text: $(this).attr("text")|| "",
+								            value: $(this).val()|| ""
+								        };
+								    }
+								});
+								console.log(JSON.stringify(optionsMap, null, 2));
+								
+								//每一項產品
 								checkedBBI.forEach(i => {
 									console.log(i);
 									let bbi = $("#other_BBI tbody ." + i);
@@ -2056,16 +2096,12 @@
 									entityJsons.forEach(s => {
 										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
-											//測試用
-											if('01-116-370013'===s['bbiisn']){
-												console.log("01-116-370013");
-											}
 										if (s['bbisn'] === bbisn) {
 											console.log(nbs+":"+s['bbisn']+":"+s['bbiisn']);
 											nbs+=1;
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
-											bisname.forEach(bs => {
+											bisname.forEach(bs => {//所有可能的項目
 												if (s['bbiisn'] === bs['bisnb']) {
 													console.log(bs['bisfname']);
 													bpmbisitemOne = {};
@@ -2077,8 +2113,10 @@
 													bpmbisitemOne.bisgfname = bs['bisgfname'];
 													bpmbisitemOne.bisfname = bs['bisfname'];
 													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
+													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
 													bpmbisitemOne.bisqty = s['bbiiqty'];
 													bpmbisitemOne.bisprocess = s['bbiiprocess'];
+													bpmbisitemOne.biswhere = [];//物料號_正負_數量,.....
 													bpmbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort_"+bs['bisgid']] = bpmbisitemOne;
 													//
 													checkIsbasic = false;
@@ -2091,12 +2129,36 @@
 											}
 										}
 									});
+									
+									//如果必選沒有選配到?
+									Object.keys(optionsMap).forEach(key => {
+									    // 檢查 optionsMap 有值 && bpmbasicSort 沒有該 key
+									    if (optionsMap[key] && !(key in bpmbasicSort)) {
+									        console.log("缺少必填資料:"+ key+", "+JSON.stringify(optionsMap[key],null));
+									        
+									        let newItem ={
+									            bisid:"0",
+									            bisgid:optionsMap[key]['value'],
+									            bisnb:"",
+									            bisname:"",
+									            bisqty:"1",
+									            bisgname:optionsMap[key]['text'],
+									            bisgfname:"",
+									            bisfname:"[\"Yes(裝)\"]",
+									            bissdescripion:"",
+									            bisprocess:"ASM"
+									         }
+									     	// 用 bisgname 當 key
+									    	bpmbasicSort[key] = newItem;
+									    }
+									});
+											
+									
 									//排序整理
 									bpmbasicSort = main.methods.orderedSort(bpmbasicSort);
 									Object.entries(bpmbasicSort).forEach(([key, value]) => {
 										bpmbisitem.items.push(value);
 									});
-
 									bpm.find(".bpmbisitem").text(JSON.stringify(bpmbisitem));
 									bpm.find(".bpmbpsnv").text("[]"); //配置參數
 									bpm.find("input").attr("title", "valTbodyTr_" + new_i);
@@ -2174,13 +2236,16 @@
 									bprbisitem.items = [];
 									bprbisitem.basic = [];
 									let bprbisitemOne = {}
+									let nbs = 1;
 									rulesEntityJsons.forEach(s => {
+										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
 										if (s['bbisn'] === bbisn) {
-											console.log(s['bbiisn']);
+											console.log(nbs+":"+s['bbisn']+":"+s['bbiisn']);
+											nbs+=1;
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
-											bisname.forEach(bs => {
+											bisname.forEach(bs => {//所有可能的項目
 												if (s['bbiisn'] === bs['bisnb']) {
 													console.log(bs['bisfname']);
 													bprbisitemOne = {};
@@ -2192,10 +2257,11 @@
 													bprbisitemOne.bisgfname = bs['bisgfname'];
 													bprbisitemOne.bisfname = bs['bisfname'];
 													bprbisitemOne.bissdescripion = bs['bissdescripion'];
+													bprbisitemOne.bissdescripion = bs['bissdescripion'];
 													bprbisitemOne.bisqty = s['bbiiqty'];
 													bprbisitemOne.bisprocess = s['bbiiprocess'];
 													bprbisitemOne.biswhere = [];//物料號_正負_數量,.....
-													bprbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort"] = bprbisitemOne;
+													bprbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort_"+bs['bisgid']] = bprbisitemOne;
 													//
 													checkIsbasic = false;
 													return false;
@@ -2221,18 +2287,18 @@
 								//觸發開關
 								$("#other_BBI .bi-dash-square").trigger("click");
 								//開啟
-								if (!$("#other_BPR_open").hasClass("show")) {
-									$("#other_BPR>div>.bi-dash-square").trigger("click");
+								if (!$("#other_c #other_BPR_open").hasClass("show")) {
+									$("#other_c #other_BPR>div>.bi-dash-square").trigger("click");
 								}
-								if (!$("#other_Detail_BPR_open").hasClass("show")) {
-									$("#other_Detail_BPR_od>div>.bi-dash-square").trigger("click");
+								if (!$("#other_c #other_Detail_BPR_open").hasClass("show")) {
+									$("#other_c #other_Detail_BPR_od>div>.bi-dash-square").trigger("click");
 								}
 								//關閉
-								if ($("#other_BPM_open").hasClass("show")) {
-									$("#other_BPM>div>.bi-dash-square").trigger("click");
+								if ($("#other_c #other_BPM_open").hasClass("show")) {
+									$("#other_c #other_BPM>div>.bi-dash-square").trigger("click");
 								}
-								if ($("#other_Detail_BPM_open").hasClass("show")) {
-									$("#other_Detail_BPM_od>div>.bi-dash-square").trigger("click");
+								if ($("#other_c #other_Detail_BPM_open").hasClass("show")) {
+									$("#other_c #other_Detail_BPM_od>div>.bi-dash-square").trigger("click");
 								}
 							}
 							break;
@@ -2592,7 +2658,7 @@
 							$("#other_c #" + whois + "_od #" + whois + "_info").removeClass("d-none");
 							$(event.target).addClass("btn-outline-primary");
 							//是Basic
-							if ($(event.target).parent().parent().find(".bisgname select").val() === "0") {
+							if ($(event.target).parent().parent().find(".bisgname select option:selected").val() === "0") {
 								let basics = [];
 								$("#other_c #" + whois + "_od #" + other_BIS + " .valTbodyTr").each(r => {
 									let valTbodyTr = $($("#other_c  #" + whois + "_od #" + other_BIS + " .valTbodyTr")[r]);
@@ -2615,7 +2681,7 @@
 							$(event.target).parent().parent().parent().find(".detailTbodyTr").addClass("locked-do");
 							$(event.target).parent().parent().removeClass("locked-do");
 							//是Basic
-							if ($(event.target).parent().parent().find(".bisgname select").val() === "0") {
+							if ($(event.target).parent().parent().find(".bisgname select option:selected").val() === "0") {
 								let basics = $(event.target).val().split(",");
 								basics.forEach(bs => {
 									console.log(bs);
@@ -3198,7 +3264,7 @@
 						} else if (toWho === 'BPM') {
 							entityJsons = other.data.otherItemPageSet.entity;
 							toWhoId = "BPM";
-							pageSize = 50;
+							pageSize = 200;
 							entityIKey = other.data.entityIKey['BPM'];
 							entityGKey = other.data.entityGKey['BPM'];
 							$('#other_' + toWhoId + '_open table').scrollTop(0);

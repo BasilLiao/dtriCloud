@@ -1415,9 +1415,10 @@
 				//Step1.查詢細節內容-格式
 				$("#other_dcr_open .valTbodyTrD").remove();
 				$('#other_dcr_open tbody td').removeClass('bg-warning');
+				let exTbodyTrAll = $();
 				for (let d = 0; d < entityDetailJsons.length; d++) {
 					//=======格式=======
-					let exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
+					exTbodyTr = $('#other_dcr_open .exDetailTbodyTr').clone();
 					exTbodyTr.removeClass('exDetailTbodyTr');
 					exTbodyTr.removeClass('d-none');
 					exTbodyTr.addClass('valTbodyDetailTr_' + (d + 1));
@@ -1477,8 +1478,11 @@
 							}
 						}
 					});
-					$('#other_c #other_dcr_open .exDetailTbodyTr').before(exTbodyTr);
+					exTbodyTrAll = exTbodyTrAll.add(exTbodyTr); // 加入一個元素
+					//$('#other_c #other_dcr_open .exDetailTbodyTr').before(exTbodyTr);
 				}
+				$('#other_c #other_dcr_open .exDetailTbodyTr').before(exTbodyTrAll);
+				
 				$('#other_c #other_dcr_open .exDetailTbodyTr').addClass('d-none');
 			},
 			//==========================資料載入==========================

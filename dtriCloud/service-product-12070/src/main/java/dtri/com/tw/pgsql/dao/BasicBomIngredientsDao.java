@@ -93,19 +93,6 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			WHERE t.bbi_i_qty > 0 --數量大於0
 				AND  (t.bbi_i_description LIKE '%正規化%'  -- ✅ 只回傳描述中含「正規化」的節點
 				OR t.level = 1) -- 保留這個篩選條件，以顯示所有第一層物料
-				-- 根據 level 和 current_bbi_path 添加的條件
-				AND (
-			       	-- 對於 level = 2，current_bbi_path 必須包含 '92-' 或 '81-' 開頭
-				    (t.level = 2 AND (t.current_bbi_path LIKE '53-%' OR t.current_bbi_path LIKE '92-%' OR t.current_bbi_path LIKE '81-%'))
-				    -- 對於 level = 3，current_bbi_path 必須包含任意兩項 '92-'、'81-'、'53-'
-				    OR (t.level = 3 AND (
-				        (t.current_bbi_path LIKE '%92-%' AND t.current_bbi_path LIKE '%81-%') OR
-				        (t.current_bbi_path LIKE '%92-%' AND t.current_bbi_path LIKE '%53-%') OR
-				        (t.current_bbi_path LIKE '%81-%' AND t.current_bbi_path LIKE '%53-%')
-				    ))
-				    -- 保留其他層級的資料，不進行過濾
-				    OR t.level = 1
-				)
 			ORDER BY t.root_bbi_sn ASC, t.bbi_i_sn ASC  -- 排序顯示：根料號 → 階層 → 展開路徑
 			""", nativeQuery = true)
 	ArrayList<BasicBomIngredients> findFlattenedBomLevel(@Param("bbisn") String bbisn,
