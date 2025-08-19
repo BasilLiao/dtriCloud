@@ -222,7 +222,8 @@
 							<div class="row m-0">
 								<button id="btn_bpr_detail" type="button"
 									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-									<b>Modify</b>
+									<b>Modify<br>Reload
+									</b>
 								</button>
 								<button id="btn_bpr_back" type="button"
 									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
@@ -249,7 +250,8 @@
 							<div class="row m-0">
 								<button id="btn_bpm_detail" type="button"
 									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
-									<b>Modify</b>
+									<b>Modify<br>Reload
+									</b>
 								</button>
 								<button id="btn_bpm_back" type="button"
 									class="lh-1 col p-1 m-1 btn btn-sm btn-outline-primary">
@@ -298,7 +300,7 @@
 		</div>
 	</div>
 	<!-- 料BOM-查詢結果 -->
-	<div id="other_BBI" class="col-12 m-0 p-1">
+	<div id="other_BBI" class="col-3 m-0 p-1">
 		<div
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
@@ -339,7 +341,7 @@
 		</div>
 	</div>
 	<!-- 規則BOM-查詢結果 -->
-	<div id="other_BPR" class="col-12 m-0 p-1">
+	<div id="other_BPR" class="col-3 m-0 p-1">
 		<div
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
@@ -380,7 +382,7 @@
 		</div>
 	</div>
 	<!-- 查詢-細節結果-BPR -->
-	<div id="other_Detail_BPR_od" class="col-12 m-0 p-1">
+	<div id="other_Detail_BPR_od" class="col-3 m-0 p-1">
 		<div
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
@@ -452,7 +454,7 @@
 						</div>
 					</div>
 					<!---->
-					<table style="min-height: 535px;"
+					<table style="max-height: 530px; min-height: 530px;"
 						class="col m-0 p-0  mt-1 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 						<thead class="table-success fixedCt">
 							<tr>
@@ -686,7 +688,7 @@
 						</div>
 					</div>
 					<!---->
-					<table style="min-height: 535px;"
+					<table style="max-height: 530px; min-height: 530px;"
 						class="col m-0 p-0  mt-1 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 						<thead class="table-success fixedCt">
 							<tr>
@@ -829,7 +831,7 @@
 						<div class="col m-0 p-0" style="width: 95%;">
 							<table
 								class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm"
-								style="min-height: 535px;">
+								style="max-height: 530px; min-height: 530px;">
 								<thead class="table-warning  fixedCt">
 									<tr>
 										<th class="fixedC1" style="min-width: 40px;">
@@ -1458,9 +1460,15 @@
 					//點擊動作
 					switch (clickId) {
 						case "btn_erp_bom":
+							//預設
+							$('#other_BBI div').first().find('.bi-dash-square').trigger("click");
+							$('#other_BBI').removeClass('col-3').addClass('col-12');
+							$('#other_BPM').removeClass('col-12').addClass('col-3');
+							$('#other_BPR').removeClass('col-12').addClass('col-3');
+							$('#other_Detail_BPR_od').removeClass('col-12').addClass('col-3');
+							$('#other_Detail_BPM_od').removeClass('col-12').addClass('col-3');
 							//開啟
 							if(!$('#other_BBI_open').hasClass('show')){
-								$('#other_BBI div').first().find('.bi-dash-square').trigger("click");
 							}
 							//關閉
 							if($('#other_BPR_open').hasClass('show')){
@@ -1478,6 +1486,13 @@
 							}
 							break;
 						case "btn_rules_bom":
+							//預設
+							$('#other_BPR').removeClass('col-3').addClass('col-12');
+							$('#other_Detail_BPR_od').removeClass('col-3').addClass('col-12');
+							$('#other_BBI').removeClass('col-12').addClass('col-3');
+							$('#other_BPM').removeClass('col-12').addClass('col-3');
+							$('#other_Detail_BPM_od').removeClass('col-12').addClass('col-3');
+							
 							//開啟
 							if(!$('#other_BPR_open').hasClass('show')){
 								$('#other_BPR div').first().find('.bi-dash-square').trigger("click");
@@ -1498,6 +1513,12 @@
 							}
 							break;
 						case "btn_format_bom":
+							//預設
+							$('#other_BPM').removeClass('col-3').addClass('col-12');
+							$('#other_Detail_BPM_od').removeClass('col-3').addClass('col-12');
+							$('#other_BBI').removeClass('col-12').addClass('col-3');
+							$('#other_BPR').removeClass('col-12').addClass('col-3');
+							$('#other_Detail_BPR_od').removeClass('col-12').addClass('col-3');
 							//開啟
 							if(!$('#other_BPM_open').hasClass('show')){
 								$('#other_BPM div').first().find('.bi-dash-square').trigger("click");
@@ -1932,7 +1953,7 @@
 										});
 									}
 									
-								} else if (bisid === "0") {
+								} else if (bisgname === "Basic") {
 									//基本資料
 									bpmbisitem.basic = bisnb.split(',').length > 0 ? bisnb.split(',') : [];
 								}
@@ -2024,6 +2045,7 @@
 							//轉換格式Fromat BOM BPM
 							//let entityJsons = JSON.parse(other.data.entityFormatJson['BBI']);
 							//entityJsons[''];
+							
 							let checkedBBI = $("#other_BBI tbody input:checked").map(function () {
 								return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
 							}).get();
@@ -2068,7 +2090,9 @@
 									let bbi = $("#other_BBI tbody ." + i);
 									let bpm = $("#other_BPM tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
+									let sysnote = bbi.find(".bbiname").text()+" & "+ bbi.find(".bbispecification").text();//PM說明
 									bpm.find(".bpmnb").text(bbisn);
+									bpm.find(".sysnote").text(sysnote);
 									//型號
 									let bpmmodel = "";
 									if (typeof bbisn === 'string') {
@@ -2165,6 +2189,12 @@
 									bpm.find(".bpmnb").addClass("text-success");
 									new_i++;
 								});
+								//預設
+								$('#other_BPM').removeClass('col-3').addClass('col-12');
+								$('#other_Detail_BPM_od').removeClass('col-3').addClass('col-12');
+								$('#other_BBI').removeClass('col-12').addClass('col-3');
+								$('#other_BPR').removeClass('col-12').addClass('col-3');
+								$('#other_Detail_BPR_od').removeClass('col-12').addClass('col-3');
 								//觸發開關
 								$("#other_BBI .bi-dash-square").trigger("click");
 								//關閉
@@ -2182,6 +2212,7 @@
 									$("#other_c #other_Detail_BPM_od>div>.bi-dash-square").trigger("click");
 								}
 							}
+							$("#other_BPM_open table").scrollTop(0);
 							break;
 						case "btn_bbi_rules":
 							//轉換格式Fromat BOM BPM
@@ -2284,6 +2315,12 @@
 									bpr.find(".bprname").addClass("text-success");
 									new_i++;
 								});
+								//預設
+								$('#other_BPR').removeClass('col-3').addClass('col-12');
+								$('#other_Detail_BPR_od').removeClass('col-3').addClass('col-12');
+								$('#other_BPM').removeClass('col-12').addClass('col-3');
+								$('#other_Detail_BPM_od').removeClass('col-12').addClass('col-3');
+								$('#other_BBI').removeClass('col-12').addClass('col-3');
 								//觸發開關
 								$("#other_BBI .bi-dash-square").trigger("click");
 								//開啟
@@ -2317,10 +2354,15 @@
 								//取出分析
 								let bpmnb = other_BPM.find('.bpmnb').text();
 								let bpmbisitem = JSON.parse(other_BPM.find('.bpmbisitem').text());
+								
 								//每一筆
 								bpmbisitem.items.forEach(itemOne => {
-									bpmbisitem.basic.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess);
+									//排除沒物料資料
+									if(!itemOne.bisnb==""){
+										bpmbisitem.basic.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess);
+									}
 								});
+
 								//排序
 								bpmbisitem.basic = bpmbisitem.basic.sort();
 
@@ -2410,6 +2452,12 @@
 							let g_bisitem = "";
 							let g_groups = [];
 							let g_spilt = {};
+							//防呆
+							let checkedBPRselect = $("#other_BPR tbody input:checked");
+							if (checkedBPRselect.length === 0) {
+							    alert("請先選取項目！");
+							    return; // 防止後續程式執行
+							}
 
 							checkedBPR = $("#other_BPR tbody input:checked").map(function () {
 								return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
@@ -2485,6 +2533,12 @@
 										bpm.find(".bpmnb").addClass("text-success");
 										new_i++;
 									});
+									//預設
+									$('#other_BPM').removeClass('col-3').addClass('col-12');
+									$('#other_Detail_BPM_od').removeClass('col-3').addClass('col-12');
+									$('#other_BBI').removeClass('col-12').addClass('col-3');
+									$('#other_BPR').removeClass('col-12').addClass('col-3');
+									$('#other_Detail_BPR_od').removeClass('col-12').addClass('col-3');
 									//關閉
 									if ($("#other_c #other_BPR_open").hasClass("show")) {
 										$("#other_c #other_BPR >div>.bi-dash-square").trigger("click");
@@ -2637,7 +2691,14 @@
 				//=====BOM/Rules Format detail=====BIS-打開編輯 細項目
 				$(document).off("click", "#other_c #other_Detail_BPR tbody .bisnb input,#other_Detail_BPM tbody .bisnb input");
 				$(document).on("click", "#other_c #other_Detail_BPR tbody .bisnb input,#other_Detail_BPM tbody .bisnb input", function (event) {
-					if ($(event.target).val() !== null && $(event.target).val() !== "") {
+					//if ($(event.target).val() !== null && $(event.target).val() !== "") {
+						//只有Basic 可以開啟
+						//是Basic
+						if ($(event.target).closest("tr").find(".bisgname select option:selected").val() !== "0") {
+							//不是Basic
+							return null;
+							
+						}
 						//other_Detail_BPM/other_Detail_BPR
 						let whois = $(event.target).parent().parent().parent().parent().parent().attr("id");
 						let other_BIS = "other_BIS";
@@ -2662,16 +2723,20 @@
 								let basics = [];
 								$("#other_c #" + whois + "_od #" + other_BIS + " .valTbodyTr").each(r => {
 									let valTbodyTr = $($("#other_c  #" + whois + "_od #" + other_BIS + " .valTbodyTr")[r]);
-									let bisnb = valTbodyTr.find('.bisnb input').val();
-									let bisqty = valTbodyTr.find('.bisqty input').val();
-									let bisprocess = valTbodyTr.find('.bisprocess input').val();
-									bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
-									basics.push(bisnb + "_" + bisqty + "_" + bisprocess);
+										let bisnb = valTbodyTr.find('.bisnb input').val();
+										let bisqty = valTbodyTr.find('.bisqty input').val();
+										let bisprocess = valTbodyTr.find('.bisprocess input').val();
+										bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
+										//避免回存資料是錯誤的
+										if(bisqty!="" &&bisnb!=""){
+											basics.push(bisnb + "_" + bisqty + "_" + bisprocess);
+										}
+									
 								});
 								$(event.target).val(basics);
 							}
 						} else {
-							//初始化內容
+							//帶出資料->初始化內容
 							$("#other_c #" + other_BIS + " .valTbodyTr").remove();
 							//切換
 							$("#other_c #" + other_BIS).removeClass("d-none");
@@ -2697,7 +2762,7 @@
 								});
 							}
 						}
-					}
+					//}
 				});
 				//=====BOM Format detail=====BIS-物料快選
 				$(document).off("input", "#other_c #other_BPR_BIS .valTbodyTr input,#other_BIS .valTbodyTr input");
@@ -2779,6 +2844,8 @@
 					let valTbodyTr = $(this).parent().parent().parent();
 					valTbodyTr.find(".bisnb input").val(bisnb);
 					valTbodyTr.find(".bisname input").val(bisname);
+					valTbodyTr.find(".bisqty input").val(1);
+					valTbodyTr.find(".bisprocess input").val("ASM");
 					valTbodyTr.find(".bisnbList").empty();
 					valTbodyTr.find(".bisnbList").addClass("d-none");
 					valTbodyTr.find(".bisnameList").empty();
@@ -2853,6 +2920,29 @@
 						$(this.parentElement.parentElement.parentElement).remove();
 					}
 				});
+				
+				//=====Bom edit basic conditions=====編輯Basic
+				$(document).off("click", "#other_BIS_open i,#other_BPR_BIS i"); 
+				$(document).on("click", "#other_BIS_open i,#other_BPR_BIS i", function (event) {
+					console.log("Bom edit basic conditions");
+					//移除?
+					if($(event.target).hasClass('bi-dash-square')){
+						$(event.target).closest("tr").remove();
+					}else if($(event.target).hasClass('bi-plus-square')){
+					//新增? 
+						let tbody = $(event.target).closest("table");
+						let exTbodyTr = tbody.find('.exTbodyTr').clone();
+						exTbodyTr.removeClass('exTbodyTr');
+						exTbodyTr.removeClass('d-none');
+						exTbodyTr.addClass('valTbodyTr');
+						exTbodyTr.find('.bisnb input').val("");
+						exTbodyTr.find('.bisqty input').val("");
+						exTbodyTr.find('.bisprocess input').val("");
+						exTbodyTr.appendTo(tbody.find('tbody'));
+					}	
+					
+				});
+				
 				//=====查詢快速編輯=====雙點
 				$(document).off("dblclick", "#other_BPM_open tbody .exTbodyTh input");
 				$(document).on("dblclick", "#other_BPM_open tbody .exTbodyTh input", function (e) {

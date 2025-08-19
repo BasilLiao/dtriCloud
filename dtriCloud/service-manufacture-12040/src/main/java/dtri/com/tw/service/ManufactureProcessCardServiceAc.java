@@ -537,6 +537,7 @@ public class ManufactureProcessCardServiceAc {
 						jsonCreate.addProperty("sys_c_date", "");// 固定
 						jsonCreate.addProperty("ph_w_years", entityDataOld.getSphwarranty());// 保固
 						jsonCreate.addProperty("sys_sn_auto", false);
+						jsonCreate.addProperty("sys_note", entityDataOld.getSphpmnote());
 
 						jsonCreates.add(jsonCreate);
 						jsonString.add("create", jsonCreates);

@@ -67,6 +67,7 @@ public class BomKeeperServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "bksuacc"));// 人
 		orders.add(new Order(Direction.ASC, "bkmodel"));// 型號
 		orders.add(new Order(Direction.ASC, "bknb"));// BOM號
 

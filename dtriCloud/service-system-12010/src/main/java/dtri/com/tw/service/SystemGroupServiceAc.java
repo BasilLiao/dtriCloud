@@ -138,7 +138,8 @@ public class SystemGroupServiceAc {
 				mapLanguages.put(x.getSltarget(), x);
 			});
 			// 細節翻譯
-			ArrayList<SystemLanguageCell> languagesDetail = languageDao.findAllByLanguageCellSame("SystemGroupDetailFront", null, 2);
+			ArrayList<SystemLanguageCell> languagesDetail = languageDao
+					.findAllByLanguageCellSame("SystemGroupDetailFront", null, 2);
 			languagesDetail.forEach(x -> {
 				mapLanguagesDetail.put(x.getSltarget(), x);
 			});
@@ -150,12 +151,16 @@ public class SystemGroupServiceAc {
 			pList = permissionDao.findAllByOrderBySpgidAscSpidAsc(null);
 			pList.forEach(t -> {
 				// 排除特定權限
+				String pArr = t.getSpname() + "_" + t.getSpid();
+				if (t.getSysheader()) {
+					pArr = "===" + t.getSpname() + "===_" + t.getSpid();
+				}
 				if (checkAdmin) {
 					// Admin
-					pListArr.add(t.getSpname() + "_" + t.getSpid());
+					pListArr.add(pArr);
 				} else if (t.getSysstatus() != 3) {
 					// 一般權限
-					pListArr.add(t.getSpname() + "_" + t.getSpid());
+					pListArr.add(pArr);
 				}
 			});
 			spid.setSlcmtype("select");
@@ -187,6 +192,9 @@ public class SystemGroupServiceAc {
 			List<SystemPermission> permissions = permissionDao.findAll();
 			permissions.forEach(p -> {
 				String pArr = p.getSpname() + "_" + p.getSpid();
+				if (p.getSysheader()) {
+					pArr = "===" + p.getSpname() + "===_" + p.getSpid();
+				}
 				selectArr.add(pArr);
 			});
 			searchJsons = packageService.searchSet(searchJsons, selectArr, "spid", "", false, //
@@ -200,7 +208,8 @@ public class SystemGroupServiceAc {
 		} else {
 			// Step4-1. 取得資料(一般/細節)
 			SystemGroup searchData = packageService.jsonToBean(packageBean.getEntityJson(), SystemGroup.class);
-			List<SystemGroup> entitys = groupDao.findAllBySystemGroup(searchData.getSgname(), null, 0L, 0L, null, notsysstatus, true, pageable);
+			List<SystemGroup> entitys = groupDao.findAllBySystemGroup(searchData.getSgname(), null, 0L, 0L, null,
+					notsysstatus, true, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 			// 類別(細節模式)
@@ -214,26 +223,27 @@ public class SystemGroupServiceAc {
 				entityDatas.add(entityOne);
 			}
 			// 子類別
-			groupDao.findAllBySystemGroup(searchData.getSgname(), searchData.getSpname(), 0L, 0L, null, notsysstatus, false, null).forEach(sd -> {
-				sd.setSpname(sd.getSystemPermission().getSpname());
-				sd.setSpid(sd.getSystemPermission().getSpid());
-				sd.setSyssort(sd.getSystemPermission().getSyssort());
-				char[] ch = sd.getSgpermission().toCharArray();
-				sd.setpAA(ch[11] == '1' ? true : false);
-				sd.setpAR(ch[10] == '1' ? true : false);
-				sd.setpAU(ch[9] == '1' ? true : false);
-				sd.setpAC(ch[8] == '1' ? true : false);
-				sd.setpAD(ch[7] == '1' ? true : false);
-				sd.setpDD(ch[6] == '1' ? true : false);
-				sd.setpS1(ch[5] == '1' ? true : false);
-				sd.setpS2(ch[4] == '1' ? true : false);
-				sd.setpS3(ch[3] == '1' ? true : false);
-				sd.setpS4(ch[2] == '1' ? true : false);
-				sd.setpS5(ch[1] == '1' ? true : false);
-				sd.setpS6(ch[0] == '1' ? true : false);
-				sd.setSystemusers(null);
-				entityDetails.add(sd);
-			});
+			groupDao.findAllBySystemGroup(searchData.getSgname(), searchData.getSpname(), 0L, 0L, null, notsysstatus,
+					false, null).forEach(sd -> {
+						sd.setSpname(sd.getSystemPermission().getSpname());
+						sd.setSpid(sd.getSystemPermission().getSpid());
+						sd.setSyssort(sd.getSystemPermission().getSyssort());
+						char[] ch = sd.getSgpermission().toCharArray();
+						sd.setpAA(ch[11] == '1' ? true : false);
+						sd.setpAR(ch[10] == '1' ? true : false);
+						sd.setpAU(ch[9] == '1' ? true : false);
+						sd.setpAC(ch[8] == '1' ? true : false);
+						sd.setpAD(ch[7] == '1' ? true : false);
+						sd.setpDD(ch[6] == '1' ? true : false);
+						sd.setpS1(ch[5] == '1' ? true : false);
+						sd.setpS2(ch[4] == '1' ? true : false);
+						sd.setpS3(ch[3] == '1' ? true : false);
+						sd.setpS4(ch[2] == '1' ? true : false);
+						sd.setpS5(ch[1] == '1' ? true : false);
+						sd.setpS6(ch[0] == '1' ? true : false);
+						sd.setSystemusers(null);
+						entityDetails.add(sd);
+					});
 			// 資料包裝
 			String entityJsonDatas = packageService.beanToJson(entityDatas);
 			packageBean.setEntityJson(entityJsonDatas);
@@ -266,13 +276,15 @@ public class SystemGroupServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 
 			// Step2.資料檢查
 			for (SystemGroup entityData : entityDatas) {
 				// 檢查-群組名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemGroup> checkDatas = groupDao.findAllByGroupHeader(entityData.getSgname(), null, true, null);
+				ArrayList<SystemGroup> checkDatas = groupDao.findAllByGroupHeader(entityData.getSgname(), null, true,
+						null);
 				for (SystemGroup checkData : checkDatas) {
 					if (checkData.getSggid() != entityData.getSggid()) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -283,14 +295,15 @@ public class SystemGroupServiceAc {
 		}
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1. 資料轉譯(細節)
-			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查
 			for (SystemGroup entityDetail : entityDetails) {
 				// 檢查-名稱重複(有數量 && 不同資料有重疊)
 				List<SystemPermission> permissions = permissionDao.findBySpid(entityDetail.getSpid());
-				ArrayList<SystemGroup> checkDetails = groupDao.findAllByGroupHeader(entityDetail.getSgname(), permissions.get(0).getSpname(), false,
-						null);
+				ArrayList<SystemGroup> checkDetails = groupDao.findAllByGroupHeader(entityDetail.getSgname(),
+						permissions.get(0).getSpname(), false, null);
 				for (SystemGroup checkDetail : checkDetails) {
 					if (!checkDetail.getSgid().equals(entityDetail.getSgid())) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -301,7 +314,8 @@ public class SystemGroupServiceAc {
 				// 檢查-群組ID(沒有跟隨到群組)
 				checkDetails = groupDao.findBySggidOrderBySggid(entityDetail.getSggid());
 				if (checkDetails.size() == 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1002, Lan.zh_TW, new String[] { entityDetail.getSpname() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1002, Lan.zh_TW,
+							new String[] { entityDetail.getSpname() });
 				}
 			}
 		}
@@ -330,7 +344,8 @@ public class SystemGroupServiceAc {
 
 						// 添加
 						if (y.getSggid() != null && y.getSgid() == null) {
-							//SystemGroup entityDetailOld = groupDao.findBySggidOrderBySggid(y.getSggid()).get(0);
+							// SystemGroup entityDetailOld =
+							// groupDao.findBySggidOrderBySggid(y.getSggid()).get(0);
 							y.setSysmdate(new Date());
 							y.setSysmuser(packageBean.getUserAccount());
 							y.setSysodate(new Date());
@@ -421,21 +436,25 @@ public class SystemGroupServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查
 			for (SystemGroup entityData : entityDatas) {
 				// 檢查-群組名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemGroup> checkDatas = groupDao.findAllByGroupHeader(entityData.getSgname(), null, true, null);
+				ArrayList<SystemGroup> checkDatas = groupDao.findAllByGroupHeader(entityData.getSgname(), null, true,
+						null);
 				if (checkDatas.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSgname() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSgname() });
 				}
 			}
 		}
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1.資料轉譯(細節)
-			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查(檢查該群組下是否重複)
 		}
 		// =======================資料整理=======================
@@ -518,14 +537,16 @@ public class SystemGroupServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查
 		}
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1. 資料轉譯(細節)
-			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -573,16 +594,18 @@ public class SystemGroupServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 
 			// Step2.資料檢查
 
 		}
 		if (packageBean.getEntityDetailJson() != null && !packageBean.getEntityDetailJson().equals("")) {
 			// Step1. 資料轉譯(細節)
-			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(), new TypeReference<ArrayList<SystemGroup>>() {
-			});
+			entityDetails = packageService.jsonToBean(packageBean.getEntityDetailJson(),
+					new TypeReference<ArrayList<SystemGroup>>() {
+					});
 			// Step2.資料檢查
 
 		}

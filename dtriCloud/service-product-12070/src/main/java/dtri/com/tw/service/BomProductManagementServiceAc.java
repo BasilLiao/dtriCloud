@@ -465,7 +465,6 @@ public class BomProductManagementServiceAc {
 					}
 				}
 
-				
 //				//會異常-> 每個查詢
 //				Map<String, ArrayList<BasicBomIngredients>> entityBBIMap = new HashMap<String, ArrayList<BasicBomIngredients>>();
 //				ArrayList<BasicBomIngredients> entityBBIs = ingredientsDao.findFlattenedBomLevel(bbisn, bbiname);
@@ -505,14 +504,11 @@ public class BomProductManagementServiceAc {
 //						break;
 //					}
 //				}
-			
-				
-				
 
 				// 資料整理(BBI-限制100筆)
 				ArrayList<BasicBomIngredients> entityBBIh = new ArrayList<BasicBomIngredients>();
 				ArrayList<BasicBomIngredients> entityBBId = new ArrayList<BasicBomIngredients>();
-				//分類整粒
+				// 分類整粒
 				bbisnMap.forEach((k, v) -> {
 					// ERP Header
 					entityBBIh.add(v);// h
@@ -631,7 +627,22 @@ public class BomProductManagementServiceAc {
 							new String[] { entityData.getBpmmodel() });
 				}
 				// Step2-3.檢查匹配權限?
-				BomProductManagement checkDataOne = managementDao.getReferenceById(entityData.getBpmid());
+				BomProductManagement checkDataOne = new BomProductManagement();
+				// 有可能直接覆蓋?
+				if (entityData.getBpmid() == null) {
+					ArrayList<BomProductManagement> managements = managementDao.findAllByCheck(entityData.getBpmnb(),
+							null, null);
+					if (managements.size() == 1) {
+						checkDataOne = managements.get(0);
+					} else {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW,
+								new String[] {});
+					}
+
+				} else {
+					checkDataOne = managementDao.getReferenceById(entityData.getBpmid());
+				}
+
 				Boolean throwCheck = true;
 				String info = checkDataOne.getBpmnb() + " / " + checkDataOne.getBpmmodel();
 				for (BomKeeper keeper : bomKeepers) {
@@ -682,6 +693,13 @@ public class BomProductManagementServiceAc {
 
 		// Step3.一般資料->寫入
 		entityDatas.forEach(c -> {// 要更新的資料
+			if (c.getBpmid() == null) {
+				// 如果是有BOM號嘗試比對看看
+				ArrayList<BomProductManagement> oldDatas = managementDao.findAllByCheck(c.getBpmnb(), null, null);
+				if (oldDatas.size() == 1) {
+					c.setBpmid(oldDatas.get(0).getBpmid());
+				}
+			}
 			if (c.getBpmid() != null) {
 				BomProductManagement oldData = managementDao.getReferenceById(c.getBpmid());
 				// 內容不同?->比對差異->登記異動紀錄->待發信件通知
