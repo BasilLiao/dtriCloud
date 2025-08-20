@@ -1920,7 +1920,7 @@
 				//
 				entity.find(".sphssn").text(c_sphxnbText+c_sphfnbText);//開始SN
 				let f_sphoqty = parseInt($('#printNotes .f_sphoqty').text());//開始SN+數量 
-				f_sphoqty = parseInt(c_sphfnbText)+f_sphoqty;
+				f_sphoqty = parseInt(c_sphfnbText)+f_sphoqty-1;//去除第一台
 				f_sphoqty = String(f_sphoqty).padStart(4, '0');//補足4位數 
 				entity.find(".sphesn").text(c_sphxnbText+f_sphoqty);//結束SN
 				entity.find(".sphpmnote").text($('#c_sphscnote textarea').val());//PM備註

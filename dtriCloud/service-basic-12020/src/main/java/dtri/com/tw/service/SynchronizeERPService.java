@@ -241,6 +241,7 @@ public class SynchronizeERPService {
 			String nKey = m.getTa001_ta002() + "-" + m.getMb001();
 			nKey = nKey.replaceAll("\\s", "");
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
+			m.setTd004(m.getTd004() == null ? "" : m.getTd004().replaceAll("\\s", ""));
 			m.setTa001_ta002(m.getTa001_ta002().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("\\s+$", ""));// 去除結尾空格
 			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格

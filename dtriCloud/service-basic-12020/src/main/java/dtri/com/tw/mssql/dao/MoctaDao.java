@@ -16,6 +16,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
+			+ " COPTD.TD004, "// --客戶品號
 			+ " MOCTA.TA015, "// --預計生產數量
 			+ " MOCTA.TA017, "// --已生產數
 			+ " MOCTA.TA029, "// --生管備註
@@ -49,6 +50,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身
 			+ "	ON (MOCTA.TA001 + MOCTA.TA002) = (MOCTB.TB001 + MOCTB.TB002) "//
+			+ "LEFT JOIN [DTR_TW].[dbo].COPTD AS COPTD ON (REPLACE(MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028, ' ', '') = REPLACE(COPTD.TD001+'-'+COPTD.TD002+'-'+COPTD.TD003, ' ', '')) "// --
 			+ "LEFT JOIN "//
 			+ "	(SELECT  *"//
 			+ "		FROM (SELECT "//
@@ -90,6 +92,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
+			+ " COPTD.TD004, "// --客戶品號
 			+ " MOCTA.TA015, "// --預計生產數量
 			+ " MOCTA.TA017, "// --已生產數
 			+ " MOCTA.TA029, "// --生管備註
@@ -123,6 +126,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].MOCTB AS MOCTB "// --製令單身
 			+ "	ON (MOCTA.TA001 + MOCTA.TA002) = (MOCTB.TB001 + MOCTB.TB002) "//
+			+ "LEFT JOIN [DTR_TW].[dbo].COPTD AS COPTD ON (REPLACE(MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028, ' ', '') = REPLACE(COPTD.TD001+'-'+COPTD.TD002+'-'+COPTD.TD003, ' ', '')) "// --
 			+ "LEFT JOIN "//
 			+ "	(SELECT  *"//
 			+ "		FROM (SELECT "//

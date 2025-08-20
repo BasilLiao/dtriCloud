@@ -47,6 +47,7 @@ public class ERPToCloudService {
 		o.setChecksum(checkSum);
 		o.setBclfuser("");
 		o.setBclproduct(m.getTa006());// 成品號
+		o.setBclcproduct(m.getTd004());//客戶品號
 		// 單頭
 		o.setBclclass(m.getTa001_ta002().split("-")[0]);// 製令單[別]
 		o.setBclsn(m.getTa001_ta002().split("-")[1]);// 製令單[號]

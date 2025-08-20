@@ -179,10 +179,16 @@ public class ScheduleProductionNotesServiceAc {
 			String lastBisgname = "";
 			for (BomItemSpecifications ii : specifications) {
 				if (!lastBisgname.equals(ii.getBisgname())) {
-					resultItemsJsons.add(">==============<" + ii.getBisgname() + ">==============<");
+					resultItemsJsons.add(">=======<" + ii.getBisgname() + ">=======<");
+					// 需要而外添加 YES & NO
+					resultItemsJsons.add(ii.getBisgname() + "<_>[\"Yes(裝)\"]<_>");
+					resultItemsJsons.add(ii.getBisgname() + "<_>[\"No(無)\"]<_>");
 					lastBisgname = ii.getBisgname();
 				}
-				resultItemsJsons.add(ii.getBisgname() + "<_>" + ii.getBisfname() + "<_>" + ii.getBisnb());
+				// 不是客製化
+				if (!ii.getBisfname().contains("customize")) {
+					resultItemsJsons.add(ii.getBisgname() + "<_>" + ii.getBisfname() + "<_>" + ii.getBisnb());
+				}
 			}
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -327,16 +333,16 @@ public class ScheduleProductionNotesServiceAc {
 
 				// 檢查陣列長度與元素是否為 null，避免發生例外
 				if (sysnot != null) {
-				    entity.setSphoname(sysnot.length > 0 && sysnot[0] != null ? sysnot[0] : defaultSphoname);     // 客戶
-				    entity.setSphocountry(sysnot.length > 1 && sysnot[1] != null ? sysnot[1] : defaultSphocountry); // 國家
-				    entity.setSphonb(sysnot.length > 2 && sysnot[2] != null ? sysnot[2] : defaultSphonb);         // 訂單號
+					entity.setSphoname(sysnot.length > 0 && sysnot[0] != null ? sysnot[0] : defaultSphoname); // 客戶
+					entity.setSphocountry(sysnot.length > 1 && sysnot[1] != null ? sysnot[1] : defaultSphocountry); // 國家
+					entity.setSphonb(sysnot.length > 2 && sysnot[2] != null ? sysnot[2] : defaultSphonb); // 訂單號
 				} else {
-				    // 若 sysnot 本身就是 null
-				    entity.setSphoname(defaultSphoname);
-				    entity.setSphocountry(defaultSphocountry);
-				    entity.setSphonb(defaultSphonb);
+					// 若 sysnot 本身就是 null
+					entity.setSphoname(defaultSphoname);
+					entity.setSphocountry(defaultSphocountry);
+					entity.setSphonb(defaultSphonb);
 				}
-				entity.setSphobpmnb("");// 訂單 BOM的產品號
+				entity.setSphobpmnb(commandList.getBclcproduct());// 訂單 BOM的產品號
 				entity.setSphhdate(commandList.getBclsdate());// 預計出貨日
 				entity.setSphfrom("");// 規格來源:生管自訂/產品經理
 				entity.setSphstatus(1);// 狀態類型 0=作廢單 1=有效單 2=自訂紀錄(不具備生產能力)

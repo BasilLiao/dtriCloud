@@ -36,6 +36,7 @@ import jakarta.persistence.Table;
  *      bcl_c_user: 核准人<br>
  *      bcl_f_user: 完成人<br>
  *      bcl_product: 產品<br>
+ *      bcl_c_product:客戶產品 Ex:50-117-238132<br>
  *      bcl_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
  *      bcl_p_number:物料號 Ex:50-117-238132<br>
  *      bcl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
@@ -105,6 +106,7 @@ public class BasicCommandList {
 		this.checkrm = true;
 		this.bcltqty = 0;
 		this.bcltrqty = 0;
+		this.bclcproduct = "";
 		//
 		this.bclcustomer = "";
 		this.bclmodel = "";
@@ -155,6 +157,9 @@ public class BasicCommandList {
 	private String bcltype;
 	@Column(name = "bcl_product", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclproduct;
+	@Column(name = "bcl_c_product", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bclcproduct;
+
 	@Column(name = "bcl_model", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclmodel;
 	@Column(name = "bcl_t_qty", nullable = false, columnDefinition = "int default 0")
@@ -180,6 +185,7 @@ public class BasicCommandList {
 
 	@Column(name = "bcl_p_number", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclpnumber;
+
 	@Column(name = "bcl_p_name", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bclpname;
 	@Column(name = "bcl_p_specification", nullable = false, columnDefinition = "varchar(150) default ''")
@@ -476,7 +482,7 @@ public class BasicCommandList {
 				+ ", bclpspecification=" + bclpspecification + ", bclpnqty=" + bclpnqty + ", bcltocommand="
 				+ bcltocommand + ", bclfromcommand=" + bclfromcommand + ", bcltowho=" + bcltowho + ", bclfromwho="
 				+ bclfromwho + ", bclstatus=" + bclstatus + ", bcledate=" + bcledate + ", bclfdate=" + bclfdate
-				+ ", checksum=" + checksum + "]";
+				+ ", bclcproduct=" + bclcproduct + ", checksum=" + checksum + "]";
 	}
 
 	public String getBclproduct() {
@@ -581,6 +587,20 @@ public class BasicCommandList {
 
 	public void setSyshonote(String syshonote) {
 		this.syshonote = syshonote;
+	}
+
+	/**
+	 * @return the bclcproduct
+	 */
+	public String getBclcproduct() {
+		return bclcproduct;
+	}
+
+	/**
+	 * @param bclcproduct the bclcproduct to set
+	 */
+	public void setBclcproduct(String bclcproduct) {
+		this.bclcproduct = bclcproduct;
 	}
 
 }

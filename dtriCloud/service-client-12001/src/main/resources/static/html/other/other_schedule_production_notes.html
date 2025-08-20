@@ -622,7 +622,7 @@
 											</div>
 											<div style="width: 90%; padding: 2px;">
 												<textarea id="sphpmnote_val"
-													style="width: 100%; font-size: 14px; line-height: 16px;"
+													style="width: 100%; font-size: 14px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
 													rows="5" disabled="disabled"></textarea>
 											</div>
 										</div>
@@ -1086,14 +1086,18 @@
 				}
 				//產品選單項目
 				let resultItems = searchSetJson['resultItems'];
+				let hikFirst = "";//每個開始群組
 				resultItems.forEach(function (ik) {
 					let hik = "";
 					let selectItemsEx = $("#selectItemsEx").clone();
+					selectItemsEx.removeAttr("selected");
 					selectItemsEx.removeAttr("id").addClass("selectItems");
+					//群組選項
 					if (ik.split("<_>").length === 1) {
 						selectItemsEx.attr("disabled", "disabled");
 						selectItemsEx.val(ik).text(ik);
 					}
+					//每個細項
 					if (ik.split("<_>").length === 3) {
 						hik = ik.split("<_>")[0];
 						hinb = ik.split("<_>")[2];
@@ -1101,10 +1105,7 @@
 						selectItemsEx.val(ik).text("(" + hik + ")" + ik);
 						selectItemsEx.attr("title", hik + "<_>" + ik + "<_>" + hinb)
 					}
-
-
-					selectItemsEx.removeAttr("selected");
-					$("#selectItemsEx").before(selectItemsEx);
+					$("#selectItemsEx").before(selectItemsEx);					
 				});
 
 				//Step5.帶入資料
@@ -1313,6 +1314,13 @@
 				//自訂項目-新增
 				$(document).off("click", "#search_c #btn_bom_item_add");
 				$('#search_c #btn_bom_item_add').on('click', function () {
+					//選取?
+					let bom_items = $('#bom_items option:selected').attr("title");
+					let bisgname = bom_items.split("<_>")[0];
+					let bisfname = bom_items.split("<_>")[1];
+					let bisnb = bom_items.split("<_>")[2];
+					let bisqty = $('#bom_items_qty').val();
+					//一般模式(恢復移除)
 					$(".sphbisitemList").each(function (index) {
 						if ($(this).text().includes($("#bom_items").select().val())) {
 							console.log(index + " : " + $(this).html());
@@ -1325,13 +1333,8 @@
 					if ($("#bomDefinition select").val() === "definition" && $('#bom_items_qty').val() > 0) {
 						$("#bomDefinition select").attr("disabled", "disabled");
 						//每個項目
-						let bom_items = $('#bom_items option:selected').attr("title");
-						let bisgname = bom_items.split("<_>")[0];
-						let bisfname = bom_items.split("<_>")[1];
-						let bisnb = bom_items.split("<_>")[2];
-						let bisqty = $('#bom_items_qty').val();
 						//
-						let htmlc = '<b>' + bisgname + ' : </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+						let htmlc = '<b>*' + bisgname + ' : </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
 						let sphbisitemEx = $('#sphbisitemEx_val').clone();
 						sphbisitemEx.removeAttr("id");
 						sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
@@ -1346,18 +1349,23 @@
 				//自訂項目-移除
 				$(document).off("click", "#search_c #btn_bom_item_remove");
 				$('#search_c #btn_bom_item_remove').on('click', function () {
+					//選取?
+					let sel = $('#bom_items option:selected').text();
+					let selh = sel.split(")")[0].replaceAll("(","");//群組
+					let selb = sel.split(")")[1];//內容					
+					//一般模式(標記移除)
 					$(".sphbisitemList").each(function (index) {
-						if ($(this).text().includes($("#bom_items").select().val())) {
+						if ($(this).text().includes(selb) &&$(this).text().includes(selh)) {
 							console.log(index + " : " + $(this).html());
 							$(this).html("<del  style='color: #ccc; '>" + $(this).html() + "</del>");
 						}
 					});
 					//自定義才能使用
-					if ($("#bomDefinition select").val() === "definition" && $('#bom_items_qty').val() < 0) {
+					if ($("#bomDefinition select").val() === "definition") {
 						$("#bomDefinition select").attr("disabled", "disabled");
 						//移除項目
 						$(".sphbisitemList").each(function (index) {
-							if ($(this).text().includes($('#bom_items option:selected').val())) {
+							if ($(this).text().includes(selb) && $(this).text().includes(selh)) {
 								$(this).remove();
 								$("#bom_items_qty").val(0);
 							}
