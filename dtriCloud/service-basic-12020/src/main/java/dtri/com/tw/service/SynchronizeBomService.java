@@ -218,8 +218,8 @@ public class SynchronizeBomService {
 		os_orders.add(new Order(Direction.ASC, "bhnb"));// 成品BOM號
 		os_orders.add(new Order(Direction.ASC, "bhpnb"));// 成品BOM號-part 物料
 		PageRequest os_pageable = PageRequest.of(0, 9999, Sort.by(os_orders));
-		ArrayList<BomHistory> outsourcers = bomHistoryDao.findAllBySearch(null, null, null, null, null, null,
-				os_pageable);
+		ArrayList<BomHistory> outsourcers = bomHistoryDao.findAllBySearch(null, null, null, 1, null,
+				Fm_T.to_count(-1, new Date()), Fm_T.to_count(0, new Date()), os_pageable);// 今天改今天送
 		// Step2-1.整理資料(每一張BOM 一封信)
 		Map<String, ArrayList<BomHistory>> outsourcersMapAllNew = new HashMap<String, ArrayList<BomHistory>>();
 		Map<String, ArrayList<BomHistory>> outsourcersMapUpdate = new HashMap<String, ArrayList<BomHistory>>();
@@ -351,8 +351,7 @@ public class SynchronizeBomService {
 				}
 				byte[] bytes = outputStream.toByteArray();
 				readyNeedMail.setBnmattcontent(bytes);
-				readyNeedMail.setBnmattname("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system PCB outsourcing schedule.xlsx");
+				readyNeedMail.setBnmattname(mk + ".xlsx");
 
 				// 取消-檢查信件(避免重複)
 				notificationMailDao.save(readyNeedMail);
@@ -462,8 +461,7 @@ public class SynchronizeBomService {
 				}
 				byte[] bytes = outputStream.toByteArray();
 				readyNeedMail.setBnmattcontent(bytes);
-				readyNeedMail.setBnmattname("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system PCB outsourcing schedule.xlsx");
+				readyNeedMail.setBnmattname(mk + ".xlsx");
 
 				// 取消-檢查信件(避免重複)
 				notificationMailDao.save(readyNeedMail);

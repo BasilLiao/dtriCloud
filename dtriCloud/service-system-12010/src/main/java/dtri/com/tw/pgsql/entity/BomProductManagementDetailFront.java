@@ -90,6 +90,7 @@ public class BomProductManagementDetailFront {
 		this.bissdescripion = "";//
 		this.biswhere = "";//
 		this.setBisprocess("");//
+		this.bislevel = "";
 	}
 
 	// 共用型
@@ -127,8 +128,9 @@ public class BomProductManagementDetailFront {
 	@Transient
 	private String bisprocess;//
 	@Transient
+	private String bislevel;//
+	@Transient
 	private String biswhere;//
-	
 
 	public Boolean getSysheader() {
 		return sysheader;
@@ -256,5 +258,19 @@ public class BomProductManagementDetailFront {
 
 	public void setBisprocess(String bisprocess) {
 		this.bisprocess = bisprocess;
+	}
+
+	/**
+	 * @return the bislevel
+	 */
+	public String getBislevel() {
+		return bislevel;
+	}
+
+	/**
+	 * @param bislevel the bislevel to set
+	 */
+	public void setBislevel(String bislevel) {
+		this.bislevel = bislevel;
 	}
 }

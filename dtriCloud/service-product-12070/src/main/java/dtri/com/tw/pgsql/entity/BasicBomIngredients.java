@@ -25,15 +25,16 @@ import jakarta.persistence.Table;
  *      sys_status : 資料狀態<br>
  *      sys_sort : 自訂排序<br>
  *      ---BOM結構-清單---<br>
- *		this.bi_id = null;KEY<br>
- *		this.bi_sn = "";主項物料號<br>
- *		this.bisnnb = "";主項物料號+序號<br>
- *		this.bi_name = "";主項目品名<br>
- *		this.bi_specification = "";主項目規格<br>
- *		this.bi_i_sn = "";子項物料號<br>
- *		this.bi_i_name = "";子項目品名<br>
- *		this.bi_i_specification = "";子項目規格<br>
- *		this.bi_i_qty = 0;子項目數量<br>
+ *		this.bbi_id = null;KEY<br>
+ *		this.bbi_sn = "";主項物料號<br>
+ *		this.bbi_snnb = "";主項物料號+序號<br>
+ *		this.bbi_name = "";主項目品名<br>
+ *		this.bbi_specification = "";主項目規格<br>
+ *		this.bbi_i_sn = "";子項物料號<br>
+ *		this.bbi_i_name = "";子項目品名<br>
+ *		this.bbi_i_specification = "";子項目規格<br>
+ *		this.bbi_i_qty = 0;子項目數量<br>
+ *		this.bbi_i_level = 0;子項目層級<br>
  * 
  * 
  */
@@ -69,6 +70,7 @@ public class BasicBomIngredients {
 		this.bbiiname = "";
 		this.bbiispecification = "";
 		this.bbiiqty = 0;
+		this.bbiilevel = 0;
 		this.checksum = "";
 
 	}
@@ -127,10 +129,11 @@ public class BasicBomIngredients {
 	private String bbiiprocess;
 	@Column(name = "bbi_i_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bbiiqty;
+	@Column(name = "bbi_i_level", nullable = false, columnDefinition = "int default 0")
+	private Integer bbiilevel;
 
 	@Column(name = "bbi_i_s_erp", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bbiiserp;
-
 
 	@Column(name = "check_sum", nullable = false, columnDefinition = "text default ''")
 	private String checksum;
@@ -335,5 +338,18 @@ public class BasicBomIngredients {
 		this.bbiiprocess = bbiiprocess;
 	}
 
+	/**
+	 * @return the bbiilevel
+	 */
+	public Integer getBbiilevel() {
+		return bbiilevel;
+	}
+
+	/**
+	 * @param bbiilevel the bbiilevel to set
+	 */
+	public void setBbiilevel(Integer bbiilevel) {
+		this.bbiilevel = bbiilevel;
+	}
 
 }

@@ -31,6 +31,7 @@ import jakarta.persistence.Table;
  *      bnsumail;關聯帳號MAIL<br>
  *      bnprimary;主要/次要<br>
  *      bnmnotice;BOM修改通知<br>
+ *      bnanotice;BOM新增通知<br>
  */
 
 @Entity

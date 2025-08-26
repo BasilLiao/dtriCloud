@@ -16,12 +16,13 @@ public interface BomHistoryDao extends JpaRepository<BomHistory, Long> {
 			+ "(:bhnb is null or c.bhnb LIKE %:bhnb%) and "//
 			+ "(:bhmodel is null or c.bhmodel LIKE %:bhmodel%) and " //
 			+ "(:bhpnb is null or c.bhpnb LIKE %:bhpnb%) and " //
+			+ "(:bhlevel is null or c.bhlevel =:bhlevel) and " //
 			+ "(cast(:ssyscdate as date) is null or c.syscdate >= :ssyscdate) and " //
 			+ "(cast(:esyscdate as date) is null or c.syscdate <= :esyscdate) and " //
 			+ "(c.bhnotification = false) and " //
 			+ "(:sysmuser is null or c.sysmuser LIKE %:sysmuser%)") //
-	ArrayList<BomHistory> findAllBySearch(String bhnb, String bhmodel, String bhpnb, String sysmuser, Date ssyscdate,
-			Date esyscdate, Pageable pageable);
+	ArrayList<BomHistory> findAllBySearch(String bhnb, String bhmodel, String bhpnb, int bhlevel, String sysmuser,
+			Date ssyscdate, Date esyscdate, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM BomHistory c WHERE "//

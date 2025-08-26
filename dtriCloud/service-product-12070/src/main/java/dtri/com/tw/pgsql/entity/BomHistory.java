@@ -38,6 +38,7 @@ import jakarta.persistence.Transient;
  *      private Integer bhpqty;數量<br>
  *      private String bhpprocess;製成別<br>
  *      private Boolean bhnotification;是否已登記通知<br>
+ *      private Integer bhlevel;幾層?<br>
  * 
  */
 
@@ -66,6 +67,7 @@ public class BomHistory {
 		this.bhpqty = 0;
 		this.bhpprocess = "";
 		this.bhnotification = false;
+		this.bhlevel = 0;
 	}
 
 	@PrePersist
@@ -121,6 +123,9 @@ public class BomHistory {
 	private String bhpnb;
 	@Column(name = "bh_p_qty", nullable = false, columnDefinition = "int default 0")
 	private Integer bhpqty;
+
+	@Column(name = "bh_level", nullable = false, columnDefinition = "int default 0")
+	private Integer bhlevel;
 
 	@Column(name = "bh_p_process", nullable = false, columnDefinition = "varchar(100) default ''")
 	private String bhpprocess;
@@ -290,6 +295,14 @@ public class BomHistory {
 
 	public void setBhnotification(Boolean bhnotification) {
 		this.bhnotification = bhnotification;
+	}
+
+	public Integer getBhlevel() {
+		return bhlevel;
+	}
+
+	public void setBhlevel(Integer bhlevel) {
+		this.bhlevel = bhlevel;
 	}
 
 }

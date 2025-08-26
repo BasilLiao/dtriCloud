@@ -269,7 +269,7 @@ public class BomProductManagementServiceAc {
 			// BIS
 			mapLanguagesBIS.forEach((k, s) -> {
 				if (k.equals("bisnb") || k.equals("bisname") || k.equals("bisqty") || k.equals("bisprocess")
-						|| k.equals("sysnote")) {
+						|| k.equals("sysnote") || k.equals("bislevel")) {
 					s.setSlcshow(1);
 					if (k.equals("sysnote")) {
 						// s.setSlcwidth(400);
@@ -282,8 +282,8 @@ public class BomProductManagementServiceAc {
 			mapLanguagesDetailBPM.forEach((k, s) -> {
 				// 只顯示這幾項目
 				if (k.equals("bisnb") || k.equals("bisname") || k.equals("bisgname") || k.equals("bisqty")
-						|| k.equals("bissdescripion") || k.equals("bisfname") || k.equals("biswhere")
-						|| k.equals("bisprocess")) {
+						|| k.equals("bissdescripion") || k.equals("bisfname") || k.equals("bisprocess")
+						|| k.equals("bislevel")) {
 					s.setSlcshow(1);
 					switch (k) {
 					case "bisgname":
@@ -309,6 +309,9 @@ public class BomProductManagementServiceAc {
 						break;
 					case "biswhere":
 						s.setSyssort(7);
+						break;
+					case "bislevel":
+						s.setSyssort(8);
 						break;
 					}
 				} else {
@@ -455,9 +458,10 @@ public class BomProductManagementServiceAc {
 							corrected.setBbiiserp(original.getBbiiserp());
 							corrected.setBbiiprocess(original.getBbiiprocess());
 							corrected.setBbiiqty(original.getBbiiqty());
+							corrected.setBbiilevel(original.getBbiilevel() == 0 ? 1 : original.getBbiilevel());
 							corrected.setBbiispecification(original.getBbiispecification());
 							System.out.println((i + 1) + " : " + corrected.getBbisn() + " : " + corrected.getBbiisn()
-									+ " : " + corrected.getSysnote());
+									+ " : " + corrected.getBbiilevel() + " : " + corrected.getSysnote());
 							correctionNew.add(corrected);
 						}
 						// 彙整->分類->把每次查到的結果加到總集合
@@ -742,9 +746,10 @@ public class BomProductManagementServiceAc {
 				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
 				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
 				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
 				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
 					// 若不重複則加入
-					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 				}
 			});
 			basic.forEach(i -> {
@@ -752,9 +757,10 @@ public class BomProductManagementServiceAc {
 				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
 				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
 				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+				String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
 				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
 					// 若不重複則加入
-					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 				}
 			});
 			// 新的BOM_型號 , 物料_數量_製成別
@@ -770,9 +776,10 @@ public class BomProductManagementServiceAc {
 				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
 				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
 				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
 				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 					// 若不重複則加入
-					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 				}
 			});
 			basic.forEach(i -> {
@@ -780,9 +787,10 @@ public class BomProductManagementServiceAc {
 				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
 				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
 				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+				String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
 				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 					// 若不重複則加入
-					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 				}
 			});
 			// 新的BOM_型號 , 物料_數量_製成別
@@ -803,6 +811,7 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpnb(newItemV.split("_")[0]);
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					// 可能更新?數量?製成?
 					String oldItemV = oldBomv.get(newItemK);
 					if (!newItemV.split("_")[1].equals(oldItemV.split("_")[1])
@@ -815,6 +824,7 @@ public class BomProductManagementServiceAc {
 						bomHistoryOld.setBhpnb(oldItemV.split("_")[0]);
 						bomHistoryOld.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
 						bomHistoryOld.setBhpprocess(oldItemV.split("_")[2]);
+						bomHistoryOld.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
 						bomHistoryOld.setBhatype("Old");
 						changeBom.add(bomHistoryOld);
 					}
@@ -826,6 +836,7 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpnb(newItemV.split("_")[0]);
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("New");
 					changeBom.add(bomHistory);
 				}
@@ -840,6 +851,7 @@ public class BomProductManagementServiceAc {
 					bomHistoryRemove.setBhpnb(oldItemV.split("_")[0]);
 					bomHistoryRemove.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
 					bomHistoryRemove.setBhpprocess(oldItemV.split("_")[2]);
+					bomHistoryRemove.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
 					bomHistoryRemove.setBhatype("Delete");
 					changeBom.add(bomHistoryRemove);
 
@@ -971,9 +983,10 @@ public class BomProductManagementServiceAc {
 					String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
 					String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
 					String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+					String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
 					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 						// 若不重複則加入
-						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 					}
 				});
 				basic.forEach(i -> {
@@ -981,9 +994,10 @@ public class BomProductManagementServiceAc {
 					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
 					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
 					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+					String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
 					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 						// 若不重複則加入
-						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 					}
 				});
 				// 新的BOM_型號 , 物料_數量_製成別
@@ -1000,6 +1014,7 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpnb(newItemV.split("_")[0]);
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("All New");
 					changeBom.add(bomHistory);
 				});
@@ -1136,9 +1151,10 @@ public class BomProductManagementServiceAc {
 				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
 				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
 				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
+				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
 				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 					// 若不重複則加入
-					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 				}
 			});
 			basic.forEach(i -> {
@@ -1148,9 +1164,10 @@ public class BomProductManagementServiceAc {
 					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
 					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
 					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
+					String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
 					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 						// 若不重複則加入
-						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess);
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
 					}
 				}
 			});
@@ -1168,6 +1185,7 @@ public class BomProductManagementServiceAc {
 				bomHistory.setBhpnb(newItemV.split("_")[0]);
 				bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 				bomHistory.setBhpprocess(newItemV.split("_")[2]);
+				bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 				bomHistory.setBhatype("All Delete");
 				changeBom.add(bomHistory);
 			});

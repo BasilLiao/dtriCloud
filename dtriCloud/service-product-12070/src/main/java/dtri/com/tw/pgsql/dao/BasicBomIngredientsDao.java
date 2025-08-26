@@ -87,7 +87,7 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			    t.sys_sort,             -- 排序編號
 			  --  t.sys_note,             -- 備註
 			    t.check_sum,            -- 校驗碼
-			    t.level,                -- 遞迴層級
+			    t.level AS bbi_i_level,                -- 遞迴層級
 			    t.current_bbi_path AS sys_note      -- 展開路徑（顯示展開歷程）
 			FROM bom_tree t
 			WHERE t.bbi_i_qty > 0 --數量大於0

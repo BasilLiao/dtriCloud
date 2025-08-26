@@ -1066,6 +1066,9 @@
 										if (resultThead[k].cellName === "bisqty") {
 											exTbodytd.find("input").attr("type", "number");
 										}
+										if (resultThead[k].cellName === "bislevel") {
+											exTbodytd.find("input").attr("type", "number");
+										}
 									}
 									//特殊處理(可點擊BPM/BPR)
 									if (toWho === "Detail_BPM" || toWho === "Detail_BPR") {
@@ -1317,8 +1320,13 @@
 									//3.開放數量
 									$('#other_Detail_BPM .bisqty input').removeAttr('disabled');
 									$('#other_Detail_BPM .bisqty input').attr('type', 'number').val(0);
+									$('#other_Detail_BPM .bislevel input').removeAttr('disabled');
+									$('#other_Detail_BPM .bislevel input').attr('type', 'number').val(0);
+									
 									$('#other_Detail_BPR .bisqty input').removeAttr('disabled');
 									$('#other_Detail_BPR .bisqty input').attr('type', 'number').val(0);
+									$('#other_Detail_BPR .bislevel input').removeAttr('disabled');
+									$('#other_Detail_BPR .bislevel input').attr('type', 'number').val(0);
 									resolve("OK:" + toWho);
 								} catch (error) {
 									reject("操作失敗:" + error + ":" + toWho);
@@ -1724,6 +1732,7 @@
 											detailTbodyTr.find(".bisfname select").val("" + itemOne.bisid).focus().trigger('change');
 											detailTbodyTr.find(".bisqty  input").val(itemOne.bisqty);
 											detailTbodyTr.find(".bisprocess input").val(itemOne.bisprocess == null ? "ASM" : itemOne.bisprocess);
+											detailTbodyTr.find(".bislevel input").val(itemOne.bislevel == null ? "0" : itemOne.bislevel)
 										}
 									}
 								});
@@ -1738,6 +1747,7 @@
 								detailTbodyTr.find(".bisgname select").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bisfname select").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bisqty input").prop("disabled", true); // 顯示但無法選擇
+								detailTbodyTr.find(".bislevel input").prop("disabled", true); // 顯示但無法選擇
 
 								//配色(BPM/BPR)
 								if (whois === "BPM") {
@@ -1914,6 +1924,7 @@
 								let bissdescripion = detail.find(".bissdescripion input").val();
 								let bisqty = detail.find(".bisqty input").val();
 								let bisprocess = detail.find(".bisprocess input").val();
+								let bislevel = detail.find(".bislevel input").val();
 								//一般選項資料
 								if (bisgid !== "0" && bisgid !== "" && bisid !== "" && bisqty !== "") {
 									bpmbisitemOne = {};
@@ -1927,6 +1938,8 @@
 									bpmbisitemOne.bisfname = bisfname;
 									bpmbisitemOne.bissdescripion = bissdescripion;
 									bpmbisitemOne.bisprocess = bisprocess;
+									bpmbisitemOne.bislevel = bislevel;
+									
 									//bpmbisitem.items.push(bpmbisitemOne);
 									//====排序====
 									const result = bis.filter(item => item.bisgid + "" === bisgid);
@@ -2043,9 +2056,6 @@
 							break;
 						case "btn_bbi_format":
 							//轉換格式Fromat BOM BPM
-							//let entityJsons = JSON.parse(other.data.entityFormatJson['BBI']);
-							//entityJsons[''];
-							
 							let checkedBBI = $("#other_BBI tbody input:checked").map(function () {
 								return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
 							}).get();
@@ -2140,6 +2150,7 @@
 													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
 													bpmbisitemOne.bisqty = s['bbiiqty'];
 													bpmbisitemOne.bisprocess = s['bbiiprocess'];
+													bpmbisitemOne.bislevel = s['bbiilevel'];
 													bpmbisitemOne.biswhere = [];//物料號_正負_數量,.....
 													bpmbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort_"+bs['bisgid']] = bpmbisitemOne;
 													//
@@ -2149,7 +2160,7 @@
 											});
 											//basic:其他基本資料
 											if (checkIsbasic) {
-												bpmbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess']);
+												bpmbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);
 											}
 										}
 									});
@@ -2170,7 +2181,8 @@
 									            bisgfname:"",
 									            bisfname:"[\"Yes(裝)\"]",
 									            bissdescripion:"",
-									            bisprocess:"ASM"
+									            bisprocess:"ASM",
+									            bislevel:"0"
 									         }
 									     	// 用 bisgname 當 key
 									    	bpmbasicSort[key] = newItem;
@@ -2216,8 +2228,6 @@
 							break;
 						case "btn_bbi_rules":
 							//轉換格式Fromat BOM BPM
-							//let rulesEntityJsons = JSON.parse(other.data.entityFormatJson['BBI']);
-							//rulesEntityJsons[''];
 							let rulesCheckedBBI = $("#other_BBI tbody input:checked").map(function () {
 								return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
 							}).get();
@@ -2238,11 +2248,16 @@
 								let bisname = other.data.otherItemPageSet.entityOther['BIS'];
 								//所有 取得的資料(料BOM)
 								let rulesEntityJsons = other.data.otherItemPageSet.entityOther['BBIDetail'];
+								//取得 項目群組
 								rulesCheckedBBI.forEach(i => {
 									console.log(i);
+									//let val = $(this).val();
+									//let defselect = $(this).attr("alt");//預設必選
+									//
 									let bbi = $("#other_BBI tbody ." + i);
 									let bpr = $("#other_BPR tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
+									let sysnote = bbi.find(".bbiname").text()+" & "+ bbi.find(".bbispecification").text();//PM說明
 									bpr.find(".bprname").text(bbisn);
 									//型號
 									let bpmmodel = "";
@@ -2258,6 +2273,7 @@
 									        }
 									    }
 									}
+									bpr.find(".sysnote").text(sysnote);
 									bpr.find(".bprmodel").text(bpmmodel);
 									bpr.find(".bprtypename").text("產品BOM");
 									bpr.find(".bprtype").text("1");
@@ -2291,6 +2307,7 @@
 													bprbisitemOne.bissdescripion = bs['bissdescripion'];
 													bprbisitemOne.bisqty = s['bbiiqty'];
 													bprbisitemOne.bisprocess = s['bbiiprocess'];
+													bprbisitemOne.bislevel = s['bbiilevel'];
 													bprbisitemOne.biswhere = [];//物料號_正負_數量,.....
 													bprbasicSort[bs['syssort'].toString().padStart(3, '0') + "_sort_"+bs['bisgid']] = bprbisitemOne;
 													//
@@ -2300,7 +2317,7 @@
 											});
 											//basic:其他基本資料
 											if (checkIsbasic) {
-												bprbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess']);
+												bprbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);
 											}
 										}
 									});
@@ -2356,17 +2373,23 @@
 								let bpmbisitem = JSON.parse(other_BPM.find('.bpmbisitem').text());
 								
 								//每一筆
+								let basicOK=[];
 								bpmbisitem.items.forEach(itemOne => {
-									//排除沒物料資料
-									if(!itemOne.bisnb==""){
-										bpmbisitem.basic.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess);
+									//排除沒物料資料 && 第一皆曾
+									if(!itemOne.bisnb=="" && itemOne.bislevel=="1"){
+										basicOK.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess + "_" + itemOne.bislevel);
 									}
 								});
-
+								//再次檢查?&& 第一皆曾
+								bpmbisitem.basic.forEach(itemOne => {
+									if(itemOne.split("_")[3]=="1"){
+										basicOK.push(itemOne);
+									}
+								});
 								//排序
-								bpmbisitem.basic = bpmbisitem.basic.sort();
-
-								trItem[bpmnb] = bpmbisitem.basic;
+								basicOK = basicOK.sort();
+								//
+								trItem[bpmnb] = basicOK;
 								console.log(trItem);
 								other.methods.readExcelFromURL(trItem);
 							} else {
@@ -2382,10 +2405,23 @@
 									let bpmnb = other_BPM.find('.bpmnb').text();
 									let bpmbisitem = JSON.parse(other_BPM.find('.bpmbisitem').text());
 									//每一筆
+									let basicOK=[];
 									bpmbisitem.items.forEach(itemOne => {
-										bpmbisitem.basic.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess);
+										//排除沒物料資料 && 第一皆曾
+										if(!itemOne.bisnb=="" && itemOne.bislevel=="1"){
+											basicOK.push(itemOne.bisnb + "_" + itemOne.bisqty + "_" + itemOne.bisprocess + "_" + itemOne.bislevel);
+										}
 									});
-									trItem[bpmnb] = bpmbisitem.basic;
+									//再次檢查?&& 第一皆曾
+									bpmbisitem.basic.forEach(itemOne => {
+										if(itemOne.split("_")[3]=="1"){
+											basicOK.push(itemOne);
+										}
+									});
+									//排序
+									basicOK = basicOK.sort();
+									//
+									trItem[bpmnb] = basicOK;
 									console.log(trItem);
 									other.methods.readExcelFromURL(trItem);
 								});
@@ -2520,7 +2556,7 @@
 										bpm.find(".bpmmodel").text(bprmodel);
 										bpm.find(".bpmtypename").text(bprtypename);
 										bpm.find(".bpmtype").text(bprtype);
-										bpm.find("sysnote").text(sysnote);
+										bpm.find(".sysnote").text(sysnote);
 										bpm.find("input").removeAttr('disabled');
 										//所有正規化選項
 										let bpmbisitem = {};//結構化
@@ -2618,6 +2654,7 @@
 						selectPePe.find(".bisqty input").removeAttr("disabled");
 						selectPePe.find(".bisfname select").removeAttr("disabled");
 						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
+						selectPePe.find(".bislevel input").removeAttr("disabled");
 
 						//複製						
 						let optionExs = $("#other_Detail_BPM_od .exDetailTbodyTr .bisfname option");
@@ -2726,10 +2763,11 @@
 										let bisnb = valTbodyTr.find('.bisnb input').val();
 										let bisqty = valTbodyTr.find('.bisqty input').val();
 										let bisprocess = valTbodyTr.find('.bisprocess input').val();
+										let bislevel = valTbodyTr.find('.bislevel input').val();
 										bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
 										//避免回存資料是錯誤的
 										if(bisqty!="" &&bisnb!=""){
-											basics.push(bisnb + "_" + bisqty + "_" + bisprocess);
+											basics.push(bisnb + "_" + bisqty + "_" + bisprocess+"_"+bislevel);
 										}
 									
 								});
@@ -2759,6 +2797,7 @@
 									detailTbodyTr.find('.bisnb li').first().trigger("click");
 									detailTbodyTr.find('.bisqty input').val(bs.split("_")[1]);
 									detailTbodyTr.find('.bisprocess input').val(bs.split("_")[2]);
+									detailTbodyTr.find('.bislevel input').val(bs.split("_")[3]);
 								});
 							}
 						}
@@ -2936,8 +2975,9 @@
 						exTbodyTr.removeClass('d-none');
 						exTbodyTr.addClass('valTbodyTr');
 						exTbodyTr.find('.bisnb input').val("");
-						exTbodyTr.find('.bisqty input').val("");
+						exTbodyTr.find('.bisqty input').val("1");
 						exTbodyTr.find('.bisprocess input').val("");
+						exTbodyTr.find('.bislevel input').val("1");
 						exTbodyTr.appendTo(tbody.find('tbody'));
 					}	
 					

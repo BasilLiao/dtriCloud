@@ -116,6 +116,7 @@ public class BomItemSpecificationsDetailFront {
 		this.bisiauto = false;
 		this.setBisdselect(false);
 		this.setBisqty(1);
+		this.bislevel = 0;
 
 	}
 
@@ -190,7 +191,8 @@ public class BomItemSpecificationsDetailFront {
 	private Integer bisqty;
 	@Transient
 	private String bisprocess;
-	
+	@Transient
+	private Integer bislevel;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -446,6 +448,20 @@ public class BomItemSpecificationsDetailFront {
 
 	public void setBisprocess(String bisprocess) {
 		this.bisprocess = bisprocess;
+	}
+
+	/**
+	 * @return the bislevel
+	 */
+	public Integer getBislevel() {
+		return bislevel;
+	}
+
+	/**
+	 * @param bislevel the bislevel to set
+	 */
+	public void setBislevel(Integer bislevel) {
+		this.bislevel = bislevel;
 	}
 
 }
