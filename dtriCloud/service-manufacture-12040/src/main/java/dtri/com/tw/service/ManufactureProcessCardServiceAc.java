@@ -413,7 +413,7 @@ public class ManufactureProcessCardServiceAc {
 					if (!x.getSphrsn().equals("") && !x.getSphrsn().split("_")[0].equals("")) {
 						number = ruleNumberDao.getReferenceById(Long.parseLong(x.getSphrsn().split("_")[0]));
 						Integer mrn0000 = Integer.parseInt(number.getMrn0000());
-						int increment = entityDataOld.getSphoqty() + 1;
+						int increment = entityDataOld.getSphoqty();
 						// 模擬環狀累加，超過 9999 時從 1 開始
 						mrn0000 = (mrn0000 + increment) % 10000;
 						// 防止結果為 0（0000 不合法），強制補為 1
