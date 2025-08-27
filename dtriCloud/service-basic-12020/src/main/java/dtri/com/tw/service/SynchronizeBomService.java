@@ -37,12 +37,14 @@ import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BasicProductModelDao;
 import dtri.com.tw.pgsql.dao.BomHistoryDao;
 import dtri.com.tw.pgsql.dao.BomNotificationDao;
+import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import dtri.com.tw.pgsql.entity.BasicProductModel;
 import dtri.com.tw.pgsql.entity.BomHistory;
 import dtri.com.tw.pgsql.entity.BomNotification;
+import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.service.feign.BomServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -59,19 +61,21 @@ public class SynchronizeBomService {
 
 	// Cloud
 	@Autowired
-	BasicProductModelDao modelDao;
+	private BasicProductModelDao modelDao;
 	@Autowired
-	BasicBomIngredientsDao basicBomIngredientsDao;
+	private BasicBomIngredientsDao basicBomIngredientsDao;
 	@Autowired
-	WarehouseMaterialDao materialDao;
+	private WarehouseMaterialDao materialDao;
 	@Autowired
-	BomHistoryDao bomHistoryDao;
+	private BomHistoryDao bomHistoryDao;
 	@Autowired
-	BomNotificationDao notificationDao;
+	private BomNotificationDao notificationDao;
 	@Autowired
 	private BasicNotificationMailDao notificationMailDao;
 	@Autowired
 	private DiscoveryClient discoveryClient;
+	@Autowired
+	private BomProductManagementDao managementDao;
 
 	@Autowired
 	ERPToCloudService erpToCloudService;
@@ -287,6 +291,15 @@ public class SynchronizeBomService {
 			});
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 取得BOM資訊(PM備註)
+				String sysnote = "";
+				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(mk, null, null);
+				if (bomProductManagements.size() == 1) {
+					sysnote += bomProductManagements.get(0).getBpmmodel()+" & ";
+					sysnote += bomProductManagements.get(0).getSysnote();
+				}
+
+				// 取得目前"規格BOM"資訊
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
 				readyNeedMail.setBnmkind("BOM");
 				readyNeedMail.setBnmmail(mainUsers + "");
@@ -294,7 +307,8 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [" + mk + "] modification notification!");
 				// 內容
-				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+				String bnmcontent = "<div>" + sysnote + "</div>"
+						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>項次</th>"//
 						+ "<th>產品號</th>"//
@@ -397,6 +411,15 @@ public class SynchronizeBomService {
 			});
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 取得BOM資訊(PM備註)
+				String sysnote = "";
+				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(mk, null, null);
+				if (bomProductManagements.size() == 1) {
+					sysnote += bomProductManagements.get(0).getBpmmodel()+" & ";
+					sysnote += bomProductManagements.get(0).getSysnote();
+				}
+
+				//
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
 				readyNeedMail.setBnmkind("BOM");
 				readyNeedMail.setBnmmail(mainUsers + "");
@@ -404,7 +427,8 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [" + mk + "] all new notification!");
 				// 內容
-				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+				String bnmcontent = "<div>" + sysnote + "</div>"
+						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>項次</th>"//
 						+ "<th>產品號</th>"//

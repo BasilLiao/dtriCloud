@@ -280,6 +280,7 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisspecifications(m.getWmspecification());
 				itemSp.setBisdescription(m.getWmdescription());
 				itemSp.setSysstatus(0);
+				itemSp.setBislevel(0);
 				// 如果舊有資料->添加群組ID
 				if (statusGid.split("_").length == 2 && !statusGid.split("_")[1].equals("")) {
 					itemSp.setBisgid(Long.parseLong(statusGid.split("_")[1]));
@@ -357,24 +358,26 @@ public class BomItemSpecificationsServiceAc {
 			Map<String, BomItemSpecifications> sqlQueryEntitys = new HashMap<>();
 			String nativeQuery = "SELECT e.* FROM warehouse_material e Where ";
 			List<BomItemSpecifications> entitys = vs;
+			BomItemSpecifications entityOne = vs.get(0);
+
 			// 共用參數
 			Long bisgid = ks;// GID
-			Boolean bisiauto = vs.get(0).getBisiauto();// 自動?
-			Boolean bisdselect = vs.get(0).getBisdselect();// 預設選擇?
-			Boolean bispcb = vs.get(0).getBispcb();
-			Boolean bisproduct = vs.get(0).getBisproduct();
-			Boolean bissfproduct = vs.get(0).getBissfproduct();
-			Boolean bisaccessories = vs.get(0).getBisaccessories();
-			Boolean bisdevelopment = vs.get(0).getBisdevelopment();
-			String bisgfname = vs.get(0).getBisgfname();// 正規畫-群組名稱
+			Boolean bisiauto = entityOne.getBisiauto();// 自動?
+			Boolean bisdselect = entityOne.getBisdselect();// 預設選擇?
+			Boolean bispcb = entityOne.getBispcb();
+			Boolean bisproduct = entityOne.getBisproduct();
+			Boolean bissfproduct = entityOne.getBissfproduct();
+			Boolean bisaccessories = entityOne.getBisaccessories();
+			Boolean bisdevelopment = entityOne.getBisdevelopment();
+			String bisgfname = entityOne.getBisgfname();// 正規畫-群組名稱
 			Integer bisgfnameSize = bisgfname.split(" ").length;
-			String bisprocess = vs.get(0).getBisprocess();
-			String bisgname = vs.get(0).getBisgname();
-			String bisgffield = vs.get(0).getBisgffield();
-			String bisgsplit = vs.get(0).getBisgsplit();// 排序
-			Integer syssort = vs.get(0).getSyssort();// 排序
+			String bisprocess = entityOne.getBisprocess();
+			String bisgname = entityOne.getBisgname();
+			String bisgffield = entityOne.getBisgffield();
+			String bisgsplit = entityOne.getBisgsplit();// 排序
+			Integer syssort = entityOne.getSyssort();// 排序
 
-			String bisgcondition = vs.get(0).getBisgcondition().replaceAll("(<AND>|<OR>)", "<@@>$1");
+			String bisgcondition = entityOne.getBisgcondition().replaceAll("(<AND>|<OR>)", "<@@>$1");
 			String bisgconditions[] = bisgcondition.split("<@@>");// 條件
 			//
 			int n = 1;// 第幾參數
@@ -466,6 +469,7 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisgsplit(bisgsplit);
 				itemSp.setBisgcondition(bisgcondition);// 區分
+				itemSp.setBislevel(0);
 
 				// 正規畫名稱轉換(物料?物料名?規格?敘述?)
 				String[] array = new String[0];
@@ -514,7 +518,7 @@ public class BomItemSpecificationsServiceAc {
 					sqlQueryEntitys.get(s.getBisnb()).setSysstatus(2);// 無效狀態
 				} else {
 					// 沒比對到->移除(除了customize例外)
-					if (s.getBisnb().equals("customize")) {
+					if (s.getBisnb().contains("customize")) {
 						entityNews.add(s);
 					} else {
 						// 如果有標記自動?
@@ -672,22 +676,29 @@ public class BomItemSpecificationsServiceAc {
 			// Step2-1.資料檢查
 			for (BomItemSpecifications entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<BomItemSpecifications> checkDatas = specificationsDao.findAllByCheck(null,
+				ArrayList<BomItemSpecifications> checkDatas = specificationsDao.findAllByCheck(entityData.getBisgname(),
 						entityData.getBisfname(), null);
 				if (checkDatas.size() != 0) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { checkDatas.get(0).getBisnb() + " -> " + checkDatas.get(0).getBisname() });
+							new String[] { entityData.getBisgname() + " -> " + checkDatas.get(0).getBisname() });
 				}
 
-				// Step2-2.資料檢查-檢查基本重複?
-				// 檢查-新資料-名稱重複
+				// Step2-2.檢查-新資料-群組名稱重複
+				ArrayList<BomItemSpecifications> checkDatasGname = specificationsDao
+						.findAllByCheck(entityData.getBisgname(), null, null);
+				if (checkDatasGname.size() != 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getBisgname() });
+				}
+
+				// Step2-3.資料檢查-檢查基本重複?-> 檢查-新資料-名稱重複
 				if (entitySame.containsKey(entityData.getBisfname())) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 							new String[] { entitySame.get(entityData.getBisfname()) + ":" + entityData.getBisnb() });
 				}
 				entitySame.put(entityData.getBisfname(), entityData.getBisnb());
 
-				// Step2-3.資料檢查-缺少值?
+				// Step2-4.資料檢查-缺少值?
 				if (entityData.getBisgcondition() == null || entityData.getBisgcondition().equals("") || //
 						entityData.getBisgname() == null || entityData.getBisgname().equals("") || //
 						entityData.getBisgffield() == null || entityData.getBisgffield().equals("") || //
@@ -698,7 +709,6 @@ public class BomItemSpecificationsServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { "Please check again" });
 				}
-
 			}
 		}
 		// =======================資料整理=======================

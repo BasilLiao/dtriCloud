@@ -128,6 +128,7 @@ public class BomItemSpecifications {
 		this.bisdevelopment = false;
 		this.bispcb = false;
 		this.bisiauto = false;
+		this.setBislevel(0);
 
 	}
 
@@ -176,7 +177,7 @@ public class BomItemSpecifications {
 
 	@Column(name = "bis_g_f_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgfname;
-	@Column(name = "bis_f_name", nullable = false, unique = true, columnDefinition = "varchar(250) default ''")
+	@Column(name = "bis_f_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisfname;
 	@Column(name = "bis_g_name", nullable = false, columnDefinition = "varchar(250) default ''")
 	private String bisgname;
@@ -202,6 +203,8 @@ public class BomItemSpecifications {
 	private Boolean bisiauto;
 	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisdselect;
+	@Column(name = "bis_level", nullable = false, columnDefinition = "int default 0")
+	private Integer bislevel;
 
 	@Transient
 	private String bisprocess;// 物料製成別
@@ -452,6 +455,14 @@ public class BomItemSpecifications {
 
 	public void setBisprocess(String bisprocess) {
 		this.bisprocess = bisprocess;
+	}
+
+	public Integer getBislevel() {
+		return bislevel;
+	}
+
+	public void setBislevel(Integer bislevel) {
+		this.bislevel = bislevel;
 	}
 
 }

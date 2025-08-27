@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -743,10 +744,14 @@ public class BomProductManagementServiceAc {
 			JsonArray items = oldV.getAsJsonArray("items");
 			JsonArray basic = oldV.getAsJsonArray("basic");
 			items.forEach(i -> {
-				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
-				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
-				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
-				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
+				JsonObject obj = i.getAsJsonObject();
+				//
+				String bisnb = obj.getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = obj.getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = obj.getAsJsonPrimitive("bisprocess").getAsString();
+				// 防呆
+				String bislevel = Optional.ofNullable(obj.get("bislevel")).filter(e -> !e.isJsonNull())
+						.map(JsonElement::getAsString).orElse("0");
 				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
 					// 若不重複則加入
 					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
@@ -757,7 +762,9 @@ public class BomProductManagementServiceAc {
 				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
 				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
 				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-				String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
+				//防呆
+				String[] parts = bisnb_bisqty_bisprocess.split("_");
+				String bislevel = parts.length > 3 ? parts[3] : "0";
 				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
 					// 若不重複則加入
 					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
