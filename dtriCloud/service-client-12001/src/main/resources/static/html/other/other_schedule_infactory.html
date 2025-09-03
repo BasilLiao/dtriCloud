@@ -307,6 +307,8 @@
 				<thead class="table-warning fixedCt">
 					<tr class="">
 						<th class="fixedC1">Btn</th>
+						<th class="mfy_sosc_show mfy_sipriority fixedC1"
+							style="width: 120px;">優先順序</th>
 						<th class="mfy_siodate_show mfy_siodate fixedC1"
 							style="width: 120px;">開工日</th>
 						<th class="mfy_sifdate_show mfy_sifdate " style="width: 120px;">完工日</th>
@@ -330,6 +332,17 @@
 				<tbody class="table-white">
 					<tr id="mfyEx" class="d-none">
 						<th class="mfy_sinb_choose fixedC1"></th>
+						<th class="mfy_sosc_show fixedC1">
+							<div class="p-1">
+								<select
+									class="mfy_sipriority_val col-12 m-0 p-1 border border-dark form-select">
+									<option value="" selected="selected">select(請選擇)</option>
+									<option value="-1">暫緩</option>
+									<option value="0">一般</option>
+									<option value="1">緊急</option>
+								</select>
+							</div>
+						</th>
 						<th class="mfy_siodate_show fixedC1">
 							<div class="p-1">
 								<input
@@ -366,7 +379,7 @@
 
 							</div>
 						</th>
-						<th class="mfy_sirqty_show ">
+						<th class="mfy_sirqty_show">
 							<div class="p-1">
 								<input
 									class="mfy_sirqty_val col-12 m-0 p-1 border border-dark form-control"
@@ -570,7 +583,7 @@
 				resultDetailThead = main.methods.orderedSort(resultDetailThead);
 				//console.log(resultThead);
 				//Step2.查詢結果標題-資料
-				let check1 = true, check2 = true, check3 = true, check4 = true,check5 = true,check6 = true,check7 = true;
+				let check1 = true, check2 = true, check3 = true, check4 = true,check5 = true,check6 = true,check7 = true,check8 = true;
 				let left = 40;
 				Object.keys(resultThead).forEach(function (k) {
 					//console.log(k + ' - ' + resultThead[k]);
@@ -630,6 +643,13 @@
 						left += resultThead[k].width;
 					}else if (check7 && resultThead[k].show == 1) {
 						check7 = false;
+						exTheadth.addClass('fixedC1');
+						exTheadth.css('left', left + "px");
+						exTbodytd.addClass('fixedC1');
+						exTbodytd.css('left', left + "px");
+						left += resultThead[k].width;
+					}else if (check8 && resultThead[k].show == 1) {
+						check8 = false;
 						exTheadth.addClass('fixedC1');
 						exTheadth.css('left', left + "px");
 						exTbodytd.addClass('fixedC1');
@@ -1073,41 +1093,42 @@
 								//完成時-呼叫
 								//worksheet.getRow(1).hidden = true//隱藏第一筆
 								//worksheet.getColumn(1).hidden = true;//隱藏第一行
-								worksheet.getColumn(1).width = 14;//預計開工日
-								worksheet.getColumn(2).width = 14;
-								worksheet.getColumn(3).width = 16;//製令單號
-								worksheet.getColumn(4).width = 20;
-								worksheet.getColumn(5).width = 50;
+								worksheet.getColumn(1).width = 10;//急單
+								worksheet.getColumn(2).width = 14;//預計開工日
+								worksheet.getColumn(3).width = 14;
+								worksheet.getColumn(4).width = 16;//製令單號
+								worksheet.getColumn(5).width = 20;
 								worksheet.getColumn(6).width = 50;
-								worksheet.getColumn(7).width = 14;//預計生產
-								worksheet.getColumn(8).width = 14;
+								worksheet.getColumn(7).width = 50;
+								worksheet.getColumn(8).width = 14;//預計生產
 								worksheet.getColumn(9).width = 14;
-								worksheet.getColumn(10).width = 40;//製令單備註(客戶/國家/訂單/其他)
-								worksheet.getColumn(11).width = 20;
-								worksheet.getColumn(12).width = 14;//訂單
-								worksheet.getColumn(13).width = 15;
+								worksheet.getColumn(10).width = 14;
+								worksheet.getColumn(11).width = 40;//製令單備註(客戶/國家/訂單/其他)
+								worksheet.getColumn(12).width = 20;
+								worksheet.getColumn(13).width = 14;//訂單
 								worksheet.getColumn(14).width = 15;
-								worksheet.getColumn(15).width = 60;//生管備註
-								worksheet.getColumn(16).width = 15;//物控狀態
-								worksheet.getColumn(17).width = 14;
-								worksheet.getColumn(18).width = 60;//物控備註
-								worksheet.getColumn(19).width = 14;
-								worksheet.getColumn(20).width = 60;//倉庫備註
-								worksheet.getColumn(21).width = 14;
-								worksheet.getColumn(22).width = 60;//製造備註
-								worksheet.getColumn(23).width = 28;//年周
+								worksheet.getColumn(15).width = 15;
+								worksheet.getColumn(16).width = 60;//生管備註
+								worksheet.getColumn(17).width = 15;//物控狀態
+								worksheet.getColumn(18).width = 14;
+								worksheet.getColumn(19).width = 60;//物控備註
+								worksheet.getColumn(20).width = 14;
+								worksheet.getColumn(21).width = 60;//倉庫備註
+								worksheet.getColumn(22).width = 14;
+								worksheet.getColumn(23).width = 60;//製造備註
+								worksheet.getColumn(24).width = 28;//年周
 								//換行設製
 								let alignments = {wrapText: true, vertical: 'top', horizontal: 'left'};
-								for (let ii = 1; ii <= 24; ii++) {
+								for (let ii = 1; ii <= 25; ii++) {
 									worksheet.getColumn(ii).alignment = alignments;//加工廠
 								}
 								//顏色標記:預計開工日(siodate) < 預計齊料日(simcdate)
 								// 比對資料並設定第三格
 								worksheet.eachRow((row, rowIndex) => {
 									if (rowIndex === 1) return; // 跳過第一筆資料 (標題行)
-									const cell8 = row.getCell(17); // 齊料日
-									const cell1 = row.getCell(1);  //  開工日 or 有"週期"字眼的欄位
-									const cell6 = row.getCell(6); //客戶訂單
+									const cell8 = row.getCell(18); // 齊料日
+									const cell1 = row.getCell(2);  //  開工日 or 有"週期"字眼的欄位
+									const cell6 = row.getCell(7); //客戶訂單
 
 									// 比對資料
 									if (cell8.value && cell1.value && cell8.value > cell1.value) {
@@ -1153,7 +1174,7 @@
 				searchReportExcel.find('.d-none').remove();
 				//searchReportExcel.find('.markFn').remove();
 				//周年修正
-				searchReportExcel.find('.valTbodyTrYW_Re .TbodyThYWO').attr("colspan", "18");//18
+				searchReportExcel.find('.valTbodyTrYW_Re .TbodyThYWO').attr("colspan", "19");//18
 
 				//置換資料-生管(換行)
 				searchReportExcel.find('.siscnote').each(function () {
@@ -1510,6 +1531,7 @@
 						let sifokdate = $(this).find(".sifokdate").html().replaceAll("<br>", "\n");
 						sifokdate = sifokdate.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
 						let siscstatus = $(this).find(".siscstatus").attr('title');
+						let sipriority = $(this).find(".sipriority").attr('title');
 						let simcdate = $(this).find(".simcdate").text();
 						let siscnote = "";
 						let simcnote = "";
@@ -1568,6 +1590,7 @@
 						mfyEx.attr("id", siid);
 						mfyEx.addClass(sinb);
 						mfyEx.find(".mfy_siodate_val").val(siodate);
+						mfyEx.find(".mfy_sipriority_val").val(sipriority);
 						mfyEx.find(".mfy_sifdate_val").val(sifdate);
 						mfyEx.find(".mfy_sinb_val").val(sinb);//製令單
 						mfyEx.find(".mfy_sipnb_val").val(sipnb);
@@ -1679,6 +1702,7 @@
 								entityJson['sifokdate'] = $(this).find(".mfy_sifokdate_val").val();
 								entityJson['siscstatus'] = $(this).find(".mfy_siscstatus_val").val();
 								entityJson['siscnote'] = $(this).find(".mfy_siscnote_val").val();
+								entityJson['sipriority'] = $(this).find(".mfy_sipriority_val").val();
 								action = "S1";
 								break
 							case "mc"://物控
@@ -1855,6 +1879,8 @@
 				const sistatusMap = {"1": "未生產", "2": "已發料", "3": "生產中", "Y": "已完工", "y": "指定完工", "V": "已作廢"};
 				// 定義生管狀態字典
 				const siscstatusMap = {0: "未開注意事項", 1: "已開注意事項", 2: "已核准流程卡"};
+				// 定義順序狀態字典
+				const sipriorityMap = {"-1": "暫緩", "0": "一般", "1": "緊急"};
 				entityJsons.forEach((entity, x) => {
 					//參數
 					//let entity = entityJsons[x];//((目前頁碼-1)*每頁數量)+x
@@ -1929,7 +1955,17 @@
 						} else if (k == "siscstatus") {
 							//生管狀態-若不存在則預設為空字串
 							cellTrNb.text(siscstatusMap[fieldValue] || "").attr("title", fieldValue);
-						} else if (k == "simcstatus") {
+						} else if (k == "sipriority") {
+							//單據順序-若不存在則預設為空字串
+							cellTrNb.text(sipriorityMap[fieldValue] || "").attr("title", fieldValue);
+							//顏色
+							cellTrNb.removeClass("bg-danger").removeClass("bg-warning");
+							if(fieldValue=="1"){
+								cellTrNb.addClass("bg-danger");
+							}else if(fieldValue=="-1"){
+								cellTrNb.addClass("bg-warning");
+							}
+						}else if (k == "simcstatus") {
 							//物控狀態-如果不存在則設置為空字串
 							cellTrNb.text(simcstatusMap[fieldValue] || "");
 						} else if (k == "sinote") {

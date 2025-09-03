@@ -1,8 +1,6 @@
 package dtri.com.tw.service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -198,12 +196,17 @@ public class SynchronizeBomService {
 		// Step0. 準備資料
 		ArrayList<BomHistory> hisListSaves = new ArrayList<BomHistory>();
 		// 1. 讀取 Excel 檔案
-		File file = new File("src/main/resources/90-XXX-XXXXXXX.xlsx");
 		Workbook workbook = null;
-		try (InputStream inputStream = new FileInputStream(file)) {
+		// 從 classpath 讀取資源
+		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("90-XXX-XXXXXXX.xlsx")) {
+			if (inputStream == null) {
+				throw new IllegalArgumentException("找不到資源檔案！");
+			}
 			System.out.println("檔案已成功讀取。");
-			// 在這裡進行文件處理邏輯
 			workbook = new XSSFWorkbook(inputStream);
+			// 在這裡進行文件處理邏輯
+			System.out.println("Excel 總共有 " + workbook.getNumberOfSheets() + " 個工作表");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -295,7 +298,7 @@ public class SynchronizeBomService {
 				String sysnote = "";
 				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(mk, null, null);
 				if (bomProductManagements.size() == 1) {
-					sysnote += bomProductManagements.get(0).getBpmmodel()+" & ";
+					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
 					sysnote += bomProductManagements.get(0).getSysnote();
 				}
 
@@ -415,7 +418,7 @@ public class SynchronizeBomService {
 				String sysnote = "";
 				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(mk, null, null);
 				if (bomProductManagements.size() == 1) {
-					sysnote += bomProductManagements.get(0).getBpmmodel()+" & ";
+					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
 					sysnote += bomProductManagements.get(0).getSysnote();
 				}
 

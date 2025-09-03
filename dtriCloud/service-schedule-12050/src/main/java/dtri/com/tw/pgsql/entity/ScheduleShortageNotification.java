@@ -32,7 +32,9 @@ import jakarta.persistence.Table;
  *      this.ssnprimary = 0;主要/次要<br>
  *      this.ssnsnotice = false;缺料通知<br>
  *      this.ssninotice = false;場內生管排程通知(周)<br>
-		this.ssnimnotice = false;場內生管異動通知(日)<br>
+ *      this.ssnimnotice = false;場內生管異動通知(日)<br>
+ *      this.ssniqnotice = false;場內生管排程通知(急單)<br>
+ * 
  */
 
 @Entity
@@ -66,6 +68,7 @@ public class ScheduleShortageNotification {
 		this.ssninotice = false;
 		this.ssnimnotice = false;
 		this.ssnnonotice = false;
+		this.ssniqnotice = false;
 	}
 
 	// 共用型
@@ -117,12 +120,13 @@ public class ScheduleShortageNotification {
 	private Boolean ssnonotice;
 	@Column(name = "ssn_i_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssninotice;
+	@Column(name = "ssn_iq_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean ssniqnotice;
 	@Column(name = "ssn_im_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssnimnotice;
 	@Column(name = "ssn_no_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean ssnnonotice;
 
-	
 	public Date getSyscdate() {
 		return syscdate;
 	}
@@ -315,5 +319,19 @@ public class ScheduleShortageNotification {
 	 */
 	public void setSsnnonotice(Boolean ssnnonotice) {
 		this.ssnnonotice = ssnnonotice;
+	}
+
+	/**
+	 * @return the ssniqnotice
+	 */
+	public Boolean getSsniqnotice() {
+		return ssniqnotice;
+	}
+
+	/**
+	 * @param ssniqnotice the ssniqnotice to set
+	 */
+	public void setSsniqnotice(Boolean ssniqnotice) {
+		this.ssniqnotice = ssniqnotice;
 	}
 }

@@ -1,6 +1,7 @@
 package dtri.com.tw.service;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,7 +11,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
@@ -195,14 +208,15 @@ public class SynchronizeScheduledService {
 	public void erpSynchronizeScheduleInfactory() throws Exception {
 		ArrayList<MoctaScheduleInfactory> erpInfactorys = erpInfactoryDao.findAllByMocta(null, "Y");// 目前ERP有的資料
 		Map<String, MoctaScheduleInfactory> erpMapInfactorys = new HashMap<String, MoctaScheduleInfactory>();// ERP整理後資料
+		Map<String, JsonObject> mesMapInfactorys = new HashMap<String, JsonObject>();// MES整理後資料
 		ArrayList<ScheduleInfactory> scheduleInfactorys = scheduleInfactoryDao.findAllByNotFinish(null);// 尚未結束的
 		ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllByBslclass(null,
 				Arrays.asList("A541", "A542"));// 取得單據
-		// Map<String, ArrayList<BasicShippingList>> shippingMaps = new HashMap<String,
-		// ArrayList<BasicShippingList>>();// 有比對到的單據
-
 		ArrayList<ScheduleInfactory> newScheduleInfactorys = new ArrayList<ScheduleInfactory>();// 要更新的
+		// MES串接
+		JsonObject sendToMES = InfactorySynchronizeMESCell();
 		// 資料整理
+		// ERP
 		for (MoctaScheduleInfactory one : erpInfactorys) {
 			// 避免時間-問題
 			if (one.getTa009() != null && !one.getTa009().equals(""))
@@ -212,6 +226,30 @@ public class SynchronizeScheduledService {
 			// if(one.getTa001_ta002().equals("A512-240311001")) {
 			// System.out.println(one.getTa001_ta002());
 			// }
+		}
+		// MES
+		if (sendToMES.has("wOrderList") && !sendToMES.get("wOrderList").isJsonNull()) {
+			JsonObject wOrderList = JsonParser.parseString(sendToMES.get("wOrderList").getAsString()).getAsJsonObject();
+			for (Map.Entry<String, JsonElement> entry : wOrderList.entrySet()) {
+				String key = entry.getKey(); // JSON 的 key
+				JsonElement value = entry.getValue(); // JSON 的 value
+				JsonObject contentJson = new JsonObject();
+				String line = value.getAsString().split("_")[0];// 指定產線
+				String lineTotal = value.getAsString().split("_")[1];// 指定總進度
+				String lineStation = value.getAsString().split("_")[2];// 指定各站別進度
+				lineStation = lineStation.replaceAll(",", "\n").replaceAll(Pattern.quote("{"), "\n")
+						.replaceAll(Pattern.quote("}"), "");
+
+				contentJson.addProperty("line", line);
+				contentJson.addProperty("lineTotal", lineTotal);
+				contentJson.addProperty("lineStation", lineStation);
+				//
+				mesMapInfactorys.put(key, contentJson);
+
+				// 如果要轉成字串
+				String valueStr = value.getAsString();
+				System.out.println("Key: " + key + ", Value: " + valueStr);
+			}
 		}
 
 		// 比對資料?
@@ -233,9 +271,9 @@ public class SynchronizeScheduledService {
 			for (BasicShippingList bSipl : shippingLists) {
 				if (bSipl.getBslclass().equals("A541") && bSipl.getBslfromcommand().contains(o.getSinb())) {// 匹配製令單號?
 					// 測試用
-					if ((bSipl.getBslclass() + "-" + bSipl.getBslsn()).equals("A541-250303001")) {
-						System.out.println("A541-250303001" + bSipl.getBslpalready());
-					}
+//					if ((bSipl.getBslclass() + "-" + bSipl.getBslsn()).equals("A541-250303001")) {
+//						System.out.println("A541-250303001" + bSipl.getBslpalready());
+//					}
 					shNewListsA541.add(bSipl);
 					if (finishA541) {
 						// 如果 未完成?
@@ -247,6 +285,7 @@ public class SynchronizeScheduledService {
 			}
 
 			// 有抓取到同樣單據
+			// ========更新倉儲狀況========
 			if (erpMapInfactorys.containsKey(o.getSinb())) {
 				erpMapInfactorys.get(o.getSinb()).setNewone(false);
 				// sum不同->更新
@@ -330,6 +369,65 @@ public class SynchronizeScheduledService {
 				o.setSysstatus(2);
 				newScheduleInfactorys.add(o);
 			}
+			// ========更新產線狀況========
+			// 同一張工單?
+			if (mesMapInfactorys.containsKey(o.getSinb())) {
+				JsonObject mesWorkOrder = mesMapInfactorys.get(o.getSinb());
+				// simpnote 樓層+各站進度
+				// simpprogress 總進度
+				JsonArray simpnotes = new JsonArray();
+				JsonObject simpnoteOne = new JsonObject();
+				// 樓層+工作站資訊
+				String content = mesWorkOrder.get("line").getAsString() + "->"
+						+ mesWorkOrder.get("lineStation").getAsString();
+				// 第一筆?
+				if (o.getSimpnote().equals("[]") || o.getSimpnote().equals("")) {
+					simpnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+					simpnoteOne.addProperty("user", "system");
+					simpnoteOne.addProperty("content", content);
+					simpnotes.add(simpnoteOne);
+					o.setSimpnote(simpnotes.toString());// 製造備註(格式)人+時間+內容
+					o.setSimpprogress(mesWorkOrder.get("lineTotal").getAsString());
+				} else {
+					// 不是空的(第N筆資料)->取出轉換->比對最新資料
+					simpnotes = JsonParser.parseString(o.getSimpnote()).getAsJsonArray();
+					// ===只保留最新3筆資料===
+					JsonArray newSimpnotes = new JsonArray();
+					int size = simpnotes.size();
+					// 保留最後 5 筆 (假設最新資料在陣列尾端)
+					int start = Math.max(0, size - 5);
+					for (int i = start; i < size; i++) {
+						JsonElement element = simpnotes.get(i);
+						newSimpnotes.add(element);
+					}
+					// 取代舊的 simpnotes
+					simpnotes = newSimpnotes;
+
+					// 取出先前的-最新資料比對->不同內容->添加新的
+					JsonArray simpnoteOld = new JsonArray();
+					simpnoteOld = JsonParser.parseString(o.getSimpnote()).getAsJsonArray();
+					String contentNew = content;
+					Boolean checkNotSame = true;
+					// 比對每一筆資料
+					for (JsonElement jsonElement : simpnoteOld) {
+						String contentOld = jsonElement.getAsJsonObject().get("content").getAsString();
+						if (contentOld.equals(contentNew)) {
+							checkNotSame = false;
+							break;
+						}
+					}
+					// 確定不同 才能更新
+					if (checkNotSame) {
+						simpnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						simpnoteOne.addProperty("user", "system");
+						simpnoteOne.addProperty("content", contentNew);//
+						simpnotes.add(simpnoteOne);
+						o.setSimpprogress(mesWorkOrder.get("lineTotal").getAsString());
+						o.setSimpnote(simpnotes.toString());// 製造備註(格式)人+時間+內容
+					}
+					//
+				}
+			}
 		});
 		// 新增?
 		erpMapInfactorys.forEach((k, n) -> {
@@ -382,6 +480,52 @@ public class SynchronizeScheduledService {
 		public void setSendAllData(String sendAllData) {
 			this.sendAllData = sendAllData;
 		}
+	}
+
+	// 而外執行(廠內生管同步->MES)
+	public JsonObject InfactorySynchronizeMESCell() {
+
+		// 取得MES配置的標籤與工作站
+		JsonObject setMES = new JsonObject();
+		try {
+			// 1. 建立 JSON 資料
+			JsonObject jsonString = new JsonObject();
+			jsonString.addProperty("action", "get_work_order");
+
+			// 2. Cookie 管理（可選）
+			BasicCookieStore cookieStore = new BasicCookieStore();
+			// 3. 建立支援自簽憑證的 SSL Context
+			SSLContextBuilder builder = new SSLContextBuilder();
+			builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+			SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(builder.build(),
+					NoopHostnameVerifier.INSTANCE // 忽略主機名驗證
+			);
+			// 4. 建立 HttpClient
+			CloseableHttpClient httpclient = HttpClients.custom()//
+					.setSSLSocketFactory(sslConnectionFactory)//
+					.setDefaultCookieStore(cookieStore)//
+					.build();
+
+			// 5. 建立 POST 請求
+			// HttpPost request = new
+			// HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil"); // 測試用
+			HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil"); // 正式用
+			request.setHeader("Content-Type", "application/json;charset=UTF-8");
+			request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
+
+			// 6. 發送請求與處理回應
+			CloseableHttpResponse response = httpclient.execute(request);
+			String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+			System.out.println("Response:");
+			System.out.println(responseBody);
+			setMES = (JsonObject) JsonParser.parseString(responseBody);
+			//
+
+		} catch (Exception e) {
+			logger.warn(CloudExceptionService.eStktToSg(e));
+		}
+		return setMES;
 	}
 
 	// ============ 補料清單檢查() ============

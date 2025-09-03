@@ -59,6 +59,7 @@ import jakarta.persistence.Transient;
  *      sicnote = "客戶備註";<br>
  *      sicpnb = "客戶成品號";<br>
  *      sisum = 資料串 比對<br>
+ *      sipriority =優先? -1稍後/0=一般/1=優先<br>
  * 
  * 
  */
@@ -66,7 +67,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "schedule_infactory")
 @EntityListeners(AuditingEntityListener.class)
-public class ScheduleInfactory {
+public class ScheduleInfactory implements Cloneable {
 	public ScheduleInfactory() {
 		// 共用型
 		this.syscdate = new Date();
@@ -98,7 +99,7 @@ public class ScheduleInfactory {
 		this.sifokdate = "";
 		this.siuname = "";
 		this.siscnote = "[]";
-		this.siscstatus = 0;//生管狀態(自訂義) 生管備料狀態 : 自訂義(生管 開單狀況 0=未開注意事項 1=已開注意事項
+		this.siscstatus = 4;
 		this.simcnote = "[]";
 		this.simcdate = "";
 		this.simcstatus = 0;// 0=未確認/1未齊料/2已齊料
@@ -111,6 +112,7 @@ public class ScheduleInfactory {
 		this.sicorder = "";
 		this.sicnote = "";
 		this.sicpnb = "";
+		this.sipriority = 0;
 
 		this.sisum = "";// 異動資料判斷?
 		// 標記更新
@@ -137,6 +139,7 @@ public class ScheduleInfactory {
 		tagString.addProperty("sistatus", "");
 		tagString.addProperty("sinote", "");
 		tagString.addProperty("sifname", "");
+		tagString.addProperty("sipriority", "");
 		// Locked
 		tagString.addProperty("locked", "");
 		tagString.addProperty("lockedtime", "");
@@ -168,7 +171,7 @@ public class ScheduleInfactory {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 場內排程-清單
+	// 倉儲區域負責人-清單
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "schedule_infactory_seq")
 	@SequenceGenerator(name = "schedule_infactory_seq", sequenceName = "schedule_infactory_seq", allocationSize = 1)
@@ -236,6 +239,9 @@ public class ScheduleInfactory {
 	private String sicnote;
 	@Column(name = "si_c_p_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String sicpnb;
+
+	@Column(name = "si_priority", nullable = false, columnDefinition = "int default 0")
+	private Integer sipriority;
 
 	@Column(name = "si_sum", nullable = false, columnDefinition = "text default ''")
 	private String sisum;
@@ -613,6 +619,29 @@ public class ScheduleInfactory {
 
 	public void setSicpnb(String sicpnb) {
 		this.sicpnb = sicpnb;
+	}
+
+	/**
+	 * @return the sipriority
+	 */
+	public Integer getSipriority() {
+		return sipriority;
+	}
+
+	/**
+	 * @param sipriority the sipriority to set
+	 */
+	public void setSipriority(Integer sipriority) {
+		this.sipriority = sipriority;
+	}
+
+	@Override
+	public ScheduleInfactory clone() {
+		try {
+			return (ScheduleInfactory) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

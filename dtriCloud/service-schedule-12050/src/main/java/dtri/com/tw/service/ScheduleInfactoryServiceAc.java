@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,9 +27,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
+import dtri.com.tw.pgsql.dao.ScheduleShortageNotificationDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import dtri.com.tw.pgsql.entity.ScheduleInfactory;
+import dtri.com.tw.pgsql.entity.ScheduleShortageNotification;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -53,7 +59,15 @@ public class ScheduleInfactoryServiceAc {
 	private ScheduleInfactoryDao infactoryDao;
 
 	@Autowired
+	private BasicNotificationMailDao notificationMailDao;
+
+	@Autowired
+	private ScheduleShortageNotificationDao notificationDao;
+
+	@Autowired
 	private EntityManager em;
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
@@ -415,7 +429,11 @@ public class ScheduleInfactoryServiceAc {
 				o.setSiscstatus(x.getSiscstatus());
 				o.setSifodate(x.getSifodate());
 				o.setSifokdate(x.getSifokdate());
-
+				o.setSipriority(x.getSipriority());
+				// 添加-寄信通知
+				if (x.getSipriority() == 1) {
+					emailSipriority(o.clone());
+				}
 				if (o.getSiscnote().equals("[]")) {
 					// 空的?+不能是沒輸入值
 					if (!x.getSiscnote().equals("")) {
@@ -434,7 +452,7 @@ public class ScheduleInfactoryServiceAc {
 					String contentOld = noteOld.getAsJsonObject().get("content").getAsString().replaceAll("\n", "");
 					if (contentOld.equals(contentNew)) {
 						checkNotSame = false;
-						break;
+						// break;
 					}
 
 					// 必須不相同+不能是沒輸入值
@@ -594,5 +612,227 @@ public class ScheduleInfactoryServiceAc {
 		String entityJsonDatas = packageService.beanToJson(entitys);
 		packageBean.setEntityJson(entityJsonDatas);
 		return packageBean;
+	}
+
+	// 寄信通知
+	private void emailSipriority(ScheduleInfactory one) {
+
+		try {
+			// 寄信通知
+			// Step1. 取得寄信人
+			List<Order> nf_orders = new ArrayList<>();
+			nf_orders.add(new Order(Direction.ASC, "ssnsuname"));// 關聯帳號名稱
+			nf_orders.add(new Order(Direction.ASC, "ssnsnotice"));// 缺料通知
+			PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
+			ArrayList<ScheduleShortageNotification> notifications = notificationDao.findAllBySearchSsniqnotice(null,
+					null, null, true, nf_pageable);
+
+			// Step2.取得資料
+			ArrayList<ScheduleInfactory> infactorys = new ArrayList<ScheduleInfactory>();
+			infactorys.add(one);
+			System.out.println("測試:" + infactorys.size());
+
+			// Step3.整理資料
+			infactorys.forEach(o -> {
+				// ====物控備註====
+				String somcnoteDiv = "<div>";
+				JsonArray somcnotes = JsonParser.parseString(o.getSimcnote()).getAsJsonArray();
+				// 避免沒資料
+				if (somcnotes.size() > 0) {
+					JsonObject somcnote = somcnotes.get(somcnotes.size() - 1).getAsJsonObject();
+					somcnoteDiv += "<div>" + somcnote.get("date").getAsString() + "/"
+							+ somcnote.get("user").getAsString() + "</div>";
+					somcnoteDiv += "<div>" + somcnote.get("content").getAsString() + "</div>";
+				}
+				somcnoteDiv += "</div>";
+				o.setSimcnote(somcnoteDiv);
+				// ====生管備註====
+				String soscnoteDiv = "<div>";
+				JsonArray soscnotes = JsonParser.parseString(o.getSiscnote()).getAsJsonArray();
+				// 避免沒資料
+				if (soscnotes.size() > 0) {
+					JsonObject soscnote = soscnotes.get(soscnotes.size() - 1).getAsJsonObject();
+					soscnoteDiv += "<div>" + soscnote.get("date").getAsString() + "/"
+							+ soscnote.get("user").getAsString() + "</div>";
+					soscnoteDiv += "<div>" + soscnote.get("content").getAsString() + "</div>";
+				}
+				soscnoteDiv += "</div>";
+				o.setSiscnote(soscnoteDiv);
+				// ====製造備註====
+				String sompnoteDiv = "<div>";
+				JsonArray sompnotes = JsonParser.parseString(o.getSimpnote()).getAsJsonArray();
+				// 避免沒資料
+				if (sompnotes.size() > 0) {
+					JsonObject sompnote = sompnotes.get(sompnotes.size() - 1).getAsJsonObject();
+					sompnoteDiv += "<div>" + sompnote.get("date").getAsString() + "/"
+							+ sompnote.get("user").getAsString() + "</div>";
+					sompnoteDiv += "<div>" + sompnote.get("content").getAsString() + "</div>";
+				}
+				sompnoteDiv += "</div>";
+				o.setSimpnote(sompnoteDiv);
+				// ====倉庫備註====
+				String sowmnoteDiv = "<div>";
+				JsonArray sowmnotes = JsonParser.parseString(o.getSiwmnote()).getAsJsonArray();
+				// 避免沒資料
+				if (sowmnotes.size() > 0) {
+					JsonObject sowmnote = sowmnotes.get(sowmnotes.size() - 1).getAsJsonObject();
+					sowmnoteDiv += "<div>" + sowmnote.get("date").getAsString() + "/"
+							+ sowmnote.get("user").getAsString() + "</div>";
+					sowmnoteDiv += "<div>" + sowmnote.get("content").getAsString() + "</div>";
+				}
+				sowmnoteDiv += "</div>";
+				o.setSiwmnote(sowmnoteDiv);
+				// 製令單狀態修正
+				switch (o.getSistatus()) {
+				case "0":
+					o.setSistatus("暫停中");
+					break;
+				case "1":
+					o.setSistatus("未生產");
+					break;
+				case "2":
+					o.setSistatus("已發料");
+					break;
+				case "3":
+					o.setSistatus("生產中");
+					break;
+				case "Y":
+					o.setSistatus("已完工");
+					break;
+				case "y":
+					o.setSistatus("指定完工");
+					break;
+				case "V":
+					o.setSistatus("已作廢");
+					break;
+				}
+			});
+			// Step3. 取得寄信模塊
+			// 寄信件對象
+			ArrayList<String> mainUsers = new ArrayList<String>();
+			ArrayList<String> secondaryUsers = new ArrayList<String>();
+			// 寄信對象條件
+			notifications.forEach(r -> {// 沒有設置=全寄信
+				// 主要?次要?
+				if (r.getSsnprimary() == 0) {
+					mainUsers.add(r.getSsnsumail());
+				} else {
+					secondaryUsers.add(r.getSsnsumail());
+				}
+			});// 建立信件->寄信對象必須要大於1位&& 且不是空的
+			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+				readyNeedMail.setBnmkind("Production");
+				readyNeedMail.setBnmmail(mainUsers + "");
+				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+						+ "Cloud system [Schedule Infactory][" + infactorys.get(0).getSinb()
+						+ "] Special urgent notification for production orders!");
+				// 內容
+				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						// + "<th>項次</th>"//
+						+ "<th style='min-width: 65px;'>順序</th>"//
+						+ "<th style='min-width: 65px;'>預計開工日</th>"//
+						+ "<th style='min-width: 65px;'>預計完工日</th>"//
+						+ "<th style='min-width: 100px;'>製令單號</th>"//
+						+ "<th style='min-width: 100px;'>產品品號</th>"//
+						// + "<th style='min-width: 100px;'>產品品名</th>"//
+						+ "<th style='min-width: 40px;'>預計-生產數</th>"//
+						// + "<th style='min-width: 40px;'>完成-生產數</th>"/ /
+						// + "<th style='min-width: 40px;'>製令單-狀態</th>"//
+						+ "<th style='min-width: 80px;'>製令單-負責人</th>"//
+						// + "<th style='min-width: 65px;'>生管狀態</th>"//
+						// + "<th style='min-width: 220px;'>生管備註</th>"//
+						+ "<th style='min-width: 65px;'>物控狀態</th>"//
+						+ "<th style='min-width: 65px;'>預計齊料日</th>"//
+						+ "<th style='min-width: 220px;'>物控備註</th>"//
+						// + "<th style='min-width: 65px;'>倉庫進度</th>"//
+						// + "<th style='min-width: 65px;'>倉庫備註</th>"//
+						// + "<th style='min-width: 65px;'>製造進度</th>"//
+						// + "<th style='min-width: 65px;'>製造備註</th>"//
+						// + "<th style='min-width: 65px;'>YYYY(年)-W00(週期)</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>";// 模擬12筆資料
+				// int r = 1;
+
+				for (ScheduleInfactory oss : infactorys) {
+//					String siscstatus = "";// 生管狀態
+//					switch (oss.getSiscstatus()) {
+//					case 0:
+//						siscstatus = "未開注意事項";
+//						break;
+//					case 1:
+//						siscstatus = "已開注意事項";
+//						break;
+//					case 2:
+//						siscstatus = "已核准流程卡";
+//						break;
+//
+//					}
+					String simcstatus = "";// 物控狀態
+					switch (oss.getSimcstatus()) {
+					case 0:
+						simcstatus = "未確認";
+						break;
+					case 1:
+						simcstatus = "未齊料";
+						break;
+					case 2:
+						simcstatus = "已齊料";
+						break;
+					}
+					String sipriority = "";// 物控狀態
+					switch (oss.getSipriority()) {
+					case 0:
+						sipriority = "一般";
+						break;
+					case -1:
+						sipriority = "暫緩";
+						break;
+					case 1:
+						sipriority = "緊急";
+						break;
+					}
+					// 信件資料結構
+					bnmcontent += "<tr>"//
+							// + "<td>" + (r++) + "</td>"// 項次
+							+ "<td>" + sipriority + "</td>"// 預計-緊急?
+							+ "<td>" + oss.getSiodate() + "</td>"// 預計-開工日
+							+ "<td>" + oss.getSifdate() + "</td>"// 預計-完工日
+							+ "<td>" + oss.getSinb() + "</td>"// 製令單號
+							+ "<td>" + oss.getSipnb() + "</td>"// 產品品號
+							// + "<td>" + oss.getSipname() + "</td>"// 產品品名
+
+							+ "<td>" + oss.getSirqty() + "</td>"// 預計生產數
+							// + "<td>" + oss.getSiokqty() + "</td>"// 已生產數
+
+							// + "<td>" + oss.getSistatus() + "</td>"// 製令單-狀態
+							+ "<td>" + oss.getSiuname() + "</td>"// 製令單-負責人
+							// + "<td>" + siscstatus + "</td>"// 生管狀態
+							// + "<td>" + oss.getSiscnote() + "</td>"// 生管備註
+							+ "<td>" + simcstatus + "</td>"// 物控狀態
+							+ "<td>" + oss.getSimcdate() + "</td>"// 預計-齊料日
+							+ "<td>" + oss.getSimcnote() + "</td>"// 物控備註
+							// + "<td>" + oss.getSiwmprogress() + "</td>"// 倉庫進度
+							// + "<td>" + oss.getSiwmnote() + "</td>"// 倉庫備註
+							// + "<td>" + oss.getSimpprogress() + "</td>"// 製造進度
+							// + "<td>" + oss.getSimpnote() + "</td>"// 製令單-備註
+							// + "<td>" + oss.getSiywdate() + "</td>"// YYYY(西元年)-W00(週期)
+							+ "</tr>";
+				}
+				bnmcontent += "</tbody></table>";
+				bnmcontent += "<br><span style='color:red; font-weight:bold;'>※ This is an automated email from the Cloud system. Do not reply。※</span>";
+				readyNeedMail.setBnmcontent(bnmcontent);
+
+				// 檢查信件(避免重複)
+				if (notificationMailDao.findAllBySearch(null, null, null, readyNeedMail.getBnmtitle(), null, null, null)
+						.size() == 0 && infactorys.size() > 0) {
+					notificationMailDao.save(readyNeedMail);
+				}
+			}
+		} catch (Exception e) {
+			logger.warn(CloudExceptionService.eStktToSg(e));
+		}
 	}
 }

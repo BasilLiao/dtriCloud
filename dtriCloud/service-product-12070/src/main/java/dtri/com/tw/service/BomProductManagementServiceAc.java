@@ -745,7 +745,6 @@ public class BomProductManagementServiceAc {
 			JsonArray basic = oldV.getAsJsonArray("basic");
 			items.forEach(i -> {
 				JsonObject obj = i.getAsJsonObject();
-				//
 				String bisnb = obj.getAsJsonPrimitive("bisnb").getAsString();
 				String bisqty = obj.getAsJsonPrimitive("bisqty").getAsString();
 				String bisprocess = obj.getAsJsonPrimitive("bisprocess").getAsString();
@@ -759,15 +758,18 @@ public class BomProductManagementServiceAc {
 			});
 			basic.forEach(i -> {
 				String bisnb_bisqty_bisprocess = i.getAsString();
-				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
-				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
-				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-				//防呆
-				String[] parts = bisnb_bisqty_bisprocess.split("_");
-				String bislevel = parts.length > 3 ? parts[3] : "0";
-				if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
-					// 若不重複則加入
-					oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+				// 排除項目是空直
+				if (!bisnb_bisqty_bisprocess.equals("")) {
+					String[] parts = bisnb_bisqty_bisprocess.split("_");
+					String bisnb = parts[0];
+					String bisqty = parts[1];
+					String bisprocess = parts[2];
+					// 防呆
+					String bislevel = parts.length > 3 ? parts[3] : "0";
+					if (!bisnb.equals("") && !oldVs.containsKey(bisnb)) {
+						// 若不重複則加入
+						oldVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+					}
 				}
 			});
 			// 新的BOM_型號 , 物料_數量_製成別
@@ -780,10 +782,13 @@ public class BomProductManagementServiceAc {
 			JsonArray items = newV.getAsJsonArray("items");
 			JsonArray basic = newV.getAsJsonArray("basic");
 			items.forEach(i -> {
-				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
-				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
-				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
-				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
+				JsonObject obj = i.getAsJsonObject();
+				String bisnb = obj.getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = obj.getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = obj.getAsJsonPrimitive("bisprocess").getAsString();
+				// 防呆
+				String bislevel = Optional.ofNullable(obj.get("bislevel")).filter(e -> !e.isJsonNull())
+						.map(JsonElement::getAsString).orElse("0");
 				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 					// 若不重複則加入
 					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
@@ -791,13 +796,18 @@ public class BomProductManagementServiceAc {
 			});
 			basic.forEach(i -> {
 				String bisnb_bisqty_bisprocess = i.getAsString();
-				String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
-				String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
-				String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-				String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
-				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
-					// 若不重複則加入
-					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+				// 排除項目是空直
+				if (!bisnb_bisqty_bisprocess.equals("")) {
+					String[] parts = bisnb_bisqty_bisprocess.split("_");
+					String bisnb = parts[0];
+					String bisqty = parts[1];
+					String bisprocess = parts[2];
+					// 防呆
+					String bislevel = parts.length > 3 ? parts[3] : "0";
+					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+						// 若不重複則加入
+						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+					}
 				}
 			});
 			// 新的BOM_型號 , 物料_數量_製成別
@@ -987,10 +997,13 @@ public class BomProductManagementServiceAc {
 				JsonArray items = newV.getAsJsonArray("items");
 				JsonArray basic = newV.getAsJsonArray("basic");
 				items.forEach(i -> {
-					String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
-					String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
-					String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
-					String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
+					JsonObject obj = i.getAsJsonObject();
+					String bisnb = obj.getAsJsonPrimitive("bisnb").getAsString();
+					String bisqty = obj.getAsJsonPrimitive("bisqty").getAsString();
+					String bisprocess = obj.getAsJsonPrimitive("bisprocess").getAsString();
+					// 防呆
+					String bislevel = Optional.ofNullable(obj.get("bislevel")).filter(e -> !e.isJsonNull())
+							.map(JsonElement::getAsString).orElse("0");
 					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 						// 若不重複則加入
 						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
@@ -998,13 +1011,18 @@ public class BomProductManagementServiceAc {
 				});
 				basic.forEach(i -> {
 					String bisnb_bisqty_bisprocess = i.getAsString();
-					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
-					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
-					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-					String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
-					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
-						// 若不重複則加入
-						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+					// 排除項目是空直
+					if (!bisnb_bisqty_bisprocess.equals("")) {
+						String[] parts = bisnb_bisqty_bisprocess.split("_");
+						String bisnb = parts[0];
+						String bisqty = parts[1];
+						String bisprocess = parts[2];
+						// 防呆
+						String bislevel = parts.length > 3 ? parts[3] : "0";
+						if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
+							// 若不重複則加入
+							newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
+						}
 					}
 				});
 				// 新的BOM_型號 , 物料_數量_製成別
@@ -1155,10 +1173,13 @@ public class BomProductManagementServiceAc {
 			JsonArray items = newV.getAsJsonArray("items");
 			JsonArray basic = newV.getAsJsonArray("basic");
 			items.forEach(i -> {
-				String bisnb = i.getAsJsonObject().getAsJsonPrimitive("bisnb").getAsString();
-				String bisqty = i.getAsJsonObject().getAsJsonPrimitive("bisqty").getAsString();
-				String bisprocess = i.getAsJsonObject().getAsJsonPrimitive("bisprocess").getAsString();
-				String bislevel = i.getAsJsonObject().getAsJsonPrimitive("bislevel").getAsString();
+				JsonObject obj = i.getAsJsonObject();
+				String bisnb = obj.getAsJsonPrimitive("bisnb").getAsString();
+				String bisqty = obj.getAsJsonPrimitive("bisqty").getAsString();
+				String bisprocess = obj.getAsJsonPrimitive("bisprocess").getAsString();
+				// 防呆
+				String bislevel = Optional.ofNullable(obj.get("bislevel")).filter(e -> !e.isJsonNull())
+						.map(JsonElement::getAsString).orElse("0");
 				if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 					// 若不重複則加入
 					newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);
@@ -1168,10 +1189,12 @@ public class BomProductManagementServiceAc {
 				String bisnb_bisqty_bisprocess = i.getAsString();
 				// 排除項目是空直
 				if (!bisnb_bisqty_bisprocess.equals("")) {
-					String bisnb = bisnb_bisqty_bisprocess.split("_")[0];
-					String bisqty = bisnb_bisqty_bisprocess.split("_")[1];
-					String bisprocess = bisnb_bisqty_bisprocess.split("_")[2];
-					String bislevel = bisnb_bisqty_bisprocess.split("_")[3];
+					String[] parts = bisnb_bisqty_bisprocess.split("_");
+					String bisnb = parts[0];
+					String bisqty = parts[1];
+					String bisprocess = parts[2];
+					// 防呆
+					String bislevel = parts.length > 3 ? parts[3] : "0";
 					if (!bisnb.equals("") && !newVs.containsKey(bisnb)) {
 						// 若不重複則加入
 						newVs.put(bisnb, bisnb + "_" + bisqty + "_" + bisprocess + "_" + bislevel);

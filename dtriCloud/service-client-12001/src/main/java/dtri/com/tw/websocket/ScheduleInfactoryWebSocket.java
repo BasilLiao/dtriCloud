@@ -300,6 +300,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 					tagString.addProperty("sifokdate", "");
 					tagString.addProperty("siscstatus", "");
 					tagString.addProperty("siscnote", "");
+					tagString.addProperty("sipriority", "");
 					// 物控
 					tagString.addProperty("simcnote", "");
 					tagString.addProperty("simcstatus", "");
@@ -594,6 +595,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 					tagString.addProperty("sifokdate", "");
 					tagString.addProperty("siscstatus", "");
 					tagString.addProperty("siscnote", "");
+					tagString.addProperty("sipriority", "");
 					// 物控
 					tagString.addProperty("simcnote", "");
 					tagString.addProperty("simcstatus", "");
@@ -663,6 +665,7 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 				tagString.addProperty("sifokdate", "");
 				tagString.addProperty("siscstatus", "");
 				tagString.addProperty("siscnote", "");
+				tagString.addProperty("sipriority", "");
 				// 物控
 				tagString.addProperty("simcnote", "");
 				tagString.addProperty("simcstatus", "");

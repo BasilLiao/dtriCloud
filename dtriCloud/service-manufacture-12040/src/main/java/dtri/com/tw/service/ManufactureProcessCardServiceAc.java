@@ -148,7 +148,8 @@ public class ManufactureProcessCardServiceAc {
 						.build();
 
 				// 5. 建立 POST 請求
-				HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil");
+				//HttpPost request = new HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil"); //測試用
+				HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil"); //正式用
 				request.setHeader("Content-Type", "application/json;charset=UTF-8");
 				request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
 
@@ -567,7 +568,7 @@ public class ManufactureProcessCardServiceAc {
 						CloseableHttpResponse response = httpclient.execute(request);
 						String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-						// System.out.println("Response:"+responseBody);
+						 System.out.println("Response:"+responseBody);
 					} catch (Exception e) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 								new String[] { "取得 MES 資料 連線失敗!" });

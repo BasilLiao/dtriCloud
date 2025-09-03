@@ -398,7 +398,7 @@
 			<div class="col row m-0 p-0 border border-primary"
 				style="width: 95%;">
 				<!--BOM項目清單-->
-				<div id="other_Detail_BPR" class="col-12 col-lg-7 m-0 p-1 row">
+				<div id="other_Detail_BPR" class="col-12 col-lg-8 m-0 p-1 row">
 					<!---->
 					<div id="od_bpr_status"
 						class="col-2 m-0 p-0 border border-secondary rounded">
@@ -434,7 +434,7 @@
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpr_type</div>
 						<div class="p-1">
 							<select class="col-12 m-0 p-1 border border-dark form-select"
-								name="bpm_type">
+								name="bpm_type" title="other_Detail_BPR">
 								<option value="">請選擇</option>
 								<option value="0">開發BOM</option>
 								<option value="1">產品BOM</option>
@@ -484,7 +484,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div id="other_Detail_BPR_info" class="col-12 col-lg-5 m-0 p-1">
+				<div id="other_Detail_BPR_info" class="col-12 col-lg-4 m-0 p-1">
 					<!--bom_parameter_settings(用途:BOM產品參數)-->
 					<div id="other_BPR_BPS"
 						class="col-12 m-0 p-0 mt-1 border border-secondary rounded">
@@ -521,7 +521,7 @@
 					</div>
 				</div>
 				<!--規則BOM物料細節-查詢結果-->
-				<div id="other_BPR_BIS" class="col-12 col-lg-5 m-0 p-0 pt-1 d-none">
+				<div id="other_BPR_BIS" class="col-12 col-lg-4 m-0 p-0 pt-1 d-none">
 					<div class="otherTitle bg-orange fw-bolder rounded-top">Bom
 						edit basic conditions</div>
 					<div id="other_BPR_BIS_open" class="row m-0">
@@ -620,7 +620,7 @@
 			<div class="col row m-0 p-0 border border-primary"
 				style="width: 95%;">
 				<!--BOM項目清單-->
-				<div id="other_Detail_BPM" class="col-12 col-lg-7 m-0 p-1 row">
+				<div id="other_Detail_BPM" class="col-12 col-lg-8 m-0 p-1 row">
 					<div id="od_bpm_batch"
 						class="col-2 m-0 p-0 border border-secondary rounded">
 						<div class="otherTitle bg-danger fw-bolder rounded-top">Batch</div>
@@ -667,7 +667,7 @@
 						<div class="otherTitle bg-success fw-bolder rounded-top">bpm_type</div>
 						<div class="p-1">
 							<select class="col-12 m-0 p-1 border border-dark form-select"
-								name="bpm_type">
+								name="bpm_type" title="other_Detail_BPM">
 								<option value="">請選擇</option>
 								<option value="0">開發BOM</option>
 								<option value="1">產品BOM</option>
@@ -718,7 +718,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div id="other_Detail_BPM_info" class="col-12 col-lg-5 m-0 p-1">
+				<div id="other_Detail_BPM_info" class="col-12 col-lg-4 m-0 p-1">
 					<!--Software&&Hardware-->
 					<div id="other_BSH"
 						class="col-12 m-0 p-0 border border-secondary rounded">
@@ -823,7 +823,7 @@
 					</div>
 				</div>
 				<!--規則BOM物料細節-查詢結果-->
-				<div id="other_BIS" class="col-12 col-lg-5 m-0 p-1 d-none">
+				<div id="other_BIS" class="col-12 col-lg-4 m-0 p-1 d-none">
 					<div class="otherTitle bg-orange fw-bolder rounded-top">Bom
 						edit basic conditions</div>
 					<div id="other_BIS_open" class="row m-0">
@@ -1259,6 +1259,11 @@
 										    .attr({
 										        class: "o_" + v['bisgname'],
 										        alt: v['bisdselect'],
+										        bisaccessories: v['bisaccessories'],//配件
+										        bisproduct: v['bisproduct'],//成品
+										        bissfproduct: v['bissfproduct'],//半成品
+										        bispcb: v['bispcb'],//版皆
+										        bisdevelopment: v['bisdevelopment'],//開發
 										        sort: v['syssort']
 										    })
 										    .text(v.bisgname)
@@ -1924,7 +1929,7 @@
 								let bissdescripion = detail.find(".bissdescripion input").val();
 								let bisqty = detail.find(".bisqty input").val();
 								let bisprocess = detail.find(".bisprocess input").val();
-								let bislevel = detail.find(".bislevel input").val();
+								let bislevel = detail.find(".bislevel input").val()==""?"0":detail.find(".bislevel input").val();
 								//一般選項資料
 								if (bisgid !== "0" && bisgid !== "" && bisid !== "" && bisqty !== "") {
 									bpmbisitemOne = {};
@@ -2101,8 +2106,6 @@
 									let bpm = $("#other_BPM tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
 									let sysnote = bbi.find(".bbiname").text()+" & "+ bbi.find(".bbispecification").text();//PM說明
-									bpm.find(".bpmnb").text(bbisn);
-									bpm.find(".sysnote").text(sysnote);
 									//型號
 									let bpmmodel = "";
 									if (typeof bbisn === 'string') {
@@ -2117,6 +2120,8 @@
 									        }
 									    }
 									}
+									bpm.find(".bpmnb").text(bbisn);
+									bpm.find(".sysnote").text(sysnote);
 									bpm.find(".bpmmodel").text(bpmmodel);//
 									bpm.find(".bpmtypename").text("產品BOM");
 									bpm.find(".bpmtype").text("1");
@@ -2125,8 +2130,9 @@
 									let bpmbisitem = {};//結構化
 									bpmbisitem.items = [];
 									bpmbisitem.basic = [];
-									let bpmbisitemOne = {}
+									let bpmbisitemOne = {};
 									let nbs = 1;
+									let bisgnameChecks = new Set();//避免重複
 									entityJsons.forEach(s => {
 										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
@@ -2136,8 +2142,10 @@
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
 											bisname.forEach(bs => {//所有可能的項目
-												if (s['bbiisn'] === bs['bisnb']) {
+												if (s['bbiisn'] === bs['bisnb'] && !bisgnameChecks.has(bs['bisgname'])) {
 													console.log(bs['bisfname']);
+													bisgnameChecks.add(bs['bisgname']);
+													//
 													bpmbisitemOne = {};
 													bpmbisitemOne.bisid = bs['bisid'];
 													bpmbisitemOne.bisgid = bs['bisgid'];
@@ -2170,7 +2178,6 @@
 									    // 檢查 optionsMap 有值 && bpmbasicSort 沒有該 key
 									    if (optionsMap[key] && !(key in bpmbasicSort)) {
 									        console.log("缺少必填資料:"+ key+", "+JSON.stringify(optionsMap[key],null));
-									        
 									        let newItem ={
 									            bisid:"0",
 									            bisgid:optionsMap[key]['value'],
@@ -2189,7 +2196,6 @@
 									    }
 									});
 											
-									
 									//排序整理
 									bpmbasicSort = main.methods.orderedSort(bpmbasicSort);
 									Object.entries(bpmbasicSort).forEach(([key, value]) => {
@@ -2249,16 +2255,30 @@
 								//所有 取得的資料(料BOM)
 								let rulesEntityJsons = other.data.otherItemPageSet.entityOther['BBIDetail'];
 								//取得 項目群組
+								let optionsMap = {};
+								$("#other_Detail_BPR_od .exDetailTbodyTr select.form-select option").each(function() {
+									let val = $(this).val();
+									let defselect = $(this).attr("alt");//預設必選
+								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目
+								        let key = $(this).attr("sort").trim().toString().padStart(3, '0') + "_sort_"+$(this).val().trim(); // 用 text 當 key
+								        optionsMap[key] = {
+								            class: $(this).attr("class") || "",
+								            alt: $(this).attr("alt") || "",
+								            sort: $(this).attr("sort") || "",
+								            text: $(this).attr("text")|| "",
+								            value: $(this).val()|| ""
+								        };
+								    }
+								});
+								console.log(JSON.stringify(optionsMap, null, 2));
+								
+								//每一項產品
 								rulesCheckedBBI.forEach(i => {
 									console.log(i);
-									//let val = $(this).val();
-									//let defselect = $(this).attr("alt");//預設必選
-									//
 									let bbi = $("#other_BBI tbody ." + i);
 									let bpr = $("#other_BPR tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
 									let sysnote = bbi.find(".bbiname").text()+" & "+ bbi.find(".bbispecification").text();//PM說明
-									bpr.find(".bprname").text(bbisn);
 									//型號
 									let bpmmodel = "";
 									if (typeof bbisn === 'string') {
@@ -2273,17 +2293,20 @@
 									        }
 									    }
 									}
+									bpr.find(".bpmnb").text(bbisn);
 									bpr.find(".sysnote").text(sysnote);
 									bpr.find(".bprmodel").text(bpmmodel);
 									bpr.find(".bprtypename").text("產品BOM");
 									bpr.find(".bprtype").text("1");
 									bpr.find("input").removeAttr('disabled');
+									bpr.find(".bprname").text(bbisn);
 									//所有正規化選項
 									let bprbisitem = {};//結構化
 									bprbisitem.items = [];
 									bprbisitem.basic = [];
-									let bprbisitemOne = {}
+									let bprbisitemOne = {};
 									let nbs = 1;
+									let bisgnameChecks = new Set();//避免重複
 									rulesEntityJsons.forEach(s => {
 										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
@@ -2293,8 +2316,10 @@
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
 											bisname.forEach(bs => {//所有可能的項目
-												if (s['bbiisn'] === bs['bisnb']) {
+												if (s['bbiisn'] === bs['bisnb'] && !bisgnameChecks.has(bs['bisgname'])) {
 													console.log(bs['bisfname']);
+													bisgnameChecks.add(bs['bisgname']);
+													//
 													bprbisitemOne = {};
 													bprbisitemOne.bisid = bs['bisid'];
 													bprbisitemOne.bisgid = bs['bisgid'];
@@ -2321,6 +2346,30 @@
 											}
 										}
 									});
+									
+									//如果必選沒有選配到?
+									Object.keys(optionsMap).forEach(key => {
+									    // 檢查 optionsMap 有值 && bpmbasicSort 沒有該 key
+									    if (optionsMap[key] && !(key in bprbasicSort)) {
+									        console.log("缺少必填資料:"+ key+", "+JSON.stringify(optionsMap[key],null));
+									        let newItem ={
+									            bisid:"0",
+									            bisgid:optionsMap[key]['value'],
+									            bisnb:"",
+									            bisname:"",
+									            bisqty:"1",
+									            bisgname:optionsMap[key]['text'],
+									            bisgfname:"",
+									            bisfname:"[\"Yes(裝)\"]",
+									            bissdescripion:"",
+									            bisprocess:"ASM",
+									            bislevel:"0"
+									         }
+									     	// 用 bisgname 當 key
+									    	bprbasicSort[key] = newItem;
+									    }
+									});
+									
 									//排序整理
 									bprbasicSort = main.methods.orderedSort(bprbasicSort);
 									Object.entries(bprbasicSort).forEach(([key, value]) => {
@@ -2763,7 +2812,8 @@
 										let bisnb = valTbodyTr.find('.bisnb input').val();
 										let bisqty = valTbodyTr.find('.bisqty input').val();
 										let bisprocess = valTbodyTr.find('.bisprocess input').val();
-										let bislevel = valTbodyTr.find('.bislevel input').val();
+										//Basic 內階層預設1
+										let bislevel = valTbodyTr.find('.bislevel input').val()==""?"1":valTbodyTr.find('.bislevel input').val();
 										bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
 										//避免回存資料是錯誤的
 										if(bisqty!="" &&bisnb!=""){
@@ -3007,7 +3057,82 @@
 						}
 					}
 				});
-				
+				//=====切換產品類型=====重製選項
+				$(document).off("change", "#other_Detail_BPM #od_bpm_type select,#other_Detail_BPR #od_bpr_type select");
+				$(document).on("change", "#other_Detail_BPM #od_bpm_type select,#other_Detail_BPR #od_bpr_type select", function (event) {
+					console.log("=====切換產品類型=====重製選項");
+					// ===>前置準備
+					let whois = $(event.currentTarget).attr("title");
+				    let selectedValue = $(this).val();   // 取得 value
+				    let selectedText  = $(this).find("option:selected").text(); // 取得顯示文字
+				 	// 對照表
+				    const valueMap = {
+				        0: "bisdevelopment",
+				        1: "bisproduct",
+				        2: "bisaccessories",
+				        3: "bissfproduct",
+				        4: "bispcb"
+				    };
+				    let mappedKey = valueMap[selectedValue]; // 對應到屬性名稱
+					// 假設 <option> 已存在於 DOM
+					let optionData = {};
+					// ===>排除 class 為空或沒有 class 的情況
+					//取得清單
+					$("#other_c #" + whois + " .exDetailTbodyTr .bisgname option").each(function () {
+					    let $this = $(this);
+					    let key = $this.attr("class"); // class 當作 key
+					    let attrs = {};
+					    if (key && key.trim() !== "") {
+						 	// 遍歷所有屬性
+						    $.each(this.attributes, function (index, attr) {
+						        // 排除掉 class (因為已經拿來當 key)
+						        if (attr.name !== "class") {
+						            attrs[attr.name] = attr.value;
+						        }
+						    });
+					 	// 存進 JSON
+					    optionData[key] = attrs;
+				    	}
+					});
+					console.log(optionData);
+					//取得目前資料
+					let other_Detail_s = $("#other_c #" + whois + " table tbody");
+					let bisgnameCheck = {};
+					// ===>去除沒物料配對項目
+					other_Detail_s.find("tr").each(function () {
+					    let tr = $(this);
+					    let input = tr.find("td.bisnb input");
+					    let bisgname = tr.find("td.bisgname select option:selected").text();
+					    let bisgnameVal = tr.find("td.bisgname select option:selected").val();
+					     
+					    if (input.length && input.val().trim() === "" && bisgname!=="Basic" && !tr.hasClass('exDetailTbodyTr')) {
+					        // 如果 input 存在且為空值 → 移除整列
+					        tr.remove();
+					    }else{
+					    	//避免重複
+					    	bisgnameCheck[bisgnameVal] = true;
+					    }
+					});
+					// ===>添加屬於此類型產品
+					$.each(optionData, function (key, value) {// 外層的 class 名稱，例如 o_Color+該 class 對應的屬性物件
+						let showType = value[mappedKey];//需要配對的類型
+						let showDef = value['alt'];//需要顯示嗎?
+						let bisgid = value['value'];//排除已經有在介面上的
+						if(showType=="true" && showDef=="true" && !(bisgid in bisgnameCheck)){
+							
+							//複製
+							let detailTbodyTr = $("#other_c #" + whois + " .exDetailTbodyTr").clone();
+							detailTbodyTr.removeClass('exDetailTbodyTr');
+							detailTbodyTr.removeClass('d-none');
+							detailTbodyTr.addClass('detailTbodyTr');
+							//
+							detailTbodyTr.appendTo($("#other_c #" + whois + " tbody"));
+							//進行選擇
+							detailTbodyTr.find(".bisgname select").val("" +bisgid).trigger('change');
+							detailTbodyTr.find('.bisqty input').val(1);
+						}
+					});
+				});
 			},
 			//==========================遞迴結構==========================
 			crossProduct(groups) {
@@ -3536,6 +3661,7 @@
 				$(document).off("click", "#other_c button");
 				$(document).off("dblclick", "#other_BPM_open tbody .exTbodyTh input");
 				$(document).off("dblclick", "#other_BPR_open tbody .exTbodyTh input");
+				$(document).off("change", "#other_Detail_BPM #od_bpm_type select,#other_Detail_BPR #od_bpr_type select");
 
 				console.log("other.html(destroy)");
 			},
