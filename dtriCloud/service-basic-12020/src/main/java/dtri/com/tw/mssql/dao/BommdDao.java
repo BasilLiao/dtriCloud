@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import dtri.com.tw.mssql.entity.Bommd;
+import feign.Param;
 
 public interface BommdDao extends JpaRepository<Bommd, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT " //
-			+ "  ROW_NUMBER() OVER(order by BOMMD.MD001) AS BOMMD_ID, "//
+			+ "  ROW_NUMBER() OVER(order by BOMMD.MD001, BOMMD.MD002) AS BOMMD_ID, "//
 			+ "  BOMMD.MD001, "// --主元件-品號
 			+ "  INVMB.MB002, "// --主元件-品名
 			+ "  INVMB.MB003, "// --主元件-規格
@@ -33,14 +34,15 @@ public interface BommdDao extends JpaRepository<Bommd, Long> {
 			+ "     ON BOMMD.MD001 = INVMB.MB001 " //
 			+ "  	LEFT JOIN [DTR_TW].[dbo].INVMB AS INVMC "// --倉庫別
 			+ "     ON BOMMD.MD003 = INVMC.MB001 "//
-			+ " WHERE BOMMD.MD006 >= 0 "//
-			+ "ORDER BY BOMMD.MD001 ASC, BOMMD.MD002 ASC "//
+			+ " WHERE BOMMD.MD006 >= 0 "
+			+ " ORDER BY BOMMD.MD001 ASC, BOMMD.MD002 ASC "//
+			+ " OFFSET :offset ROWS FETCH NEXT :pageSize ROWS ONLY "//
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Bommd> findAllByBommdFirst();
+	ArrayList<Bommd> findAllByBommdFirst(@Param("offset") long offset, @Param("pageSize") long pageSize);
 
 	// 多筆查詢範例
 	@Query(value = "SELECT " //
-			+ "  ROW_NUMBER() OVER(order by BOMMD.MD001) AS BOMMD_ID, "//
+			+ "  ROW_NUMBER() OVER(order by BOMMD.MD001, BOMMD.MD002) AS BOMMD_ID, "//
 			+ "  BOMMD.MD001, "// --主元件-品號
 			+ "  INVMB.MB002, "// --主元件-品名
 			+ "  INVMB.MB003, "// --主元件-規格

@@ -252,12 +252,11 @@ public class ScheduleShortageNotificationServiceAc {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
 				ArrayList<ScheduleShortageNotification> checkDatas = notificationDao
 						.findAllByCheck(entityData.getSsnsuid(), null, null);
-				for (ScheduleShortageNotification checkData : checkDatas) {
-					if (checkData.getSsnnb().equals(entityData.getSsnnb())
-							&& checkData.getSsnid().compareTo(entityData.getSsnid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getSsnsuname() });
-					}
+				// 有重複
+				if (checkDatas.size() != 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { checkDatas.get(0).getSsnsuname() });
+
 				}
 			}
 		}

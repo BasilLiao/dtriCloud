@@ -116,11 +116,9 @@ public class SynchronizeBomService {
 	public synchronized void erpSynchronizeBomIngredients(boolean synAll) throws Exception {
 		try {
 			erpSBIWorking = true;
-			ArrayList<Bommd> bommds = new ArrayList<Bommd>();
-			ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
+
 			ArrayList<BasicBomIngredients> bomRemoves = new ArrayList<BasicBomIngredients>();
 			ArrayList<BasicBomIngredients> bomNews = new ArrayList<BasicBomIngredients>();
-			Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
 			Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
 			List<String> bbisnnb = new ArrayList<String>();
 			// 物料號
@@ -129,56 +127,135 @@ public class SynchronizeBomService {
 			});
 			// 第一次跑在用 = 沒資料須導入/常態性跑用 = 有資料 區塊性更新
 			if (synAll) {
-				bommds = bommdDao.findAllByBommdFirst();// 第一次跑在用
+				ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
+				boms = basicBomIngredientsDao.findAllByBomListsFirst();// 常態性跑用
+				long pageSize = 50000; // 每批 5 萬
+				long offset = 0;
+				while (true) {
+					ArrayList<Bommd> bommds = new ArrayList<Bommd>();
+					bommds = bommdDao.findAllByBommdFirst(offset, pageSize);// 第一次跑在用
+					if (bommds.isEmpty()) {
+						break; // 沒資料就結束
+					}
+					// 🔹 在這裡處理這批資料
+					System.out.println("處理筆數: " + offset + ":" + pageSize + ":" + bommds.size());
+
+					Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
+					// ERP -> 檢查資料&更正
+					bommds.forEach(bommd -> {
+						bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
+						bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
+						bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
+						bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
+						bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
+						bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
+						bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+						erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
+						bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());// 成品號-序號
+					});
+					// Cloud 取出比對
+					boms.forEach(o -> {
+						// 測試
+						// if (erpBommds.containsKey("90-340-T20AA00-0010")) {
+						// System.out.println(o.getBbisnnb());
+						// }
+						if (erpBommds.containsKey(o.getBbisnnb())) {
+							erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
+							String sum = erpBommds.get(o.getBbisnnb()).toString();
+							if (!sum.equals(o.getChecksum())) {
+								// 更新
+								erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+								bomNews.add(o);
+							}
+							o.setSysstatus(1);
+						} else {
+							// 沒比對到?已經移除?
+							if (o.getSysstatus() != 1) {
+								o.setSysstatus(2);
+							}
+						}
+					});
+					// 新增
+					erpBommds.forEach((k, n) -> {
+						if (n.isNewone()) {
+							BasicBomIngredients o = new BasicBomIngredients();
+							String sum = n.toString();
+							erpToCloudService.bomIngredients(o, n, wMs, sum);
+							bomNews.add(o);
+						}
+					});
+
+					if (bommds.size() < pageSize) {
+						break; // 最後一批
+					}
+					// 更新下一批範圍
+					offset += pageSize; // 下一批
+				}
+				// 移除
+				boms.forEach(r -> {
+					if (r.getSysstatus() == 2) {
+						bomRemoves.add(r);
+					}
+					r.setSysstatus(0);
+				});
 			} else {
+				ArrayList<Bommd> bommds = new ArrayList<Bommd>();
 				bommds = bommdDao.findAllByBommd();// 常態性跑用
-			}
-			// ERP -> 檢查資料&更正
-			bommds.forEach(bommd -> {
-				bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
-				bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
-				bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
-				bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
-				bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
-				bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
-				bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
-				erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
-				bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());
-			});
-			// 資料回收
-			bommds = null;
-			// 轉換資料
-			if (synAll) {
-				boms = basicBomIngredientsDao.findAllByBomListsFirst();// 第一次跑在用
-			} else {
+				Map<String, Bommd> erpBommds = new HashMap<String, Bommd>();// ERP整理後資料
+				// ERP -> 檢查資料&更正
+				bommds.forEach(bommd -> {
+					bommd.setMdcdate(bommd.getMdcdate() == null ? "" : bommd.getMdcdate().replaceAll("\\s", ""));
+					bommd.setMdcuser(bommd.getMdcuser() == null ? "" : bommd.getMdcuser().replaceAll("\\s", ""));
+					bommd.setMdmdate(bommd.getMdmdate() == null ? "" : bommd.getMdmdate().replaceAll("\\s", ""));
+					bommd.setMdmuser(bommd.getMdmuser() == null ? "" : bommd.getMdmuser().replaceAll("\\s", ""));
+					bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
+					bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
+					bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+					erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
+					bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());// 成品號-序號
+				});
+				// 轉換資料
 				String[] bbisnnbs = bbisnnb.toArray(new String[0]);
+				ArrayList<BasicBomIngredients> boms = new ArrayList<BasicBomIngredients>();
 				boms = basicBomIngredientsDao.findAllByBomLists(bbisnnbs);// 常態性跑用
-			}
-			boms.forEach(o -> {
-				if (erpBommds.containsKey(o.getBbisnnb())) {
-					erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
-					String sum = erpBommds.get(o.getBbisnnb()).toString();
-					if (!sum.equals(o.getChecksum())) {
-						// 更新
-						erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+				boms.forEach(o -> {
+					// 測試
+					// if (o.getBbisnnb().equals("90-340-T20AA00-0010")) {
+					// System.out.println(o.getBbisnnb());
+					// }
+					if (erpBommds.containsKey(o.getBbisnnb())) {
+						erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
+						String sum = erpBommds.get(o.getBbisnnb()).toString();
+						if (!sum.equals(o.getChecksum())) {
+							// 更新
+							erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+							bomNews.add(o);
+						}
+						o.setSysstatus(1);
+					} else {
+						// 沒比對到?已經移除?
+						if (o.getSysstatus() != 1) {
+							o.setSysstatus(2);
+						}
+					}
+				});
+				// 新增
+				erpBommds.forEach((k, n) -> {
+					if (n.isNewone()) {
+						BasicBomIngredients o = new BasicBomIngredients();
+						String sum = n.toString();
+						erpToCloudService.bomIngredients(o, n, wMs, sum);
 						bomNews.add(o);
 					}
-				} else {
-					// 沒比對到?已經移除?
-					bomRemoves.add(o);// 第一次跑在用
-				}
-			});
-			// 資料回收
-			boms = null;
-			// 新增
-			erpBommds.forEach((k, n) -> {
-				if (n.isNewone()) {
-					BasicBomIngredients o = new BasicBomIngredients();
-					String sum = n.toString();
-					erpToCloudService.bomIngredients(o, n, wMs, sum);
-					bomNews.add(o);
-				}
-			});
+				});
+				// 移除
+				boms.forEach(r -> {
+					if (r.getSysstatus() == 2) {
+						bomRemoves.add(r);
+					}
+					r.setSysstatus(0);
+				});
+			}
 			// 存入資料
 			basicBomIngredientsDao.saveAll(bomNews);
 			basicBomIngredientsDao.deleteAll(bomRemoves);
@@ -195,21 +272,6 @@ public class SynchronizeBomService {
 	public void bomModification() throws Exception {
 		// Step0. 準備資料
 		ArrayList<BomHistory> hisListSaves = new ArrayList<BomHistory>();
-		// 1. 讀取 Excel 檔案
-		Workbook workbook = null;
-		// 從 classpath 讀取資源
-		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("90-XXX-XXXXXXX.xlsx")) {
-			if (inputStream == null) {
-				throw new IllegalArgumentException("找不到資源檔案！");
-			}
-			System.out.println("檔案已成功讀取。");
-			workbook = new XSSFWorkbook(inputStream);
-			// 在這裡進行文件處理邏輯
-			System.out.println("Excel 總共有 " + workbook.getNumberOfSheets() + " 個工作表");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		// Step1. 取得寄信人
 		List<Order> nf_orders = new ArrayList<>();
@@ -259,9 +321,24 @@ public class SynchronizeBomService {
 			}
 		}
 
-		Workbook workbooks = workbook;// 為了下方邏輯
 		// Step3. 取得寄信模塊(更新)
 		outsourcersMapUpdate.forEach((mk, mv) -> {
+			// 1. 讀取 Excel 檔案
+			Workbook workbooks = null;
+			// 從 classpath 讀取資源
+			try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("90-XXX-XXXXXXX.xlsx")) {
+				if (inputStream == null) {
+					throw new IllegalArgumentException("找不到資源檔案！");
+				}
+				System.out.println("檔案已成功讀取。");
+				workbooks = new XSSFWorkbook(inputStream);
+				// 在這裡進行文件處理邏輯
+				System.out.println("Excel 總共有 " + workbooks.getNumberOfSheets() + " 個工作表");
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 			// 寄信件對象
 			ArrayList<String> mainUsers = new ArrayList<String>();
 			ArrayList<String> secondaryUsers = new ArrayList<String>();
@@ -298,8 +375,9 @@ public class SynchronizeBomService {
 				String sysnote = "";
 				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(mk, null, null);
 				if (bomProductManagements.size() == 1) {
-					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
+					sysnote += "☑Product Model : " + bomProductManagements.get(0).getBpmmodel();
 					sysnote += bomProductManagements.get(0).getSysnote();
+					sysnote += "("+bomProductManagements.get(0).getSysmuser()+")";
 				}
 
 				// 取得目前"規格BOM"資訊
@@ -382,6 +460,21 @@ public class SynchronizeBomService {
 		});
 		// Step3. 取得寄信模塊(新增)
 		outsourcersMapAllNew.forEach((mk, mv) -> {
+			// 1. 讀取 Excel 檔案
+			Workbook workbooks = null;
+			// 從 classpath 讀取資源
+			try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("90-XXX-XXXXXXX.xlsx")) {
+				if (inputStream == null) {
+					throw new IllegalArgumentException("找不到資源檔案！");
+				}
+				System.out.println("檔案已成功讀取。");
+				workbooks = new XSSFWorkbook(inputStream);
+				// 在這裡進行文件處理邏輯
+				System.out.println("Excel 總共有 " + workbooks.getNumberOfSheets() + " 個工作表");
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			// 寄信件對象
 			ArrayList<String> mainUsers = new ArrayList<String>();
 			ArrayList<String> secondaryUsers = new ArrayList<String>();

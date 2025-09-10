@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -177,6 +178,12 @@ public class ScheduleInfactoryServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "simcstatus", "Ex:物控狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
+			// Step3-5. 建立查詢項目
+			selectStatusArr = new JsonArray();
+			selectStatusArr.add("完工時間_999");
+			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "syssort", "Ex:排序?完工時間", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
+
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
@@ -226,6 +233,21 @@ public class ScheduleInfactoryServiceAc {
 					searchData.getSimcdatee(), searchData.getSimcnote(), searchData.getSimcstatus(),
 					searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
+
+			if (searchData.getSyssort() == 999) {
+				// 年周轉換->依照完工日
+				for (ScheduleInfactory e : entitys) {
+					String sifdate = e.getSifdate();
+					int year = Fm_T.getYear(Fm_T.toDate(sifdate));
+					int week = Fm_T.getWeek(Fm_T.toDate(sifdate));
+					// 年周格式 → yyyy-Wxx
+					String yearWeek = String.format("%d-W%02d", year, week);
+					e.setSiywdate(yearWeek);
+				}
+				// 🔹 2. 依完工日排序
+				entitys.sort(Comparator.comparing(e -> e.getSifdate()));
+
+			}
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);

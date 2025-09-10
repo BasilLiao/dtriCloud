@@ -221,7 +221,7 @@ public class SynchronizeScheduledService {
 			// 避免時間-問題
 			if (one.getTa009() != null && !one.getTa009().equals(""))
 				one.setNewone(true);
-			erpMapInfactorys.put(one.getTa001_ta002(), one);
+			erpMapInfactorys.put(one.getTa001_ta002(), one);//製令單_內容
 			// 測試用
 			// if(one.getTa001_ta002().equals("A512-240311001")) {
 			// System.out.println(one.getTa001_ta002());
@@ -237,8 +237,9 @@ public class SynchronizeScheduledService {
 				String line = value.getAsString().split("_")[0];// 指定產線
 				String lineTotal = value.getAsString().split("_")[1];// 指定總進度
 				String lineStation = value.getAsString().split("_")[2];// 指定各站別進度
-				lineStation = lineStation.replaceAll(",", "\n").replaceAll(Pattern.quote("{"), "\n")
-						.replaceAll(Pattern.quote("}"), "");
+				lineStation = lineStation.replaceAll(",", " / ").replaceAll(Pattern.quote("{"), "")
+						.replaceAll(Pattern.quote("}"), "").replaceAll(Pattern.quote("\""), "");
+				lineStation = lineStation.replaceAll("\\r?\\n", " ").replaceAll("\\s+", " "); // ✅ 去除換行，替換成空白
 
 				contentJson.addProperty("line", line);
 				contentJson.addProperty("lineTotal", lineTotal);
@@ -266,8 +267,9 @@ public class SynchronizeScheduledService {
 			ArrayList<BasicShippingList> shNewListsA541 = new ArrayList<BasicShippingList>();
 			ArrayList<BasicShippingList> shNewListsA542 = new ArrayList<BasicShippingList>();
 			String statusA541 = "";
-			// String statusA542 = "";
+			String statusA542 = "";
 			Boolean finishA541 = true;
+			Boolean finishA542 = true;
 			for (BasicShippingList bSipl : shippingLists) {
 				if (bSipl.getBslclass().equals("A541") && bSipl.getBslfromcommand().contains(o.getSinb())) {// 匹配製令單號?
 					// 測試用
@@ -281,6 +283,10 @@ public class SynchronizeScheduledService {
 					}
 				} else if (bSipl.getBslclass().equals("A542") && bSipl.getBslfromcommand().contains(o.getSinb())) {
 					shNewListsA542.add(bSipl);
+					if (finishA542) {
+						// 如果 未完成?
+						finishA542 = !bSipl.getBslfuser().equals("");
+					}
 				}
 			}
 

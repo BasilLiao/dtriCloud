@@ -1778,12 +1778,18 @@
 
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
-					//console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
+					console.log(index+" : "+$(this).attr("id")+" : "+$(this).val());
 					if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
 						entityJson[$(this).attr("id")] = new Date($(this).val()).getTime();
 					} else {
 						entityJson[$(this).attr("id")] = $(this).val() == "" ? null : $(this).val();
 					}
+					//排序例外->避免屬性衝突(String->int)
+					if($(this).attr("id")=="syssort" && $(this).val()==""){
+						entityJson[$(this).attr("id")] = 0;
+					}
+					
+					
 				});
 				data['entityJson'] = JSON.stringify(entityJson);
 				//換頁

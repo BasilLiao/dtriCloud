@@ -141,7 +141,7 @@ public class BasicBomIngredientsServiceAc {
 					BasicBomIngredients.class);
 
 			// 特殊促發(BOMsynAll) 重新全部同步BOM
-			if (searchData.getBbisn().equals("BOMsynAll")) {
+			if (searchData.getBbisn() != null && searchData.getBbisn().equals("BOMsynAll")) {
 				// BOM結構同步
 				if (!SynchronizeBomService.erpSBIWorking) {
 					synchronizeBomService.erpSynchronizeBomIngredients(true);// u

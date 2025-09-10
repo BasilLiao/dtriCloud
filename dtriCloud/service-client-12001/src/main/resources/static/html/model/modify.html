@@ -282,7 +282,7 @@
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 
-				<div id="" class="col-6 col-lg-3 p-1 ">
+				<div id="" class="col-6 col-lg-2 p-1 ">
 					<div
 						class=" border border-secondary rounded modify_c_batch_revision_open collapse ">
 						<div class="title_color fw-bolder rounded-top">Batch Data</div>
@@ -305,7 +305,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-3 p-1 ">
+				<div class="col-6 col-lg-2 p-1 ">
 					<div id="cBatchDetail"
 						class=" border border-secondary rounded modify_c_batch_revision_open collapse">
 						<div class="title_color fw-bolder rounded-top">Batch Detail</div>
@@ -329,7 +329,33 @@
 					</div>
 				</div>
 				<div class="col-6 col-lg-3 p-1">
-					<div class=" border border-secondary rounded">
+					<div class="border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Excel
+							import(Only Create)</div>
+						<div class="row m-0">
+							<button id="btn_inp_excel_ex" type="button"
+								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
+								<b>Inport<br>Excel Ex
+								</b>
+							</button>
+							<button id="btn_inp_excel" type="button"
+								class="lh-1 col-8 p-1 m-1 btn btn-sm btn-outline-dark">
+								<div class="row m-0">
+									<div class="col-4 p-0">
+										Inport<br>Excel
+									</div>
+									<div class="col-8 p-0">
+										<input
+											class="col-12 m-0 p-1 border border-dark form-control-file"
+											type="file" value="" placeholder="Ex:" accept=".xlsx">
+									</div>
+								</div>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-2 p-1">
+					<div class="border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">State</div>
 						<div id="modify_c_state" title="None_"
 							class="p-1 m-0 h2 fw-bold text-center text-danger">＞None＜</div>
@@ -987,11 +1013,148 @@
 						}
 					}
 				});
-
+				//上傳檔案Ex?
+				$(document).off("click", "#btn_inp_excel_ex");
+				$(document).on("click", "#btn_inp_excel_ex", function (event) {
+					let inputExcelEx = $('#modifyThAll table thead tr').clone();
+					let tbody = $('#modifyThAll table tbody tr').first().clone();
+					// 把裡面的每個 <td> 內容改成它的 class
+					tbody.find("td").each(function () {
+					    let cls = $(this).find('input, select, textarea');// 找到 input
+					    cls.removeClass("col-12 m-0 p-1 border border-dark m_fixed form-control entityVal form-check-input checkbox_33 datetimepicker_date form-select form-textarea");// 移除不需要的 class
+					   	let clsText = cls.attr("class") || "";
+					    $(this).text(clsText); // 用 class 名稱取代原本的值
+					});
+					inputExcelEx.find(".f_c_1,.f_c_2").remove();
+					tbody.find(".f_c_1,.f_c_2").remove();
+					
+					// 建立新的 table，把 thead 與 tbody 接在一起
+					let newTable = $("<table></table>")
+					    .append(tbody) // 先放 tbody
+					    .append(inputExcelEx);// 再放 thead
+					
+					let options = {
+						workbook: {
+							views: [{
+								x: 0, y: 0, width: 10000, height: 20000,
+								firstSheet: 0, activeTab: 1, visibility: 'visible'
+							}]
+						},
+						widthRatio: 0.55,//寬度比例
+						plugins: [
+							{
+								workbookCreated({workbook, tables}) {
+									console.log(tables);
+								}, worksheetCreated({workbook, tables, worksheet, table}) {
+									console.log(tables);
+								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
+									console.log(tables);
+								}, worksheetCompleted({workbook, tables, worksheet, table}) {
+									console.log(tables);
+								}
+							},
+						]
+					}
+					const table2Excel = new Table2Excel(newTable, options);//id or class or table
+					table2Excel.export($('#nav_functional_unit').text() + "_Ex", 'xlsx');//檔案名稱+副檔名
+				});
+				//上傳檔案?
+				$(document).off("change", "#btn_inp_excel .form-control-file");
+				$(document).on("change", "#btn_inp_excel .form-control-file", function (event) {
+					console.log("form-control-file");
+					let target = $(event.target);
+					//沒檔案?
+					if (!this.files || !this.files[0] || target.attr("accept") != ".xlsx") {
+						target.val("");
+						return;
+					}
+					//取得狀態(生管/物控/倉儲.....)
+				
+					//分析完成->比對資料寫入
+					let jsonResult = modify.methods.inputExcel(this.files[0]);
+					let modify_c_state = $('#modify_c_state').attr('title');
+					jsonResult.then((res) => {
+						console.log(res['inputExcel']);
+						//每個Excel欄位
+						res['inputExcel'].forEach(function (t,index) {
+							if (index === 0) return; // 跳過第一筆 & 略過標題
+							//開始比對欄位判斷
+							if(modify_c_state==='AC_POST'){
+								//新增?->觸發新增->填入對應資料(必須是沒有Class:m_fixed)
+								$("#modifyThAll .modifyThvEx .bi-plus-square").trigger('click');
+								let modifyThv_tr = $($("#modifyThv tr")[index]);
+								Object.entries(t).forEach(([key, val]) => {
+									val = val.trim();
+								    console.log("key:", key, "val:", val);
+								    if(modifyThv_tr.find("."+key).hasClass('m_fixed') || modifyThv_tr.find("."+key).parent().hasClass('d-none')){							    	
+										//不可寫入
+								    }else{
+								    	let target = modifyThv_tr.find("." + key);
+								    	//可寫入
+								    	if(target.is("input")){
+								    		//這是 input 欄位
+										    target.val(val);
+								    	}else if (target.is("textarea")) {
+								    		//這是 textarea 欄位
+								    		target.val(val);
+								    	}else if(target.is("select")){
+									    	//這是 select 欄位
+								    		// 1. 先比對 value
+										    if (target.find("option[value='" + val + "']").length > 0) {
+										        target.val(val);
+										        matched = true;
+										    } 
+										    // 2. 如果沒有 value，改比對文字
+										    else {
+										        target.find("option").each(function () {
+										        	  let text = $(this).text().trim();
+										              // ✅ 模糊比對，類似 SQL LIKE '%val%'
+										              if (text.includes(val)) {
+										                  target.val($(this).val());
+										                  matched = true;
+										                  return false; // 找到後跳出迴圈
+										              }
+										        });
+										    }
+								    	}
+								    }
+								});
+							}else if(modify_c_state==='AU_PUT'){
+								//修改?->暫無動作
+								
+							}							
+							console.log(t);		
+						});
+					});
+				});
 				//清除預設
 				$("#modify_c_date_clearAll").trigger('click');
 				$("#modify_c_detail_clearAll").trigger('click');
-
+			},
+			//==========================Excel ==========================
+			inputExcel(file) {
+				let reader = new FileReader();
+				reader.readAsBinaryString(file);
+				//https://www.casper.tw/development/2020/02/16/all-new-promise/
+				//
+				return new Promise((resolve, reject) => {
+					reader.onload = function (e) {
+						let data = e.target.result;
+						let workbook = XLSX.read(data, {
+							type: "binary",
+						});
+						let result = {};
+						workbook.SheetNames.forEach(function (sheetName) {
+							let roa = XLSX.utils.sheet_to_row_object_array(
+								workbook.Sheets[sheetName]
+							);
+							if (roa.length > 0) {
+								result['inputExcel'] = roa;
+							}
+						});
+						resolve(result);
+					};
+				});
 			},
 			//==========================處理資料==========================
 			modify(order, datas, dataDetails, entityDateTime) {
@@ -1331,6 +1494,8 @@
 				$(document).off("click", "#modify_c_detail_clearAll");
 				$(document).off("click", "#modify_c_save");
 				$(document).off("click", "#modify_c_cancelAll");
+				$(document).off("click", "#btn_inp_excel_ex");//Excel export
+				$(document).off("change", "#btn_inp_excel .form-control-file");//Excel File
 			},
 		},
 	};

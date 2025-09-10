@@ -1616,19 +1616,21 @@
 							let other_BPM_R = "";
 							$("#od_bpm_batch select").val("");//批次選擇->歸位
 							if (clickId === "btn_bpm_detail" && $("#other_BPM tbody input:checked").length > 0) {
+								//勾選那些產品?
 								checkedBPM_R = $("#other_BPM tbody input:checked").map(function () {
 									return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
 								}).get();
 								whois = "BPM";
-								whoisbpsnv = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + " .bpmbpsnv").text());
-								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bpmbisitem').text());
+								whoisbpsnv = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + " .bpmbpsnv").text());//產品參數
+								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bpmbisitem').text());//指定的物料內容
 							} else if (clickId === "btn_bpr_detail" && $("#other_BPR tbody input:checked").length > 0) {
+								//勾選那些產品?
 								checkedBPM_R = $("#other_BPR tbody input:checked").map(function () {
 									return $(this).attr("title"); // 或者 $(this).attr("你的屬性名稱") 來取得特定屬性
 								}).get();
 								whois = "BPR";
-								whoisbpsnv = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + " .bprbpsnv").text());
-								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bprbisitem').text());
+								whoisbpsnv = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + " .bprbpsnv").text());//產品參數
+								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bprbisitem').text());//指定的物料內容
 							}
 
 							//有勾選?
@@ -1664,15 +1666,16 @@
 										$("#other_BPS tbody tr .bpsname").each(d => {
 											let bpsname = $($("#other_BPS tbody tr .bpsname")[d]);
 											if (bpsname.text() === name) {
-												//選項?輸入?
+												//選項?輸入?select/input
 												console.log(name + ":" + val);
-												if (bpsname.parent().find(".bpsval select").length === 1) {
-													bpsname.parent().find(".bpsval select").val(val);
-													bpsname.parent().find(".bpscheck input").prop("checked", true);
+												let bpsnameParent = bpsname.parent();
+												if (bpsnameParent.find(".bpsval select").length === 1) {
+													bpsnameParent.find(".bpsval select").val(val);
+													bpsnameParent.find(".bpscheck input").prop("checked", true);
 												}
-												if (bpsname.parent().find(".bpsval input").length === 1) {
-													bpsname.parent().find(".bpsval input").val(val);
-													bpsname.parent().find(".bpscheck input").prop("checked", true);
+												if (bpsnameParent.find(".bpsval input").length === 1) {
+													bpsnameParent.find(".bpsval input").val(val);
+													bpsnameParent.find(".bpscheck input").prop("checked", true);
 												}
 											}
 										});
@@ -1703,13 +1706,14 @@
 											if (bpsname.text() === name) {
 												//選項?輸入?
 												console.log(name + ":" + val);
-												if (bpsname.parent().find(".bpsval select").length === 1) {
-													bpsname.parent().find(".bpsval select").val(val);
-													bpsname.parent().find(".bpscheck input").prop("checked", true);
+												let bpsnameParent = bpsname.parent();
+												if (bpsnameParent.find(".bpsval select").length === 1) {
+													bpsnameParent.find(".bpsval select").val(val);
+													bpsnameParent.find(".bpscheck input").prop("checked", true);
 												}
-												if (bpsname.parent().find(".bpsval input").length === 1) {
-													bpsname.parent().find(".bpsval input").val(val);
-													bpsname.parent().find(".bpscheck input").prop("checked", true);
+												if (bpsnameParent.find(".bpsval input").length === 1) {
+													bpsnameParent.find(".bpsval input").val(val);
+													bpsnameParent.find(".bpscheck input").prop("checked", true);
 												}
 											}
 										});
@@ -1720,13 +1724,15 @@
 								//
 								let odBPMTr = $("#other_Detail_" + whois + " tbody tr");//目前的項目數量
 								let bisgnameTr = $("#other_c #other_Detail_" + whois + " .exDetailTbodyTr .bisgname option");//群組項目數量
+								
 								//items:項目:不可大於[群組項目數量]
+								let detailTbody = $("#other_c #other_Detail_" + whois + " tbody");
+								let detailTbodyTrClone = $("#other_c #other_Detail_" + whois + " .exDetailTbodyTr");
 								whoisbisitem.items.forEach(itemOne => {
-									let detailTbodyTr = $("#other_c #other_Detail_" + whois + " .exDetailTbodyTr").clone();
-									detailTbodyTr.removeClass('exDetailTbodyTr');
-									detailTbodyTr.removeClass('d-none');
+									let detailTbodyTr = detailTbodyTrClone.clone();
+									detailTbodyTr.removeClass('exDetailTbodyTr d-none');
 									detailTbodyTr.addClass('detailTbodyTr');
-									detailTbodyTr.appendTo($("#other_c #other_Detail_" + whois + " tbody"));
+									detailTbodyTr.appendTo(detailTbody);
 									//群主檢查
 									let bisgidCheck = detailTbodyTr.find('.bisgname select option[value="' + itemOne.bisgid + '"]').length > 0;
 									if (bisgidCheck) {
@@ -1741,12 +1747,12 @@
 										}
 									}
 								});
+								
 								//basic:基本:
 								let detailTbodyTr = $("#other_c #other_Detail_" + whois + " .exDetailTbodyTr").clone();
-								detailTbodyTr.removeClass('exDetailTbodyTr');
-								detailTbodyTr.removeClass('d-none');
+								detailTbodyTr.removeClass('exDetailTbodyTr d-none');
 								detailTbodyTr.addClass('detailTbodyTr');
-								detailTbodyTr.appendTo($("#other_c #other_Detail_" + whois + " tbody"));
+								detailTbodyTr.appendTo(detailTbody);
 								detailTbodyTr.find(".bisgname select").val("0").focus().trigger('change');
 								detailTbodyTr.find(".bisnb input").val(whoisbisitem.basic);
 								detailTbodyTr.find(".bisgname select").prop("disabled", true); // 顯示但無法選擇
@@ -2089,6 +2095,7 @@
 								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目
 								        let key = $(this).attr("sort").trim().toString().padStart(3, '0') + "_sort_"+$(this).val().trim(); // 用 text 當 key
 								        optionsMap[key] = {
+								        	bisproduct: $(this).attr("bisproduct") || "",
 								            class: $(this).attr("class") || "",
 								            alt: $(this).attr("alt") || "",
 								            sort: $(this).attr("sort") || "",
@@ -2105,7 +2112,7 @@
 									let bbi = $("#other_BBI tbody ." + i);
 									let bpm = $("#other_BPM tbody .valTbodyTr_" + new_i);
 									let bbisn = bbi.find(".bbisn").text();
-									let sysnote = bbi.find(".bbiname").text()+" & "+ bbi.find(".bbispecification").text();//PM說明
+									let sysnote = "☑Product Name: "+bbi.find(".bbiname").text()+" ☑Specifications: "+ bbi.find(".bbispecification").text()+" ☑PM: "+$('#menu_login_name').text();//PM說明
 									//型號
 									let bpmmodel = "";
 									if (typeof bbisn === 'string') {
@@ -2176,7 +2183,7 @@
 									//如果必選沒有選配到?
 									Object.keys(optionsMap).forEach(key => {
 									    // 檢查 optionsMap 有值 && bpmbasicSort 沒有該 key
-									    if (optionsMap[key] && !(key in bpmbasicSort)) {
+									    if (optionsMap[key] && !(key in bpmbasicSort) && optionsMap[key]["bisproduct"]=="true") {
 									        console.log("缺少必填資料:"+ key+", "+JSON.stringify(optionsMap[key],null));
 									        let newItem ={
 									            bisid:"0",
