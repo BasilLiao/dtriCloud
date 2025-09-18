@@ -286,7 +286,6 @@ public class ScheduleInfactoryServiceAc {
 					});
 			// Step2.資料檢查
 		}
-
 		// =======================資料整理=======================
 		// action : mp=製造/wm=倉庫/mc=物控/sc=生管
 		entityDatas.forEach(x -> {
@@ -448,7 +447,7 @@ public class ScheduleInfactoryServiceAc {
 				o.setSysmdate(new Date());
 				o.setSysmuser(packageBean.getUserAccount());
 
-				o.setSiscstatus(x.getSiscstatus());
+				o.setSiscstatus(x.getSiscstatus() == null ? 0 : x.getSiscstatus());// 生管狀態
 				o.setSifodate(x.getSifodate());
 				o.setSifokdate(x.getSifokdate());
 				o.setSipriority(x.getSipriority());
@@ -779,19 +778,19 @@ public class ScheduleInfactoryServiceAc {
 				// int r = 1;
 
 				for (ScheduleInfactory oss : infactorys) {
-//					String siscstatus = "";// 生管狀態
-//					switch (oss.getSiscstatus()) {
-//					case 0:
-//						siscstatus = "未開注意事項";
-//						break;
-//					case 1:
-//						siscstatus = "已開注意事項";
-//						break;
-//					case 2:
-//						siscstatus = "已核准流程卡";
-//						break;
-//
-//					}
+					String siscstatus = "";// 生管狀態
+					switch (oss.getSiscstatus()) {
+					case 0:
+						siscstatus = "未開注意事項";
+						break;
+					case 1:
+						siscstatus = "已開注意事項";
+						break;
+					case 2:
+						siscstatus = "已核准流程卡";
+						break;
+
+					}
 					String simcstatus = "";// 物控狀態
 					switch (oss.getSimcstatus()) {
 					case 0:

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -893,6 +894,11 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomProductManagement> entitySave = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
+		// 連續號檢查?(末3碼)SN_check
+		JsonObject sn_checkJson = new JsonObject();
+		sn_checkJson = JsonParser.parseString(packageBean.getCallBackValue()).getAsJsonObject();
+		Boolean sn_check = sn_checkJson.get("SN_check").getAsBoolean();
+
 		// =======================資料檢查=======================
 		// 一般BOM規格
 		if (packageBean.getOtherSet().equals("BPM")) {
@@ -961,6 +967,47 @@ public class BomProductManagementServiceAc {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
 								new String[] { "This account has no permissions : " + packageBean.getUserAccount()
 										+ " : " + info });
+					}
+					// 檢查連續碼
+					if (sn_check) {
+						String bpmnbNew = entityData.getBpmnb();
+						// 先確保字串長度 >= 3
+						if (bpmnbNew != null && bpmnbNew.length() >= 3) {
+							// 末3碼
+							String bpmnbNewLast3 = bpmnbNew.substring(bpmnbNew.length() - 3);
+							// 其餘碼
+							String bpmnbNewPrefix = bpmnbNew.substring(0, bpmnbNew.length() - 3);
+							//
+							List<Order> orders = new ArrayList<>();
+							orders.add(new Order(Direction.DESC, "bpmnb"));// BOM號
+							PageRequest pageable = PageRequest.of(0, 999, Sort.by(orders));
+							ArrayList<BomProductManagement> checkDataSn = managementDao.findAllBySearch(bpmnbNewPrefix,
+									null, null, null, pageable);
+							if (checkDataSn.size() > 0) {
+								// 檢查連序號
+								String bpmnbOld = checkDataSn.get(0).getBpmnb();
+								// 末3碼
+								String bpmnbOldLast3 = bpmnbOld.substring(bpmnbOld.length() - 3);
+								// 其餘碼
+								// String bpmnbOldPrefix = bpmnbOld.substring(0, bpmnbOld.length() - 3);
+								String expectedNext = nextSN(bpmnbOldLast3);
+
+								if (bpmnbNewLast3.equals(expectedNext)) {
+									System.out.println("✅ 序號連貫");
+								} else {
+									System.out.println("❌ 序號不連貫，上一碼是 " + bpmnbOldLast3 + "，理應是 " + expectedNext
+											+ "，但收到 " + bpmnbNewLast3);
+									throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008,
+											Lan.zh_TW, new String[] { "Product serial numbers are not continuous:"
+													+ bpmnbOld + "->" + entityData.getBpmnb() });
+								}
+							}
+						} else {
+							System.out.println("字串長度不足3碼");
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+									new String[] {
+											"The string length is less than 3 characters:" + entityData.getBpmnb() });
+						}
 					}
 				}
 			}
@@ -1316,5 +1363,34 @@ public class BomProductManagementServiceAc {
 		packageBean.setEntityJson(entityJsonDatas);
 
 		return packageBean;
+	}
+
+	// 先定義合法字元集：A-Z + 0-9
+	private static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+	// 連續號檢測
+	public static String nextSN(String sn) {
+		char[] chars = sn.toCharArray();
+		int i = chars.length - 1;
+
+		while (i >= 0) {
+			int index = CHARSET.indexOf(chars[i]);
+			if (index < 0) {
+				throw new IllegalArgumentException("不合法字元: " + chars[i]);
+			}
+
+			if (index == CHARSET.length() - 1) {
+				// 進位 (Z → A, 9 → A)
+				chars[i] = CHARSET.charAt(0);
+				i--;
+			} else {
+				// 當前位數 +1
+				chars[i] = CHARSET.charAt(index + 1);
+				return new String(chars);
+			}
+		}
+
+		// 全部滿了 (ZZZ → overflow)
+		throw new IllegalStateException("序號已達最大值: " + sn);
 	}
 }

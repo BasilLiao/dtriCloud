@@ -631,6 +631,7 @@ public class BomItemSpecificationsServiceAc {
 				entityDataOld.setBisgname(x.getBisgname());
 				entityDataOld.setBisgsplit(x.getBisgsplit());
 				entityDataOld.setBisgcondition(x.getBisgcondition());
+				entityDataOld.setBislevel(x.getBislevel() == null ? 0 : x.getBislevel());
 				// 勾選
 				entityDataOld.setBisproduct(x.getBisproduct());
 				entityDataOld.setBisaccessories(x.getBisaccessories());
@@ -726,6 +727,7 @@ public class BomItemSpecificationsServiceAc {
 			x.setSyscdate(new Date());
 			x.setSyscuser(packageBean.getUserAccount());
 			x.setSysheader(false);
+			x.setBislevel(x.getBislevel() == null ? 0 : x.getBislevel());
 			entitySave.add(x);
 		}
 		// =======================資料儲存=======================

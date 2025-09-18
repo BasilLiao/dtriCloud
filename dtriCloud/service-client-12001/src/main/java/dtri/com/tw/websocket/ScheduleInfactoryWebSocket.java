@@ -143,6 +143,11 @@ public class ScheduleInfactoryWebSocket implements ApplicationContextAware {
 			if (mapInfactory.size() == 0) {
 				reLoad();
 			}
+			// 測試用
+			mapInfactory.forEach((x, v) -> {
+				System.out.println(x + ":" + v.getSiscstatus());
+			});
+
 			// User?
 			if (session != null) {
 				userAcc = (String) session.getRequestParameterMap().get("userAcc").get(0);

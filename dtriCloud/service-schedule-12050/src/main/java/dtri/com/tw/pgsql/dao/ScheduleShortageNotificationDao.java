@@ -13,10 +13,11 @@ public interface ScheduleShortageNotificationDao extends JpaRepository<ScheduleS
 	// 查詢用
 	@Query("SELECT c FROM ScheduleShortageNotification c WHERE "//
 			+ "(:ssnnb is null or c.ssnnb LIKE %:ssnnb%) and "// 成品BOM號
-			+ "(:ssnsslerpcuser is null or c.ssnsslerpcuser LIKE %:ssnsslerpcuser%) and "// ERP 建單人
+			+ "(:ssnsuname is null or c.ssnsuname LIKE %:ssnsuname%) and "// 負責人
+			+ "(:ssnsumail is null or c.ssnsumail LIKE %:ssnsumail%) and "// Mail 建單人
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
-	ArrayList<ScheduleShortageNotification> findAllBySearch(String ssnnb, String ssnsslerpcuser, Integer sysstatus,
-			Pageable pageable);
+	ArrayList<ScheduleShortageNotification> findAllBySearch(String ssnnb, String ssnsuname, String ssnsumail,
+			Integer sysstatus, Pageable pageable);
 
 	// 查詢用
 	@Query("SELECT c FROM ScheduleShortageNotification c WHERE "//
@@ -24,8 +25,8 @@ public interface ScheduleShortageNotificationDao extends JpaRepository<ScheduleS
 			+ "(:ssnsslerpcuser is null or c.ssnsslerpcuser LIKE %:ssnsslerpcuser%) and "// ERP 建單人
 			+ "(:ssniqnotice is null or c.ssniqnotice = :ssniqnotice) and "// 是否通知急單
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
-	ArrayList<ScheduleShortageNotification> findAllBySearchSsniqnotice(String ssnnb, String ssnsslerpcuser, Integer sysstatus,
-			Boolean ssniqnotice, Pageable pageable);
+	ArrayList<ScheduleShortageNotification> findAllBySearchSsniqnotice(String ssnnb, String ssnsslerpcuser,
+			Integer sysstatus, Boolean ssniqnotice, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleShortageNotification c WHERE "//

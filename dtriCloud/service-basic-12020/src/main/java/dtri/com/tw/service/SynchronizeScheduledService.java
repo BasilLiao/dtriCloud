@@ -221,7 +221,7 @@ public class SynchronizeScheduledService {
 			// 避免時間-問題
 			if (one.getTa009() != null && !one.getTa009().equals(""))
 				one.setNewone(true);
-			erpMapInfactorys.put(one.getTa001_ta002(), one);//製令單_內容
+			erpMapInfactorys.put(one.getTa001_ta002(), one);// 製令單_內容
 			// 測試用
 			// if(one.getTa001_ta002().equals("A512-240311001")) {
 			// System.out.println(one.getTa001_ta002());
@@ -281,7 +281,8 @@ public class SynchronizeScheduledService {
 						// 如果 未完成?
 						finishA541 = !bSipl.getBslfuser().equals("");
 					}
-				} else if (bSipl.getBslclass().equals("A542") && bSipl.getBslfromcommand().contains(o.getSinb())) {
+				}
+				if (bSipl.getBslclass().equals("A542") && bSipl.getBslfromcommand().contains(o.getSinb())) {
 					shNewListsA542.add(bSipl);
 					if (finishA542) {
 						// 如果 未完成?
@@ -300,7 +301,7 @@ public class SynchronizeScheduledService {
 					erpToCloudService.scheduleInfactoryOne(o, erpMapInfactorys.get(o.getSinb()), sum);
 					newScheduleInfactorys.add(o);
 				}
-				// shNewListsA541.size() > 0 || shNewListsA542.size() > 0
+				// ===A541領料單===
 				if (shNewListsA541.size() > 0) {
 					// 測試用
 //					if ((shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn())
@@ -323,6 +324,66 @@ public class SynchronizeScheduledService {
 							if (qtyN > 0 && !oneBSL.getBslfuser().equals("ERP_Remove(Auto)")) {
 								// 缺料標記
 								content += "\n" + oneBSL.getBslpnumber() + " 缺: " + qtyN;
+							}
+						}
+					}
+
+					// 檢料進度不同?
+					JsonArray siwmnotes = new JsonArray();
+					JsonObject siwmnoteOne = new JsonObject();
+					// 如果是空的(第一筆)?
+					if (o.getSiwmnote().equals("[]") || o.getSiwmnote().equals("")) {
+						siwmnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+						siwmnoteOne.addProperty("user", "system");
+						siwmnoteOne.addProperty("content", content);
+						siwmnotes.add(siwmnoteOne);
+						o.setSiwmnote(siwmnotes.toString());// 倉儲備註(格式)人+時間+內容
+					} else {
+						// 不是空的(第N筆資料)->取出轉換->比對最新資料
+						siwmnotes = JsonParser.parseString(o.getSiwmnote()).getAsJsonArray();
+
+						// 取出先前的-最新資料比對->不同內容->添加新的
+						JsonArray siwmnoteOld = new JsonArray();
+						siwmnoteOld = JsonParser.parseString(o.getSiwmnote()).getAsJsonArray();
+						String contentNew = content;
+						Boolean checkNotSame = true;
+						// 比對每一筆資料
+						for (JsonElement jsonElement : siwmnoteOld) {
+							String contentOld = jsonElement.getAsJsonObject().get("content").getAsString();
+							if (contentOld.equals(contentNew)) {
+								checkNotSame = false;
+								break;
+							}
+						}
+						// 確定不同 才能更新
+						if (checkNotSame) {
+							siwmnoteOne.addProperty("date", Fm_T.to_yMd_Hms(new Date()));
+							siwmnoteOne.addProperty("user", "system");
+							siwmnoteOne.addProperty("content", contentNew);//
+							siwmnotes.add(siwmnoteOne);
+							o.setSiwmnote(siwmnotes.toString());// 倉儲備註(格式)人+時間+內容
+						}
+					}
+				}
+
+				// ===A542補料單===
+				if (shNewListsA542.size() > 0) {
+					if (shNewListsA542.get(0).getBslpalready() == 1) {// 已打印
+						statusA542 = "開始補料";
+						if (finishA542) {// 已經完成備料?
+							statusA542 = "完成補料";
+						}
+					} else {
+						statusA542 = "尚未補料";
+					}
+					String content = statusA542 + "_" //
+							+ shNewListsA542.get(0).getBslclass() + "-" + shNewListsA542.get(0).getBslsn();
+					if (finishA542) {// 已經完成備料?
+						for (BasicShippingList oneBSL : shNewListsA542) {
+							int qtyN = oneBSL.getBslpngqty();
+							if (qtyN > 0 && !oneBSL.getBslfuser().equals("ERP_Remove(Auto)")) {
+								// 缺料標記
+								content += "\n" + oneBSL.getBslpnumber() + " 已補: " + qtyN;
 							}
 						}
 					}
