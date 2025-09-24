@@ -191,6 +191,7 @@ public class BomItemSpecificationsServiceAc {
 		JsonArray reportAry = packageService.StringToAJson(entityReport);
 		List<BomItemSpecifications> entitys = new ArrayList<>();
 		List<BomItemSpecifications> entityNews = new ArrayList<>();
+		Map<String, String> entityNewsRep = new HashMap<>();// 避免重複
 		List<WarehouseMaterial> materials = new ArrayList<>();
 		Map<String, String> sqlQuery = new HashMap<>();
 		Map<String, BomItemSpecifications> sqlQueryEntitys = new HashMap<>();
@@ -301,11 +302,15 @@ public class BomItemSpecificationsServiceAc {
 				s.setBisnb(itemSp.getBisnb());
 				s.setBisspecifications(itemSp.getBisspecifications());
 				s.setBisdescription(itemSp.getBisdescription());
-				entityNews.add(s);
+				// 避免重複
+				if (!entityNewsRep.containsKey(itemSp.getBisnb())) {
+					entityNewsRep.put(itemSp.getBisnb(), "");
+					entityNews.add(s);
+				}
 				sqlQueryEntitys.get(s.getBisnb()).setSysstatus(2);// 無效狀態
 			} else {
 				// 沒比對到->移除(除了customize例外)
-				if (s.getBisnb().equals("customize")) {
+				if (s.getBisnb().contains("customize")) {
 					entityNews.add(s);
 				}
 			}
@@ -338,14 +343,17 @@ public class BomItemSpecificationsServiceAc {
 		List<BomItemSpecifications> entitysData = specificationsDao.findAll();
 		// 過濾->只取得GID
 		entitysData.forEach(s -> {
-			if (entitysMap.containsKey(s.getBisgid())) {
-				List<BomItemSpecifications> list = entitysMap.get(s.getBisgid());
-				list.add(s);
-				entitysMap.put(s.getBisgid(), list);
-			} else {
-				List<BomItemSpecifications> list = new ArrayList<BomItemSpecifications>();
-				list.add(s);
-				entitysMap.put(s.getBisgid(), list);
+			//去除自訂義
+			if (!s.getBisnb().contains("customize")) {
+				if (entitysMap.containsKey(s.getBisgid())) {
+					List<BomItemSpecifications> list = entitysMap.get(s.getBisgid());
+					list.add(s);
+					entitysMap.put(s.getBisgid(), list);
+				} else {
+					List<BomItemSpecifications> list = new ArrayList<BomItemSpecifications>();
+					list.add(s);
+					entitysMap.put(s.getBisgid(), list);
+				}
 			}
 		});
 
@@ -501,7 +509,7 @@ public class BomItemSpecificationsServiceAc {
 				}
 			});
 
-			// 資料比對整理(新舊整合)
+			// 資料比對整理(舊(entitys)->新(sqlQueryEntitys) 整合)
 			entitys.forEach(s -> {
 				// 有比對到->更新
 				BomItemSpecifications itemSp = new BomItemSpecifications();
@@ -519,7 +527,7 @@ public class BomItemSpecificationsServiceAc {
 				} else {
 					// 沒比對到->移除(除了customize例外)
 					if (s.getBisnb().contains("customize")) {
-						entityNews.add(s);
+						// entityNews.add(s);
 					} else {
 						// 如果有標記自動?
 						if (s.getBisiauto()) {
