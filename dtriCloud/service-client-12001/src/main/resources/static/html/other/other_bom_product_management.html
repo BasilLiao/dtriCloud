@@ -694,7 +694,7 @@
 						</div>
 					</div>
 					<!---->
-					<table style="max-height: 530px; min-height: 530px;"
+					<table style="max-height: 430px; min-height: 430px;"
 						class="col m-0 p-0  mt-1 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 						<thead class="table-success fixedCt">
 							<tr>
@@ -1620,6 +1620,23 @@
 							let whoisbpsnv = "";
 							let whoisbisitem = "";
 							let other_BPM_R = "";
+							//還原樣式
+							//
+							$("#other_c #other_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BIS").addClass("col-lg-4");
+							$("#other_c #other_BPR_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BPR_BIS").addClass("col-lg-4");
+							//
+							$("#other_c #other_Detail_BPM").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPM").addClass("col-lg-8");
+							$("#other_c #other_Detail_BPR").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPR").addClass("col-lg-8");
+							//
+							$("#other_c #other_BIS").addClass("d-none");
+							$("#other_c #other_BPR_BIS").addClass("d-none");
+							$("#other_c #other_Detail_BPM_info").removeClass("d-none");
+							$("#other_c #other_Detail_BPR_info").removeClass("d-none");
+							//
 							$("#od_bpm_batch select").val("");//批次選擇->歸位
 							if (clickId === "btn_bpm_detail" && $("#other_BPM tbody input:checked").length > 0) {
 								//勾選那些產品?
@@ -1801,6 +1818,23 @@
 							let b_w = "";
 							let b_w_m = "";
 							let b_p_s = "";
+							//還原樣式
+							//
+							$("#other_c #other_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BIS").addClass("col-lg-4");
+							$("#other_c #other_BPR_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BPR_BIS").addClass("col-lg-4");
+							//
+							$("#other_c #other_Detail_BPM").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPM").addClass("col-lg-8");
+							$("#other_c #other_Detail_BPR").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPR").addClass("col-lg-8");
+							//
+							$("#other_c #other_BIS").addClass("d-none");
+							$("#other_c #other_BPR_BIS").addClass("d-none");
+							$("#other_c #other_Detail_BPM_info").removeClass("d-none");
+							$("#other_c #other_Detail_BPR_info").removeClass("d-none");
+							
 							if (clickId === "btn_bpm_back") {	
 								//異常觸發?是否選取?
 								od_bpmr_nb = $('#od_bpm_nb input').val();
@@ -2181,7 +2215,9 @@
 											});
 											//basic:其他基本資料
 											if (checkIsbasic) {
-												bpmbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);
+												if(s['bbiilevel'] == 1){
+													bpmbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);												
+												}
 											}
 										}
 									});
@@ -2355,7 +2391,9 @@
 											});
 											//basic:其他基本資料
 											if (checkIsbasic) {
-												bprbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);
+												if(s['bbiilevel'] == 1){
+													bprbisitem.basic.push(s['bbiisn'] + "_" + s['bbiiqty'] + "_" + s['bbiiprocess'] + "_" + s['bbiilevel']);
+												}
 											}
 										}
 									});
@@ -2816,6 +2854,13 @@
 							//還原->存入
 							$("#other_c #" + whois + "_od #" + other_BIS).addClass("d-none");
 							$("#other_c #" + whois + "_od #" + whois + "_info").removeClass("d-none");
+							//
+							$("#other_c #" + other_BIS).removeClass("col-lg-6");
+							$("#other_c #" + other_BIS).addClass("col-lg-4");
+							//
+							$("#other_c #" + whois).removeClass("col-lg-6");
+							$("#other_c #" + whois).addClass("col-lg-8");
+							
 							$(event.target).addClass("btn-outline-primary");
 							//是Basic
 							if ($(event.target).parent().parent().find(".bisgname select option:selected").val() === "0") {
@@ -2828,8 +2873,8 @@
 										//Basic 內階層預設1
 										let bislevel = valTbodyTr.find('.bislevel input').val()==""?"1":valTbodyTr.find('.bislevel input').val();
 										bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
-										//避免回存資料是錯誤的
-										if(bisqty!="" &&bisnb!=""){
+										//避免回存資料是錯誤的+指存入1階層資料
+										if(bisqty!="" && bisnb!="" && bislevel==1){
 											basics.push(bisnb + "_" + bisqty + "_" + bisprocess+"_"+bislevel);
 										}
 									
@@ -2841,8 +2886,17 @@
 							$("#other_c #" + other_BIS + " .valTbodyTr").remove();
 							//切換
 							$("#other_c #" + other_BIS).removeClass("d-none");
+							$("#other_c #" + other_BIS).removeClass("col-lg-4");
+							$("#other_c #" + other_BIS).addClass("col-lg-6");
+							//
+							$("#other_c #" + whois).removeClass("col-lg-8");
+							$("#other_c #" + whois).addClass("col-lg-6");
+							//
 							$("#other_c #" + whois + "_info").addClass("d-none");
 							$(event.target).addClass("btn-outline-warning");
+							
+							
+							
 							//鎖定
 							$(event.target).parent().parent().parent().find(".detailTbodyTr").addClass("locked-do");
 							$(event.target).parent().parent().removeClass("locked-do");

@@ -66,7 +66,7 @@ public interface BommdDao extends JpaRepository<Bommd, Long> {
 			+ "     ON BOMMD.MD003 = INVMC.MB001 "//
 			+ " WHERE BOMMD.MD006 >= 0 "//
 			+ " AND (BOMMD.CREATE_DATE > CONVERT(VARCHAR(8), GETDATE()-10, 112) "// --第一次資料導入忽視此條件
-			+ " OR BOMMD.MODI_DATE > CONVERT(VARCHAR(8), GETDATE(), 112)) "// --第一次資料導入忽視此條件
+			+ " OR BOMMD.MODI_DATE > CONVERT(VARCHAR(8), GETDATE()-10, 112)) "// --第一次資料導入忽視此條件
 			+ "ORDER BY BOMMD.MD001 ASC, BOMMD.MD002 ASC "//
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Bommd> findAllByBommd();

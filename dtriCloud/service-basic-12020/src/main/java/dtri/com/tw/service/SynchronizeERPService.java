@@ -1894,9 +1894,9 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 測試用
-//			if(nKey.indexOf("A121-231122005-0001")>=0) {
-//				System.out.println(nKey);
-//			}
+			if(nKey.contains("A115")) {
+				System.out.println(nKey);
+			}
 			// 單據性質別:
 			if (m.getTb001_tb002_tb003().contains("A111")) {
 				m.setTk000("領料類");
@@ -1937,6 +1937,9 @@ public class SynchronizeERPService {
 			} else if (m.getTb001_tb002_tb003().contains("A115")) {
 				// RMA領料
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
+				// 領
+				m.setTk000("領料類");
+				erpShMaps.put(nKey, m);
 			}
 		}
 

@@ -211,6 +211,10 @@ public class SynchronizeBomService {
 					bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
 					bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
 					bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+					// 測試
+//					if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("90-340-T12RA03-0040")) {
+//						System.out.println((bommd.getMd001() + "-" + bommd.getMd002()));
+//					}
 					erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
 					bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());// 成品號-序號
 				});
@@ -220,9 +224,9 @@ public class SynchronizeBomService {
 				boms = basicBomIngredientsDao.findAllByBomLists(bbisnnbs);// 常態性跑用
 				boms.forEach(o -> {
 					// 測試
-					// if (o.getBbisnnb().equals("90-340-T20AA00-0010")) {
-					// System.out.println(o.getBbisnnb());
-					// }
+//					if (o.getBbisnnb().equals("90-340-T12RA03-0040")) {
+//						System.out.println(o.getBbisnnb());
+//					}
 					if (erpBommds.containsKey(o.getBbisnnb())) {
 						erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
 						String sum = erpBommds.get(o.getBbisnnb()).toString();
@@ -397,7 +401,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system BOM [" + bhnb + "] modification notification!");
+						+ "Cloud system BOM [Update][" + bhnb + "] modification notification!");
 				// 內容
 				String bnmcontent = "<div>" + sysnote + "</div>"
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
@@ -533,7 +537,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system BOM [" + bhnb + "] all new notification!");
+						+ "Cloud system BOM [All New][" + bhnb + "] all new notification!");
 				// 內容
 				String bnmcontent = "<div>" + sysnote + "</div>"
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
