@@ -302,16 +302,16 @@ public class BomProductManagementServiceAc {
 					case "bisname":
 						s.setSyssort(4);
 						break;
-					case "bissdescripion":
+					case "bislevel":
 						s.setSyssort(5);
 						break;
 					case "bisprocess":
 						s.setSyssort(6);
 						break;
-					case "biswhere":
+					case "bissdescripion":
 						s.setSyssort(7);
 						break;
-					case "bislevel":
+					case "biswhere":
 						s.setSyssort(8);
 						break;
 					}

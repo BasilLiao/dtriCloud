@@ -2202,7 +2202,6 @@
 													bpmbisitemOne.bisgfname = bs['bisgfname'];
 													bpmbisitemOne.bisfname = bs['bisfname'];
 													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
-													bpmbisitemOne.bissdescripion = bs['bissdescripion'];
 													bpmbisitemOne.bisqty = s['bbiiqty'];
 													bpmbisitemOne.bisprocess = s['bbiiprocess'];
 													bpmbisitemOne.bislevel = s['bbiilevel'];
@@ -2377,7 +2376,6 @@
 													bprbisitemOne.bisgname = bs['bisgname'];
 													bprbisitemOne.bisgfname = bs['bisgfname'];
 													bprbisitemOne.bisfname = bs['bisfname'];
-													bprbisitemOne.bissdescripion = bs['bissdescripion'];
 													bprbisitemOne.bissdescripion = bs['bissdescripion'];
 													bprbisitemOne.bisqty = s['bbiiqty'];
 													bprbisitemOne.bisprocess = s['bbiiprocess'];
@@ -3074,6 +3072,9 @@
 					//移除
 					if (target.hasClass("bi-dash-square")) {
 						$(this.parentElement.parentElement.parentElement).remove();
+						//檢查該項目是不是第一階層
+						
+						
 					}
 				});
 				

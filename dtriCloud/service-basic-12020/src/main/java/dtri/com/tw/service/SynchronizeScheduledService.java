@@ -315,15 +315,19 @@ public class SynchronizeScheduledService {
 						}
 					} else {
 						statusA541 = "尚未備料";
+						if (finishA541) {// 有可能沒有打印 已經完成備料?
+							statusA541 = "完成備料";
+						}
 					}
 					String content = statusA541 + "_" //
 							+ shNewListsA541.get(0).getBslclass() + "-" + shNewListsA541.get(0).getBslsn();
 					if (finishA541) {// 已經完成備料?
+						int nb = 1;
 						for (BasicShippingList oneBSL : shNewListsA541) {
 							int qtyN = oneBSL.getBslpnqty() - oneBSL.getBslpngqty();
 							if (qtyN > 0 && !oneBSL.getBslfuser().equals("ERP_Remove(Auto)")) {
 								// 缺料標記
-								content += "\n" + oneBSL.getBslpnumber() + " 缺: " + qtyN;
+								content += "\n" + (nb++) + "．" + oneBSL.getBslpnumber() + " 缺: " + qtyN;
 							}
 						}
 					}
@@ -375,15 +379,19 @@ public class SynchronizeScheduledService {
 						}
 					} else {
 						statusA542 = "尚未補料";
+						if (finishA542) {// 有可能沒有打印 已經完成備料?
+							statusA541 = "完成備料";
+						}
 					}
 					String content = statusA542 + "_" //
 							+ shNewListsA542.get(0).getBslclass() + "-" + shNewListsA542.get(0).getBslsn();
 					if (finishA542) {// 已經完成備料?
+						int nb = 1;
 						for (BasicShippingList oneBSL : shNewListsA542) {
 							int qtyN = oneBSL.getBslpngqty();
 							if (qtyN > 0 && !oneBSL.getBslfuser().equals("ERP_Remove(Auto)")) {
 								// 缺料標記
-								content += "\n" + oneBSL.getBslpnumber() + " 已補: " + qtyN;
+								content += "\n" + (nb++) + "．" + oneBSL.getBslpnumber() + " 已補: " + qtyN;
 							}
 						}
 					}

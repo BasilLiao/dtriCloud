@@ -375,7 +375,7 @@ public class SynchronizeBomService {
 					} else {
 						secondaryUsers.add(r.getBnsumail());
 					}
-				} else {
+				} else if (r.getBnnb().equals("") && r.getBnmodel().equals("")) {
 					// 如果都沒有過濾(留空白)-> 主要?次要?
 					if (r.getBnprimary() == 0) {
 						mainUsers.add(r.getBnsumail());
@@ -512,7 +512,7 @@ public class SynchronizeBomService {
 					} else {
 						secondaryUsers.add(r.getBnsumail());
 					}
-				} else {
+				} else if (r.getBnnb().equals("") && r.getBnmodel().equals("")) {
 					// 如果都沒有過濾(留空白)-> 主要?次要?
 					if (r.getBnprimary() == 0) {
 						mainUsers.add(r.getBnsumail());

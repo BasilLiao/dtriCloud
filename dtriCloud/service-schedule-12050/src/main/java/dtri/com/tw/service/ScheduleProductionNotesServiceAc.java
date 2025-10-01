@@ -24,12 +24,14 @@ import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BasicCommandListDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
+import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicCommandList;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
+import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -62,6 +64,9 @@ public class ScheduleProductionNotesServiceAc {
 
 	@Autowired
 	private BasicBomIngredientsDao bomIngredientsDao;
+
+	@Autowired
+	private ScheduleInfactoryDao infactoryDao;
 
 	// @Autowired
 	// private EntityManager em;
@@ -302,11 +307,20 @@ public class ScheduleProductionNotesServiceAc {
 				// 客戶/國家/訂單
 				String[] sysnot = null;
 				String syshnote = commandList.getSyshnote();
+				String sphname = "";
+				String sphspecification = "";
 				if (syshnote != null && !syshnote.trim().isEmpty()) {
 					// 去除所有空格並進行分割
 					sysnot = syshnote.replaceAll("\\s+", "").split("/");
 				}
-				//
+				// 找尋 資料BOM資料
+				ArrayList<ScheduleInfactory> infactories = infactoryDao.findAllByCheck(bclclass + "-" + bclsn, null,
+						null);
+				if (infactories.size() > 0) {
+					sphname = infactories.get(0).getSipname();// 產品品名<br>
+					sphspecification = infactories.get(0).getSipspecifications();// 產品規格<br>
+				}
+
 				entity.setSyscdate(commandList.getSyscdate());
 				entity.setSysmdate(commandList.getSysmdate());
 				entity.setSyscuser(commandList.getSyscuser());
@@ -314,8 +328,8 @@ public class ScheduleProductionNotesServiceAc {
 
 				entity.setSphid(null);
 				entity.setSphbpmnb(commandList.getBclproduct());// BOM 的產品號
-				entity.setSphname(commandList.getBclpname());// 產品名稱
-				entity.setSphspecification(commandList.getBclpspecification());// 產品規格
+				entity.setSphname(sphname);// 產品名稱
+				entity.setSphspecification(sphspecification);// 產品規格
 				entity.setSphbpmmodel("");// BOM 的產品型號
 				entity.setSphbpmtype("2");// 產品歸類:0 = 開發BOM/1 = 產品BOM/2 = 配件BOM/3 = 半成品BOM/3 = 板階BOM
 				entity.setSphbpmtypename("產品BOM");// 產品歸類名稱

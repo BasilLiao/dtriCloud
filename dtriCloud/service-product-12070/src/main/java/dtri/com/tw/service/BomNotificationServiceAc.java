@@ -67,6 +67,7 @@ public class BomNotificationServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "bnsuname"));// 人
 		orders.add(new Order(Direction.ASC, "bnmodel"));// BOM型號
 		orders.add(new Order(Direction.ASC, "bnnb"));// BOM產品號
 
@@ -77,7 +78,7 @@ public class BomNotificationServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BomNotification> entitys = notificationDao.findAllBySearch(null, null, 0, pageable);
+			ArrayList<BomNotification> entitys = notificationDao.findAllBySearch(null, null, null, 0, pageable);
 
 			// Step3-2.資料區分(一般/細節)
 
@@ -131,6 +132,9 @@ public class BomNotificationServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, null, "bnmodel", "Ex:成品型號?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "bnsuname", "Ex:Who?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
 			JsonArray selectStatusArr = new JsonArray();
 			selectStatusArr.add("正常_0");
 			selectStatusArr.add("暫停使用_2");
@@ -147,7 +151,7 @@ public class BomNotificationServiceAc {
 			BomNotification searchData = packageService.jsonToBean(packageBean.getEntityJson(), BomNotification.class);
 
 			ArrayList<BomNotification> entitys = notificationDao.findAllBySearch(searchData.getBnnb(),
-					searchData.getBnmodel(), searchData.getSysstatus(), pageable);
+					searchData.getBnmodel(), searchData.getBnsuname(), searchData.getSysstatus(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
