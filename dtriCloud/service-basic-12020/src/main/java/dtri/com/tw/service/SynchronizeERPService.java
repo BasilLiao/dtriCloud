@@ -66,8 +66,10 @@ import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
 import dtri.com.tw.service.feign.ClientServiceFeign;
 import dtri.com.tw.shared.Fm_T;
 import jakarta.annotation.Resource;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class SynchronizeERPService {
 
 	@Autowired
@@ -305,7 +307,7 @@ public class SynchronizeERPService {
 			removeCheck.forEach(r -> {
 				String nKey = r.getTa001_ta002() + "-" + r.getMb001();
 				nKey = nKey.replaceAll("\\s", "");
-				if ("Y".equalsIgnoreCase(r.getTa011())) { // 忽略大小寫
+				if ("Y".equalsIgnoreCase(r.getTa011()) && removeCommandMap.containsKey(nKey)) { // 忽略大小寫
 					// 納入完結更新 -> 不需移除
 					BasicCommandList ok = removeCommandMap.get(nKey);
 					if (ok != null) {
@@ -425,10 +427,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = (r.getTh001_th002() + "-" + r.getTh003()).replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTh030())) {
+				if ("Y".equals(r.getTh030()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -639,10 +642,11 @@ public class SynchronizeERPService {
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
 				// 已經完成->標記更新
 				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
-				if ("Y".equals(r.getTe019())) {
+				if ("Y".equals(r.getTe019()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -661,12 +665,13 @@ public class SynchronizeERPService {
 //					System.out.println("測試:A541-250401003-0018");
 //				}
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
-				BasicShippingList o = removeShMap.get(nKey);
 				// 已經完成->標記更新
 				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
-				if ("Y".equals(r.getTe019())) {
+				if ("Y".equals(r.getTe019()) && removeInMap.containsKey(nKey)) {
+					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -684,7 +689,9 @@ public class SynchronizeERPService {
 
 		// Step5. 存入資料
 		incomingListDao.saveAll(saveInLists);
+		incomingListDao.flush();
 		shippingListDao.saveAll(saveShLists);
+		shippingListDao.flush();
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
 		// Step6. 自動結算
@@ -871,6 +878,7 @@ public class SynchronizeERPService {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -890,6 +898,7 @@ public class SynchronizeERPService {
 				if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -1076,6 +1085,7 @@ public class SynchronizeERPService {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1095,6 +1105,7 @@ public class SynchronizeERPService {
 				if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -1205,10 +1216,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg022())) {
+				if ("Y".equals(r.getTg022()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1314,10 +1326,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg022())) {
+				if ("Y".equals(r.getTg022()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1420,10 +1433,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTi037())) {
+				if ("Y".equals(r.getTi037()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1600,6 +1614,7 @@ public class SynchronizeERPService {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1617,10 +1632,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("3".equals(r.getTf028())) {
+				if ("3".equals(r.getTf028()) && removeInMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -1807,10 +1823,11 @@ public class SynchronizeERPService {
 //					System.out.println(nKey);
 //				}
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTi022())) {
+				if ("Y".equals(r.getTi022()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -1828,10 +1845,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTi001_ti002_ti003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTi022())) {
+				if ("Y".equals(r.getTi022()) && removeInMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -1894,7 +1912,7 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 測試用
-			if(nKey.contains("A115")) {
+			if (nKey.contains("A115")) {
 				System.out.println(nKey);
 			}
 			// 單據性質別:
@@ -2058,10 +2076,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTb018())) {
+				if ("Y".equals(r.getTb018()) && removeInMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -2079,10 +2098,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTb001_tb002_tb003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTb018())) {
+				if ("Y".equals(r.getTb018()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -2274,10 +2294,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTe001_te002_te003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTe010())) {
+				if ("Y".equals(r.getTe010()) && removeShMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -2294,10 +2315,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTe001_te002_te003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTe010())) {
+				if ("Y".equals(r.getTe010()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -2495,10 +2517,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg010())) {
+				if ("Y".equals(r.getTg010()) && removeShMap.containsKey(nKey)) {
 					BasicIncomingList o = removeInMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBilcheckin(1);
 					saveInLists.add(o);
 				}
 				removeInMap.remove(nKey);
@@ -2515,10 +2538,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTg001_tg002_tg003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg010())) {
+				if ("Y".equals(r.getTg010()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);
@@ -2645,10 +2669,11 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTh001_th002_th003().replaceAll("\\s", "");
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg047())) {
+				if ("Y".equals(r.getTg047()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
+					o.setBslcheckin(1);
 					saveShLists.add(o);
 				}
 				removeShMap.remove(nKey);

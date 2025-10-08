@@ -26,7 +26,7 @@ import jakarta.persistence.Table;
  *      sys_ver : 修改版本<br>
  *      sys_note : 備註<br>
  *      sys_h_note : 表單頭備註<br>
- *      sys_status : 資料狀態<br>
+ *      sys_status : 資料狀態 核單 / 核項目 0=未核單 1=已核單<br>
  *      sys_sort : 自訂排序<br>
  *      ---入料單-清單---<br>
  *      bsl_id : ID_KEY<br>

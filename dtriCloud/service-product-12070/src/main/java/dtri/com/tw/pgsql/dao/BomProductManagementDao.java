@@ -26,8 +26,11 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 	@Query("SELECT c FROM BomProductManagement c "//
 			+ "WHERE (:bpmnb is null or c.bpmnb =:bpmnb ) and "//
 			+ "(:bpmmodel is null or c.bpmmodel = :bpmmodel ) and "//
+			+ "(:sysnote is null or c.sysnote = :sysnote ) and "//
+			+ "(:bpmbisitem is null or c.bpmbisitem = :bpmbisitem ) and "//
 			+ "(:bpmtypename is null or c.bpmtypename =:bpmtypename ) ") //
-	ArrayList<BomProductManagement> findAllByCheck(String bpmnb, String bpmmodel, String bpmtypename);
+	ArrayList<BomProductManagement> findAllByCheck(String bpmnb, String bpmmodel, String bpmtypename, String sysnote,
+			String bpmbisitem);
 
 	// 找
 	ArrayList<BomProductManagement> findAllByBpmid(Long bisgcondition);

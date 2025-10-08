@@ -418,6 +418,10 @@ public class BomProductManagementServiceAc {
 
 				String bbisn = searchData.getBbisn();
 				String bbiname = searchData.getBbiname();
+				if (bbisn == null && bbiname == null) {
+					bbisn = "90-504-T10";
+				}
+
 				PageRequest pageableBBI = PageRequest.of(0, 50000, Sort.by(ordersBBI));
 				// 先查詢有哪些BOM->每一個查詢展BOM(因為JPA 與 原生SQL 有技術上的匹配不到)
 				ArrayList<BasicBomIngredients> bbisnList = ingredientsDao.findAllBySearch(bbisn, bbiname, null, null,
@@ -614,7 +618,7 @@ public class BomProductManagementServiceAc {
 			for (BomProductManagement entityData : entityDatas) {
 				// 檢查-舊資料-名稱重複(有資料 && 不是同一筆資料)
 				ArrayList<BomProductManagement> checkDatas = managementDao.findAllByCheck(entityData.getBpmnb(), null,
-						null);
+						null, null, null);
 				for (BomProductManagement checkData : checkDatas) {
 					// 排除自己
 					if (entityData.getBpmid() != null && checkData.getBpmid().compareTo(entityData.getBpmid()) != 0) {
@@ -631,12 +635,30 @@ public class BomProductManagementServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { entityData.getBpmmodel() });
 				}
+
+				// Step2-2.備註檢查是否一樣 ?
+				ArrayList<BomProductManagement> checkDatas2 = managementDao.findAllByCheck(null, null, null,
+						entityData.getSysnote(), null);
+				if (checkDatas2.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSysnote() + " : 備註!" });
+				}
+
+				// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
+				ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
+						entityData.getBpmbisitem());
+				if (checkDatas3.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] {
+									checkDatas3.get(0).getBpmnb() + " : " + entityData.getBpmnb() + " : 規格內容!" });
+				}
+
 				// Step2-3.檢查匹配權限?
 				BomProductManagement checkDataOne = new BomProductManagement();
 				// 有可能直接覆蓋?
 				if (entityData.getBpmid() == null) {
 					ArrayList<BomProductManagement> managements = managementDao.findAllByCheck(entityData.getBpmnb(),
-							null, null);
+							null, null, null, null);
 					if (managements.size() == 1) {
 						checkDataOne = managements.get(0);
 					} else {
@@ -700,7 +722,8 @@ public class BomProductManagementServiceAc {
 		entityDatas.forEach(c -> {// 要更新的資料
 			if (c.getBpmid() == null) {
 				// 如果是有BOM號嘗試比對看看
-				ArrayList<BomProductManagement> oldDatas = managementDao.findAllByCheck(c.getBpmnb(), null, null);
+				ArrayList<BomProductManagement> oldDatas = managementDao.findAllByCheck(c.getBpmnb(), null, null, null,
+						null);
 				if (oldDatas.size() == 1) {
 					c.setBpmid(oldDatas.get(0).getBpmid());
 				}
@@ -915,7 +938,7 @@ public class BomProductManagementServiceAc {
 				for (BomProductManagement entityData : entityDatas) {
 					// 檢查-名稱重複(有資料 && 不是同一筆資料)
 					ArrayList<BomProductManagement> checkDatas = managementDao.findAllByCheck(entityData.getBpmnb(),
-							null, null);
+							null, null, null, null);
 					if (checkDatas.size() != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 								new String[] { entityData.getBpmnb() });
@@ -929,6 +952,23 @@ public class BomProductManagementServiceAc {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 								new String[] { entityData.getBpmmodel() });
 					}
+					// Step2-2.備註檢查是否一樣 ?
+					ArrayList<BomProductManagement> checkDatas2 = managementDao.findAllByCheck(null, null, null,
+							entityData.getSysnote(), null);
+					if (checkDatas2.size() > 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getSysnote() + " : 備註!" });
+					}
+
+					// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
+					ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
+							entityData.getBpmbisitem());
+					if (checkDatas3.size() > 0) {
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] {
+										checkDatas3.get(0).getBpmnb() + " : " + entityData.getBpmnb() + " : 規格內容!" });
+					}
+
 					// Step2-3.檢查匹配權限?
 					Boolean throwCheck = true;
 					String info = entityData.getBpmnb() + " / " + entityData.getBpmmodel();
