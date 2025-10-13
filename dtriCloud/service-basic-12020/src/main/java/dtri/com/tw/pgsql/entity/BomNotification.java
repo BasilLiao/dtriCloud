@@ -32,6 +32,7 @@ import jakarta.persistence.Table;
  *      bnprimary;主要/次要<br>
  *      bnmnotice;BOM修改通知<br>
  *      bnanotice;BOM新增通知<br>
+ *      bndnotice;BOM移除通知<br>
  */
 
 @Entity
@@ -60,7 +61,8 @@ public class BomNotification {
 		this.bnsumail = ""; // 關聯帳號MAIL<br>
 		this.bnprimary = 0;// 主要/次要<br>
 		this.bnmnotice = false;// BOM修改通知<br>
-		this.setBnanotice(false);// BOM新增通知<br>
+		this.bnanotice = false;// BOM新增通知<br>
+		this.setBndnotice(false);// BOM移除通知<br>
 	}
 
 	// 共用型
@@ -110,6 +112,8 @@ public class BomNotification {
 	private Boolean bnmnotice;
 	@Column(name = "bn_a_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bnanotice;
+	@Column(name = "bn_d_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bndnotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -261,6 +265,20 @@ public class BomNotification {
 
 	public void setBnanotice(Boolean bnanotice) {
 		this.bnanotice = bnanotice;
+	}
+
+	/**
+	 * @return the bndnotice
+	 */
+	public Boolean getBndnotice() {
+		return bndnotice;
+	}
+
+	/**
+	 * @param bndnotice the bndnotice to set
+	 */
+	public void setBndnotice(Boolean bndnotice) {
+		this.bndnotice = bndnotice;
 	}
 
 }

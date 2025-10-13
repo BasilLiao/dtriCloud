@@ -225,6 +225,7 @@ public class BomNotificationServiceAc {
 				entityDataOld.setBnsumail(user.getSuemail());
 				entityDataOld.setBnmnotice(x.getBnmnotice());// 修改通知
 				entityDataOld.setBnanotice(x.getBnanotice());// 新增通知
+				entityDataOld.setBndnotice(x.getBndnotice());// 移除通知
 				saveDatas.add(entityDataOld);
 			}
 		});

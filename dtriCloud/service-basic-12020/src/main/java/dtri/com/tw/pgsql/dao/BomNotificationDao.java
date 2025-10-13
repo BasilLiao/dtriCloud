@@ -16,9 +16,10 @@ public interface BomNotificationDao extends JpaRepository<BomNotification, Long>
 			+ "(:bnmodel is null or c.bnmodel LIKE %:bnmodel%) and "// 型號
 			+ "(:bnmnotice is null or c.bnmnotice = :bnmnotice) and "// 必須要有勾一個(更新)
 			+ "(:bnanotice is null or c.bnanotice = :bnanotice) and "// 必須要有勾一個(新增)
+			+ "(:bndnotice is null or c.bndnotice = :bndnotice) and "// 必須要有勾一個(移除)
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
 	ArrayList<BomNotification> findAllBySearch(String bnnb, String bnmodel, Boolean bnmnotice, Boolean bnanotice,
-			Integer sysstatus, Pageable pageable);
+			Boolean bndnotice, Integer sysstatus, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM BomNotification c WHERE "//

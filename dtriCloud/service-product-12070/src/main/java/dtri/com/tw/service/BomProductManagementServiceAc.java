@@ -640,17 +640,27 @@ public class BomProductManagementServiceAc {
 				ArrayList<BomProductManagement> checkDatas2 = managementDao.findAllByCheck(null, null, null,
 						entityData.getSysnote(), null);
 				if (checkDatas2.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] { entityData.getSysnote() + " : 備註!" });
+					for (BomProductManagement one : checkDatas2) {
+						// 如果跟本產品不同在警報
+						if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+									new String[] { ":" + one.getBpmnb() + " 備註 : " + entityData.getSysnote() });
+						}
+					}
 				}
 
 				// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
 				ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
 						entityData.getBpmbisitem());
 				if (checkDatas3.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-							new String[] {
-									checkDatas3.get(0).getBpmnb() + " : " + entityData.getBpmnb() + " : 規格內容!" });
+					for (BomProductManagement one : checkDatas3) {
+						// 如果跟本產品不同在警報
+						if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+									new String[] { ":" + one.getBpmnb() + " 規格內容 : " + checkDatas3.get(0).getBpmnb()
+											+ " : " + entityData.getBpmnb() });
+						}
+					}
 				}
 
 				// Step2-3.檢查匹配權限?
@@ -717,7 +727,7 @@ public class BomProductManagementServiceAc {
 		// 準備比對資料<BOM號,內容新舊>
 		Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
 		Map<String, JsonObject> oldBPM = new HashMap<String, JsonObject>();
-
+		Map<String, String> changeBpmnb = new HashMap<String, String>();// 修改了產品品號->則全新,舊,
 		// Step3.一般資料->寫入
 		entityDatas.forEach(c -> {// 要更新的資料
 			if (c.getBpmid() == null) {
@@ -738,7 +748,10 @@ public class BomProductManagementServiceAc {
 							JsonParser.parseString(oldData.getBpmbisitem()).getAsJsonObject());
 				}
 				// 可能->新的?
-
+				if (oldData.getBpmnb() != c.getBpmnb()) {
+					changeBpmnb.put(c.getBpmnb(), oldData.getBpmnb());
+				}
+				//
 				oldData.setSysmdate(new Date());
 				oldData.setSysmuser(packageBean.getUserAccount());
 				oldData.setSysodate(new Date());
@@ -758,8 +771,9 @@ public class BomProductManagementServiceAc {
 		});
 		// Step4.彙整更新的資料->物料排序->標記更新 or 移除
 		ArrayList<BomHistory> changeBom = new ArrayList<BomHistory>();
-		Map<String, HashMap<String, String>> oldBom = new HashMap<String, HashMap<String, String>>();
-		Map<String, HashMap<String, String>> newBom = new HashMap<String, HashMap<String, String>>();
+		Map<String, HashMap<String, String>> oldBom = new HashMap<String, HashMap<String, String>>();// 舊BOM
+		Map<String, HashMap<String, String>> newBom = new HashMap<String, HashMap<String, String>>();// 新BOM
+
 		// 舊資料整理->一個BOM 內多個項目
 		oldBPM.forEach((oldK, oldV) -> {
 			// 物料號_數量_製成別(items>basic 如果有一樣的物料的話)
@@ -897,6 +911,13 @@ public class BomProductManagementServiceAc {
 
 				}
 			});
+			// 檢查是否為新BOM(因為有改產品BOM號則為全新)
+			changeBom.forEach(b -> {
+				if (changeBpmnb.containsKey(b.getBhnb())) {
+					b.setBhatype("All New");
+				}
+			});
+
 			// 比對同一張BOM->的物料
 			historyDao.saveAll(changeBom);
 
@@ -956,17 +977,27 @@ public class BomProductManagementServiceAc {
 					ArrayList<BomProductManagement> checkDatas2 = managementDao.findAllByCheck(null, null, null,
 							entityData.getSysnote(), null);
 					if (checkDatas2.size() > 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getSysnote() + " : 備註!" });
+						for (BomProductManagement one : checkDatas2) {
+							// 如果跟本產品不同在警報
+							if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+								throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+										new String[] { ":" + one.getBpmnb() + " 備註 : " + entityData.getSysnote() });
+							}
+						}
 					}
 
 					// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
 					ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
 							entityData.getBpmbisitem());
 					if (checkDatas3.size() > 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] {
-										checkDatas3.get(0).getBpmnb() + " : " + entityData.getBpmnb() + " : 規格內容!" });
+						for (BomProductManagement one : checkDatas3) {
+							// 如果跟本產品不同在警報
+							if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+								throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+										new String[] { ":" + one.getBpmnb() + " 規格內容 : " + checkDatas3.get(0).getBpmnb()
+												+ " : " + entityData.getBpmnb() });
+							}
+						}
 					}
 
 					// Step2-3.檢查匹配權限?

@@ -281,10 +281,12 @@ public class SynchronizeBomService {
 		List<Order> nf_orders = new ArrayList<>();
 		nf_orders.add(new Order(Direction.ASC, "bnsuname"));// 關聯帳號名稱
 		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
-		ArrayList<BomNotification> notificationsAllNew = notificationDao.findAllBySearch(null, null, null, true, 0,
-				nf_pageable);// 必須要有勾一個(新增)
-		ArrayList<BomNotification> notificationsUpdate = notificationDao.findAllBySearch(null, null, true, null, 0,
-				nf_pageable);// 必須要有勾一個(更新)
+		ArrayList<BomNotification> notificationsAllNew = notificationDao.findAllBySearch(null, null, null, true, null,
+				0, nf_pageable);// 必須要有勾一個(新增)
+		ArrayList<BomNotification> notificationsUpdate = notificationDao.findAllBySearch(null, null, true, null, null,
+				0, nf_pageable);// 必須要有勾一個(更新)
+		ArrayList<BomNotification> notificationsDelete = notificationDao.findAllBySearch(null, null, null, null, true,
+				0, nf_pageable);// 必須要有勾一個(移除)
 
 		// Step2. 取得須寄信清單(產品異動通知)
 		List<Order> os_orders = new ArrayList<>();
@@ -298,6 +300,8 @@ public class SynchronizeBomService {
 																												// : 內容
 		Map<String, ArrayList<BomHistory>> outsourcersMapUpdate = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間
 																												// : 內容
+		Map<String, ArrayList<BomHistory>> outsourcersMapDelete = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間
+		// : 內容
 		for (BomHistory bomHistory : outsourcers) {
 			// 有比對到?
 			if (bomHistory.getBhatype().equals("All New")) {
@@ -314,6 +318,22 @@ public class SynchronizeBomService {
 					ArrayList<BomHistory> newHis = new ArrayList<BomHistory>();
 					newHis.add(bomHistory);
 					outsourcersMapAllNew.put(bomHistory.getBhnb() + "_" + Fm_T.to_yMd_Hms(bomHistory.getSyscdate()),
+							newHis);
+				}
+			} else if (bomHistory.getBhatype().equals("All Delete")) {
+				// 移除
+				if (outsourcersMapDelete
+						.containsKey(bomHistory.getBhnb() + "_" + Fm_T.to_yMd_Hms(bomHistory.getSyscdate()))) {
+					ArrayList<BomHistory> oldHis = outsourcersMapDelete
+							.get(bomHistory.getBhnb() + "_" + Fm_T.to_yMd_Hms(bomHistory.getSyscdate()));
+					oldHis.add(bomHistory);
+					outsourcersMapDelete.put(bomHistory.getBhnb() + "_" + Fm_T.to_yMd_Hms(bomHistory.getSyscdate()),
+							oldHis);
+				} else {
+					// 沒比對到?
+					ArrayList<BomHistory> newHis = new ArrayList<BomHistory>();
+					newHis.add(bomHistory);
+					outsourcersMapDelete.put(bomHistory.getBhnb() + "_" + Fm_T.to_yMd_Hms(bomHistory.getSyscdate()),
 							newHis);
 				}
 			} else {
@@ -538,6 +558,142 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [All New][" + bhnb + "] all new notification!");
+				// 內容
+				String bnmcontent = "<div>" + sysnote + "</div>"
+						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						+ "<th>項次</th>"//
+						+ "<th>產品號</th>"//
+						+ "<th>產品型號</th>"//
+						+ "<th>異動類型</th>"//
+						+ "<th>組成-物料號</th>"//
+						+ "<th>組成-製成</th>"//
+						+ "<th>組成-數量</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>";// 模擬12筆資料
+				int r = 0;
+				for (BomHistory oss : mv) {
+					// 移除的不能算
+					Boolean checkX = oss.getBhatype().equals("Delete") || oss.getBhatype().equals("Old");
+					if (!checkX) {
+						r += 1;
+						// Excel
+						Sheet sheet = workbooks.getSheetAt(0); // 獲取第一個工作表
+						// 2. 修改 Excel 資料（這裡假設在第一行添加一行資料）
+						Row dataRow = sheet.createRow(r);
+						dataRow.createCell(0).setCellValue(r);
+						dataRow.createCell(1).setCellValue(oss.getBhpnb());
+						dataRow.createCell(2).setCellValue(oss.getBhpqty());
+						dataRow.createCell(8).setCellValue(oss.getBhpprocess());
+					}
+
+					// 信件資料結構
+					bnmcontent += "<tr>"//
+							+ "<td>" + (checkX ? "X" : r) + "</td>"// 項次
+							+ "<td>" + oss.getBhnb() + "</td>"// 產品號
+							+ "<td>" + oss.getBhmodel() + "</td>"// 產品型號
+							+ "<td>" + oss.getBhatype() + "</td>"// 異動類型
+							+ "<td>" + oss.getBhpnb() + "</td>"// 組成-物料號
+							+ "<td>" + oss.getBhpprocess() + "</td>"// 組成-製成
+							+ "<td>" + oss.getBhpqty() + "</td>"// 組成-數量
+							+ "</tr>";
+					// 有登記的
+					hisListSaves.add(oss);
+				}
+				bnmcontent += "</tbody></table>";
+				bnmcontent += "<div>Old=原先舊[物料]/Update=更新後[物料]/";
+				bnmcontent += "<br>Delete=已被移除[物料]/New=新增加[物料]/";
+				bnmcontent += "<br>All New=新增[BOM]產品/All Delete=移除[BOM]產品</div>";
+
+				readyNeedMail.setBnmcontent(bnmcontent);
+
+				// 輸出到 byte[]
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				try {
+					workbooks.write(outputStream);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				byte[] bytes = outputStream.toByteArray();
+				readyNeedMail.setBnmattcontent(bytes);
+				readyNeedMail.setBnmattname(bhnb + ".xlsx");
+
+				// 取消-檢查信件(避免重複)
+				notificationMailDao.save(readyNeedMail);
+				// Step4. 修正資料
+				hisListSaves.forEach(e -> {
+					e.setSysstatus(1);
+					e.setBhnotification(true);
+				});
+				bomHistoryDao.saveAll(hisListSaves);
+			}
+		});
+		// Step3. 取得寄信模塊(移除)
+		outsourcersMapDelete.forEach((mk, mv) -> {
+			String bhnb = mk.split("_")[0];
+			// 1. 讀取 Excel 檔案
+			Workbook workbooks = null;
+			// 從 classpath 讀取資源
+			try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("90-XXX-XXXXXXX.xlsx")) {
+				if (inputStream == null) {
+					throw new IllegalArgumentException("找不到資源檔案！");
+				}
+				System.out.println("檔案已成功讀取。");
+				workbooks = new XSSFWorkbook(inputStream);
+				// 在這裡進行文件處理邏輯
+				System.out.println("Excel 總共有 " + workbooks.getNumberOfSheets() + " 個工作表");
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// 寄信件對象
+			ArrayList<String> mainUsers = new ArrayList<String>();
+			ArrayList<String> secondaryUsers = new ArrayList<String>();
+			// 寄信對象條件
+			notificationsDelete.forEach(r -> {// 沒有設置=全寄信
+				// 如果有機型?
+				if (!r.getBnmodel().equals("") && mv.get(0).getBhmodel().contains(r.getBnmodel())) {
+					// 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				} // 如果有成品號?
+				else if (!r.getBnnb().equals("") && mv.get(0).getBhnb().contains(r.getBnnb())) {
+					// 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				} else if (r.getBnnb().equals("") && r.getBnmodel().equals("")) {
+					// 如果都沒有過濾(留空白)-> 主要?次要?
+					if (r.getBnprimary() == 0) {
+						mainUsers.add(r.getBnsumail());
+					} else {
+						secondaryUsers.add(r.getBnsumail());
+					}
+				}
+			});
+			// 建立信件
+			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 取得BOM資訊(PM備註)
+				String sysnote = "";
+				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(bhnb, null, null);
+				if (bomProductManagements.size() == 1) {
+					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
+					sysnote += bomProductManagements.get(0).getSysnote();
+				}
+
+				//
+				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+				readyNeedMail.setBnmkind("BOM");
+				readyNeedMail.setBnmmail(mainUsers + "");
+				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+						+ "Cloud system BOM [All Delete][" + bhnb + "] all new notification!");
 				// 內容
 				String bnmcontent = "<div>" + sysnote + "</div>"
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//

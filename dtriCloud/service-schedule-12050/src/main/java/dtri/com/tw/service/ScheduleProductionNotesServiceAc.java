@@ -339,7 +339,7 @@ public class ScheduleProductionNotesServiceAc {
 				entity.setSphscnv("[]");// 生管-參數設置
 				entity.setSphbpsuser("");// BOM負責人
 				entity.setSphpon(searchData.getSphpon());// 製令單號
-				entity.setSphoqty(commandList.getBclpnqty());// 需生產數
+				entity.setSphoqty(commandList.getBcltqty());// 需生產數
 				// 預設值
 				String defaultSphonb = "";
 				String defaultSphoname = "";
