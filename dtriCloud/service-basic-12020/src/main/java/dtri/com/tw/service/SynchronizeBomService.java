@@ -408,11 +408,16 @@ public class SynchronizeBomService {
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
 				// 取得BOM資訊(PM備註)
 				String sysnote = "";
+				String sysnoteOld = "";
 				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(bhnb, null, null);
 				if (bomProductManagements.size() == 1) {
 					sysnote += "☑Product Model : " + bomProductManagements.get(0).getBpmmodel();
 					sysnote += bomProductManagements.get(0).getSysnote();
 					sysnote += "(" + bomProductManagements.get(0).getSysmuser() + ")";
+
+					sysnoteOld += "☑Product Model : " + bomProductManagements.get(0).getBpmmodel();
+					sysnoteOld += mv.get(0).getSysnote();
+					sysnoteOld += "(" + bomProductManagements.get(0).getSysmuser() + ")";
 				}
 
 				// 取得目前"規格BOM"資訊
@@ -423,7 +428,16 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [Update][" + bhnb + "] modification notification!");
 				// 內容
-				String bnmcontent = "<div>" + sysnote + "</div>"
+				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						+ "<th>新舊</th>"//
+						+ "<th>產品說明</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>"// 模擬12筆資料
+						+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
+						+ "<tr><td>Old</td><td>" + sysnoteOld + "</td><tr>"// 舊備註
+						+ "</tbody></table>"//
+						+ "<br>" //
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>項次</th>"//
@@ -436,7 +450,15 @@ public class SynchronizeBomService {
 						+ "</tr></thead>"//
 						+ "<tbody>";// 模擬12筆資料
 				int r = 0;
+				// 標記是否為 需要寄信 可能沒有改資料
+				Boolean checkNeedSend = false;
+				//
 				for (BomHistory oss : mv) {
+					// 有修改內容
+					if ((!checkNeedSend) && !oss.getBhpqty().equals("")) {
+						checkNeedSend = true;
+					}
+
 					// 移除的不能算
 					Boolean checkX = oss.getBhatype().equals("Delete") || oss.getBhatype().equals("Old");
 					if (!checkX) {
@@ -484,7 +506,9 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmattname(bhnb + ".xlsx");
 
 				// 取消-檢查信件(避免重複)
-				notificationMailDao.save(readyNeedMail);
+				if (checkNeedSend) {
+					notificationMailDao.save(readyNeedMail);
+				}
 				// Step4. 修正資料
 				hisListSaves.forEach(e -> {
 					e.setSysstatus(1);
@@ -559,7 +583,15 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [All New][" + bhnb + "] all new notification!");
 				// 內容
-				String bnmcontent = "<div>" + sysnote + "</div>"
+				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						+ "<th>新舊</th>"//
+						+ "<th>產品說明</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>"// 模擬12筆資料
+						+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
+						+ "</tbody></table>"//
+						+ "<br>"//
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>項次</th>"//
@@ -695,7 +727,15 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
 						+ "Cloud system BOM [All Delete][" + bhnb + "] all new notification!");
 				// 內容
-				String bnmcontent = "<div>" + sysnote + "</div>"
+				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+						+ "<thead><tr style= 'background-color: aliceblue;'>"//
+						+ "<th>新舊</th>"//
+						+ "<th>產品說明</th>"//
+						+ "</tr></thead>"//
+						+ "<tbody>"// 模擬12筆資料
+						+ "<tr><td>Delete</td><td>" + sysnote + "</td><tr>"// 備註
+						+ "</tbody></table>"//
+						+ "<br>"//
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>項次</th>"//

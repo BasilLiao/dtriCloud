@@ -26,19 +26,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
+import dtri.com.tw.pgsql.dao.BasicNotificationMailDao;
 import dtri.com.tw.pgsql.dao.BomHistoryDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomKeeperDao;
+import dtri.com.tw.pgsql.dao.BomNotificationDao;
 import dtri.com.tw.pgsql.dao.BomParameterSettingsDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.BomProductRuleDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
+import dtri.com.tw.pgsql.entity.BasicNotificationMail;
 import dtri.com.tw.pgsql.entity.BomHistory;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomItemSpecificationsDetailFront;
 import dtri.com.tw.pgsql.entity.BomKeeper;
+import dtri.com.tw.pgsql.entity.BomNotification;
 import dtri.com.tw.pgsql.entity.BomParameterSettings;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.BomProductManagementDetailFront;
@@ -82,6 +86,9 @@ public class BomProductManagementServiceAc {
 	private BomParameterSettingsDao settingsDao;
 
 	@Autowired
+	private BomNotificationDao notificationDao;
+
+	@Autowired
 	private WarehouseMaterialDao materialDao;
 
 	@Autowired
@@ -89,6 +96,9 @@ public class BomProductManagementServiceAc {
 
 	@Autowired
 	private BomHistoryDao historyDao;
+
+	@Autowired
+	private BasicNotificationMailDao notificationMailDao;
 
 	@Autowired
 	private EntityManager em;
@@ -728,6 +738,8 @@ public class BomProductManagementServiceAc {
 		Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
 		Map<String, JsonObject> oldBPM = new HashMap<String, JsonObject>();
 		Map<String, String> changeBpmnb = new HashMap<String, String>();// 修改了產品品號->則全新,舊,
+		Map<String, String> oldBomNote = new HashMap<String, String>();// 舊BOM Note
+
 		// Step3.一般資料->寫入
 		entityDatas.forEach(c -> {// 要更新的資料
 			if (c.getBpmid() == null) {
@@ -746,9 +758,15 @@ public class BomProductManagementServiceAc {
 							JsonParser.parseString(c.getBpmbisitem()).getAsJsonObject());
 					oldBPM.put(c.getBpmnb() + "_" + c.getBpmmodel(),
 							JsonParser.parseString(oldData.getBpmbisitem()).getAsJsonObject());
+					// 登記舊的備註資訊 之後比對使用
+					oldBomNote.put(c.getBpmnb() + "_" + c.getBpmmodel(), oldData.getSysnote());
+				} else if (!oldData.getSysnote().equals(c.getSysnote())) {
+					// 不同才通知
+					mailSend(oldData, c);
 				}
-				// 可能->新的?
-				if (oldData.getBpmnb() != c.getBpmnb()) {
+
+				// 可能是新的 -> <新的,舊的>?
+				if (!oldData.getBpmnb().equals(c.getBpmnb())) {
 					changeBpmnb.put(c.getBpmnb(), oldData.getBpmnb());
 				}
 				//
@@ -850,6 +868,8 @@ public class BomProductManagementServiceAc {
 			// 新的BOM_型號 , 物料_數量_製成別
 			newBom.put(newK, newVs);
 		});
+		// 統一時間 不然會導致BOM被切割
+		Date sameTime = new Date();
 		// 資料整理入 BomHistory 內
 		newBom.forEach((newBomK, newBomV) -> {
 			// 匹配的舊BOM
@@ -860,12 +880,18 @@ public class BomProductManagementServiceAc {
 				bomHistory.setBhnb(newBomK.split("_")[0]);
 				bomHistory.setBhmodel(newBomK.split("_")[1]);
 				bomHistory.setBhatype("");
+				// 舊的NOTE
+				if (oldBomNote.containsKey(newBomK)) {
+					bomHistory.setSysnote(oldBomNote.get(newBomK));
+				}
 				// 沒有變化(物料)
 				if (oldBomv.containsKey(newItemK)) {
 					bomHistory.setBhpnb(newItemV.split("_")[0]);
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
+					bomHistory.setSyscdate(sameTime);
+
 					// 可能更新?數量?製成?
 					String oldItemV = oldBomv.get(newItemK);
 					if (!newItemV.split("_")[1].equals(oldItemV.split("_")[1])
@@ -892,9 +918,11 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("New");
+					bomHistory.setSyscdate(sameTime);
 					changeBom.add(bomHistory);
 				}
 			});
+
 			// 舊資料
 			oldBomv.forEach((oldItemK, oldItemV) -> {
 				// 表示被移除了
@@ -907,6 +935,11 @@ public class BomProductManagementServiceAc {
 					bomHistoryRemove.setBhpprocess(oldItemV.split("_")[2]);
 					bomHistoryRemove.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
 					bomHistoryRemove.setBhatype("Delete");
+					bomHistoryRemove.setSyscdate(sameTime);
+					// 舊的NOTE
+					if (oldBomNote.containsKey(newBomK)) {
+						bomHistoryRemove.setSysnote(oldBomNote.get(newBomK));
+					}
 					changeBom.add(bomHistoryRemove);
 
 				}
@@ -1145,6 +1178,8 @@ public class BomProductManagementServiceAc {
 				// 新的BOM_型號 , 物料_數量_製成別
 				newBom.put(newK, newVs);
 			});
+			// 統一時間 不然會導致BOM被切割
+			Date sameTime = new Date();
 			// 資料整理入 BomHistory 內
 			newBom.forEach((newBomK, newBomV) -> {
 				// 每個新BOM的Item
@@ -1158,6 +1193,7 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("All New");
+					bomHistory.setSyscdate(sameTime);
 					changeBom.add(bomHistory);
 				});
 				// 比對同一張BOM->的物料
@@ -1321,6 +1357,8 @@ public class BomProductManagementServiceAc {
 			// 新的BOM_型號 , 物料_數量_製成別
 			newBom.put(newK, newVs);
 		});
+		// 統一時間 不然會導致BOM被切割
+		Date sameTime = new Date();
 		// 資料整理入 BomHistory 內
 		newBom.forEach((newBomK, newBomV) -> {
 			// 每個新BOM的Item
@@ -1334,6 +1372,7 @@ public class BomProductManagementServiceAc {
 				bomHistory.setBhpprocess(newItemV.split("_")[2]);
 				bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 				bomHistory.setBhatype("All Delete");
+				bomHistory.setSyscdate(sameTime);
 				changeBom.add(bomHistory);
 			});
 			// 比對同一張BOM->的物料
@@ -1462,5 +1501,79 @@ public class BomProductManagementServiceAc {
 
 		// 全部滿了 (ZZZ → overflow)
 		throw new IllegalStateException("序號已達最大值: " + sn);
+	}
+
+	private void mailSend(BomProductManagement oldData, BomProductManagement c) {
+
+		// Step1. 取得寄信人
+		List<Order> nf_orders = new ArrayList<>();
+		nf_orders.add(new Order(Direction.ASC, "bnsuname"));// 關聯帳號名稱
+		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
+		ArrayList<BomNotification> notificationsUpdate = notificationDao.findAllBySearch(null, null, true, null, null,
+				0, nf_pageable);// 必須要有勾一個(更新)
+		// 寄信件對象
+		ArrayList<String> mainUsers = new ArrayList<String>();
+		ArrayList<String> secondaryUsers = new ArrayList<String>();
+		// 寄信對象條件
+		notificationsUpdate.forEach(r -> {// 沒有設置=全寄信
+			// 如果有機型?
+			if (!r.getBnmodel().equals("") && c.getBpmmodel().contains(r.getBnmodel())) {
+				// 主要?次要?
+				if (r.getBnprimary() == 0) {
+					mainUsers.add(r.getBnsumail());
+				} else {
+					secondaryUsers.add(r.getBnsumail());
+				}
+			} // 如果有成品號?
+			else if (!r.getBnnb().equals("") && c.getBpmnb().contains(r.getBnnb())) {
+				// 主要?次要?
+				if (r.getBnprimary() == 0) {
+					mainUsers.add(r.getBnsumail());
+				} else {
+					secondaryUsers.add(r.getBnsumail());
+				}
+			} else if (r.getBnnb().equals("") && r.getBnmodel().equals("")) {
+				// 如果都沒有過濾(留空白)-> 主要?次要?
+				if (r.getBnprimary() == 0) {
+					mainUsers.add(r.getBnsumail());
+				} else {
+					secondaryUsers.add(r.getBnsumail());
+				}
+			}
+		});
+
+		//
+		BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+		readyNeedMail.setBnmkind("BOM");
+		readyNeedMail.setBnmmail(mainUsers + "");
+		readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+		readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+				+ "Cloud system BOM Note [Update][" + c.getBpmnb() + "] all new notification!");
+
+		// 如果BOM規格內資料沒有異動?只改備註?
+		// 取得BOM資訊(PM備註)
+		String sysnote = "";
+		sysnote += "☑Product Model : " + c.getBpmmodel();
+		sysnote += c.getSysnote();
+		sysnote += "(" + c.getSysmuser() + ")";
+		//
+		String sysnoteOld = "";
+		sysnoteOld += "☑Product Model : " + oldData.getBpmmodel();
+		sysnoteOld += oldData.getSysnote();
+		sysnoteOld += "(" + oldData.getSysmuser() + ")";
+
+		// 內容
+		String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+				+ "<thead><tr style= 'background-color: aliceblue;'>"//
+				+ "<th>新舊</th>"//
+				+ "<th>產品說明</th>"//
+				+ "</tr></thead>"//
+				+ "<tbody>"// 模擬12筆資料
+				+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
+				+ "<tr><td>Old</td><td>" + sysnoteOld + "</td><tr>"// 舊備註
+				+ "</tbody></table>";//
+		readyNeedMail.setBnmcontent(bnmcontent);
+		notificationMailDao.save(readyNeedMail);
+
 	}
 }

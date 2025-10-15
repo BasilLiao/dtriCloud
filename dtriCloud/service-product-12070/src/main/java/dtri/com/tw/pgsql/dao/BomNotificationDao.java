@@ -16,7 +16,8 @@ public interface BomNotificationDao extends JpaRepository<BomNotification, Long>
 			+ "(:bnmodel is null or c.bnmodel LIKE %:bnmodel%) and "// 成品型號
 			+ "(:bnsuname is null or c.bnsuname LIKE %:bnsuname%) and "// 成品型號
 			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
-	ArrayList<BomNotification> findAllBySearch(String bnnb, String bnmodel,String bnsuname, Integer sysstatus, Pageable pageable);
+	ArrayList<BomNotification> findAllBySearch(String bnnb, String bnmodel, String bnsuname, Integer sysstatus,
+			Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM BomNotification c WHERE "//
@@ -24,4 +25,14 @@ public interface BomNotificationDao extends JpaRepository<BomNotification, Long>
 			+ "(:bnnb is null or c.bnnb=:bnnb) ")
 	ArrayList<BomNotification> findAllByCheck(Long bnsuid, String bnnb, Pageable pageable);
 
+	// 查詢用
+	@Query("SELECT c FROM BomNotification c WHERE "//
+			+ "(:bnnb is null or c.bnnb LIKE %:bnnb%) and "// 成品BOM號
+			+ "(:bnmodel is null or c.bnmodel LIKE %:bnmodel%) and "// 型號
+			+ "(:bnmnotice is null or c.bnmnotice = :bnmnotice) and "// 必須要有勾一個(更新)
+			+ "(:bnanotice is null or c.bnanotice = :bnanotice) and "// 必須要有勾一個(新增)
+			+ "(:bndnotice is null or c.bndnotice = :bndnotice) and "// 必須要有勾一個(移除)
+			+ "(:sysstatus is null or c.sysstatus =:sysstatus)") //
+	ArrayList<BomNotification> findAllBySearch(String bnnb, String bnmodel, Boolean bnmnotice, Boolean bnanotice,
+			Boolean bndnotice, Integer sysstatus, Pageable pageable);
 }
