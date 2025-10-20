@@ -1012,6 +1012,9 @@
 								exTbodytd.addClass('valTbodytd');
 								exTbodytd.attr("title", resultThead[k].cellName);
 								exTbodytd.addClass(resultThead[k].cellName);
+								if(resultThead[k].cellName==="sysnote"){
+									exTbodytd.addClass('text-start');
+								}
 
 								//固定第一格式
 								if (check1 && resultThead[k].show == 1) {
@@ -1027,6 +1030,7 @@
 									exTheadth.text(cellName == "" ? resultThead[k].cellName : cellName);//有可能內容是空的
 									exTheadth.css('minWidth', resultThead[k].width + "px");
 									exTbodytd.css('maxWidth', resultThead[k].width + "px");
+									
 									//===特殊 限制於BPM使用->順帶入名稱===
 									if (toWhoId === "BPM") {
 										if (resultThead[k].cellName === "bpmmodel") {
@@ -2740,10 +2744,9 @@
 					//選擇了-群組項目
 					if ($(this.parentElement).hasClass("bisgname")) {
 						
-						//console.log(bisfnames);
 						//還原
 						selectPePe.find(".bisfname .bisgid_0").prop('selected', true);
-						selectPePe.find(".bisqty input").val(0);
+						selectPePe.find(".bisqty input").val(1);
 						selectPePe.find(".bg-danger").removeClass("bg-danger");
 						selectPePe.find(".bg-success").removeClass("bg-success");
 						selectPePe.find(".bisnb input").val("");
@@ -2753,6 +2756,11 @@
 						selectPePe.find(".bisfname select").removeAttr("disabled");
 						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
 						selectPePe.find(".bislevel input").removeAttr("disabled");
+						
+						//預設->數量1 ->顏色綠色
+						selectPePe.find(".bisqty").addClass("bg-success");
+						selectPePe.find(".bisfname").addClass("bg-success");
+						selectPePe.find(".bisgname").addClass("bg-success");
 
 						//複製						
 						let optionExs = $("#other_Detail_BPM_od .exDetailTbodyTr .bisfname option");
@@ -2820,6 +2828,7 @@
 									od_bpm_sys_note.val(od_bpm_sys_note.val() + newDes);
 								}
 							}
+							
 						}
 					}
 				});
@@ -3068,13 +3077,20 @@
 								}
 							});
 						}
+						//新增:時切換顏色None
+						if($("#other_Detail_BPM #od_bpm_status select").val()===""){
+							$("#other_Detail_BPM #od_bpm_status select").val("Modify");
+						}	
 					}
 					//移除
 					if (target.hasClass("bi-dash-square")) {
 						$(this.parentElement.parentElement.parentElement).remove();
 						//檢查該項目是不是第一階層
 						
-						
+						//移除:時切換顏色None
+						if($("#other_Detail_BPM #od_bpm_status select").val()===""){
+							$("#other_Detail_BPM #od_bpm_status select").val("Modify");
+						}	
 					}
 				});
 				

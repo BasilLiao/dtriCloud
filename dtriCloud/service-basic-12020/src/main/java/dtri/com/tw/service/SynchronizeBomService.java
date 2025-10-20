@@ -426,7 +426,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system BOM [Update][" + bhnb + "] modification notification!");
+						+ "Cloud system BOM [Update][" + bhnb + "] notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
@@ -455,7 +455,7 @@ public class SynchronizeBomService {
 				//
 				for (BomHistory oss : mv) {
 					// 有修改內容
-					if ((!checkNeedSend) && !oss.getBhpqty().equals("")) {
+					if ((!checkNeedSend) && !oss.getBhatype().equals("")) {
 						checkNeedSend = true;
 					}
 
@@ -580,8 +580,16 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmkind("BOM");
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system BOM [All New][" + bhnb + "] all new notification!");
+				Boolean checkImport = basicBomIngredientsDao.findAllByCheck(bhnb, null, null, null).size() > 0;//
+				// 可能是ERP 導入
+				if (checkImport) {
+					readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+							+ "Cloud system BOM [Import][" + bhnb + "] notification!");
+				} else {
+					// 可能是全新資料
+					readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+							+ "Cloud system BOM [All New][" + bhnb + "] notification!");
+				}
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
@@ -712,12 +720,8 @@ public class SynchronizeBomService {
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
 				// 取得BOM資訊(PM備註)
-				String sysnote = "";
-				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(bhnb, null, null);
-				if (bomProductManagements.size() == 1) {
-					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
-					sysnote += bomProductManagements.get(0).getSysnote();
-				}
+				String sysnoteOld = "";
+				sysnoteOld += mv.get(0).getSysnote();
 
 				//
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
@@ -725,7 +729,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
 				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
-						+ "Cloud system BOM [All Delete][" + bhnb + "] all new notification!");
+						+ "Cloud system BOM [All Delete][" + bhnb + "] notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
@@ -733,7 +737,7 @@ public class SynchronizeBomService {
 						+ "<th>產品說明</th>"//
 						+ "</tr></thead>"//
 						+ "<tbody>"// 模擬12筆資料
-						+ "<tr><td>Delete</td><td>" + sysnote + "</td><tr>"// 備註
+						+ "<tr><td>Delete</td><td>" + sysnoteOld + "</td><tr>"// 備註
 						+ "</tbody></table>"//
 						+ "<br>"//
 						+ "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//

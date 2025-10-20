@@ -148,8 +148,9 @@ public class ManufactureProcessCardServiceAc {
 						.build();
 
 				// 5. 建立 POST 請求
-				//HttpPost request = new HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil"); //測試用
-				HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil"); //正式用
+				// HttpPost request = new
+				// HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil"); //測試用
+				HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil"); // 正式用
 				request.setHeader("Content-Type", "application/json;charset=UTF-8");
 				request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
 
@@ -502,6 +503,7 @@ public class ManufactureProcessCardServiceAc {
 						jsonCreate.addProperty("sys_c_user", "");// 固定
 						jsonCreate.addProperty("ph_c_from", "DTR Cloud");// 固定 來源
 						jsonCreate.addProperty("pr_name", entityDataOld.getSphname());// 產品名稱
+
 						jsonCreate.addProperty("ph_id", "");// 固定
 						jsonCreate.addProperty("sys_ver", "0");// 固定
 						jsonCreate.addProperty("ph_ll_g_name", entityDataOld.getSphlable());// 標籤組
@@ -518,6 +520,7 @@ public class ManufactureProcessCardServiceAc {
 						jsonCreate.addProperty("ph_s_date", "");// 固定 開始時間
 						jsonCreate.addProperty("sys_m_date", "");// 固定
 						jsonCreate.addProperty("pr_bom_id", entityDataOld.getSphbpmnb());// BOM號
+						jsonCreate.addProperty("pr_bom_c_id", entityDataOld.getSphobpmnb());// 訂單BOM號
 						jsonCreate.addProperty("pr_p_model", entityDataOld.getSphbpmmodel());// 型號
 						jsonCreate.addProperty("ps_sn_6", "000");// 固定
 						jsonCreate.addProperty("ps_sn_5", "0");// 固定
@@ -568,7 +571,7 @@ public class ManufactureProcessCardServiceAc {
 						CloseableHttpResponse response = httpclient.execute(request);
 						String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-						 System.out.println("Response:"+responseBody);
+						System.out.println("Response:" + responseBody);
 					} catch (Exception e) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 								new String[] { "取得 MES 資料 連線失敗!" });

@@ -18,9 +18,10 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 			+ "WHERE (:bpmnb is null or c.bpmnb LIKE %:bpmnb% ) and "// BOM號
 			+ "(:bpmmodel is null or c.bpmmodel LIKE %:bpmmodel% ) and "// BOM型號
 			+ "(:bpmtypename is null or c.bpmtypename LIKE %:bpmtypename% ) and" // 產品歸類-名稱
-			+ "(:bpmbisitem is null or c.bpmbisitem LIKE %:bpmbisitem% ) ") // 產品規格
+			+ "(:bpmbisitem is null or c.bpmbisitem LIKE %:bpmbisitem% ) and " // 產品規格
+			+ "(:syscuser is null or c.syscuser LIKE %:syscuser% ) ") // 新建人
 	ArrayList<BomProductManagement> findAllBySearch(String bpmnb, String bpmmodel, String bpmtypename,
-			String bpmbisitem, Pageable pageable);
+			String bpmbisitem, String syscuser, Pageable pageable);
 
 	// 檢查
 	@Query("SELECT c FROM BomProductManagement c "//

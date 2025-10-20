@@ -91,8 +91,8 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			    t.current_bbi_path AS sys_note      -- 展開路徑（顯示展開歷程）
 			FROM bom_tree t
 			WHERE t.bbi_i_qty > 0 --數量大於0
-				AND  (t.bbi_i_description LIKE '%正規化%'  -- ✅ 只回傳描述中含「正規化」的節點
-				OR t.level = 1) -- 保留這個篩選條件，以顯示所有第一層物料
+				AND  (
+				 	  t.level < 5) -- 保留這個篩選條件，以顯示所有第一層物料
 			ORDER BY t.root_bbi_sn ASC, t.bbi_i_sn ASC  -- 排序顯示：根料號 → 階層 → 展開路徑
 			""", nativeQuery = true)
 	ArrayList<BasicBomIngredients> findFlattenedBomLevel(@Param("bbisn") String bbisn,

@@ -1023,7 +1023,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setBilpngqty(t.getBilpnqty());
 									if (!t.getBilfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
 										t.setBilfuser(t.getBilfuser().equals("")
-												? "System(" + packageBean.getUserAccount() + ")"
+												? "Pass(" + packageBean.getUserAccount() + ")"
 												: t.getBilfuser());
 										// 記錄用
 										WarehouseHistory history = new WarehouseHistory();
@@ -1133,7 +1133,7 @@ public class WarehouseAssignmentServiceAc {
 									t.setBslfucheckin(true);// 已集結
 									if (!t.getBslfuser().contains("System")) {// 已經登記自動化了記錄內:則不需要紀錄
 										t.setBslfuser(t.getBslfuser().equals("")
-												? "System(" + packageBean.getUserAccount() + ")"
+												? "Pass(" + packageBean.getUserAccount() + ")"
 												: t.getBslfuser());
 										// 記錄用
 										WarehouseHistory history = new WarehouseHistory();

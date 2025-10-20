@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -137,7 +138,8 @@ public class BomProductManagementServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 
 			// Step3-1.取得資料(一般/細節)
-			ArrayList<BomProductManagement> entitys = managementDao.findAllBySearch(null, null, null, null, pageable);
+			ArrayList<BomProductManagement> entitys = managementDao.findAllBySearch(null, null, null, null, null,
+					pageable);
 			ArrayList<BomProductManagementDetailFront> entityDetails = new ArrayList<BomProductManagementDetailFront>();
 
 			// Step3-2.資料區分(一般/細節)
@@ -393,11 +395,13 @@ public class BomProductManagementServiceAc {
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_4);
 			// BOM規格
 			searchJsonsBPM = packageService.searchSet(searchJsonsBPM, null, "bpmnb", "Ex:成品號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_4);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_3);
 			searchJsonsBPM = packageService.searchSet(searchJsonsBPM, null, "bpmmodel", "Ex:產品型號?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_4);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_3);
 			searchJsonsBPM = packageService.searchSet(searchJsonsBPM, null, "bpmbisitem", "Ex:規格內容?", true, //
-					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_4);
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_3);
+			searchJsonsBPM = packageService.searchSet(searchJsonsBPM, null, "syscuser", "Ex:user?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_3);
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsonsBPM);
 			searchSetJsonAll.add("searchSetBBI", searchJsonsBBI);
@@ -438,12 +442,12 @@ public class BomProductManagementServiceAc {
 						null, pageableBBI);
 				Map<String, BasicBomIngredients> bbisnMap = new TreeMap<String, BasicBomIngredients>();
 				for (BasicBomIngredients bbis : bbisnList) {
-					// 沒有?最多100筆
-					if (!bbisnMap.containsKey(bbis.getBbisn()) && bbisnMap.size() <= 100) {
+					// 沒有?最多50筆
+					if (!bbisnMap.containsKey(bbis.getBbisn()) && bbisnMap.size() <= 50) {
 						bbisnMap.put(bbis.getBbisn(), bbis);
 					}
-					// 100筆資料後 跳出
-					if (bbisnMap.size() == 100) {
+					// 50筆資料後 跳出
+					if (bbisnMap.size() == 50) {
 						break;
 					}
 				}
@@ -546,7 +550,7 @@ public class BomProductManagementServiceAc {
 						BomProductManagement.class);
 				// Step3-1.取得資料(一般/細節)
 				entitys = managementDao.findAllBySearch(searchData.getBpmnb(), searchData.getBpmmodel(), null,
-						searchData.getBpmbisitem(), pageable);
+						searchData.getBpmbisitem(), searchData.getSyscuser(), pageable);
 				ArrayList<BomProductManagementDetailFront> entityNewDetails = new ArrayList<BomProductManagementDetailFront>();
 
 				// Step3-2.資料區分(一般/細節)
@@ -659,7 +663,7 @@ public class BomProductManagementServiceAc {
 					}
 				}
 
-				// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
+				// Step2-3.檢查BOM所有項目 內容 是否一樣 ?
 				ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
 						entityData.getBpmbisitem());
 				if (checkDatas3.size() > 0) {
@@ -667,13 +671,29 @@ public class BomProductManagementServiceAc {
 						// 如果跟本產品不同在警報
 						if (!one.getBpmnb().equals(entityData.getBpmnb())) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-									new String[] { ":" + one.getBpmnb() + " 規格內容 : " + checkDatas3.get(0).getBpmnb()
-											+ " : " + entityData.getBpmnb() });
+									new String[] { one.getBpmnb() + " 規格內容 : " + checkDatas3.get(0).getBpmnb() + " : "
+											+ entityData.getBpmnb() });
 						}
 					}
 				}
 
-				// Step2-3.檢查匹配權限?
+				// Step2-4.檢查BOM所有項目 是否有重複 ?
+				Map<String, Boolean> checkGorupItems = new HashMap<String, Boolean>();
+				JsonObject bpmbisitem = new JsonObject();
+				JsonArray bpmbisitems = new JsonArray();
+				bpmbisitem = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+				bpmbisitems = bpmbisitem.get("items").getAsJsonArray();
+				for (JsonElement bomKeeper : bpmbisitems) {
+					String key = bomKeeper.getAsJsonObject().get("bisgname").getAsString();
+					if (checkGorupItems.containsKey(key)) {
+						// 有重複跳出訊號
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+								new String[] { entityData.getBpmnb() + " : " + key });
+					}
+					checkGorupItems.put(key, true);
+				}
+
+				// Step2-5.檢查匹配權限?
 				BomProductManagement checkDataOne = new BomProductManagement();
 				// 有可能直接覆蓋?
 				if (entityData.getBpmid() == null) {
@@ -868,8 +888,7 @@ public class BomProductManagementServiceAc {
 			// 新的BOM_型號 , 物料_數量_製成別
 			newBom.put(newK, newVs);
 		});
-		// 統一時間 不然會導致BOM被切割
-		Date sameTime = new Date();
+
 		// 資料整理入 BomHistory 內
 		newBom.forEach((newBomK, newBomV) -> {
 			// 匹配的舊BOM
@@ -890,7 +909,6 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
-					bomHistory.setSyscdate(sameTime);
 
 					// 可能更新?數量?製成?
 					String oldItemV = oldBomv.get(newItemK);
@@ -918,7 +936,6 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("New");
-					bomHistory.setSyscdate(sameTime);
 					changeBom.add(bomHistory);
 				}
 			});
@@ -935,7 +952,6 @@ public class BomProductManagementServiceAc {
 					bomHistoryRemove.setBhpprocess(oldItemV.split("_")[2]);
 					bomHistoryRemove.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
 					bomHistoryRemove.setBhatype("Delete");
-					bomHistoryRemove.setSyscdate(sameTime);
 					// 舊的NOTE
 					if (oldBomNote.containsKey(newBomK)) {
 						bomHistoryRemove.setSysnote(oldBomNote.get(newBomK));
@@ -945,11 +961,25 @@ public class BomProductManagementServiceAc {
 				}
 			});
 			// 檢查是否為新BOM(因為有改產品BOM號則為全新)
-			changeBom.forEach(b -> {
+			Iterator<BomHistory> it = changeBom.iterator();//it將會連動changeBom
+			while (it.hasNext()) {
+				BomHistory b = it.next();
+				// 僅處理「BOM號有變更的品號」項目
 				if (changeBpmnb.containsKey(b.getBhnb())) {
-					b.setBhatype("All New");
+					String oldType = b.getBhatype();
+					if (oldType == null || oldType.equals("New") || oldType.equals("Update") || oldType.equals("")) {
+						// 舊值為 空/ New/ Update -> 視為全新
+						b.setBhatype("All New");
+					} else {
+						// 其他舊值 -> 移除
+						it.remove(); // 只能用 iterator.remove() 才不會 ConcurrentModificationException
+					}
 				}
-			});
+			}
+
+			// 統一時間 不然會導致BOM被切割
+			Date sameTime = new Date();
+			changeBom.forEach(his -> his.setSyscdate(sameTime));
 
 			// 比對同一張BOM->的物料
 			historyDao.saveAll(changeBom);
@@ -1019,7 +1049,7 @@ public class BomProductManagementServiceAc {
 						}
 					}
 
-					// Step2-2.檢查BOM所有項目 內容 是否一樣 ?
+					// Step2-3.檢查BOM所有項目 內容 是否一樣 ?
 					ArrayList<BomProductManagement> checkDatas3 = managementDao.findAllByCheck(null, null, null, null,
 							entityData.getBpmbisitem());
 					if (checkDatas3.size() > 0) {
@@ -1032,8 +1062,22 @@ public class BomProductManagementServiceAc {
 							}
 						}
 					}
-
-					// Step2-3.檢查匹配權限?
+					// Step2-4.檢查BOM所有項目 是否有重複 ?
+					Map<String, Boolean> checkGorupItems = new HashMap<String, Boolean>();
+					JsonObject bpmbisitem = new JsonObject();
+					JsonArray bpmbisitems = new JsonArray();
+					bpmbisitem = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+					bpmbisitems = bpmbisitem.get("items").getAsJsonArray();
+					for (JsonElement bomKeeper : bpmbisitems) {
+						String key = bomKeeper.getAsJsonObject().get("bisgname").getAsString();
+						if (checkGorupItems.containsKey(key)) {
+							// 有重複跳出訊號
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+									new String[] { entityData.getBpmnb() + " : " + key });
+						}
+						checkGorupItems.put(key, true);
+					}
+					// Step2-5.檢查匹配權限?
 					Boolean throwCheck = true;
 					String info = entityData.getBpmnb() + " / " + entityData.getBpmmodel();
 					for (BomKeeper keeper : bomKeepers) {
@@ -1066,11 +1110,13 @@ public class BomProductManagementServiceAc {
 							}
 						}
 					}
+
 					if (throwCheck) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
 								new String[] { "This account has no permissions : " + packageBean.getUserAccount()
 										+ " : " + info });
 					}
+
 					// 檢查連續碼
 					if (sn_check) {
 						String bpmnbNew = entityData.getBpmnb();
@@ -1085,7 +1131,7 @@ public class BomProductManagementServiceAc {
 							orders.add(new Order(Direction.DESC, "bpmnb"));// BOM號
 							PageRequest pageable = PageRequest.of(0, 999, Sort.by(orders));
 							ArrayList<BomProductManagement> checkDataSn = managementDao.findAllBySearch(bpmnbNewPrefix,
-									null, null, null, pageable);
+									null, null, null, null, pageable);
 							if (checkDataSn.size() > 0) {
 								// 檢查連序號
 								String bpmnbOld = checkDataSn.get(0).getBpmnb();
@@ -1112,6 +1158,7 @@ public class BomProductManagementServiceAc {
 											"The string length is less than 3 characters:" + entityData.getBpmnb() });
 						}
 					}
+
 				}
 			}
 			// =======================資料整理=======================
@@ -1178,8 +1225,6 @@ public class BomProductManagementServiceAc {
 				// 新的BOM_型號 , 物料_數量_製成別
 				newBom.put(newK, newVs);
 			});
-			// 統一時間 不然會導致BOM被切割
-			Date sameTime = new Date();
 			// 資料整理入 BomHistory 內
 			newBom.forEach((newBomK, newBomV) -> {
 				// 每個新BOM的Item
@@ -1193,13 +1238,16 @@ public class BomProductManagementServiceAc {
 					bomHistory.setBhpprocess(newItemV.split("_")[2]);
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("All New");
-					bomHistory.setSyscdate(sameTime);
 					changeBom.add(bomHistory);
 				});
+
 				// 比對同一張BOM->的物料
-				historyDao.saveAll(changeBom);
 			});
 			// =======================資料儲存=======================
+			// 統一時間 不然會導致BOM被切割
+			Date sameTime = new Date();
+			changeBom.forEach(his -> his.setSyscdate(sameTime));
+			historyDao.saveAll(changeBom);
 			// 資料Data
 			managementDao.saveAll(entitySave);
 			packageBean.setCallBackValue("BPM");
@@ -1304,6 +1352,7 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> saveDatas = new ArrayList<>();
 		// 準備比對資料<BOM號,內容新舊>
 		Map<String, JsonObject> newBPM = new HashMap<String, JsonObject>();
+		Map<String, String> oldBomNote = new HashMap<String, String>();// 舊BOM Note
 		// 一般-移除內容
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
@@ -1311,6 +1360,8 @@ public class BomProductManagementServiceAc {
 				// 登記異動紀錄->待發信件通知
 				newBPM.put(x.getBpmnb() + "_" + x.getBpmmodel(),
 						JsonParser.parseString(x.getBpmbisitem()).getAsJsonObject());
+				// 登記舊的備註資訊 之後比對使用
+				oldBomNote.put(x.getBpmnb() + "_" + x.getBpmmodel(), x.getSysnote());
 				//
 				BomProductManagement entityDataOld = managementDao.getReferenceById(x.getBpmid());
 				saveDatas.add(entityDataOld);
@@ -1357,14 +1408,17 @@ public class BomProductManagementServiceAc {
 			// 新的BOM_型號 , 物料_數量_製成別
 			newBom.put(newK, newVs);
 		});
-		// 統一時間 不然會導致BOM被切割
-		Date sameTime = new Date();
+
 		// 資料整理入 BomHistory 內
 		newBom.forEach((newBomK, newBomV) -> {
 			// 每個新BOM的Item
 			newBomV.forEach((newItemK, newItemV) -> {
 				// 新的?
 				BomHistory bomHistory = new BomHistory();
+				// 舊的NOTE
+				if (oldBomNote.containsKey(newBomK)) {
+					bomHistory.setSysnote(oldBomNote.get(newBomK));
+				}
 				bomHistory.setBhnb(newBomK.split("_")[0]);
 				bomHistory.setBhmodel(newBomK.split("_")[1]);
 				bomHistory.setBhpnb(newItemV.split("_")[0]);
@@ -1372,14 +1426,15 @@ public class BomProductManagementServiceAc {
 				bomHistory.setBhpprocess(newItemV.split("_")[2]);
 				bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 				bomHistory.setBhatype("All Delete");
-				bomHistory.setSyscdate(sameTime);
 				changeBom.add(bomHistory);
 			});
 			// 比對同一張BOM->的物料
-			historyDao.saveAll(changeBom);
 		});
-
+		// 統一時間 不然會導致BOM被切割
+		Date sameTime = new Date();
+		changeBom.forEach(his -> his.setSyscdate(sameTime));
 		// =======================資料儲存=======================
+		historyDao.saveAll(changeBom);
 		// 資料Data
 		managementDao.deleteAll(saveDatas);
 		packageBean.setCallBackValue("BPM");

@@ -505,7 +505,41 @@ public class ScheduleProductionNotesServiceAc {
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
 		// =======================資料準備 =======================
 		System.out.println("setInvalid");
+		ArrayList<ScheduleProductionHistory> entityDatas = new ArrayList<>();
+		ScheduleProductionHistory oldData = null;
 		// =======================資料檢查=======================
+		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+			// Step1.資料轉譯(一般)
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<ScheduleProductionHistory>>() {
+					});
+
+			// Step2.資料檢查
+			for (ScheduleProductionHistory entityData : entityDatas) {
+				// 檢查-名稱重複(有資料 && 不是同一筆資料)->如果重複?->檢查狀態 是否已經打印->
+				// 沒流程卡->舊資料 標記 stop
+				// 有流成卡->不可動
+				ArrayList<ScheduleProductionHistory> checkDatas = historyDao.findAllByCheck(entityData.getSphpon(),
+						null, null, null);
+				// 有資料?
+				if (checkDatas.size() > 0 && checkDatas.get(0).getSphprogress() >= 3) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+							new String[] { entityData.getSphpon() });
+				} else if (checkDatas.size() > 0 && checkDatas.get(0).getSphprogress() < 3) {
+					// 可修改?
+					oldData = new ScheduleProductionHistory();
+					oldData = checkDatas.get(0);
+					int n = historyDao.findAllBySearch(entityData.getSphpon(), null, null, null, null, null, null, null)
+							.size();
+					oldData.setSphpon(oldData.getSphpon() + "_STOP" + n);
+					oldData.setSysmuser(packageBean.getUserAccount());
+
+				}
+			}
+		}
+		if (oldData != null) {
+			historyDao.save(oldData);
+		}
 		return packageBean;
 	}
 

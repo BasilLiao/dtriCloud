@@ -343,7 +343,7 @@ public class BomItemSpecificationsServiceAc {
 		List<BomItemSpecifications> entitysData = specificationsDao.findAll();
 		// 過濾->只取得GID
 		entitysData.forEach(s -> {
-			//去除自訂義
+			// 去除自訂義
 			if (!s.getBisnb().contains("customize")) {
 				if (entitysMap.containsKey(s.getBisgid())) {
 					List<BomItemSpecifications> list = entitysMap.get(s.getBisgid());
@@ -583,6 +583,25 @@ public class BomItemSpecificationsServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { entityData.getBisnb() });
 				}
+				// 檢查 資料完整性
+				// Step2-4.資料檢查-缺少值?
+				if (entityData.getBisgcondition() == null || entityData.getBisgcondition().equals("") || //
+						entityData.getBisgname() == null || entityData.getBisgname().equals("") || //
+						entityData.getBisgffield() == null || entityData.getBisgffield().equals("") || //
+						entityData.getBisgfname() == null || entityData.getBisgfname().equals("") || //
+						entityData.getBisgsplit() == null || entityData.getBisgsplit().equals("") || //
+						entityData.getBisfname() == null || entityData.getBisfname().equals("[\"\"]") || //
+						entityData.getSyssort() == null) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+							new String[] { "Please check again Or Use copy Data!" });
+				}
+			}
+			// 自動狀態 須關閉才能修改
+			ArrayList<BomItemSpecifications> oldDatasCheck = specificationsDao
+					.findAllByBisgid(entityDatas.get(0).getBisgid());
+			if (oldDatasCheck.size() > 0 && oldDatasCheck.get(0).getBisiauto() && entityDatas.get(0).getBisiauto()) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+						new String[] { "Please turn off Auto : " + entityDatas.get(0).getBisiauto() });
 			}
 		}
 		// 一定要有群組
@@ -604,6 +623,7 @@ public class BomItemSpecificationsServiceAc {
 				// 可能->新的?
 				c.setBisid(null);
 				c.setBisgid(bisgid);
+				c.setBislevel(0);
 				c.setSysmdate(new Date());
 				c.setSysmuser(packageBean.getUserAccount());
 				c.setSysodate(new Date());
@@ -718,6 +738,14 @@ public class BomItemSpecificationsServiceAc {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { "Please check again" });
 				}
+				// 自動狀態 須關閉才能修改
+				ArrayList<BomItemSpecifications> oldDatasCheck = specificationsDao
+						.findAllByBisgid(entityDatas.get(0).getBisgid());
+				if (oldDatasCheck.size() > 0 && oldDatasCheck.get(0).getBisiauto()
+						&& entityDatas.get(0).getBisiauto()) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+							new String[] { "Please turn off Auto : " + entityDatas.get(0).getBisiauto() });
+				}
 			}
 		}
 		// =======================資料整理=======================
@@ -757,6 +785,13 @@ public class BomItemSpecificationsServiceAc {
 					new TypeReference<ArrayList<BomItemSpecifications>>() {
 					});
 			// Step2.資料檢查
+			// 自動狀態 須關閉才能修改
+			ArrayList<BomItemSpecifications> oldDatasCheck = specificationsDao
+					.findAllByBisgid(entityDatas.get(0).getBisgid());
+			if (oldDatasCheck.size() > 0 && oldDatasCheck.get(0).getBisiauto() && entityDatas.get(0).getBisiauto()) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+						new String[] { "Please turn off Auto : " + entityDatas.get(0).getBisiauto() });
+			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
@@ -789,6 +824,13 @@ public class BomItemSpecificationsServiceAc {
 					new TypeReference<ArrayList<BomItemSpecifications>>() {
 					});
 			// Step2.資料檢查
+			// 自動狀態 須關閉才能修改
+			ArrayList<BomItemSpecifications> oldDatasCheck = specificationsDao
+					.findAllByBisgid(entityDatas.get(0).getBisgid());
+			if (oldDatasCheck.size() > 0 && oldDatasCheck.get(0).getBisiauto() && entityDatas.get(0).getBisiauto()) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+						new String[] { "Please turn off Auto : " + entityDatas.get(0).getBisiauto() });
+			}
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
