@@ -656,7 +656,8 @@ public class BomProductManagementServiceAc {
 				if (checkDatas2.size() > 0) {
 					for (BomProductManagement one : checkDatas2) {
 						// 如果跟本產品不同在警報
-						if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+						if (!one.getBpmnb().equals(entityData.getBpmnb())
+								&& !one.getBpmid().equals(entityData.getBpmid())) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 									new String[] { ":" + one.getBpmnb() + " 備註 : " + entityData.getSysnote() });
 						}
@@ -669,7 +670,8 @@ public class BomProductManagementServiceAc {
 				if (checkDatas3.size() > 0) {
 					for (BomProductManagement one : checkDatas3) {
 						// 如果跟本產品不同在警報
-						if (!one.getBpmnb().equals(entityData.getBpmnb())) {
+						if (!one.getBpmnb().equals(entityData.getBpmnb())
+								&& !one.getBpmid().equals(entityData.getBpmid())) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 									new String[] { one.getBpmnb() + " 規格內容 : " + checkDatas3.get(0).getBpmnb() + " : "
 											+ entityData.getBpmnb() });
@@ -961,7 +963,7 @@ public class BomProductManagementServiceAc {
 				}
 			});
 			// 檢查是否為新BOM(因為有改產品BOM號則為全新)
-			Iterator<BomHistory> it = changeBom.iterator();//it將會連動changeBom
+			Iterator<BomHistory> it = changeBom.iterator();// it將會連動changeBom
 			while (it.hasNext()) {
 				BomHistory b = it.next();
 				// 僅處理「BOM號有變更的品號」項目
@@ -976,15 +978,14 @@ public class BomProductManagementServiceAc {
 					}
 				}
 			}
-
-			// 統一時間 不然會導致BOM被切割
-			Date sameTime = new Date();
-			changeBom.forEach(his -> his.setSyscdate(sameTime));
-
-			// 比對同一張BOM->的物料
-			historyDao.saveAll(changeBom);
-
 		});
+
+		// 統一時間 不然會導致BOM被切割
+		Date sameTime = new Date();
+		changeBom.forEach(his -> his.setSyscdate(sameTime));
+
+		// 比對同一張BOM->的物料
+		historyDao.saveAll(changeBom);
 
 		// =======================資料儲存=======================
 		// 資料Data
@@ -1602,7 +1603,7 @@ public class BomProductManagementServiceAc {
 		readyNeedMail.setBnmkind("BOM");
 		readyNeedMail.setBnmmail(mainUsers + "");
 		readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-		readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+		readyNeedMail.setBnmtitle("[" + Fm_T.to_yMd_Hms(new Date()) + "]"//
 				+ "Cloud system BOM Note [Update][" + c.getBpmnb() + "] all new notification!");
 
 		// 如果BOM規格內資料沒有異動?只改備註?

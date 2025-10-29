@@ -406,6 +406,11 @@ public class SynchronizeBomService {
 			});
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 時間配置
+				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
+				if (mv.size() > 0) {
+					dateTime = mv.get(0).getSyscdate() + "";
+				}
 				// 取得BOM資訊(PM備註)
 				String sysnote = "";
 				String sysnoteOld = "";
@@ -425,7 +430,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmkind("BOM");
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+				readyNeedMail.setBnmtitle("[" + dateTime + "]"//
 						+ "Cloud system BOM [Update][" + bhnb + "] notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
@@ -567,6 +572,12 @@ public class SynchronizeBomService {
 			});
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 時間配置
+				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
+				if (mv.size() > 0) {
+					dateTime = mv.get(0).getSyscdate() + "";
+				}
+
 				// 取得BOM資訊(PM備註)
 				String sysnote = "";
 				ArrayList<BomProductManagement> bomProductManagements = managementDao.findAllByCheck(bhnb, null, null);
@@ -583,11 +594,11 @@ public class SynchronizeBomService {
 				Boolean checkImport = basicBomIngredientsDao.findAllByCheck(bhnb, null, null, null).size() > 0;//
 				// 可能是ERP 導入
 				if (checkImport) {
-					readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+					readyNeedMail.setBnmtitle("[" + dateTime + "]"//
 							+ "Cloud system BOM [Import][" + bhnb + "] notification!");
 				} else {
 					// 可能是全新資料
-					readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+					readyNeedMail.setBnmtitle("[" + dateTime + "]"//
 							+ "Cloud system BOM [All New][" + bhnb + "] notification!");
 				}
 				// 內容
@@ -719,6 +730,11 @@ public class SynchronizeBomService {
 			});
 			// 建立信件
 			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+				// 時間配置
+				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
+				if (mv.size() > 0) {
+					dateTime = mv.get(0).getSyscdate() + "";
+				}
 				// 取得BOM資訊(PM備註)
 				String sysnoteOld = "";
 				sysnoteOld += mv.get(0).getSysnote();
@@ -728,7 +744,7 @@ public class SynchronizeBomService {
 				readyNeedMail.setBnmkind("BOM");
 				readyNeedMail.setBnmmail(mainUsers + "");
 				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-				readyNeedMail.setBnmtitle("[" + Fm_T.to_y_M_d(new Date()) + "]"//
+				readyNeedMail.setBnmtitle("[" + dateTime + "]"//
 						+ "Cloud system BOM [All Delete][" + bhnb + "] notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//

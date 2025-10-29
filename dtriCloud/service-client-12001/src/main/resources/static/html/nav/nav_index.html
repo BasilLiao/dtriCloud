@@ -1,39 +1,53 @@
 <style>
-	/*單元名稱_文字_調製整*/
-	#nav_functional_unit {
-		line-height: 24px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+/*單元名稱_文字_調製整*/
+#nav_functional_unit {
+	line-height: 24px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
-	/*Menu_位置_調製整*/
-	.menu_css {
-		margin-top: -1px;
-	}
+/*Menu_位置_調製整*/
+.menu_css {
+	margin-top: -1px;
+}
+
+.modal {
+	z-index: 1060 !important;
+}
+
+.modal-backdrop {
+	z-index: 1050 !important;
+}
 </style>
 <div id="nav_index" class="fixed-top text-primary">
 	<!-- 固定選單 -->
-	<div class="col-12 p-0 bg-light border border-primary rounded-bottom row m-0 p-1 shadow-sm">
+	<div
+		class="col-12 p-0 bg-light border border-primary rounded-bottom row m-0 p-1 shadow-sm">
 		<div class="col-1 p-0">
-			<button class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse"
-				aria-controls="nav_functional_menu" data-bs-target="#nav_functional_menu">
+			<button class="col-12 p-1 btn btn-outline-primary" type="submit"
+				data-bs-toggle="collapse" aria-controls="nav_functional_menu"
+				data-bs-target="#nav_functional_menu">
 				<i class="bi bi-menu-down"></i> <b class="d-none d-lg-inline">Menu</b>
 			</button>
 		</div>
 		<div class="col-10 p-0 row m-0">
-			<div id="nav_functional_unit" class="col-3 p-1 m-0 h4 fw-bold text-center">Home</div>
+			<div id="nav_functional_unit"
+				class="col-3 p-1 m-0 h4 fw-bold text-center">Home</div>
 			<div class="col-9 p-1 pt-0 pb-0 m-0 fw-bold">
-				<div id="nav_message_color" class="alert alert-primary p-1 m-0 d-flex justify-content-between"
+				<div id="nav_message_color"
+					class="alert alert-primary p-1 m-0 d-flex justify-content-between"
 					role="alert">
 					<div id="nav_message_info_def" class="">[Code]Message :</div>
 					<div id="nav_message_info" class="d-none">[Code]Message :</div>
-					<button id="nav_message_close" type="button" class="btn-close" aria-label="Close"></button>
+					<button id="nav_message_close" type="button" class="btn-close"
+						aria-label="Close"></button>
 				</div>
 			</div>
 		</div>
 		<div class="col-1 p-0">
-			<button id="nav_user" class="col-12 p-1 btn btn-outline-primary" type="submit" data-bs-toggle="collapse"
+			<button id="nav_user" class="col-12 p-1 btn btn-outline-primary"
+				type="submit" data-bs-toggle="collapse"
 				aria-controls="nav_user_menu" data-bs-target="#nav_user_menu">
 				<i class="bi bi-person-circle"></i> <b class="d-none d-lg-inline">User</b>
 			</button>
@@ -42,13 +56,16 @@
 	<!-- 動態選單 -->
 	<div class="col-12 p-1 pt-0">
 		<!-- Menu -->
-		<div class="menu_css collapse float-start col-5 col-md-4 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0"
+		<div
+			class="menu_css collapse float-start col-5 col-md-4 col-lg-2 border border-primary rounded-bottom bg-white shadow pt-0"
 			id="nav_functional_menu">
 			<div class="row m-0 p-0">
-				<div id="menu_list" class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
-					style="max-height:60vh;">
+				<div id="menu_list"
+					class="col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
+					style="max-height: 60vh;">
 					<div id="menu_ex" class="pt-2 d-none">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
+						<button type="button"
+							class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
 								<i class="bi bi-tags"></i> Class
 							</div>
@@ -58,10 +75,12 @@
 
 				</div>
 				<!-- Menu-item -->
-				<div id="menu_item" class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
-					style="max-height:60vh;">
+				<div id="menu_item"
+					class=" col-6 p-1 text-center h6 m-0 text-primary overflow-auto"
+					style="max-height: 60vh;">
 					<div id="menu_i_ex" class="pt-2 d-none">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
+						<button type="button"
+							class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div class="sptype_0 d-none ">
 								<i class="bi bi-box-arrow-down-right"></i> General
 							</div>
@@ -75,9 +94,11 @@
 			</div>
 		</div>
 		<!-- User -->
-		<div class="menu_css collapse float-end col-4 col-md-3 col-lg-1 border border-primary rounded-bottom bg-white shadow"
+		<div
+			class="menu_css collapse float-end col-4 col-md-3 col-lg-1 border border-primary rounded-bottom bg-white shadow"
 			id="nav_user_menu">
-			<div class="p-1 row text-center fw-bold fw-normal h6 m-0 text-primary">
+			<div
+				class="p-1 row text-center fw-bold fw-normal h6 m-0 text-primary">
 				<div class="col-12 p-0">
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Name
@@ -91,7 +112,8 @@
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Language
 					</div>
-					<div class="h6" id="menu_login_language" style="word-break: keep-all;"></div>
+					<div class="h6" id="menu_login_language"
+						style="word-break: keep-all;"></div>
 				</div>
 				<div class="pt-1 pb-1 p-0">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
@@ -100,14 +122,16 @@
 					<div class="pb-2">
 						<i class="bi bi-bookmark"></i> Login time
 					</div>
-					<div class="h6" id="menu_login_datetime" style="word-break: keep-all;">yyyy-MM-dd 24h:mm:ss</div>
+					<div class="h6" id="menu_login_datetime"
+						style="word-break: keep-all;">yyyy-MM-dd 24h:mm:ss</div>
 				</div>
 				<div class="pt-1 pb-1 p-0">
 					<div class="col-12 p-0 m-0 border border-primary"></div>
 				</div>
 				<div class="pt-2 p-0">
 					<a id="home_index" href="#">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
+						<button type="button"
+							class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 							<div>
 								<i class="bi bi-house-heart"></i>
 							</div>
@@ -116,7 +140,8 @@
 					</a>
 				</div>
 				<div class="pt-2 p-0">
-					<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
+					<button type="button"
+						class="col-12 fw-bold btn-sm btn btn-outline-primary shadow-sm">
 						<div>
 							<i class="bi bi-person-square"></i>
 						</div>
@@ -128,7 +153,8 @@
 				</div>
 				<div class="pt-2 p-0">
 					<a id="logout" href="./logout.basil">
-						<button type="button" class="col-12 fw-bold btn-sm btn btn-outline-danger shadow-sm">
+						<button type="button"
+							class="col-12 fw-bold btn-sm btn btn-outline-danger shadow-sm">
 							<div>
 								<i class="bi bi-outlet"></i>
 							</div>
@@ -182,6 +208,30 @@
 					$("#nav_message_color").removeClass("alert-danger");
 				}, 15000);
 			},
+			/**
+			 * showConfirmModal(message, title)
+			 * 顯示可自訂文字的確認對話框
+			 * 傳回 Promise<Boolean> → true=按確定, false=按取消
+			 */
+			showConfirmModal(message = "確定執行？", title = "系統提示") {
+			 return new Promise(resolve => {
+			    $("#simpleConfirmBox").remove(); // 移除舊視窗
+			    const html = `
+			      <div id="simpleConfirmBox" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+			        background:rgba(0,0,0,0.4);z-index:9999;">
+			        <div style="background:#fff;border:2px solid #007bff;padding:15px 20px;border-radius:6px;min-width:260px;text-align:center;">
+			          <h4 style="margin:0 0 8px 0;">${title}</h4>
+			          <p style="margin:0 0 12px 0;">${message}</p>
+			          <button id="okBtn" style="margin-right:10px;">確定</button>
+			          <button id="noBtn">取消</button>
+			        </div>
+			      </div>`;
+			    $("body").append(html);
+			    $("#okBtn").on("click", ()=>{ $("#simpleConfirmBox").remove(); resolve(true); });
+			    $("#noBtn").on("click", ()=>{ $("#simpleConfirmBox").remove(); resolve(false); });
+			  });
+			},
+			
 			create() {
 				//初始化
 				console.log("nav_index.html(create)");

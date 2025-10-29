@@ -372,11 +372,19 @@ public class BomItemSpecificationsServiceAc {
 			Long bisgid = ks;// GID
 			Boolean bisiauto = entityOne.getBisiauto();// 自動?
 			Boolean bisdselect = entityOne.getBisdselect();// 預設選擇?
+			// 勾選
 			Boolean bispcb = entityOne.getBispcb();
 			Boolean bisproduct = entityOne.getBisproduct();
 			Boolean bissfproduct = entityOne.getBissfproduct();
 			Boolean bisaccessories = entityOne.getBisaccessories();
 			Boolean bisdevelopment = entityOne.getBisdevelopment();
+			// 勾選-必選
+			Boolean bismpcb = entityOne.getBismpcb();
+			Boolean bismproduct = entityOne.getBismproduct();
+			Boolean bismsfproduct = entityOne.getBismsfproduct();
+			Boolean bismaccessories = entityOne.getBismaccessories();
+			Boolean bismdevelopment = entityOne.getBismdevelopment();
+			//
 			String bisgfname = entityOne.getBisgfname();// 正規畫-群組名稱
 			Integer bisgfnameSize = bisgfname.split(" ").length;
 			String bisprocess = entityOne.getBisprocess();
@@ -467,14 +475,22 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisiauto(bisiauto);
 				itemSp.setBisdselect(bisdselect);
 				itemSp.setBisgfname(bisgfname);
+				//勾選
 				itemSp.setBispcb(bispcb);// PCBA主板
 				itemSp.setBisproduct(bisproduct);// 產品
+				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisaccessories(bisaccessories);//
 				itemSp.setBisdevelopment(bisdevelopment);//
+				//
+				itemSp.setBismpcb(bismpcb);// PCBA主板
+				itemSp.setBismproduct(bismproduct);// 產品
+				itemSp.setBismsfproduct(bismsfproduct);//
+				itemSp.setBismaccessories(bismaccessories);//
+				itemSp.setBismdevelopment(bismdevelopment);//
+				//
 				itemSp.setBisprocess(bisprocess);//
 				itemSp.setBisgname(bisgname);//
 				itemSp.setBisgffield(bisgffield);//
-				itemSp.setBissfproduct(bissfproduct);//
 				itemSp.setBisgsplit(bisgsplit);
 				itemSp.setBisgcondition(bisgcondition);// 區分
 				itemSp.setBislevel(0);
@@ -666,6 +682,13 @@ public class BomItemSpecificationsServiceAc {
 				entityDataOld.setBissfproduct(x.getBissfproduct());
 				entityDataOld.setBisdevelopment(x.getBisdevelopment());
 				entityDataOld.setBispcb(x.getBispcb());
+				//
+				entityDataOld.setBismproduct(x.getBismproduct());
+				entityDataOld.setBismaccessories(x.getBismaccessories());
+				entityDataOld.setBismsfproduct(x.getBismsfproduct());
+				entityDataOld.setBismdevelopment(x.getBismdevelopment());
+				entityDataOld.setBismpcb(x.getBismpcb());
+				//
 				entityDataOld.setBisiauto(x.getBisiauto());
 				entityDataOld.setBisdselect(x.getBisdselect());
 				//

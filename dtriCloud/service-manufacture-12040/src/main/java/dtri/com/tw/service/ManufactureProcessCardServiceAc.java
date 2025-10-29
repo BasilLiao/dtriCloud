@@ -86,6 +86,7 @@ public class ManufactureProcessCardServiceAc {
 
 		// Step2.排序
 		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.DESC, "syscdate"));// 建立單據日
 		orders.add(new Order(Direction.ASC, "sphpon"));// 工單號
 
 		// 一般模式

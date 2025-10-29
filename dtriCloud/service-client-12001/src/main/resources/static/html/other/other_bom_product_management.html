@@ -1274,6 +1274,13 @@
 										        bissfproduct: v['bissfproduct'],//半成品
 										        bispcb: v['bispcb'],//版皆
 										        bisdevelopment: v['bisdevelopment'],//開發
+										        //必選
+										        bismaccessories: v['bismaccessories'],//配件
+										        bismproduct: v['bismproduct'],//成品
+										        bismsfproduct: v['bismsfproduct'],//半成品
+										        bismpcb: v['bismpcb'],//版皆
+										        bismdevelopment: v['bismdevelopment'],//開發
+										        
 										        sort: v['syssort']
 										    })
 										    .text(v.bisgname)
@@ -1474,7 +1481,7 @@
 				//==========================監聽==========================
 				//=====點及按鈕類=====
 				$(document).off("click", "#other_c button");
-				$(document).on("click", "#other_c button", function (event) {
+				$(document).on("click", "#other_c button", async function (event) {
 					console.log($(event.currentTarget).attr("id"));
 					let clickId = $(event.currentTarget).attr("id");
 					let od_bpm_batch = $("#od_bpm_batch option:selected").val();
@@ -1812,6 +1819,7 @@
 							break;
 						case "btn_bpr_back":
 						case "btn_bpm_back":
+							
 							//返回-暫存->歸還的對象?
 							let od_bpmr_nb = "";
 							let od_bpmr_model = "";
@@ -1822,23 +1830,7 @@
 							let b_w = "";
 							let b_w_m = "";
 							let b_p_s = "";
-							//還原樣式
-							//
-							$("#other_c #other_BIS").removeClass("col-lg-6");
-							$("#other_c #other_BIS").addClass("col-lg-4");
-							$("#other_c #other_BPR_BIS").removeClass("col-lg-6");
-							$("#other_c #other_BPR_BIS").addClass("col-lg-4");
-							//
-							$("#other_c #other_Detail_BPM").removeClass("col-lg-6");
-							$("#other_c #other_Detail_BPM").addClass("col-lg-8");
-							$("#other_c #other_Detail_BPR").removeClass("col-lg-6");
-							$("#other_c #other_Detail_BPR").addClass("col-lg-8");
-							//
-							$("#other_c #other_BIS").addClass("d-none");
-							$("#other_c #other_BPR_BIS").addClass("d-none");
-							$("#other_c #other_Detail_BPM_info").removeClass("d-none");
-							$("#other_c #other_Detail_BPR_info").removeClass("d-none");
-							
+							//=======確認哪一類?Format / Rule=======
 							if (clickId === "btn_bpm_back") {	
 								//異常觸發?是否選取?
 								od_bpmr_nb = $('#od_bpm_nb input').val();
@@ -1874,6 +1866,85 @@
 									break;
 								}
 							}
+							
+							//======確定狀態->再提醒======
+							switch ($("#other_Detail_" + b_w + " #od_" + b_w_m + "_status select").val()) {
+							case "Add":
+							case "Modify":
+							case "":
+								//取得必填
+								//取得 項目群組
+								//bismaccessories:"false" //配件
+								//bismdevelopment: "false" //開發
+								//bismpcb: "false" //板階
+								//bismproduct: "false"//產品
+								//bismsfproduct: "false"//半成品
+								let selectedValue = $("#other_Detail_" + b_w + " #od_bpm_type select").val();//產品類型
+							 	// 對照表
+							    const valueMap = {
+							        0: "bismdevelopment",
+							        1: "bismproduct",
+							        2: "bismaccessories",
+							        3: "bismsfproduct",
+							        4: "bismpcb"
+							    };
+							    let mappedKey = valueMap[selectedValue]; // 對應到屬性名稱
+								let optionsMap = {};
+								$("#other_Detail_BPM_od .exDetailTbodyTr select.form-select option").each(function() {
+									let val = $(this).val();
+									let defselect = $(this).attr(mappedKey);//預設必選
+								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目
+								        let key = $(this).text().trim(); // 用 text 當 key
+								        optionsMap[key] = {
+								            mustBe: $(this).attr(mappedKey)|| ""
+								        };
+								    }
+								});
+								//取得資料-提醒
+								$("#other_Detail_" + b_w + " .detailTbodyTr").each(s => {
+									let detail = $($("#other_Detail_" + b_w + " .detailTbodyTr")[s]);
+									let checkbisgname = detail.find(".bisgname select option:selected").text();
+									console.log(checkbisgname);
+									delete optionsMap[checkbisgname];//把已經配對到的移除
+								});
+								
+								
+								//檢查是否缺少資料
+								if (Object.keys(optionsMap).length > 0) {
+									let result_ms = "Required option is missing : "+Object.keys(optionsMap).join(" / ");
+									let ok = await nav_alert.methods.showConfirmModal(result_ms, "確定此筆 BOM 資料正確？");
+									if (ok) {
+								        console.log("✅ 使用者按下確定");
+								    } else {
+								        console.log("❌ 使用者按下取消");
+								        return null;
+								    }
+								}
+								break;
+							}
+							
+							
+							//=======還原樣式+先檢查是否關閉Basic=======
+							if (!$("#other_c #other_BIS").hasClass("d-none")) {
+								$("#other_Detail_BPM tbody .bisnb .btn-outline-warning").trigger("click");
+							}
+							//還原樣式
+							$("#other_c #other_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BIS").addClass("col-lg-4");
+							$("#other_c #other_BPR_BIS").removeClass("col-lg-6");
+							$("#other_c #other_BPR_BIS").addClass("col-lg-4");
+							//
+							$("#other_c #other_Detail_BPM").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPM").addClass("col-lg-8");
+							$("#other_c #other_Detail_BPR").removeClass("col-lg-6");
+							$("#other_c #other_Detail_BPR").addClass("col-lg-8");
+							//
+							$("#other_c #other_BIS").addClass("d-none");
+							$("#other_c #other_BPR_BIS").addClass("d-none");
+							$("#other_c #other_Detail_BPM_info").removeClass("d-none");
+							$("#other_c #other_Detail_BPR_info").removeClass("d-none");
+							
+							//=======開啟選取=======
 							switch ($("#other_Detail_" + b_w + " #od_" + b_w_m + "_status select").val()) {
 								case "Add":
 									//檢查是否有資料?
@@ -1941,7 +2012,7 @@
 									return false;
 									break;
 							}
-							//開啟選取
+							
 							if (clickId === "btn_bpm_back") {
 								$("#other_" + b_w + " tbody .bpmnb").each(o => {
 									//解所選項
@@ -1957,6 +2028,7 @@
 									}
 								});
 							}
+							
 							
 							//回存資料
 							let bpmbisitem = {};//結構化
@@ -2091,6 +2163,7 @@
 							$("#" + b_p_s + " tbody tr input").val("");
 							$("#" + b_p_s + " tbody tr select").val("");
 							$("#other_Detail_" + b_w + "_od #other_BIS .valTbodyTr").remove();
+							
 
 							//回至清單->觸發開關->開啟
 							if (!$("#other_" + b_w + "_open").hasClass("show")) {
@@ -2143,7 +2216,7 @@
 								            class: $(this).attr("class") || "",
 								            alt: $(this).attr("alt") || "",
 								            sort: $(this).attr("sort") || "",
-								            text: $(this).attr("text")|| "",
+								            text: $(this).text()|| "",
 								            value: $(this).val()|| ""
 								        };
 								    }
@@ -2317,7 +2390,7 @@
 								            class: $(this).attr("class") || "",
 								            alt: $(this).attr("alt") || "",
 								            sort: $(this).attr("sort") || "",
-								            text: $(this).attr("text")|| "",
+								            text: $(this).text()|| "",
 								            value: $(this).val()|| ""
 								        };
 								    }
@@ -2854,7 +2927,7 @@
 						$(event.target).removeClass("btn-outline-primary");
 						$(event.target).removeClass("btn-outline-warning");
 						//解鎖定
-						$(event.target).parent().parent().parent().find(".detailTbodyTr").removeClass("locked-do");
+						//$(event.target).parent().parent().parent().find(".detailTbodyTr").removeClass("locked-do");
 
 
 						if ($("#other_c #" + whois + "_info").hasClass("d-none")) {
@@ -2905,8 +2978,8 @@
 							
 							
 							//鎖定
-							$(event.target).parent().parent().parent().find(".detailTbodyTr").addClass("locked-do");
-							$(event.target).parent().parent().removeClass("locked-do");
+							//$(event.target).parent().parent().parent().find(".detailTbodyTr").addClass("locked-do");
+							//$(event.target).parent().parent().removeClass("locked-do");
 							//是Basic
 							if ($(event.target).parent().parent().find(".bisgname select option:selected").val() === "0") {
 								let basics = $(event.target).val().split(",");

@@ -10,7 +10,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -68,14 +67,6 @@ public class BomHistory {
 		this.bhpprocess = "";
 		this.bhnotification = false;
 		this.bhlevel = 0;
-	}
-
-	@PrePersist
-	protected void onCreate() {
-		this.syscdate = new Date(System.currentTimeMillis() / 1000 * 1000); // 去除毫秒
-		this.syscuser = "system";
-		this.sysmdate = new Date(System.currentTimeMillis() / 1000 * 1000);
-		this.sysmuser = "system";
 	}
 
 	@PreUpdate

@@ -114,6 +114,14 @@ public class BomItemSpecificationsDetailFront {
 		this.bisdevelopment = false;
 		this.bispcb = false;
 		this.bisiauto = false;
+		//
+		//必填
+		this.bismproduct = false;
+		this.bismaccessories = false;
+		this.bismsfproduct = false;
+		this.bismdevelopment = false;
+		this.bismpcb = false;
+		//
 		this.setBisdselect(false);
 		this.setBisqty(1);
 		this.bislevel = 0;
@@ -172,7 +180,7 @@ public class BomItemSpecificationsDetailFront {
 	private String bisgffield;
 	@Transient
 	private String bisgfname;
-
+	//
 	@Transient
 	private Boolean bisproduct;
 	@Transient
@@ -183,6 +191,19 @@ public class BomItemSpecificationsDetailFront {
 	private Boolean bisdevelopment;
 	@Transient
 	private Boolean bispcb;
+	//
+	// 必填
+	@Transient
+	private Boolean bismproduct;
+	@Transient
+	private Boolean bismaccessories;
+	@Transient
+	private Boolean bismsfproduct;
+	@Transient
+	private Boolean bismdevelopment;
+	@Transient
+	private Boolean bismpcb;
+	//
 	@Transient
 	private Boolean bisiauto;
 	@Transient
@@ -464,4 +485,43 @@ public class BomItemSpecificationsDetailFront {
 		this.bislevel = bislevel;
 	}
 
+	public Boolean getBismpcb() {
+		return bismpcb;
+	}
+
+	public void setBismpcb(Boolean bismpcb) {
+		this.bismpcb = bismpcb;
+	}
+
+	public Boolean getBismdevelopment() {
+		return bismdevelopment;
+	}
+
+	public void setBismdevelopment(Boolean bismdevelopment) {
+		this.bismdevelopment = bismdevelopment;
+	}
+
+	public Boolean getBismsfproduct() {
+		return bismsfproduct;
+	}
+
+	public void setBismsfproduct(Boolean bismsfproduct) {
+		this.bismsfproduct = bismsfproduct;
+	}
+
+	public Boolean getBismaccessories() {
+		return bismaccessories;
+	}
+
+	public void setBismaccessories(Boolean bismaccessories) {
+		this.bismaccessories = bismaccessories;
+	}
+
+	public Boolean getBismproduct() {
+		return bismproduct;
+	}
+
+	public void setBismproduct(Boolean bismproduct) {
+		this.bismproduct = bismproduct;
+	}
 }

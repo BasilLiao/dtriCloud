@@ -46,6 +46,13 @@ import jakarta.persistence.Transient;
  *      this.bissfproduct = false;指定顯示單元 半成品<br>
  *      this.bisdevelopment = false;指定顯示單元 開發品<br>
  *      this.bispcb = false;指定顯示單元 板階<br>
+ * 
+ *      this.bismproduct = false;指定顯示單元 必填產品<br>
+ *      this.bismaccessories = false;指定顯示單元 必填配件<br>
+ *      this.bismsfproduct = false;指定顯示單元 必填半成品<br>
+ *      this.bismdevelopment = false;指定顯示單元 必填開發品<br>
+ *      this.bismpcb = false;指定顯示單元 必填板階<br>
+ * 
  *      this.bisiauto = false;自動導入<br>
  *      this.bisdselect = false;預設選擇<br>
  * 
@@ -128,6 +135,12 @@ public class BomItemSpecifications {
 		this.bisdevelopment = false;
 		this.bispcb = false;
 		this.bisiauto = false;
+		//
+		this.setBismproduct(false);
+		this.setBismaccessories(false);
+		this.setBismsfproduct(false);
+		this.setBismdevelopment(false);
+		this.setBismpcb(false);
 		this.setBislevel(0);
 
 	}
@@ -199,6 +212,18 @@ public class BomItemSpecifications {
 	private Boolean bisdevelopment;
 	@Column(name = "bis_pcb", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bispcb;
+	// 必填
+	@Column(name = "bis_m_product", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bismproduct;
+	@Column(name = "bis_m_accessories", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bismaccessories;
+	@Column(name = "bis_m_sf_product", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bismsfproduct;
+	@Column(name = "bis_m_development", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bismdevelopment;
+	@Column(name = "bis_m_pcb", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bismpcb;
+	//
 	@Column(name = "bis_i_auto", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bisiauto;
 	@Column(name = "bis_d_select", nullable = false, columnDefinition = "boolean default false")
@@ -463,6 +488,46 @@ public class BomItemSpecifications {
 
 	public void setBislevel(Integer bislevel) {
 		this.bislevel = bislevel;
+	}
+
+	public Boolean getBismpcb() {
+		return bismpcb;
+	}
+
+	public void setBismpcb(Boolean bismpcb) {
+		this.bismpcb = bismpcb;
+	}
+
+	public Boolean getBismdevelopment() {
+		return bismdevelopment;
+	}
+
+	public void setBismdevelopment(Boolean bismdevelopment) {
+		this.bismdevelopment = bismdevelopment;
+	}
+
+	public Boolean getBismsfproduct() {
+		return bismsfproduct;
+	}
+
+	public void setBismsfproduct(Boolean bismsfproduct) {
+		this.bismsfproduct = bismsfproduct;
+	}
+
+	public Boolean getBismaccessories() {
+		return bismaccessories;
+	}
+
+	public void setBismaccessories(Boolean bismaccessories) {
+		this.bismaccessories = bismaccessories;
+	}
+
+	public Boolean getBismproduct() {
+		return bismproduct;
+	}
+
+	public void setBismproduct(Boolean bismproduct) {
+		this.bismproduct = bismproduct;
 	}
 
 }

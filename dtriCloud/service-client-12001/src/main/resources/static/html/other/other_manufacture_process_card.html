@@ -170,7 +170,7 @@
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 				<div
 					class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-					<div class="col-12 col-lg-2 p-1">
+					<div class="col-6 col-lg-3 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Execution</div>
 							<div class="row m-0">
@@ -196,6 +196,11 @@
 									<b>Preview<br>()
 									</b>
 								</button>
+								<button id="btn_printerForm" type="button"
+									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+									<b>Print<br>form
+									</b>
+								</button>
 								<button id="btn_saveForm" type="submit" value="btn_saveForm"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
 									<b>Save<br>(AU)
@@ -205,13 +210,8 @@
 									<input id="btn_save_auto" alt="" title="" type="checkbox"
 										checked="checked"
 										class="m-0 form-check-input checkbox_16 border border-dark">
-									<br> <b style="font-size: 12px;">Save -> Print</b>
+									<br> <b style="font-size: 12px;">Print -> Save</b>
 								</div>
-								<button id="btn_printerForm" type="button"
-									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-									<b>Print<br>form
-									</b>
-								</button>
 								<button id="btn_unlockForm" type="submit" value="btn_unlockForm"
 									class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
 									<b>Unlock<br>(AU)
@@ -878,7 +878,7 @@
 										</div>
 										<!-- BOM結構 -->
 										<div id="allBOM" class="row m-0"
-											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 16px; font-size: 12px; text-align: left; font-family: sans-serif; font-stretch: condensed;white-space: nowrap;">
+											style="display: flex; flex-wrap: wrap; flex-direction: column; height: 420px; line-height: 16px; font-size: 12px; text-align: left; font-family: sans-serif; font-stretch: condensed; white-space: nowrap;">
 											<div id="sphbisitemEx_val"
 												class="d-none p-0 ms-1 mt-1 only_brm"
 												style="overflow: hidden; text-align: start; height: 18px; width: 288px; line-height: 16px;">
@@ -1009,6 +1009,7 @@
 			entityFormatJson: {},//查詢格式
 			btn_send_auto: "",//自動傳送
 			btn_order: false,//是否-工單查詢填入
+			btn_intoForm: false,//是否有先預覽
 			//換頁設置
 			searchPageSet: {
 				total: 1000,//批次數量(1-1000)
@@ -1656,7 +1657,11 @@
 					let batchIndex = 0;
 					
 					function printBatch() {
-						if (batchIndex * batchSize >= total) return; // 所有都印完了
+						if (batchIndex * batchSize >= total){
+							other.methods.btn_saveForm(3);
+							return; // 所有都印完了
+						}
+							
 
 						let contentHtml = "";
 						// 防呆：確保長度合理
@@ -1833,6 +1838,7 @@
 				const action = event.submitter.value;
 				if (action === "btn_intoForm") {
 					other.methods.btn_intoForm();
+					other.data.btn_intoForm = true;
 				} else if (action === "btn_saveForm") {
 					other.methods.btn_saveForm(3);
 				}else if (action === "btn_unlockForm") {
@@ -1959,6 +1965,12 @@
 			},
 			//存檔資料
 			btn_saveForm(sphprogress) {
+				//必須先預覽->才能存檔
+				if(other.data.btn_intoForm !== true){
+					nav_alert.methods.alertshow("warning", "[622] Please 'Preview' first! [Warning]!!");
+					return null;
+				}
+				
 				//預覽內容
 				console.log("btn_saveForm");
 				console.log(other.data.entityFormatJson);
@@ -2246,7 +2258,7 @@
 					other.data.searchPageSet.pageNew = 1; //單前頁碼(1-50)
 					other.data.marks = {};//有選取的IKeyGKey
 					other.data.markDetails = {};//有選取的IKeyGKey
-
+					other.data.btn_intoForm = false;//預覽檢查
 					//Step5.帶入資料
 					if (main.resq_data['entityJson'] != "") {
 						other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
@@ -2272,7 +2284,7 @@
 							//取得目前選項
 							let mrn0000 = parseInt($(this).find('option:selected').attr('mrn0000')) || 0;
 							let sphoqty = parseInt(entity.find(".sphoqty").text()) || 0;
-							let result = mrn0000 + sphoqty + 1;
+							let result = mrn0000 + sphoqty;
 							// 若超過 9999，模擬循環從 0001 開始
 							result = result % 10000;
 							if (result === 0) result = 1;
