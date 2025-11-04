@@ -363,7 +363,7 @@ public class BasicProductModelServiceAc {
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bpm_name asc";
 		nativeQuery += " , e.sys_c_date asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BasicProductModel.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

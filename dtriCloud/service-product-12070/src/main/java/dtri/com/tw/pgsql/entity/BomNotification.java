@@ -33,6 +33,7 @@ import jakarta.persistence.Table;
  *      bnmnotice;BOM修改通知<br>
  *      bnanotice;BOM新增通知<br>
  *      bndnotice;BOM移除通知<br>
+ *      bnipnotice;BOM立即導入通知<br>
  */
 
 @Entity
@@ -63,6 +64,7 @@ public class BomNotification {
 		this.bnmnotice = false;// BOM修改通知<br>
 		this.bnanotice = false;// BOM新增通知<br>
 		this.setBndnotice(false);// BOM移除通知<br>
+		this.setBnipnotice(false);// BOM立即導入通知<br>
 	}
 
 	// 共用型
@@ -114,6 +116,8 @@ public class BomNotification {
 	private Boolean bnanotice;
 	@Column(name = "bn_d_notice", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bndnotice;
+	@Column(name = "bn_ip_notice", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bnipnotice;
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -279,6 +283,20 @@ public class BomNotification {
 	 */
 	public void setBndnotice(Boolean bndnotice) {
 		this.bndnotice = bndnotice;
+	}
+
+	/**
+	 * @return the bnipnotice
+	 */
+	public Boolean getBnipnotice() {
+		return bnipnotice;
+	}
+
+	/**
+	 * @param bnipnotice the bnipnotice to set
+	 */
+	public void setBnipnotice(Boolean bnipnotice) {
+		this.bnipnotice = bnipnotice;
 	}
 
 }

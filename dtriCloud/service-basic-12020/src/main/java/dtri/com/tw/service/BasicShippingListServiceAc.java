@@ -405,7 +405,7 @@ public class BasicShippingListServiceAc {
 		nativeQuery += " order by e.bsl_class asc";
 		nativeQuery += " , e.bsl_sn asc";
 		nativeQuery += " , e.bsl_p_number asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BasicShippingList.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

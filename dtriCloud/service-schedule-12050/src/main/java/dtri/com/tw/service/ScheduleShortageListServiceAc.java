@@ -294,7 +294,7 @@ public class ScheduleShortageListServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.ssl_bsl_sn_nb asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, ScheduleShortageList.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

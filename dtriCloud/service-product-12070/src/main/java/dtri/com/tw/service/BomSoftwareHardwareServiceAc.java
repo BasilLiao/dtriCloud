@@ -376,7 +376,7 @@ public class BomSoftwareHardwareServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bsh_nb asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BomSoftwareHardware.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

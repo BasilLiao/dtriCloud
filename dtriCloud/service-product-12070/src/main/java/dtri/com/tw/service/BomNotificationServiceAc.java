@@ -226,6 +226,7 @@ public class BomNotificationServiceAc {
 				entityDataOld.setBnmnotice(x.getBnmnotice());// 修改通知
 				entityDataOld.setBnanotice(x.getBnanotice());// 新增通知
 				entityDataOld.setBndnotice(x.getBndnotice());// 移除通知
+				entityDataOld.setBnipnotice(x.getBnipnotice());// 急單通知
 				saveDatas.add(entityDataOld);
 			}
 		});
@@ -412,7 +413,7 @@ public class BomNotificationServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.ssn_su_name asc, e.ssn_ssl_erp_c_user asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BomNotification.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

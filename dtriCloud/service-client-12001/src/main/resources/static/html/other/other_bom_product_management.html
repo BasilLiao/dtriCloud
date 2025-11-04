@@ -1333,7 +1333,9 @@
 											bisoption = $('<option></option>').text(val).val(v['bisid']);
 											bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
 											bisoption.attr('title', v['bisnb'] + "<_>" + v['bisname'] + "<_>" + v['bisspecifications'] + "<_>" + v['bissdescripion'] + "<_>" + v['bisgfname']);
-											bisselect.append(bisoption);							
+											bisoption.attr('onmouseenter="showTip(event, this.title)"');
+											bisoption.attr('onmouseleave="hideTip()"');
+											bisselect.append(bisoption);
 										}
 									});
 									bisselect.addClass('form-select');
@@ -3157,13 +3159,16 @@
 					}
 					//移除
 					if (target.hasClass("bi-dash-square")) {
-						$(this.parentElement.parentElement.parentElement).remove();
-						//檢查該項目是不是第一階層
-						
-						//移除:時切換顏色None
-						if($("#other_Detail_BPM #od_bpm_status select").val()===""){
-							$("#other_Detail_BPM #od_bpm_status select").val("Modify");
-						}	
+						console.log("Remove");
+						let tr_all = $(this.parentElement.parentElement.parentElement);
+						//檢查該項目是不是Basic->不可移除
+						if(tr_all.find("td.bisgname select option:selected").text()!=="Basic"){
+							tr_all.remove();
+							//移除:時切換顏色None
+							if($("#other_Detail_BPM #od_bpm_status select").val()===""){
+								$("#other_Detail_BPM #od_bpm_status select").val("Modify");
+							}								
+						}
 					}
 				});
 				
@@ -3290,6 +3295,7 @@
 						}
 					});
 				});
+				
 			},
 			//==========================遞迴結構==========================
 			crossProduct(groups) {
@@ -3405,7 +3411,7 @@
 				});
 			},
 			//==========================傳送資料==========================
-			confirmSend(kindId, whois, saveDatas) {
+			async confirmSend(kindId, whois, saveDatas) {
 				//傳送資料
 				let data = {};
 				let req_data = {};
@@ -3414,6 +3420,10 @@
 				let entityDateTime = other.data.entityDateTime;
 				let entityIKey = other.data.entityIKey;
 				let entityGKey = other.data.entityGKey;
+				let callBackValue = {};
+				callBackValue['In_Production'] = false;
+				callBackValue['SN_check'] = $("#btn_SN_check").is(":checked");
+				
 				switch (kindId) {
 					case "Add":
 						//==========================傳送對象-新增==========================
@@ -3472,6 +3482,11 @@
 						}
 						break;
 					case "Modify":
+						let result_ms = "信件通知將會列出 影響之工單 清單.";
+						let ok = await nav_alert.methods.showConfirmModal(result_ms, "是否需要 '立即導入' 通知?");
+						if(ok){
+							callBackValue['In_Production'] = true;
+						}
 						//==========================傳送對象-修改==========================
 						entityJsons = [];
 						if (saveDatas.length > 0 && whois === "BPM") {
@@ -3616,17 +3631,16 @@
 						req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.WM";
 						data['otherSet'] = whois;
 						data['callBackFunction'] = "other_search";
-
-
 						break;
 
 				}
 				console.log(entityJsons);
 				console.log(entityDetailJsons);
+
 				//包裝
 				data['entityJson'] = JSON.stringify(entityJsons);
 				data['entityDetailJson'] = JSON.stringify(entityDetailJsons);
-				data['callBackValue'] =  JSON.stringify({"SN_check" : $("#btn_SN_check").is(":checked")});
+				data['callBackValue'] =  JSON.stringify(callBackValue);
 				req_data['data'] = data;
 				//送出
 				main.methods.ajaxSend(req_data, true);

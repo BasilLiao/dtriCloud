@@ -34,6 +34,7 @@ import jakarta.persistence.Transient;
  *      private String bhnb;BOM號 EX:90-313<br>
  *      private String bhmodel;BOM型號 EX:504TY<br>
  *      private String bhpnb;物料號<br>
+ *      private Boolean bhinproduction;是否為立即導入<br>
  *      private Integer bhpqty;數量<br>
  *      private String bhpprocess;製成別<br>
  *      private Boolean bhnotification;是否已登記通知<br>
@@ -67,6 +68,7 @@ public class BomHistory {
 		this.bhpprocess = "";
 		this.bhnotification = false;
 		this.bhlevel = 0;
+		this.setBhinproduction(false);
 	}
 
 	@PreUpdate
@@ -122,6 +124,8 @@ public class BomHistory {
 	private String bhpprocess;
 	@Column(name = "bh_notification", nullable = false, columnDefinition = "boolean default false")
 	private Boolean bhnotification;
+	@Column(name = "bh_in_production", nullable = false, columnDefinition = "boolean default false")
+	private Boolean bhinproduction;
 
 	@Transient
 	private Date ssyscdate;// 起始時間
@@ -294,6 +298,20 @@ public class BomHistory {
 
 	public void setBhlevel(Integer bhlevel) {
 		this.bhlevel = bhlevel;
+	}
+
+	/**
+	 * @return the bhinproduction
+	 */
+	public Boolean getBhinproduction() {
+		return bhinproduction;
+	}
+
+	/**
+	 * @param bhinproduction the bhinproduction to set
+	 */
+	public void setBhinproduction(Boolean bhinproduction) {
+		this.bhinproduction = bhinproduction;
 	}
 
 }

@@ -432,7 +432,7 @@ public class ManufactureRuleNumberServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.mrn_g_name asc, e.mrn_name asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, ManufactureRuleNumber.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

@@ -1,6 +1,8 @@
 package dtri.com.tw.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,34 +35,68 @@ public class BasicNotificationMailService {
 //			message.setSubject(subject);
 //			message.setText(bodyHtml);
 //			mailSender.send(message);
-			if (toUser.length > 0) {
-				// 創建 MimeMessage 物件
-				MimeMessage message = mailSender.createMimeMessage();
-				// 使用 MimeMessageHelper 來設置消息內容和屬性
-				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-				// 設置收件人、主題、以及內容
-				helper.setTo(toUser);
-				if (toCcUser.length > 0 && !toCcUser[0].equals("")) {
-					helper.setCc(toCcUser);
-				}
-				helper.setSubject(subject);
-				// 設置 HTML 格式的內容
-				helper.setText(bodyHtml, true);
-				// 附件?
-				if (bnmattcontent != null && !bnmattname.equals("") && bnmattname != null) {
-					// 使用 ByteArrayDataSource 將 byte[] 包裝成資料來源
-					ByteArrayDataSource dataSource = new ByteArrayDataSource(bnmattcontent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-					helper.addAttachment(bnmattname, dataSource);
-
-				}
-				// 發送郵件
-				mailSender.send(message);
+			if (toUser.length == 0) {
+				// 沒有任何有效 TO 位址，直接返回失敗並記錄
+				logger.warn("Skip sending mail: no valid TO recipients. subject={}", subject);
+				return false;
 			}
 
-		} catch (Exception e) {
-			System.out.println(e);
-			logger.error(e.toString());
+			// === 1) 建立 MimeMessage 與 Helper ===
+			MimeMessage message = mailSender.createMimeMessage();
+			// 第二個參數 multipart=true（允許 HTML + 附件），第三個參數指定 UTF-8
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+			// 設置收件人、主題、以及內容
+			// === 3) 設定收件人/副本 ===
+			helper.setTo(toUser);
+			if (toCcUser.length > 0 && !toCcUser[0].equals("")) {
+				helper.setCc(toCcUser);
+			}
+			// === 4) 主旨/本文 null 安全處理 ===
+			helper.setSubject(subject != null ? subject : "(no subject)");
+			// 設置 HTML 格式的內容
+			helper.setText(bodyHtml != null ? bodyHtml : "", true); // true = HTML
+			// 寄出時間
+			helper.setSentDate(new java.util.Date());
+
+			// === 5) 附件（先判檔名，再判內容） ===
+			if (bnmattname != null && !bnmattname.isBlank() && bnmattcontent != null && bnmattcontent.length > 0) {
+				String lower = bnmattname.toLowerCase();
+				String contentType = "application/octet-stream"; // 預設
+				// 使用 ByteArrayDataSource 將 byte[] 包裝成資料來源
+				if (lower.endsWith(".xlsx")) {
+					contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+				} else if (lower.endsWith(".xls")) {
+					contentType = "application/vnd.ms-excel";
+				} else if (lower.endsWith(".pdf")) {
+					contentType = "application/pdf";
+				} else if (lower.endsWith(".csv")) {
+					contentType = "text/csv";
+				} else if (lower.endsWith(".txt")) {
+					contentType = "text/plain; charset=UTF-8";
+				}
+				ByteArrayDataSource ds = new ByteArrayDataSource(bnmattcontent, contentType);
+				helper.addAttachment(bnmattname, ds);
+			}
+			// === 7) 寄出 ===
+			mailSender.send(message);
+
+		} catch (jakarta.mail.SendFailedException e) {
+			// 典型：收件人格式不合法、部份位址被拒
 			sendOK = false;
+			logger.error("SendFailedException: subject={}, to={}, cc={}", subject, Arrays.toString(toUser),
+					Arrays.toString(toCcUser), e);
+
+		} catch (org.springframework.mail.MailSendException e) {
+			// Spring 封裝的寄送例外（底層可能是連線、驗證、IO等）
+			sendOK = false;
+			logger.error("MailSendException: subject={}, to={}, cc={}", subject, Arrays.toString(toUser),
+					Arrays.toString(toCcUser), e);
+
+		} catch (Exception e) {
+			// 其他未預期錯誤
+			sendOK = false;
+			logger.error("Unexpected mail error: subject={}, to={}, cc={}", subject, Arrays.toString(toUser),
+					Arrays.toString(toCcUser), e);
 		}
 		return sendOK;
 	}
@@ -71,8 +107,16 @@ public class BasicNotificationMailService {
 		ArrayList<BasicNotificationMail> mails = notificationMailDao.findAllByCheck(null, null, null, null, false, null,
 				null);
 		mails.forEach(m -> {
-			String[] toUsers = m.getBnmmail().replace("[", "").replace("]", "").replaceAll(" ", "").split(",");
-			String[] toCcUsers = m.getBnmmailcc().replace("[", "").replace("]", "").replaceAll(" ", "").split(",");
+			String[] toUsers = Arrays.stream(Optional.ofNullable(m.getBnmmail()).orElse("") // null 保護
+					.replace("[", "").replace("]", "").replace("\u00A0", " ") // NBSP（非換行空白）
+					.replace("\u2007", " ").replace("\u202F", " ").trim().split(",")).map(String::trim) // 去除每筆頭尾空白
+					.filter(s -> !s.isEmpty()) // 過濾空字串
+					.toArray(String[]::new);
+
+			String[] toCcUsers = Arrays
+					.stream(Optional.ofNullable(m.getBnmmailcc()).orElse("").replace("[", "").replace("]", "")
+							.replace("\u00A0", " ").replace("\u2007", " ").replace("\u202F", " ").trim().split(","))
+					.map(String::trim).filter(s -> !s.isEmpty()).toArray(String[]::new);
 
 			// 傳送
 			boolean ok = this.sendEmail(toUsers, toCcUsers, m.getBnmtitle(), m.getBnmcontent(), m.getBnmattname(),

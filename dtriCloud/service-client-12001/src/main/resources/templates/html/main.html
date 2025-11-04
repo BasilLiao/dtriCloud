@@ -58,6 +58,13 @@ body {
 </body>
 <script type="text/javascript" th:inline="javascript">
 	//====Step1.初始化====
+	//傳送配置
+	let ajaxSendQueue = [];               // 傳送排程佇列
+	let ajaxSendIsSending = false;        // 是否正在傳送
+	const ajaxSendDelay = 1500;            // 傳送間隔時間 (ms)
+	let ajaxSendLastTime = 0;             // 最近一次傳送時間戳
+	let ajaxSendLastReqKey = "";          // 最近一次傳送的識別碼
+	//
 	var main = {};
 	//main.web_html .=各類-網頁面位置(需註冊-頭/身/底/覽/警/讀取中/出)
 	var header_index = {}, body_index = {}, footer_index = {}, nav_index = {}, nav_alert = {}, loading = {}, logout = {};
@@ -117,95 +124,121 @@ body {
 	//============共用-方法清單============
 	main.methods = {
 		ajaxSend(req_data, loading) {
-			console.log("ajaxSend:" + new Date());
-			//紀錄是否還在操作時間
-			hiddenTime = new Date().getTime();
-			if (loading) {
-				$("#loading").removeClass("d-none");
+			// === Step 1. 產生唯一請求識別碼 (URL + TYPE + Data摘要) ===
+			const reqKey = `${req_data.url}_${req_data.type}_${JSON.stringify(req_data.data)}`;
+			
+			// === Step 2. 防止 0.5 秒內重複傳送相同請求 ===
+			const now = new Date().getTime();
+			if (reqKey === ajaxSendLastReqKey && (now - ajaxSendLastTime) < ajaxSendDelay) {
+			  console.warn("⚠️ [ajaxSend] 重複點擊被忽略 ("+ajaxSendDelay+" 豪秒冷卻中)", req_data.url);
+			  return; // 直接跳出，不進入 queue
 			}
-			//模組-(傳送+接收)
-			//排除{!=}/{複製上Tab}
-			req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "").replaceAll("\\t", "");
-			//console.log("Cell ajax to send:"+req_data);
-			$.ajax({
-				url: "ajax/" + req_data.url,//位置
-				type: req_data.type,//POST/GET/PUT/DELETE
-				contentType: "application/json;charset=UTF-8",
-				dataType: 'json',
-				data: req_data.data,//資料內容
-				timeout: 180000,
-				success(event) {
-					console.log("success:" + new Date());
-					console.log(event);
-					//console.log("Step1.顯示訊息資訊:ajax to success:");
-					var mainAlertM = nav_alert.methods;
-					if (event['infoColor'] == "success") {
-						mainAlertM.alertshow(event['infoColor'], event['info']);
-					} else if (event['infoColor'] == "warning") {
-						mainAlertM.alertshow(event['infoColor'], event['info']);
-						return null;
-					} else {
-						mainAlertM.alertshow("danger", "[777] The command was executed [ERROR]!!");
-						return null;
-					}
-					//console.log("Step2.取得所有資料");
-					main.resq_data = event;
-					//console.log("Step3.是否 轉跳畫面");
-					if (event['htmlBody'] != "") {
-						//console.log("Step3-1.清除上一模版監聽:轉跳畫面:刷新_模板:"+event['htmlBody']);
-						//body 內資料->清除
-						if (home.methods != null) {home.methods.destroy(); home = {};}
-						if (search.methods != null) {search.methods.destroy(); search = {};}
-						if (modify.methods != null) {modify.methods.destroy(); modify = {};}
-						if (print.methods != null) {print.methods.destroy(); print = {};}
-						if (report.methods != null) {report.methods.destroy(); report = {};}
-						if (compare.methods != null) {compare.methods.destroy(); compare = {};}
-						if (other.methods != null) {other.methods.destroy(); other = {};}
-						//body 內本體->清除
-						body_index.methods.destroy(); body_index = {};
-						//body 掛載新頁面->註冊
-						$("#body_page").load("./html/body/" + main.resq_data['htmlBody'], function () {
-							//創立單元
-							body_index.methods.create();
-							//更換-單元名稱
-							$('#nav_functional_unit').text(event['htmlBodyUnitName']);
-							$('#nav_functional_unit').attr('title', event['htmlBody'].replace('.html', '').replace('body_', ''));
-
-						});
-					} else if (event['callBackFunction'] != "") {
-						//console.log("Step3-2.非轉跳畫面(更新資料/新增資料/查詢資料)");
-						switch (event['callBackFunction']) {
-							case "search": search.methods.searchReturn(); break;
-							case "modify": modify.methods.modifyReturn(); break;
-							case "report": report.methods.reportReturn(); break;
-							case "other_search": other.methods.otherReturn(); break;
-							case "other_detail_search": other.methods.otherDetailReturn(); break;
-							case "other_modify": other.methods.otherModifyReturn(); break;
-							case "other_other": other.methods.otherOtherReturn(); break;
-						}
-					} else {
-						//console.log("Step3-3.異常請求尚未在範圍內");
-						mainAlertM.alertshow("danger", "[078] The command was executed [ERROR]!!");
-					}
-					$("#loading").addClass("d-none");
-				},
-				error(event) {
-					console.log("error:" + new Date());
-					//console.log("ajax to fail:" + JSON.stringify(event));
-					var mainAlertM = nav_alert.methods;
-					if (event.status == 200) {//沒有session 拒絕
-						mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
-						window.location.replace("login.basil");
-					} else if (event.status == 404) {//沒有網頁時 不移動
-						mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
-					} else if (event.status == 403) {//沒有權限時 不移動
-						mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
-					} else {//其他問題
-						mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + event);
-					}
-				},
-			});
+			ajaxSendLastReqKey = reqKey;
+			ajaxSendLastTime = now;
+			
+			// === Step 3. 將請求加入佇列 ===
+			ajaxSendQueue.push({ req_data, loading });
+			main.methods.runNextAjaxSend(); // 執行排程
+			
+			console.log("ajaxSend:" + new Date());
+			
 		},
+		/**
+		 * === 私有函式：runNextAjaxSend() ===
+		 * 功能：
+		 *   依序從佇列中取出請求執行，確保每筆間隔 0.5-2 秒。
+		 */
+		async runNextAjaxSend() {
+		  if (ajaxSendIsSending || ajaxSendQueue.length === 0) return;
+
+		  ajaxSendIsSending = true;
+		  const { req_data, loading } = ajaxSendQueue.shift();
+
+		  console.log("🚀 [ajaxSend] 開始傳送:", req_data.url, "時間:", new Date().toLocaleTimeString());
+
+		  // === 以下為原本 AJAX 傳送邏輯 ===
+		  hiddenTime = new Date().getTime();
+		  if (loading) $("#loading").removeClass("d-none");
+		  req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "").replaceAll("\\t", "");
+
+		  $.ajax({
+		    url: "ajax/" + req_data.url,
+		    type: req_data.type,
+		    contentType: "application/json;charset=UTF-8",
+		    dataType: 'json',
+		    data: req_data.data,
+		    timeout: 180000,
+		    success(event) {
+		      console.log("✅ success:", new Date());
+		      const mainAlertM = nav_alert.methods;
+		      if (event['infoColor'] === "success") {
+		        mainAlertM.alertshow(event['infoColor'], event['info']);
+		      } else if (event['infoColor'] === "warning") {
+		        mainAlertM.alertshow(event['infoColor'], event['info']);
+		        $("#loading").addClass("d-none");
+		        return;
+		      } else {
+		        mainAlertM.alertshow("danger", "[777] The command was executed [ERROR]!!");
+		        $("#loading").addClass("d-none");
+		        return;
+		      }
+
+		      main.resq_data = event;
+
+		      if (event['htmlBody'] !== "") {
+		        if (home.methods) { home.methods.destroy(); home = {}; }
+		        if (search.methods) { search.methods.destroy(); search = {}; }
+		        if (modify.methods) { modify.methods.destroy(); modify = {}; }
+		        if (print.methods) { print.methods.destroy(); print = {}; }
+		        if (report.methods) { report.methods.destroy(); report = {}; }
+		        if (compare.methods) { compare.methods.destroy(); compare = {}; }
+		        if (other.methods) { other.methods.destroy(); other = {}; }
+		        body_index.methods.destroy(); body_index = {};
+
+		        $("#body_page").load("./html/body/" + main.resq_data['htmlBody'], function () {
+		          body_index.methods.create();
+		          $('#nav_functional_unit').text(event['htmlBodyUnitName']);
+		          $('#nav_functional_unit').attr('title', event['htmlBody'].replace('.html', '').replace('body_', ''));
+		        });
+		      } else if (event['callBackFunction'] !== "") {
+		        switch (event['callBackFunction']) {
+		          case "search": search.methods.searchReturn(); break;
+		          case "modify": modify.methods.modifyReturn(); break;
+		          case "report": report.methods.reportReturn(); break;
+		          case "other_search": other.methods.otherReturn(); break;
+		          case "other_detail_search": other.methods.otherDetailReturn(); break;
+		          case "other_modify": other.methods.otherModifyReturn(); break;
+		          case "other_other": other.methods.otherOtherReturn(); break;
+		        }
+		      } else {
+		        mainAlertM.alertshow("danger", "[078] The command was executed [ERROR]!!");
+		      }
+
+		      $("#loading").addClass("d-none");
+		    },
+		    error(event) {
+		      console.log("❌ error:", new Date());
+		      const mainAlertM = nav_alert.methods;
+		      if (event.status === 200) {
+		        mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+		        window.location.replace("login.basil");
+		      } else if (event.status === 404) {
+		        mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+		      } else if (event.status === 403) {
+		        mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+		      } else {
+		        mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + event);
+		      }
+		      $("#loading").addClass("d-none");
+		    },
+		  });
+		  // === Step 4. 間隔 0.5 秒後執行下一筆 ===
+		  await new Promise(resolve => setTimeout(resolve, ajaxSendDelay));
+		  ajaxSendIsSending = false;
+		  main.methods.runNextAjaxSend();
+		},
+		
+		
 		orderedSort(title) {
 			//排序jsonObj 功能(Order By Key)
 			const ordered = Object.keys(title).sort().reduce((obj, key) => {obj[key] = title[key]; return obj;}, {});

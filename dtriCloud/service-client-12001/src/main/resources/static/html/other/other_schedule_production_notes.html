@@ -553,7 +553,7 @@
 
 								</div>
 								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border: 1px solid #000000; text-align: center;">
+									style="font-family: sans-serif; font-stretch: condensed; white-space: nowrap; display: flex; flex-wrap: wrap; justify-content: space-between; border: 1px solid #000000; text-align: center;">
 									<div style="width: 10%;">
 										<b>製令</b>
 									</div>
@@ -571,7 +571,7 @@
 										style="width: 20%; overflow: hidden; text-align: left;"></div>
 								</div>
 								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
+									style="font-family: sans-serif; font-stretch: condensed; white-space: nowrap; display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
 									<div style="width: 10%;">
 										<b>客戶</b>
 									</div>
@@ -590,7 +590,7 @@
 										style="width: 20%; overflow: hidden; text-align: left;"></div>
 								</div>
 								<div
-									style="display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
+									style="font-family: sans-serif; font-stretch: condensed; white-space: nowrap; display: flex; flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid #000000; border-right: 1px solid #000000; border-left: 1px solid #000000; text-align: center;">
 									<div style="width: 10%;">
 										<b>品號</b>
 									</div>
@@ -663,7 +663,7 @@
 												</b>
 											</div>
 											<div
-												style="width: 90%; display: flex; flex-wrap: wrap; justify-content: space-between; pointer-events: none; border-left: 1px solid #00000060; font-family: sans-serif; font-stretch: condensed;">
+												style="white-space: nowrap; overflow: hidden; width: 90%; display: flex; flex-wrap: wrap; justify-content: space-between; pointer-events: none; border-left: 1px solid #00000060; font-family: sans-serif; font-stretch: condensed;">
 												<div class="m-1" id="pkg_checkbox1"
 													style="width: 31%; text-align: start; font-size: 12px; line-height: 13px; background-color: #f8f8f8;">
 													<input type="checkbox"> <span>Power cord</span>
@@ -843,10 +843,10 @@
 			btn_order: false,//是否-工單查詢填入
 			//換頁設置
 			searchPageSet: {
-				total: 1000,//批次數量(1-1000)
+				total: 100,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
-				pageSize: 200,//每頁數量(1-20)
+				pageSize: 100,//每頁數量(1-20)
 				entityJsons: [],//資料
 				entityDetailJsons: [],//細節資料
 				entityIKey: "",//ID

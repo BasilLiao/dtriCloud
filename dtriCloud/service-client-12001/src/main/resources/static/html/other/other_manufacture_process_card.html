@@ -206,9 +206,9 @@
 									<b>Save<br>(AU)
 									</b>
 								</button>
-								<div class="lh-1 col p-1 m-1 border border-success rounded">
-									<input id="btn_save_auto" alt="" title="" type="checkbox"
-										checked="checked"
+								<div id="btn_save_auto"
+									class="lh-1 col p-1 m-1 border border-success rounded">
+									<input alt="" title="" type="checkbox" checked="checked"
 										class="m-0 form-check-input checkbox_16 border border-dark">
 									<br> <b style="font-size: 12px;">Print -> Save</b>
 								</div>
@@ -721,7 +721,8 @@
 												style="width: 45px; font-size: 10px; line-height: 15px;">
 												<b>Order No.</b>
 											</div>
-											<div class="f_sphonb p-0 only_brm" style="width: 268px;"></div>
+											<div class="f_sphonb p-0 only_brm"
+												style="width: 268px; font-family: sans-serif; font-stretch: condensed; overflow: hidden;"></div>
 										</div>
 										<!--  -->
 										<div class="row m-0 justify-content-end"
@@ -763,7 +764,7 @@
 											<div class="f_sphhdate p-0 only_brm" style="width: 108px;"></div>
 										</div>
 										<!--  -->
-										<div class="row m-0 justify-content-end" style="height: 60px;">
+										<div class="row m-0 justify-content-end" style="height: 62px;">
 											<div class="p-0 only_br"
 												style="width: 20px; writing-mode: vertical-lr; font-size: 12px; line-height: 20px;">
 												<b>Notice</b>
@@ -1353,7 +1354,8 @@
 					printNotes.find(".f_creator").text('Creator: '+entity.find(".syscuser").text());//單據負責人
 					printNotes.find(".f_pm_owner").text('PM: '+entity.find(".sphbpsuser").text());//BOM負責人
 					//
-					printNotes.find(".f_sphpmnote").text(entity.find(".sphpmnote").text()) ;//BOM/PM注意事項
+					let f_sphpmnote = entity.find(".sphpmnote").text().replace(/\r?\n/g, "<br>"); 
+					printNotes.find(".f_sphpmnote").html(f_sphpmnote) ;//BOM/PM注意事項
 					
 					
 					
@@ -1658,7 +1660,9 @@
 					
 					function printBatch() {
 						if (batchIndex * batchSize >= total){
-							other.methods.btn_saveForm(3);
+							if($("#btn_save_auto input:checked").length > 0){
+								other.methods.btn_saveForm(3);
+							}
 							return; // 所有都印完了
 						}
 							
@@ -1866,7 +1870,8 @@
 				//
 				$('#printNotes .f_sphprnote1').text($('#c_sphprnote1 textarea').val());//1.備註資訊
 				$('#printNotes .f_sphprnote2').text($('#c_sphprnote2 textarea').val());//2.備註資訊
-				$('#printNotes .f_sphpmnote').text($('#c_sphpmnote textarea').val());//產品備註資訊
+				let f_sphpmnote = $('#c_sphpmnote textarea').val().replace(/\r?\n/g, "<br>"); 
+				$('#printNotes .f_sphpmnote').html(f_sphpmnote);//產品備註資訊
 				
 				$('#printNotes .f_sphline').attr('title',c_sphlineValue);//工作站
 				

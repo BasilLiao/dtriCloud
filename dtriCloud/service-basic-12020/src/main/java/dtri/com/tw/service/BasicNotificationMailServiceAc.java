@@ -378,7 +378,7 @@ public class BasicNotificationMailServiceAc {
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bnm_kind asc";
 		nativeQuery += " , e.sys_c_date asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BasicNotificationMail.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

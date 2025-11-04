@@ -426,7 +426,7 @@ public class BasicBomIngredientsServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bbi_sn_nb asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BasicBomIngredients.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.diff.StringsComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -620,13 +621,20 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> saveDatasUpdate = new ArrayList<BomProductManagement>();
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
-
+		Boolean in_Production = false;
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
 			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
 					new TypeReference<ArrayList<BomProductManagement>>() {
 					});
+			// 急單檢查?
+			JsonObject sn_checkJson = new JsonObject();
+			sn_checkJson = JsonParser.parseString(packageBean.getCallBackValue()).getAsJsonObject();
+			//避免沒資料
+			if (sn_checkJson.has("In_Production") && !sn_checkJson.get("In_Production").isJsonNull()) {
+				in_Production = sn_checkJson.get("In_Production").getAsBoolean();
+			}
 
 			// Step2.資料檢查
 			for (BomProductManagement entityData : entityDatas) {
@@ -907,9 +915,9 @@ public class BomProductManagementServiceAc {
 				}
 				// 沒有變化(物料)
 				if (oldBomv.containsKey(newItemK)) {
-					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpnb(newItemV.split("_")[0].trim());
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
-					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhpprocess(newItemV.split("_")[2].trim());
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 
 					// 可能更新?數量?製成?
@@ -923,7 +931,7 @@ public class BomProductManagementServiceAc {
 						bomHistoryOld.setBhmodel(newBomK.split("_")[1]);
 						bomHistoryOld.setBhpnb(oldItemV.split("_")[0]);
 						bomHistoryOld.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
-						bomHistoryOld.setBhpprocess(oldItemV.split("_")[2]);
+						bomHistoryOld.setBhpprocess(oldItemV.split("_")[2].trim());
 						bomHistoryOld.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
 						bomHistoryOld.setBhatype("Old");
 						changeBom.add(bomHistoryOld);
@@ -933,9 +941,9 @@ public class BomProductManagementServiceAc {
 					oldBomv.put(newItemK, null);
 				} else {
 					// 沒比對到?新的?
-					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpnb(newItemV.split("_")[0].trim());
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
-					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhpprocess(newItemV.split("_")[2].trim());
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("New");
 					changeBom.add(bomHistory);
@@ -949,7 +957,7 @@ public class BomProductManagementServiceAc {
 					BomHistory bomHistoryRemove = new BomHistory();
 					bomHistoryRemove.setBhnb(newBomK.split("_")[0]);
 					bomHistoryRemove.setBhmodel(newBomK.split("_")[1]);
-					bomHistoryRemove.setBhpnb(oldItemV.split("_")[0]);
+					bomHistoryRemove.setBhpnb(oldItemV.split("_")[0].trim());
 					bomHistoryRemove.setBhpqty(Integer.parseInt(oldItemV.split("_")[1]));
 					bomHistoryRemove.setBhpprocess(oldItemV.split("_")[2]);
 					bomHistoryRemove.setBhlevel(Integer.parseInt(oldItemV.split("_")[3]));
@@ -982,7 +990,11 @@ public class BomProductManagementServiceAc {
 
 		// 統一時間 不然會導致BOM被切割
 		Date sameTime = new Date();
-		changeBom.forEach(his -> his.setSyscdate(sameTime));
+		Boolean setBhinproduction = in_Production;
+		changeBom.forEach(his -> {
+			his.setSyscdate(sameTime);
+			his.setBhinproduction(setBhinproduction);
+		});
 
 		// 比對同一張BOM->的物料
 		historyDao.saveAll(changeBom);
@@ -1234,9 +1246,9 @@ public class BomProductManagementServiceAc {
 					BomHistory bomHistory = new BomHistory();
 					bomHistory.setBhnb(newBomK.split("_")[0]);
 					bomHistory.setBhmodel(newBomK.split("_")[1]);
-					bomHistory.setBhpnb(newItemV.split("_")[0]);
+					bomHistory.setBhpnb(newItemV.split("_")[0].trim());
 					bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
-					bomHistory.setBhpprocess(newItemV.split("_")[2]);
+					bomHistory.setBhpprocess(newItemV.split("_")[2].trim());
 					bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 					bomHistory.setBhatype("All New");
 					changeBom.add(bomHistory);
@@ -1422,9 +1434,9 @@ public class BomProductManagementServiceAc {
 				}
 				bomHistory.setBhnb(newBomK.split("_")[0]);
 				bomHistory.setBhmodel(newBomK.split("_")[1]);
-				bomHistory.setBhpnb(newItemV.split("_")[0]);
+				bomHistory.setBhpnb(newItemV.split("_")[0].trim());
 				bomHistory.setBhpqty(Integer.parseInt(newItemV.split("_")[1]));
-				bomHistory.setBhpprocess(newItemV.split("_")[2]);
+				bomHistory.setBhpprocess(newItemV.split("_")[2].trim());
 				bomHistory.setBhlevel(Integer.parseInt(newItemV.split("_")[3]));
 				bomHistory.setBhatype("All Delete");
 				changeBom.add(bomHistory);
@@ -1603,8 +1615,8 @@ public class BomProductManagementServiceAc {
 		readyNeedMail.setBnmkind("BOM");
 		readyNeedMail.setBnmmail(mainUsers + "");
 		readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-		readyNeedMail.setBnmtitle("[" + Fm_T.to_yMd_Hms(new Date()) + "]"//
-				+ "Cloud system BOM Note [Update][" + c.getBpmnb() + "] all new notification!");
+		readyNeedMail.setBnmtitle("[Update][" + c.getBpmnb() + "][" + Fm_T.to_yMd_Hms(new Date()) + "]"//
+				+ " Cloud system BOM Note notification!");
 
 		// 如果BOM規格內資料沒有異動?只改備註?
 		// 取得BOM資訊(PM備註)
@@ -1612,11 +1624,15 @@ public class BomProductManagementServiceAc {
 		sysnote += "☑Product Model : " + c.getBpmmodel();
 		sysnote += c.getSysnote();
 		sysnote += "(" + c.getSysmuser() + ")";
+		sysnote = sysnote.replaceAll("\n", "<br>");
 		//
 		String sysnoteOld = "";
 		sysnoteOld += "☑Product Model : " + oldData.getBpmmodel();
 		sysnoteOld += oldData.getSysnote();
 		sysnoteOld += "(" + oldData.getSysmuser() + ")";
+		sysnoteOld = sysnoteOld.replaceAll("\n", "<br>");
+
+		String newDiff = highlightDiff(sysnoteOld, sysnote);
 
 		// 內容
 		String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
@@ -1625,11 +1641,60 @@ public class BomProductManagementServiceAc {
 				+ "<th>產品說明</th>"//
 				+ "</tr></thead>"//
 				+ "<tbody>"// 模擬12筆資料
-				+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
+				+ "<tr><td>New</td><td>" + newDiff + "</td><tr>"// 新備註
 				+ "<tr><td>Old</td><td>" + sysnoteOld + "</td><tr>"// 舊備註
 				+ "</tbody></table>";//
 		readyNeedMail.setBnmcontent(bnmcontent);
 		notificationMailDao.save(readyNeedMail);
 
+	}
+
+	/**
+	 * 取得兩段文字差異，並在不同處以黃色背景標記
+	 * 
+	 * @param oldText 舊文字
+	 * @param newText 新文字
+	 * @return 含HTML標記的比對結果
+	 */
+	public static String highlightDiff(String oldText, String newText) {
+		StringsComparator comparator = new StringsComparator(oldText, newText);
+		StringBuilder result = new StringBuilder();
+		comparator.getScript().visit(new org.apache.commons.text.diff.CommandVisitor<Character>() {
+			@Override
+			public void visitInsertCommand(Character c) {
+				// 🔸【新增字元】：
+				// 表示這個字元 c 是新字串中出現、但在舊字串中沒有的內容
+				// 通常代表「新增的部分」。
+				//
+				// 這裡我們用 <span> 包住該字元，
+				// 並以黃色背景（background-color:yellow）凸顯它是新加入的。
+				result.append("<span style='background-color:yellow;'>").append(c).append("</span>");
+			}
+
+			@Override
+			public void visitDeleteCommand(Character c) {
+				// 可選：顯示刪除內容（例如紅色刪除線）
+				// 🔸【刪除字元】：
+				// 表示這個字元 c 是舊字串中有、但在新字串中被刪除的內容
+				// 通常代表「被移除的部分」。
+				//
+				// 為了讓視覺上更清楚，我們使用粉紅底（#ffc0cb）
+				// 並加上刪除線（text-decoration:line-through）
+				// 以提示這個部分是舊內容、已被移除。
+				result.append("<span style='background-color:#ffc0cb;text-decoration:line-through;'>").append(c)
+						.append("</span>");
+			}
+
+			@Override
+			public void visitKeepCommand(Character c) {
+				// 🔸【保留字元】：
+				// 表示這個字元 c 在舊字串與新字串中都存在，
+				// 沒有變化，因此不需要上色或刪除線。
+				//
+				// 直接將字元原樣加入結果即可。
+				result.append(c);
+			}
+		});
+		return result.toString();
 	}
 }

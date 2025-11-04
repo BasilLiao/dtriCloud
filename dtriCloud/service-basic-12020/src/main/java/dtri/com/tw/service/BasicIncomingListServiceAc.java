@@ -405,7 +405,7 @@ public class BasicIncomingListServiceAc {
 		nativeQuery += " order by e.bil_class asc";
 		nativeQuery += " , e.bil_sn asc";
 		nativeQuery += " , e.bil_p_number asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BasicIncomingList.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

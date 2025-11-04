@@ -385,7 +385,7 @@ public class BomParameterSettingsServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bps_nb asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BomParameterSettings.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

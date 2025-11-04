@@ -457,7 +457,7 @@ public class BiosVersionServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bv_model asc, e.bv_version asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BiosVersion.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

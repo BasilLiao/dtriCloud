@@ -93,7 +93,7 @@ public class ScheduleProductionNotesServiceAc {
 		// 一般模式
 		PageRequest pageable = PageRequest.of(batch, total, Sort.by(orders));
 		PageRequest pageableDetail = PageRequest.of(batch, total, Sort.by(ordersD));
-		PageRequest pageableI = PageRequest.of(0, 99999, Sort.by(ordersI));
+		PageRequest pageableI = PageRequest.of(0, 9999, Sort.by(ordersI));
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問

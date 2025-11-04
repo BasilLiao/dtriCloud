@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.diff.StringsComparator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -36,6 +38,7 @@ import dtri.com.tw.pgsql.dao.BasicProductModelDao;
 import dtri.com.tw.pgsql.dao.BomHistoryDao;
 import dtri.com.tw.pgsql.dao.BomNotificationDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
+import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
 import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BasicNotificationMail;
@@ -43,6 +46,7 @@ import dtri.com.tw.pgsql.entity.BasicProductModel;
 import dtri.com.tw.pgsql.entity.BomHistory;
 import dtri.com.tw.pgsql.entity.BomNotification;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
+import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.service.feign.BomServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -74,10 +78,11 @@ public class SynchronizeBomService {
 	private DiscoveryClient discoveryClient;
 	@Autowired
 	private BomProductManagementDao managementDao;
+	@Autowired
+	private ScheduleInfactoryDao infactoryDao;
 
 	@Autowired
 	ERPToCloudService erpToCloudService;
-
 	@Resource
 	BomServiceFeign serviceFeign;
 
@@ -275,18 +280,26 @@ public class SynchronizeBomService {
 	// ============ BOM是否有異動修正() ============
 	public void bomModification() throws Exception {
 		// Step0. 準備資料
-		ArrayList<BomHistory> hisListSaves = new ArrayList<BomHistory>();
+		Map<String, WarehouseMaterial> wMs = new HashMap<>();// 物料清單
+		// List<String> bbisnnb = new ArrayList<String>();
+		// 物料號
+		materialDao.findAll().forEach(m -> {
+			wMs.put(m.getWmpnb(), m);
+		});
 
+		ArrayList<BomHistory> hisListSaves = new ArrayList<BomHistory>();
 		// Step1. 取得寄信人
 		List<Order> nf_orders = new ArrayList<>();
 		nf_orders.add(new Order(Direction.ASC, "bnsuname"));// 關聯帳號名稱
 		PageRequest nf_pageable = PageRequest.of(0, 9999, Sort.by(nf_orders));
-		ArrayList<BomNotification> notificationsAllNew = notificationDao.findAllBySearch(null, null, null, true, null,
-				0, nf_pageable);// 必須要有勾一個(新增)
 		ArrayList<BomNotification> notificationsUpdate = notificationDao.findAllBySearch(null, null, true, null, null,
-				0, nf_pageable);// 必須要有勾一個(更新)
+				null, 0, nf_pageable);// 必須要有勾一個(更新)
+		ArrayList<BomNotification> notificationsAllNew = notificationDao.findAllBySearch(null, null, null, true, null,
+				null, 0, nf_pageable);// 必須要有勾一個(新增)
 		ArrayList<BomNotification> notificationsDelete = notificationDao.findAllBySearch(null, null, null, null, true,
-				0, nf_pageable);// 必須要有勾一個(移除)
+				null, 0, nf_pageable);// 必須要有勾一個(移除)
+		ArrayList<BomNotification> notificationsIp = notificationDao.findAllBySearch(null, null, null, null, null, true,
+				0, nf_pageable);// 必須要有勾一個(立即導入)
 
 		// Step2. 取得須寄信清單(產品異動通知)
 		List<Order> os_orders = new ArrayList<>();
@@ -296,11 +309,10 @@ public class SynchronizeBomService {
 		ArrayList<BomHistory> outsourcers = bomHistoryDao.findAllBySearch(null, null, null, 1, null,
 				Fm_T.to_count(-1, new Date()), Fm_T.to_count(0, new Date()), os_pageable);// 今天改今天送
 		// Step2-1.整理資料(每一張BOM 一封信)
-		Map<String, ArrayList<BomHistory>> outsourcersMapAllNew = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間
-																												// : 內容
-		Map<String, ArrayList<BomHistory>> outsourcersMapUpdate = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間
-																												// : 內容
-		Map<String, ArrayList<BomHistory>> outsourcersMapDelete = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間
+		Map<String, ArrayList<BomHistory>> outsourcersMapAllNew = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間->全新
+		Map<String, ArrayList<BomHistory>> outsourcersMapUpdate = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間->更新
+		Map<String, ArrayList<BomHistory>> outsourcersMapDelete = new HashMap<String, ArrayList<BomHistory>>();// BOM號_新增時間->移除
+
 		// : 內容
 		for (BomHistory bomHistory : outsourcers) {
 			// 有比對到?
@@ -358,6 +370,7 @@ public class SynchronizeBomService {
 		// Step3. 取得寄信模塊(更新)
 		outsourcersMapUpdate.forEach((mk, mv) -> {
 			String bhnb = mk.split("_")[0];
+			Boolean bhinproduction = mv.get(0).getBhinproduction();// 緊急
 			// 1. 讀取 Excel 檔案
 			Workbook workbooks = null;
 			// 從 classpath 讀取資源
@@ -375,8 +388,8 @@ public class SynchronizeBomService {
 			}
 
 			// 寄信件對象
-			ArrayList<String> mainUsers = new ArrayList<String>();
-			ArrayList<String> secondaryUsers = new ArrayList<String>();
+			LinkedHashSet<String> mainUsers = new LinkedHashSet<String>();
+			LinkedHashSet<String> secondaryUsers = new LinkedHashSet<String>();
 			// 寄信對象條件
 			notificationsUpdate.forEach(r -> {// 沒有設置=全寄信
 				// 如果有機型?
@@ -404,12 +417,42 @@ public class SynchronizeBomService {
 					}
 				}
 			});
+			// 可能是急單
+			if (bhinproduction) {
+				notificationsIp.forEach(r -> {// 沒有設置=全寄信
+					// 如果有機型?
+					if (!r.getBnmodel().equals("") && mv.get(0).getBhmodel().contains(r.getBnmodel())) {
+						// 主要?次要?
+						if (r.getBnprimary() == 0) {
+							mainUsers.add(r.getBnsumail());
+						} else {
+							secondaryUsers.add(r.getBnsumail());
+						}
+					} // 如果有成品號?
+					else if (!r.getBnnb().equals("") && mv.get(0).getBhnb().contains(r.getBnnb())) {
+						// 主要?次要?
+						if (r.getBnprimary() == 0) {
+							mainUsers.add(r.getBnsumail());
+						} else {
+							secondaryUsers.add(r.getBnsumail());
+						}
+					} else if (r.getBnnb().equals("") && r.getBnmodel().equals("")) {
+						// 如果都沒有過濾(留空白)-> 主要?次要?
+						if (r.getBnprimary() == 0) {
+							mainUsers.add(r.getBnsumail());
+						} else {
+							secondaryUsers.add(r.getBnsumail());
+						}
+					}
+				});
+			}
+
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {
-					dateTime = mv.get(0).getSyscdate() + "";
+					dateTime = Fm_T.to_yMd_Hms(mv.get(0).getSyscdate()) + "";
 				}
 				// 取得BOM資訊(PM備註)
 				String sysnote = "";
@@ -419,19 +462,22 @@ public class SynchronizeBomService {
 					sysnote += "☑Product Model : " + bomProductManagements.get(0).getBpmmodel();
 					sysnote += bomProductManagements.get(0).getSysnote();
 					sysnote += "(" + bomProductManagements.get(0).getSysmuser() + ")";
+					sysnote = sysnote.replaceAll("\n", "<br>");
 
 					sysnoteOld += "☑Product Model : " + bomProductManagements.get(0).getBpmmodel();
 					sysnoteOld += mv.get(0).getSysnote();
 					sysnoteOld += "(" + bomProductManagements.get(0).getSysmuser() + ")";
+					sysnoteOld = sysnoteOld.replaceAll("\n", "<br>");
 				}
-
+				String newDiff = highlightDiff(sysnoteOld, sysnote);
 				// 取得目前"規格BOM"資訊
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
+				String hs = bhinproduction ? "[急]" : "";
 				readyNeedMail.setBnmkind("BOM");
-				readyNeedMail.setBnmmail(mainUsers + "");
-				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-				readyNeedMail.setBnmtitle("[" + dateTime + "]"//
-						+ "Cloud system BOM [Update][" + bhnb + "] notification!");
+				readyNeedMail.setBnmmail(new ArrayList<>(mainUsers) + "");
+				readyNeedMail.setBnmmailcc(new ArrayList<>(secondaryUsers) + "");// 標題
+				readyNeedMail.setBnmtitle(hs + "[Update][" + bhnb + "][" + dateTime + "]"//
+						+ " Cloud system BOM notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
@@ -439,7 +485,7 @@ public class SynchronizeBomService {
 						+ "<th>產品說明</th>"//
 						+ "</tr></thead>"//
 						+ "<tbody>"// 模擬12筆資料
-						+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
+						+ "<tr><td>New</td><td>" + newDiff + "</td><tr>"// 新備註
 						+ "<tr><td>Old</td><td>" + sysnoteOld + "</td><tr>"// 舊備註
 						+ "</tbody></table>"//
 						+ "<br>" //
@@ -450,6 +496,8 @@ public class SynchronizeBomService {
 						+ "<th>產品型號</th>"//
 						+ "<th>異動類型</th>"//
 						+ "<th>組成-物料號</th>"//
+						+ "<th>組成-物料名</th>"//
+						+ "<th>組成-物料規格</th>"//
 						+ "<th>組成-製成</th>"//
 						+ "<th>組成-數量</th>"//
 						+ "</tr></thead>"//
@@ -477,7 +525,13 @@ public class SynchronizeBomService {
 						dataRow.createCell(2).setCellValue(oss.getBhpqty());
 						dataRow.createCell(8).setCellValue(oss.getBhpprocess());
 					}
-
+					// 抓取規格(去除空格)
+					String getWmname = wMs.containsKey(oss.getBhpnb().trim())
+							? wMs.get(oss.getBhpnb().trim()).getWmname()
+							: "";
+					String getWmspecification = wMs.containsKey(oss.getBhpnb().trim())
+							? wMs.get(oss.getBhpnb().trim()).getWmspecification()
+							: "";
 					// 信件資料結構
 					bnmcontent += "<tr>"//
 							+ "<td>" + (checkX ? "X" : r) + "</td>"// 項次
@@ -485,6 +539,8 @@ public class SynchronizeBomService {
 							+ "<td>" + oss.getBhmodel() + "</td>"// 產品型號
 							+ "<td>" + oss.getBhatype() + "</td>"// 異動類型
 							+ "<td>" + oss.getBhpnb() + "</td>"// 組成-物料號
+							+ "<td>" + getWmname + "</td>"// 組成-物料名
+							+ "<td>" + getWmspecification + "</td>"// 組成-物料規格
 							+ "<td>" + oss.getBhpprocess() + "</td>"// 組成-製成
 							+ "<td>" + oss.getBhpqty() + "</td>"// 組成-數量
 							+ "</tr>";
@@ -495,6 +551,45 @@ public class SynchronizeBomService {
 				bnmcontent += "<div>Old=原先舊[物料]/Update=更新後[物料]/";
 				bnmcontent += "<br>Delete=已被移除[物料]/New=新增加[物料]/";
 				bnmcontent += "<br>All New=新增[BOM]產品/All Delete=移除[BOM]產品</div>";
+
+				// 如果是急單 查出在途製令單
+				if (bhinproduction) {
+					// Step3-1.取得資料(一般/細節)
+					ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllByNotFinish(bhnb, null);
+					if (entitys.size() > 0) {
+						bnmcontent += "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
+								+ "<thead><tr style= 'background-color: aliceblue;'>"//
+								+ "<th>預計開工</th>"//
+								+ "<th>預計完工</th>"//
+								+ "<th>製令單備註(客/國/訂/其)</th>"//
+								+ "<th>製令單號</th>"//
+								+ "<th>產品品號</th>"//
+								+ "<th>產品品名</th>"//
+								+ "<th>產品規格</th>"//
+								+ "<th>預計-生產數</th>"//
+								+ "<th>製令單-負責人</th>"//
+								+ "</tr></thead>"//
+								+ "<tbody>";// 模擬12筆資料
+
+						for (ScheduleInfactory entityOne : entitys) {
+
+							// 信件資料結構
+							bnmcontent += "<tr>"//
+									+ "<td>" + entityOne.getSiodate() + "</td>"// 預計開工
+									+ "<td>" + entityOne.getSifdate() + "</td>"// 預計完工
+									+ "<td>" + entityOne.getSinote() + "</td>"// 製令單備註(客/國/訂/其)
+									+ "<td>" + entityOne.getSinb() + "</td>"// 製令單號
+									+ "<td>" + entityOne.getSipnb() + "</td>"// 產品品號
+									+ "<td>" + entityOne.getSipname() + "</td>"// 產品品名
+									+ "<td>" + entityOne.getSipspecifications() + "</td>"// 產品規格
+									+ "<td>" + entityOne.getSirqty() + "</td>"// 預計-生產數
+									+ "<td>" + entityOne.getSiuname() + "</td>"// 製令單-負責人
+									+ "</tr>";
+
+						}
+						bnmcontent += "</tbody></table>";
+					}
+				}
 
 				readyNeedMail.setBnmcontent(bnmcontent);
 
@@ -541,8 +636,8 @@ public class SynchronizeBomService {
 				e.printStackTrace();
 			}
 			// 寄信件對象
-			ArrayList<String> mainUsers = new ArrayList<String>();
-			ArrayList<String> secondaryUsers = new ArrayList<String>();
+			LinkedHashSet<String> mainUsers = new LinkedHashSet<String>();
+			LinkedHashSet<String> secondaryUsers = new LinkedHashSet<String>();
 			// 寄信對象條件
 			notificationsAllNew.forEach(r -> {// 沒有設置=全寄信
 				// 如果有機型?
@@ -570,12 +665,13 @@ public class SynchronizeBomService {
 					}
 				}
 			});
+
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {
-					dateTime = mv.get(0).getSyscdate() + "";
+					dateTime = Fm_T.to_yMd_Hms(mv.get(0).getSyscdate()) + "";
 				}
 
 				// 取得BOM資訊(PM備註)
@@ -584,22 +680,23 @@ public class SynchronizeBomService {
 				if (bomProductManagements.size() == 1) {
 					sysnote += bomProductManagements.get(0).getBpmmodel() + " & ";
 					sysnote += bomProductManagements.get(0).getSysnote();
+					sysnote = sysnote.replaceAll("\n", "<br>");
 				}
 
 				//
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
 				readyNeedMail.setBnmkind("BOM");
-				readyNeedMail.setBnmmail(mainUsers + "");
-				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
+				readyNeedMail.setBnmmail(new ArrayList<>(mainUsers) + "");
+				readyNeedMail.setBnmmailcc(new ArrayList<>(secondaryUsers) + "");// 標題
 				Boolean checkImport = basicBomIngredientsDao.findAllByCheck(bhnb, null, null, null).size() > 0;//
 				// 可能是ERP 導入
 				if (checkImport) {
-					readyNeedMail.setBnmtitle("[" + dateTime + "]"//
-							+ "Cloud system BOM [Import][" + bhnb + "] notification!");
+					readyNeedMail.setBnmtitle("[Import][" + bhnb + "][" + dateTime + "]"//
+							+ " Cloud system BOM notification!");
 				} else {
 					// 可能是全新資料
-					readyNeedMail.setBnmtitle("[" + dateTime + "]"//
-							+ "Cloud system BOM [All New][" + bhnb + "] notification!");
+					readyNeedMail.setBnmtitle("[All New][" + bhnb + "][" + dateTime + "]"//
+							+ " Cloud system BOM notification!");
 				}
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
@@ -699,8 +796,8 @@ public class SynchronizeBomService {
 				e.printStackTrace();
 			}
 			// 寄信件對象
-			ArrayList<String> mainUsers = new ArrayList<String>();
-			ArrayList<String> secondaryUsers = new ArrayList<String>();
+			LinkedHashSet<String> mainUsers = new LinkedHashSet<String>();
+			LinkedHashSet<String> secondaryUsers = new LinkedHashSet<String>();
 			// 寄信對象條件
 			notificationsDelete.forEach(r -> {// 沒有設置=全寄信
 				// 如果有機型?
@@ -729,23 +826,24 @@ public class SynchronizeBomService {
 				}
 			});
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.get(0).equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {
-					dateTime = mv.get(0).getSyscdate() + "";
+					dateTime = Fm_T.to_yMd_Hms(mv.get(0).getSyscdate()) + "";
 				}
 				// 取得BOM資訊(PM備註)
 				String sysnoteOld = "";
 				sysnoteOld += mv.get(0).getSysnote();
+				sysnoteOld = sysnoteOld.replaceAll("\n", "<br>");
 
 				//
 				BasicNotificationMail readyNeedMail = new BasicNotificationMail();
 				readyNeedMail.setBnmkind("BOM");
-				readyNeedMail.setBnmmail(mainUsers + "");
-				readyNeedMail.setBnmmailcc(secondaryUsers + "");// 標題
-				readyNeedMail.setBnmtitle("[" + dateTime + "]"//
-						+ "Cloud system BOM [All Delete][" + bhnb + "] notification!");
+				readyNeedMail.setBnmmail(new ArrayList<>(mainUsers) + "");
+				readyNeedMail.setBnmmailcc(new ArrayList<>(secondaryUsers) + "");// 標題
+				readyNeedMail.setBnmtitle("[All Delete][" + bhnb + "][" + dateTime + "]"//
+						+ " Cloud system BOM notification!");
 				// 內容
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
@@ -862,5 +960,54 @@ public class SynchronizeBomService {
 		public void setSendAllData(String sendAllData) {
 			this.sendAllData = sendAllData;
 		}
+	}
+
+	/**
+	 * 取得兩段文字差異，並在不同處以黃色背景標記
+	 * 
+	 * @param oldText 舊文字
+	 * @param newText 新文字
+	 * @return 含HTML標記的比對結果
+	 */
+	public static String highlightDiff(String oldText, String newText) {
+		StringsComparator comparator = new StringsComparator(oldText, newText);
+		StringBuilder result = new StringBuilder();
+		comparator.getScript().visit(new org.apache.commons.text.diff.CommandVisitor<Character>() {
+			@Override
+			public void visitInsertCommand(Character c) {
+				// 🔸【新增字元】：
+				// 表示這個字元 c 是新字串中出現、但在舊字串中沒有的內容
+				// 通常代表「新增的部分」。
+				//
+				// 這裡我們用 <span> 包住該字元，
+				// 並以黃色背景（background-color:yellow）凸顯它是新加入的。
+				result.append("<span style='background-color:yellow;'>").append(c).append("</span>");
+			}
+
+			@Override
+			public void visitDeleteCommand(Character c) {
+				// 可選：顯示刪除內容（例如紅色刪除線）
+				// 🔸【刪除字元】：
+				// 表示這個字元 c 是舊字串中有、但在新字串中被刪除的內容
+				// 通常代表「被移除的部分」。
+				//
+				// 為了讓視覺上更清楚，我們使用粉紅底（#ffc0cb）
+				// 並加上刪除線（text-decoration:line-through）
+				// 以提示這個部分是舊內容、已被移除。
+				result.append("<span style='background-color:#ffc0cb;text-decoration:line-through;'>").append(c)
+						.append("</span>");
+			}
+
+			@Override
+			public void visitKeepCommand(Character c) {
+				// 🔸【保留字元】：
+				// 表示這個字元 c 在舊字串與新字串中都存在，
+				// 沒有變化，因此不需要上色或刪除線。
+				//
+				// 直接將字元原樣加入結果即可。
+				result.append(c);
+			}
+		});
+		return result.toString();
 	}
 }

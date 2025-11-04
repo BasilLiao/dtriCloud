@@ -372,7 +372,7 @@ public class BiosCustomerTagServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.bct_name asc, e.bct_n_abbreviation asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, BiosCustomerTag.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

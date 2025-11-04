@@ -47,6 +47,12 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<!--文字比對-->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.11.0</version>
+		</dependency>
 		<!--資料庫運用-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

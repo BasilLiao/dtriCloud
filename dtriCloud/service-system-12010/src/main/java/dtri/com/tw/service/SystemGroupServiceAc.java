@@ -709,7 +709,7 @@ public class SystemGroupServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.sg_g_id desc,e.sys_sort asc ";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, SystemGroup.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {

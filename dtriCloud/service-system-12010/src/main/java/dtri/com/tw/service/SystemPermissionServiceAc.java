@@ -468,7 +468,7 @@ public class SystemPermissionServiceAc {
 
 		nativeQuery = StringUtils.removeEnd(nativeQuery, "AND ");
 		nativeQuery += " order by e.sp_g_id asc,e.sys_header desc , e.sys_sort asc";
-		nativeQuery += " LIMIT 25000 OFFSET 0 ";
+		nativeQuery += " LIMIT 10000 OFFSET 0 ";
 		Query query = em.createNativeQuery(nativeQuery, SystemPermission.class);
 		// =======================查詢參數=======================
 		sqlQuery.forEach((key, valAndType) -> {
