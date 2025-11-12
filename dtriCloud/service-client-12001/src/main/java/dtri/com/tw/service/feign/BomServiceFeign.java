@@ -58,6 +58,9 @@ public interface BomServiceFeign {
 	// ================================產品:物料規格項目================================
 	@RequestMapping(value = { "/bomItemSpecifications/getSearch" }, method = RequestMethod.POST)
 	PackageBean getItemSpecificationsSearch(@RequestBody String jsonPackageBean);
+	
+	@RequestMapping(value = { "/bomItemSpecifications/getSynBomAll" }, method = RequestMethod.POST)
+	PackageBean getItemSpecificationsSynBomAll(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/bomItemSpecifications/getSearchTest" }, method = RequestMethod.POST)
 	PackageBean getItemSpecificationsSearchTest(@RequestBody String jsonPackageBean);

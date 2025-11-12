@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -22,8 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -622,6 +626,7 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
 		Boolean in_Production = false;
+		Boolean auto_Item = false;
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
@@ -631,9 +636,13 @@ public class BomProductManagementServiceAc {
 			// 急單檢查?
 			JsonObject sn_checkJson = new JsonObject();
 			sn_checkJson = JsonParser.parseString(packageBean.getCallBackValue()).getAsJsonObject();
-			//避免沒資料
+			// 避免沒資料-急單
 			if (sn_checkJson.has("In_Production") && !sn_checkJson.get("In_Production").isJsonNull()) {
 				in_Production = sn_checkJson.get("In_Production").getAsBoolean();
+			}
+			// 避免沒資料-檢查連動物料 局限於 92 / 81
+			if (sn_checkJson.has("Auto_item") && !sn_checkJson.get("Auto_item").isJsonNull()) {
+				auto_Item = sn_checkJson.get("Auto_item").getAsBoolean();
 			}
 
 			// Step2.資料檢查
@@ -769,7 +778,7 @@ public class BomProductManagementServiceAc {
 		Map<String, JsonObject> oldBPM = new HashMap<String, JsonObject>();
 		Map<String, String> changeBpmnb = new HashMap<String, String>();// 修改了產品品號->則全新,舊,
 		Map<String, String> oldBomNote = new HashMap<String, String>();// 舊BOM Note
-
+		Boolean all_auto_Item = auto_Item;
 		// Step3.一般資料->寫入
 		entityDatas.forEach(c -> {// 要更新的資料
 			if (c.getBpmid() == null) {
@@ -987,14 +996,110 @@ public class BomProductManagementServiceAc {
 				}
 			}
 		});
+		// 需要檢查是否連動?
+		Map<String, BomItemSpecifications> entityMapBIS = new HashMap<String, BomItemSpecifications>();
+		// 哪個 90BOM<哪個選項>
+		Map<String, HashMap<String, BomItemSpecifications>> entityMatchBIS = new HashMap<String, HashMap<String, BomItemSpecifications>>();
+		if (all_auto_Item) {
+			ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
+			entityBIS.forEach(bis -> {
+				entityMapBIS.put(bis.getBisnb(), bis);
+			});
+		}
 
 		// 統一時間 不然會導致BOM被切割
 		Date sameTime = new Date();
 		Boolean setBhinproduction = in_Production;
 		changeBom.forEach(his -> {
+			// 紀錄時間
 			his.setSyscdate(sameTime);
 			his.setBhinproduction(setBhinproduction);
+
+			// 需要檢查是否連動?
+			if (all_auto_Item && (his.getBhpnb().startsWith("92") || his.getBhpnb().startsWith("81"))) {
+				ArrayList<BasicBomIngredients> entityOneBBI = ingredientsDao.findFlattenedBomLevel(his.getBhpnb(),
+						null);
+				entityOneBBI.forEach(kp -> {
+					// 如果有對應到標記90BOM + 此項目是 新的 or 更新
+					if (entityMapBIS.containsKey(kp.getBbiisn())
+							&& (his.getBhatype().equals("New") || his.getBhatype().equals("Update"))) {
+						HashMap<String, BomItemSpecifications> kpMap = new HashMap<String, BomItemSpecifications>();
+						// 已經有了?
+						if (entityMatchBIS.containsKey(his.getBhnb())) {
+							kpMap = entityMatchBIS.get(his.getBhnb());
+						}
+						kpMap.put(entityMapBIS.get(kp.getBbiisn()).getBisgid() + "", entityMapBIS.get(kp.getBbiisn()));
+						entityMatchBIS.put(his.getBhnb(), kpMap);
+					}
+				});
+			}
 		});
+
+		// 修正其他Key Part
+		if (all_auto_Item) {
+			saveDatasUpdate.forEach(bpmOne -> {
+				// Gson：若 JSON 內含 HTML 內容，建議用 disableHtmlEscaping 避免被轉義
+				Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+				// 比對修正資料-90BOM
+				if (entityMatchBIS.containsKey(bpmOne.getBpmnb())) {
+					// === 1) 解析 JSON ===
+					String raw = bpmOne.getBpmbisitem();
+					JsonObject root = JsonParser.parseString(raw).getAsJsonObject();
+					JsonArray items = root.getAsJsonArray("items");// BOM 的物件
+					HashMap<String, BomItemSpecifications> entityMatchKe = entityMatchBIS.get(bpmOne.getBpmnb());// 要匹配的
+																													// 正規化清單
+					// BOM內容-每個Item
+					for (JsonElement el : items) {
+						if (!el.isJsonObject()) {
+							// 非物件（例如字串/數字），不處理
+							continue;
+						}
+						//
+						boolean changed = false; // 本筆是否有任何改動
+						JsonObject iiObj = el.getAsJsonObject();
+						// 取三個關鍵欄位（防 null）
+						// String bisgname = getAsString(iiObj, "bisgname");// 項目組名稱
+						String bisgid = getAsString(iiObj, "bisgid");// 項目組ID
+						// String bisid = getAsString(iiObj, "bisid");// 項目ID_V
+						String bisnb = getAsString(iiObj, "bisnb");// 項目物料號_V
+						// String bisname = getAsString(iiObj, "bisname");// 物料品名_V
+						String bisqty = getAsString(iiObj, "bisqty");// 物料數量_V
+						// String bisfname = getAsString(iiObj, "bisfname");// 格式化_V
+						//
+						if (bisgid == null) {
+							// 群組不存在 → 無法匹配 → 略過
+							continue;
+						}
+						// 排除customize
+						if (bisnb == null || "customize".equals(bisnb)) {
+							continue;
+						}
+						// 如果沒配對到
+						if (!entityMatchKe.containsKey(bisgid)) {
+							continue;
+						}
+						// === 3) 僅在不同時寫入（避免多餘 UPDATE） ===
+						// 你目前要求的三個欄位，後續可自由增減
+						// 取得KeyPart
+						BomItemSpecifications bisOne = entityMatchKe.get(bisgid);
+						//
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisid", bisOne.getBisid() + ""); // ID
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisnb", bisOne.getBisnb()); // 物料號"
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisname", bisOne.getBisname()); // 物料名稱"
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisqty", bisqty); // 物料數量"
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisgfname", bisOne.getBisgfname()); // 格式:"產品 版次"
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisgname", bisOne.getBisgname()); // 項目組名稱:"PCBA"
+						changed |= addOrOverwriteIfDifferent(iiObj, "bisfname", bisOne.getBisfname()); // 項目格式化:"[\"DT340TR
+																										// MB...\",\"1.2\"]
+						// === 4) 有改動才寫回欄位 ===
+						if (changed) {
+							String updatedJson = gson.toJson(root); // 將 root 轉回字串
+							bpmOne.setBpmbisitem(updatedJson);
+						}
+					}
+				}
+			});
+		}
 
 		// 比對同一張BOM->的物料
 		historyDao.saveAll(changeBom);
@@ -1696,5 +1801,52 @@ public class BomProductManagementServiceAc {
 			}
 		});
 		return result.toString();
+	}
+	/* -------------------- 輔助方法區 -------------------- */
+
+	/** 安全取得 JsonObject 欄位字串值；若不是字串(例如數字/布林)也做容錯 */
+	private static String getAsString(JsonObject obj, String key) {
+		if (obj == null || key == null || !obj.has(key))
+			return null;
+		JsonElement e = obj.get(key);
+		if (e == null || e.isJsonNull())
+			return null;
+		try {
+			return e.getAsString();
+		} catch (Exception ignore) {
+			// 非字串（可能是數字或布林），退回 toString 並去除外層引號
+			return e.toString().replaceAll("^\"|\"$", "");
+		}
+	}
+
+	/**
+	 * 僅在舊值與新值不同時才寫入；可避免無謂 UPDATE。 newVal == null → 寫入 JsonNull（或改為不動，視規格調整）。
+	 * 
+	 * @return true 表示有變更
+	 */
+	private static boolean addOrOverwriteIfDifferent(JsonObject target, String key, String newVal) {
+		if (target == null || key == null)
+			return false;
+
+		String oldVal = null;
+		if (target.has(key) && !target.get(key).isJsonNull()) {
+			JsonElement oldEl = target.get(key);
+			try {
+				oldVal = oldEl.getAsString();
+			} catch (Exception ignore) {
+				oldVal = oldEl.toString().replaceAll("^\"|\"$", "");
+			}
+		}
+
+		if (Objects.equals(oldVal, newVal)) {
+			return false; // 值相同 → 不動
+		}
+
+		if (newVal == null) {
+			target.add(key, JsonNull.INSTANCE); // 或者：return false; (若規格不允許清空)
+		} else {
+			target.addProperty(key, newVal);
+		}
+		return true;
 	}
 }

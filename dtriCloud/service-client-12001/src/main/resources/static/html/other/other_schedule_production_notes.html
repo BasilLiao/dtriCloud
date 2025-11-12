@@ -173,7 +173,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-6 col-lg-3 p-1">
+					<div class="col-6 col-lg-4 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="title_color fw-bolder rounded-top">Action</div>
 							<div class="row m-0">
@@ -192,6 +192,12 @@
 									<b>Save<br>(AC/AU/DD)
 									</b>
 								</button>
+								<div id="btn_save_auto"
+									class="lh-1 col p-1 m-1 border border-success rounded">
+									<input alt="" title="" type="checkbox" checked="checked"
+										class="m-0 form-check-input checkbox_16 border border-dark">
+									<br> <b style="font-size: 12px;">Print -> Save</b>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -1477,6 +1483,9 @@
 						printWindow.print();
 						printWindow.close();
 					};
+					if($("#btn_save_auto input:checked").length > 0){
+						$("#btn_saveForm").trigger("click");
+					}
 				});
 
 				//監聽-查詢

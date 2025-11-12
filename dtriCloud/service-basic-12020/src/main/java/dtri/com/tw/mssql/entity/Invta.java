@@ -22,7 +22,7 @@ public class Invta implements Cloneable {
 
 	@Id
 	@Column(name = "INVTA_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TB001_TB002_TB003")
 	private String tb001_tb002_tb003;// 調撥/費用/A111-A112-A119-A121
@@ -74,11 +74,11 @@ public class Invta implements Cloneable {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

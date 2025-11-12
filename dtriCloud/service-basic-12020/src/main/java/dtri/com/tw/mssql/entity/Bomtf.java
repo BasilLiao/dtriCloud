@@ -22,7 +22,7 @@ public class Bomtf implements Cloneable {
 
 	@Id
 	@Column(name = "BOMTF_ID")
-	private Long mocid;
+	private String mocid;
 	// (BOMTG.TG001+'-'+TRIM(BOMTG.TG002)+'-'+BOMTG.TG003) as TG001_TG002_TG003,--單號
 
 	@Column(name = "TG001_TG002_TG003")
@@ -79,11 +79,11 @@ public class Bomtf implements Cloneable {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

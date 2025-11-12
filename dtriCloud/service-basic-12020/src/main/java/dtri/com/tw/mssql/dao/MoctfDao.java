@@ -12,8 +12,8 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT"// --生產入庫
-			+ "	ROW_NUMBER() OVER(order by MOCTF.TF001) AS MOCTF_ID,"//
-			+ "	(MOCTG.TG001+ '-' + TRIM(MOCTG.TG002) +'-'+ MOCTG.TG003) AS TG001_TG002_TG003,"// --入庫單
+			+ "	(TRIM(MOCTG.TG001)+ '-' + TRIM(MOCTG.TG002) +'-'+ TRIM(MOCTG.TG003)) AS MOCTF_ID,"//
+			+ "	(TRIM(MOCTG.TG001)+ '-' + TRIM(MOCTG.TG002) +'-'+ TRIM(MOCTG.TG003)) AS TG001_TG002_TG003,"// --入庫單
 			+ "	MOCTG.TG014+'-'+MOCTG.TG015 AS TG014_TG015,"// --製令單
 			+ "	MOCTG.TG010,"// -- 入庫別
 			+ "	CEILING(MOCTG.TG011) AS TG011,"// --入庫數量
@@ -53,7 +53,7 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
-			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "//產線須提前印資料
+			+ "	MOCTF.TF014 ='3' OR MOCTF.TF014 ='N'  "// 產線須提前印資料
 			+ "	AND MOCTG.TG011 > 0 "// --數量不為0
 			+ "	AND (MOCTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
 			+ "	OR MOCTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
@@ -64,8 +64,8 @@ public interface MoctfDao extends JpaRepository<Moctf, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT"// --生產入庫
-			+ "	ROW_NUMBER() OVER(order by MOCTF.TF001) AS MOCTF_ID,"//
-			+ "	(MOCTG.TG001+ '-' + TRIM(MOCTG.TG002) +'-'+ MOCTG.TG003) AS TG001_TG002_TG003,"// --入庫單
+			+ "	(TRIM(MOCTG.TG001)+ '-' + TRIM(MOCTG.TG002) +'-'+ TRIM(MOCTG.TG003)) AS MOCTF_ID,"//
+			+ "	(TRIM(MOCTG.TG001)+ '-' + TRIM(MOCTG.TG002) +'-'+ TRIM(MOCTG.TG003)) AS TG001_TG002_TG003,"// --入庫單
 			+ "	MOCTG.TG014+'-'+MOCTG.TG015 AS TG014_TG015,"// --製令單
 			+ "	MOCTG.TG010,"// -- 入庫別
 			+ "	CEILING(MOCTG.TG011) AS TG011,"// --入庫數量

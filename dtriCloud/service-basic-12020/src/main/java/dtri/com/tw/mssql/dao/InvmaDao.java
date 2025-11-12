@@ -11,7 +11,7 @@ public interface InvmaDao extends JpaRepository<Invma, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT"//
-			+ "  ROW_NUMBER() OVER (ORDER BY INVMA.MA002) AS INVMA_ID,"//
+			+ "  (TRIM(INVMA.MA002)+ '-' + TRIM(INVMA.MA003)) AS INVMA_ID,"//
 			+ "  MA001,"// --分類方式(4:生管)
 			+ "  MA002,"// --產品代號
 			+ "  MA003 "// --產品機種別

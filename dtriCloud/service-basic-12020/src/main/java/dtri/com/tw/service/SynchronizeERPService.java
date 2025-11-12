@@ -293,11 +293,12 @@ public class SynchronizeERPService {
 			}
 		});
 		// Step4.確認是否完結 or 被移除?
-		int batchSize = 1500;
+		int batchSize = 1000;
 		List<String> removeCommandMapList = new ArrayList<>(removeCommandMap.keySet());
 		int totalSize = removeCommandMapList.size();
 		// 批次檢查
 		for (int i = 0; i < totalSize; i += batchSize) {
+			System.out.println("S:" + i + ":" + Fm_T.to_yMd_Hm(new Date()));
 			// 取得當前批次
 			List<String> batchList = removeCommandMapList.subList(i, Math.min(i + batchSize, totalSize));
 			// 執行 JPA 查詢
@@ -591,6 +592,10 @@ public class SynchronizeERPService {
 			} else if (bslfuser.equals("")) {
 				// 可能移除? 結單?
 				removeShMap.put(oKey, o);
+				// 測試用
+				if (oKey.indexOf("A541-251110001-0004") >= 0) {
+					System.out.println(oKey);
+				}
 			}
 		});
 		// Step3.[ERP vs Cloud] 全新資料?
@@ -635,7 +640,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
+			List<Mocte> removeInCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -657,17 +662,20 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
+
+			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
+
 			// 處理結果
 			removeShCheck.forEach(r -> {
-				// 測試用A541-250401003-0018
-//				if (r.getTa026_ta027_ta028().contains("A541-250401003-0018")) {
-//					System.out.println("測試:A541-250401003-0018");
-//				}
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+				// 測試用A541-250401003-0018
+//				System.out.println(nKey);
+//				if (nKey.indexOf("A541-251110001") >= 0) {
+//					System.out.println("測試:A541-251110001-0004");
+//				}
 				// 已經完成->標記更新
 				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
-				if ("Y".equals(r.getTe019()) && removeInMap.containsKey(nKey)) {
+				if ("Y".equals(r.getTe019()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成
@@ -868,7 +876,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
+			List<Mocte> removeInCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -889,7 +897,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
+			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
@@ -1075,7 +1083,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeInCheck = mocteDao.findAllByMocte(batchList);
+			List<Mocte> removeInCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1096,7 +1104,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Mocte> removeShCheck = mocteDao.findAllByMocte(batchList);
+			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
@@ -2754,7 +2762,7 @@ public class SynchronizeERPService {
 		// 存入資料物件
 		ArrayList<WarehouseMaterial> saveLists = new ArrayList<WarehouseMaterial>();
 		ArrayList<WarehouseArea> saveItems = new ArrayList<WarehouseArea>();
-
+		ArrayList<WarehouseMaterial> removeLists = new ArrayList<WarehouseMaterial>();
 		// Step3-1.[物料清單] 資料整理轉換
 		listOlds.forEach(o -> {
 			String oKey = o.getWmpnb();
@@ -2772,8 +2780,18 @@ public class SynchronizeERPService {
 					o.setChecksum(checkSum);
 					saveLists.add(o);
 				}
+				// 標記有對應到->如果沒對應到的將移除
+				o.setSysstatus(1);
 			}
 		});
+		// 檢查那些要移除?
+		listOlds.forEach(x -> {
+			if (x.getSysstatus() == 0) {
+				removeLists.add(x);
+			}
+			x.setSysstatus(0);
+		});
+
 		// Step3-2 [物料清單] 全新資料?
 		erpListMaps.forEach((key, v) -> {
 			if (v.isNewone()) {
@@ -2788,6 +2806,7 @@ public class SynchronizeERPService {
 			}
 		});
 		materialDao.saveAll(saveLists);
+		materialDao.deleteAll(removeLists);
 		// 資料回收
 		listOlds = null;
 

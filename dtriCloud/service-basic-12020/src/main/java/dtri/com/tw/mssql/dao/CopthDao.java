@@ -12,8 +12,8 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --OK 銷貨單單 A231/A232
-			+ "  ROW_NUMBER() OVER (ORDER BY COPTH.TH001) AS COPTH_ID, "//
-			+ "  (COPTH.TH001+ '-' + TRIM(COPTH.TH002) +'-'+ COPTH.TH003) AS TH001_TH002_TH003,"// --銷貨單
+			+ "  (TRIM(COPTH.TH001)+ '-' + TRIM(COPTH.TH002) +'-'+ TRIM(COPTH.TH003)) AS COPTH_ID, "//
+			+ "  (TRIM(COPTH.TH001)+ '-' + TRIM(COPTH.TH002) +'-'+ TRIM(COPTH.TH003)) AS TH001_TH002_TH003,"// --銷貨單
 			+ "  COPTH.TH007,"// -- 出庫別 "
 			+ "  COPTH.TH008, "// --出庫數量 "
 			+ "  COPTH.TH018, "// --備註 "
@@ -54,8 +54,8 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --OK 銷貨單單 A231/A232
-			+ "  ROW_NUMBER() OVER (ORDER BY COPTH.TH001) AS COPTH_ID, "//
-			+ "  (COPTH.TH001+ '-' + TRIM(COPTH.TH002) +'-'+ COPTH.TH003) AS TH001_TH002_TH003,"// --銷貨單
+			+ "  (TRIM(COPTH.TH001)+ '-' + TRIM(COPTH.TH002) +'-'+ TRIM(COPTH.TH003)) AS COPTH_ID, "//
+			+ "  (TRIM(COPTH.TH001)+ '-' + TRIM(COPTH.TH002) +'-'+ TRIM(COPTH.TH003)) AS TH001_TH002_TH003,"// --銷貨單
 			+ "  COPTH.TH007,"// -- 出庫別 "
 			+ "  COPTH.TH008, "// --出庫數量 "
 			+ "  COPTH.TH018, "// --備註 "

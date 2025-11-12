@@ -18,7 +18,7 @@ import jakarta.persistence.Transient;
 public class Invth {
 	@Id
 	@Column(name = "INVTH_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TI001_TI002_TI003")
 	private String ti001_ti002_ti003;// 借出歸還A151+借入歸還單A161
@@ -72,11 +72,11 @@ public class Invth {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

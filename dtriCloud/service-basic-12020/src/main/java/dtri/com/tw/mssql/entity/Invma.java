@@ -22,7 +22,7 @@ public class Invma implements Cloneable {
 
 	@Id
 	@Column(name = "INVMA_ID")
-	private Long invid;
+	private String invid;
 
 	@Column(name = "MA001")
 	private String ma001;// 分類方式
@@ -40,11 +40,11 @@ public class Invma implements Cloneable {
 		return super.clone();
 	}
 
-	public Long getInvid() {
+	public String getInvid() {
 		return invid;
 	}
 
-	public void setInvid(Long invid) {
+	public void setInvid(String invid) {
 		this.invid = invid;
 	}
 

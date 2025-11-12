@@ -18,7 +18,7 @@ import jakarta.persistence.Transient;
 public class Copth {
 	@Id
 	@Column(name = "COPTH_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TH001_TH002_TH003")
 	private String th001_th002_th003;// -- 銷貨單單 A231/A232
@@ -73,7 +73,7 @@ public class Copth {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
@@ -149,7 +149,7 @@ public class Copth {
 		this.tg007 = tg007;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

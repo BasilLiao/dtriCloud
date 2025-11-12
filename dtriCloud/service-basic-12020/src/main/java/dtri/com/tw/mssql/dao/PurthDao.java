@@ -12,8 +12,8 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = " SELECT "// --進貨單 進貨單 A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
-			+ "	ROW_NUMBER() OVER(order by PURTH.TH001) AS PURTH_ID,"//
-			+ "	(PURTH.TH011+'-'+PURTH.TH012+'-'+PURTH.TH013) AS TH011_TH012_TH013,"// --採購單
+			+ "	(TRIM(PURTH.TH011)+'-'+TRIM(PURTH.TH012)+'-'+TRIM(PURTH.TH013)) AS PURTH_ID,"//
+			+ "	(TRIM(PURTH.TH011)+'-'+TRIM(PURTH.TH012)+'-'+TRIM(PURTH.TH013)) AS TH011_TH012_TH013,"// --採購單
 			+ "	(PURTH.TH001+'-'+PURTH.TH002) AS TH001_TH002,"// --進貨單
 			+ "	PURTH.TH003, "// --進貨單序號
 			+ "	CEILING(PURTH.TH007) AS TH007, "// --數量
@@ -63,8 +63,8 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = " SELECT "// --進貨單 進貨單 A341 國內進貨單/ A342 國外進貨單/ A343 台北進貨單/ A345 無採購進貨單
-			+ "	ROW_NUMBER() OVER(order by PURTH.TH001) AS PURTH_ID,"//
-			+ "	(PURTH.TH011+'-'+PURTH.TH012+'-'+PURTH.TH013) AS TH011_TH012_TH013,"// --採購單
+			+ "	(TRIM(PURTH.TH011)+'-'+TRIM(PURTH.TH012)+'-'+TRIM(PURTH.TH013)) AS PURTH_ID,"//
+			+ "	(TRIM(PURTH.TH011)+'-'+TRIM(PURTH.TH012)+'-'+TRIM(PURTH.TH013)) AS TH011_TH012_TH013,"// --採購單
 			+ "	(PURTH.TH001+'-'+PURTH.TH002) AS TH001_TH002,"// --進貨單
 			+ "	PURTH.TH003, "// --進貨單序號
 			+ "	CEILING(PURTH.TH007) AS TH007, "// --數量

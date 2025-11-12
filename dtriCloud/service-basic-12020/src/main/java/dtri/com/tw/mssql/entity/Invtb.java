@@ -22,7 +22,7 @@ public class Invtb implements Cloneable {
 
 	@Id
 	@Column(name = "INVTB_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "MB001")
 	private String mb001;// 品號
@@ -64,11 +64,11 @@ public class Invtb implements Cloneable {
 		return super.clone();
 	}
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

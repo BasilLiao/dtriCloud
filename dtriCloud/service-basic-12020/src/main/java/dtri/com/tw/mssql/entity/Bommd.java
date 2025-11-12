@@ -23,7 +23,7 @@ public class Bommd implements Cloneable {
 
 	@Id
 	@Column(name = "BOMMD_ID")
-	private Long bomid;
+	private String bomid;
 
 	@Column(name = "MD001")
 	private String md001;// --主元件-品號
@@ -65,11 +65,11 @@ public class Bommd implements Cloneable {
 	@Transient
 	private boolean newone;
 
-	public Long getBomid() {
+	public String getBomid() {
 		return bomid;
 	}
 
-	public void setBomid(Long bomid) {
+	public void setBomid(String bomid) {
 		this.bomid = bomid;
 	}
 

@@ -12,8 +12,8 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --調撥/費用/A111-A112-A115-A119-A121
-			+ "	ROW_NUMBER() OVER(order by INVTA.TA001) AS INVTA_ID, "//
-			+ "	(INVTB.TB001+'-'+TRIM(INVTB.TB002)+'-'+INVTB.TB003) as TB001_TB002_TB003, "// --單號
+			+ "	(TRIM(INVTB.TB001)+'-'+TRIM(INVTB.TB002)+'-'+TRIM(INVTB.TB003)) AS INVTA_ID, "//
+			+ "	(TRIM(INVTB.TB001)+'-'+TRIM(INVTB.TB002)+'-'+TRIM(INVTB.TB003)) as TB001_TB002_TB003, "// --單號
 			+ "	INVTB.TB007, "// --數量
 			+ "	INVTB.TB012, "// --出庫
 			+ "	INVTB.TB013, "// --入庫
@@ -64,8 +64,8 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --調撥/費用/A111-A112-A115-A119-A121
-			+ "	ROW_NUMBER() OVER(order by INVTA.TA001) AS INVTA_ID, "//
-			+ "	(INVTB.TB001+'-'+TRIM(INVTB.TB002)+'-'+INVTB.TB003) as TB001_TB002_TB003, "// --單號
+			+ "	(TRIM(INVTB.TB001)+'-'+TRIM(INVTB.TB002)+'-'+TRIM(INVTB.TB003)) AS INVTA_ID, "//
+			+ "	(TRIM(INVTB.TB001)+'-'+TRIM(INVTB.TB002)+'-'+TRIM(INVTB.TB003)) as TB001_TB002_TB003, "// --單號
 			+ "	INVTB.TB007, "// --數量
 			+ "	INVTB.TB012, "// --出庫
 			+ "	INVTB.TB013, "// --入庫

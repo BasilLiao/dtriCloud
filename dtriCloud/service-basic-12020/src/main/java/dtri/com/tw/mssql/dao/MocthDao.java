@@ -12,8 +12,8 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --委外進貨 A591
-			+ "	ROW_NUMBER() OVER(order by MOCTI.TI001) AS MOCTH_ID,"//
-			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003) AS TI001_TI002_TI003,"// --委外進貨單
+			+ "	(TRIM(MOCTI.TI001)+'-'+TRIM(MOCTI.TI002)+'-'+TRIM(MOCTI.TI003)) AS MOCTH_ID,"//
+			+ "	(TRIM(MOCTI.TI001)+'-'+TRIM(MOCTI.TI002)+'-'+TRIM(MOCTI.TI003)) AS TI001_TI002_TI003,"// --委外進貨單
 			+ "	(MOCTI.TI013+'-'+TRIM(MOCTI.TI014)) AS TI013_TI014,"// --製令單
 			+ "	CEILING(MOCTI.TI007) AS TI007,"// --進貨數量
 			+ "	MOCTI.TI009,"// --進貨庫別
@@ -64,8 +64,8 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --委外進貨 A591
-			+ "	ROW_NUMBER() OVER(order by MOCTI.TI001) AS MOCTH_ID,"//
-			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003) AS TI001_TI002_TI003,"// --委外進貨單
+			+ "	(TRIM(MOCTI.TI001)+'-'+TRIM(MOCTI.TI002)+'-'+TRIM(MOCTI.TI003)) AS MOCTH_ID,"//
+			+ "	(TRIM(MOCTI.TI001)+'-'+TRIM(MOCTI.TI002)+'-'+TRIM(MOCTI.TI003)) AS TI001_TI002_TI003,"// --委外進貨單
 			+ "	(MOCTI.TI013+'-'+TRIM(MOCTI.TI014)) AS TI013_TI014,"// --製令單
 			+ "	CEILING(MOCTI.TI007) AS TI007,"// --進貨數量
 			+ "	MOCTI.TI009,"// --進貨庫別

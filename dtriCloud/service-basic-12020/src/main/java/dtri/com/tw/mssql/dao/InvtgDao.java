@@ -12,8 +12,8 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --借出A131+借入單A141
-			+ "	ROW_NUMBER() OVER(order by INVTG.TG001) AS INVTG_ID, "//
-			+ "	(INVTG.TG001+'-'+TRIM(INVTG.TG002)+'-'+INVTG.TG003) AS TG001_TG002_TG003, "// ---借出單
+			+ "	(TRIM(INVTG.TG001)+'-'+TRIM(INVTG.TG002)+'-'+TRIM(INVTG.TG003)) AS INVTG_ID, "//
+			+ "	(TRIM(INVTG.TG001)+'-'+TRIM(INVTG.TG002)+'-'+TRIM(INVTG.TG003)) AS TG001_TG002_TG003, "// ---借出單
 			+ "	INVTF.TF015, "// --借出對象
 			+ "	INVTG.TG007, "// --轉出庫別
 			+ "	INVTG.TG008, "// --轉入庫別
@@ -63,8 +63,8 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --借出A131+借入單A141
-			+ "	ROW_NUMBER() OVER(order by INVTG.TG001) AS INVTG_ID, "//
-			+ "	(INVTG.TG001+'-'+TRIM(INVTG.TG002)+'-'+INVTG.TG003) AS TG001_TG002_TG003, "// ---借出單
+			+ "	(TRIM(INVTG.TG001)+'-'+TRIM(INVTG.TG002)+'-'+TRIM(INVTG.TG003)) AS INVTG_ID, "//
+			+ "	(TRIM(INVTG.TG001)+'-'+TRIM(INVTG.TG002)+'-'+TRIM(INVTG.TG003)) AS TG001_TG002_TG003, "// ---借出單
 			+ "	INVTF.TF015, "// --借出對象
 			+ "	INVTG.TG007, "// --轉出庫別
 			+ "	INVTG.TG008, "// --轉入庫別

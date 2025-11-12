@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
+import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomItemSpecificationsDetailFront;
+import dtri.com.tw.pgsql.entity.BomProductManagement;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -52,6 +57,9 @@ public class BomItemSpecificationsServiceAc {
 
 	@Autowired
 	private BomItemSpecificationsDao specificationsDao;
+
+	@Autowired
+	private BomProductManagementDao managementDao;
 
 	@Autowired
 	private EntityManager em;
@@ -136,6 +144,12 @@ public class BomItemSpecificationsServiceAc {
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "bisgname", "Ex:項目組名稱?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "bisfname", "Ex:正規化內容?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "bisnb", "Ex:50-123-456789?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -151,7 +165,7 @@ public class BomItemSpecificationsServiceAc {
 			Map<String, BomItemSpecifications> mapGroups = new HashMap<String, BomItemSpecifications>();
 
 			ArrayList<BomItemSpecifications> entitys = specificationsDao.findAllBySearch(searchData.getBisgname(),
-					searchData.getBisname(), searchData.getBisnb(), pageable);
+					searchData.getBisfname(), searchData.getBisnb(), pageable);
 			// Step4-2.資料區分(一般/細節)
 			entitys.forEach(e -> {
 				if (!mapGroups.containsKey(e.getBisgname())) {
@@ -161,8 +175,18 @@ public class BomItemSpecificationsServiceAc {
 				}
 			});
 
+			// 如果有查詢另外資料->再次查詢 群組
+			ArrayList<BomItemSpecifications> entityAll = new ArrayList<BomItemSpecifications>();
+			if (searchData.getBisfname() != null || searchData.getBisnb() != null) {
+				entityGroups.forEach(g -> {
+					ArrayList<BomItemSpecifications> entityOne = specificationsDao.findAllBySearch(g.getBisgname(),
+							null, null, pageable);
+					entityAll.addAll(entityOne);
+				});
+			}
+
 			// 類別(一般模式)
-			String entityJson = packageService.beanToJson(entitys);
+			String entityJson = packageService.beanToJson(entityAll.size() > 0 ? entityAll : entitys);
 			String entityGJson = packageService.beanToJson(entityGroups);
 			// 資料包裝
 			packageBean.setEntityJson(entityGJson);
@@ -475,7 +499,7 @@ public class BomItemSpecificationsServiceAc {
 				itemSp.setBisiauto(bisiauto);
 				itemSp.setBisdselect(bisdselect);
 				itemSp.setBisgfname(bisgfname);
-				//勾選
+				// 勾選
 				itemSp.setBispcb(bispcb);// PCBA主板
 				itemSp.setBisproduct(bisproduct);// 產品
 				itemSp.setBissfproduct(bissfproduct);//
@@ -586,6 +610,7 @@ public class BomItemSpecificationsServiceAc {
 					});
 
 			// Step2.資料檢查
+			String getBisgname = "";
 			for (BomItemSpecifications entityData : entityDatas) {
 
 				// 檢查-新資料-名稱重複
@@ -610,6 +635,22 @@ public class BomItemSpecificationsServiceAc {
 						entityData.getSyssort() == null) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 							new String[] { "Please check again Or Use copy Data!" });
+				}
+				// 檢查群組名稱是否重複?
+				if (getBisgname.equals("") || !getBisgname.equals(entityData.getBisgname())) {
+					ArrayList<BomItemSpecifications> checkBIS = specificationsDao
+							.findAllByCheck(entityData.getBisgname(), null, null);
+					getBisgname = entityData.getBisgname();
+					for (BomItemSpecifications checkOneBIS : checkBIS) {
+						// 如果不同群組 卻相同GID 則不可更新
+						if (checkOneBIS.getBisgid() != entityData.getBisgid()) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+									new String[] {
+											"Item group name has been used already. : " + checkOneBIS.getBisgname() });
+						} else {
+							break;
+						}
+					}
 				}
 			}
 			// 自動狀態 須關閉才能修改
@@ -967,4 +1008,178 @@ public class BomItemSpecificationsServiceAc {
 		return packageBean;
 	}
 
+	public boolean getSynAllBom() throws Exception {
+		boolean check = true;
+		// Step3-1.取得資料(一般/細節)
+		ArrayList<BomItemSpecifications> entityItems = specificationsDao.findAllBySearch(null, null, null, null);
+		Map<String, HashMap<String, BomItemSpecifications>> itemsMap = new HashMap<String, HashMap<String, BomItemSpecifications>>();
+		// GID,<物料號orID_XXXXX,物件>
+		for (BomItemSpecifications itemsOne : entityItems) {
+			HashMap<String, BomItemSpecifications> newOne = new HashMap<String, BomItemSpecifications>();
+			String bisid_bisnb = "";
+			// 非物料 or 是物料
+			if (itemsOne.getBisnb().equals("customize")) {
+				bisid_bisnb = "id_" + itemsOne.getBisid();
+			} else {
+				bisid_bisnb = itemsOne.getBisnb();
+			}
+			// 有沒有紀錄?
+			if (itemsMap.containsKey(itemsOne.getBisgid() + "")) {
+				// 有
+				newOne = itemsMap.get(itemsOne.getBisgid() + "");
+				newOne.put(bisid_bisnb, itemsOne);
+				itemsMap.put(itemsOne.getBisgid() + "", newOne);
+			} else {
+				// 無
+				newOne.put(bisid_bisnb, itemsOne);
+				itemsMap.put(itemsOne.getBisgid() + "", newOne);
+			}
+		}
+
+		// Step3-2.資料區分(一般/細節)
+		ArrayList<BomProductManagement> entityBoms = managementDao.findAllBySearch(null, null, null, null, null, null);
+
+		// 收集「真的有變更」的資料列，最後批次 saveAll
+		List<BomProductManagement> dirty = new ArrayList<>();
+
+		// Gson：若 JSON 內含 HTML 內容，建議用 disableHtmlEscaping 避免被轉義
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+		for (BomProductManagement b : entityBoms) {
+			String raw = b.getBpmbisitem();
+			if (raw == null || raw.isBlank()) {
+				// 無 JSON 可處理 → 略過
+				continue;
+			}
+
+			// === 1) 解析 JSON ===
+			JsonObject root;
+			try {
+				root = JsonParser.parseString(raw).getAsJsonObject();
+			} catch (Exception ex) {
+				// 若遇壞資料：可記錄警示或另行補救
+				// log.warn("bpmbisitem 解析失敗, id={}, raw={}", b.getId(), raw, ex);
+				continue;
+			}
+
+			// 取得 items 陣列（若不存在或型別錯誤則略過）
+			if (!root.has("items") || !root.get("items").isJsonArray()) {
+				continue;
+			}
+			JsonArray items = root.getAsJsonArray("items");
+
+			boolean changed = false; // 本筆是否有任何改動
+
+			// === 2) 逐筆合併 ===
+			for (JsonElement el : items) {
+				if (!el.isJsonObject()) {
+					// 非物件（例如字串/數字），不處理
+					continue;
+				}
+				JsonObject iiObj = el.getAsJsonObject();
+
+				// 取三個關鍵欄位（防 null）
+				String bisgid = getAsString(iiObj, "bisgid");
+				String bisnb = getAsString(iiObj, "bisnb");
+				String bisid = getAsString(iiObj, "bisid");
+
+				if (bisgid == null) {
+					// 群組不存在 → 無法匹配 → 略過
+					continue;
+				}
+
+				// 取出群組
+				Map<String, BomItemSpecifications> group = itemsMap.get(bisgid);
+				if (group == null || group.isEmpty()) {
+					continue;
+				}
+
+				// 依規則決定 key（優先 bisnb，且不可為 "customize"）
+				String key = null;
+				if (bisnb != null && !"customize".equals(bisnb) && group.containsKey(bisnb)) {
+					key = bisnb;
+				} else if (bisid != null && group.containsKey("id_" + bisid)) {
+					key = "id_" + bisid;
+				}
+				if (key == null) {
+					continue; // 找不到對應規則 → 略過
+				}
+
+				BomItemSpecifications spec = group.get(key);
+				if (spec == null) {
+					continue;
+				}
+
+				// === 3) 僅在不同時寫入（避免多餘 UPDATE） ===
+				// 你目前要求的三個欄位，後續可自由增減
+				changed |= addOrOverwriteIfDifferent(iiObj, "bisgfname", spec.getBisgfname()); // 格式:"產品 版次"
+				changed |= addOrOverwriteIfDifferent(iiObj, "bisgname", spec.getBisgname()); // 項目組名稱:"PCBA"
+				changed |= addOrOverwriteIfDifferent(iiObj, "bisfname", spec.getBisfname()); // 項目格式化:"[\"DT340TR
+																								// MB...\",\"1.2\"]"
+			}
+
+			// === 4) 有改動才寫回欄位 ===
+			if (changed) {
+				String updatedJson = gson.toJson(root); // 將 root 轉回字串
+				b.setBpmbisitem(updatedJson);
+				dirty.add(b);
+			}
+		}
+
+		// === 5) 批次儲存（只有髒資料） ===
+		if (!dirty.isEmpty()) {
+			managementDao.saveAll(dirty);
+			// 視需求：若後續馬上要讀一致資料，可立刻 flush
+			// managementDao.flush();
+		}
+
+		return check;
+	}
+	/* -------------------- 輔助方法區 -------------------- */
+
+	/** 安全取得 JsonObject 欄位字串值；若不是字串(例如數字/布林)也做容錯 */
+	private static String getAsString(JsonObject obj, String key) {
+		if (obj == null || key == null || !obj.has(key))
+			return null;
+		JsonElement e = obj.get(key);
+		if (e == null || e.isJsonNull())
+			return null;
+		try {
+			return e.getAsString();
+		} catch (Exception ignore) {
+			// 非字串（可能是數字或布林），退回 toString 並去除外層引號
+			return e.toString().replaceAll("^\"|\"$", "");
+		}
+	}
+
+	/**
+	 * 僅在舊值與新值不同時才寫入；可避免無謂 UPDATE。 newVal == null → 寫入 JsonNull（或改為不動，視規格調整）。
+	 * 
+	 * @return true 表示有變更
+	 */
+	private static boolean addOrOverwriteIfDifferent(JsonObject target, String key, String newVal) {
+		if (target == null || key == null)
+			return false;
+
+		String oldVal = null;
+		if (target.has(key) && !target.get(key).isJsonNull()) {
+			JsonElement oldEl = target.get(key);
+			try {
+				oldVal = oldEl.getAsString();
+			} catch (Exception ignore) {
+				oldVal = oldEl.toString().replaceAll("^\"|\"$", "");
+			}
+		}
+
+		if (Objects.equals(oldVal, newVal)) {
+			return false; // 值相同 → 不動
+		}
+
+		if (newVal == null) {
+			target.add(key, JsonNull.INSTANCE); // 或者：return false; (若規格不允許清空)
+		} else {
+			target.addProperty(key, newVal);
+		}
+		return true;
+	}
 }

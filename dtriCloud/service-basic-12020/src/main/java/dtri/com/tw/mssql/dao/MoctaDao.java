@@ -13,7 +13,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 	// 多筆查詢範例
 	@Query(value = " SELECT  "// --製令單A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單
 			+ " ROW_NUMBER() OVER(order by INVMB.MB001) AS MOCTA_ID,"//
-			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
+			+ " (TRIM(MOCTA.TA026)+'-'+TRIM(MOCTA.TA027)+'-'+TRIM(MOCTA.TA028)) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
 			+ " COPTD.TD004, "// --客戶品號
@@ -77,7 +77,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 			// MOCTA.TA011 = 'y' OR MOCTA.TA011 = 'Y') "//
 			+ "	 AND (MOCTA.TA001='A511' OR MOCTA.TA001='A512' OR MOCTA.TA001='A521' OR MOCTA.TA001='A522') "//
 			+ "	 AND (MOCTB.TB018 = 'Y' OR MOCTB.TB018 = 'N') "// --核單碼
-			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-350, 112) "//
+			+ "  AND (MOCTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "//
 			+ " OR MOCTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " ORDER BY "//
 			+ "	 MOCTA.TA001+MOCTA.TA002 ASC,"// --工單號
@@ -89,7 +89,7 @@ public interface MoctaDao extends JpaRepository<Mocta, Long> {
 	// 多筆查詢範例
 	@Query(value = " SELECT  "// --製令單A511 廠內製令單/A512 委外製令單/A521 廠內重工單/A522 委外領料單
 			+ " ROW_NUMBER() OVER(order by INVMB.MB001) AS MOCTA_ID,"//
-			+ " (MOCTA.TA026+'-'+MOCTA.TA027+'-'+MOCTA.TA028) AS TA026_TA027_TA028,"// --訂單項
+			+ " (TRIM(MOCTA.TA026)+'-'+TRIM(MOCTA.TA027)+'-'+TRIM(MOCTA.TA028)) AS TA026_TA027_TA028,"// --訂單項
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ " MOCTA.TA006, "// --成品品號
 			+ " COPTD.TD004, "// --客戶品號

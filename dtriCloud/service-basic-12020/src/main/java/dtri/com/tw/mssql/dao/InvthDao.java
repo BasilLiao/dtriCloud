@@ -12,9 +12,9 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --借出歸還A151+借入歸還單A161
-			+ "	ROW_NUMBER() OVER(order by INVTI.TI001) AS INVTH_ID,"//
-			+ "	(INVTI.TI001+'-'+TRIM(INVTI.TI002)+'-'+INVTI.TI003) AS TI001_TI002_TI003,"// ---借出歸還單
-			+ "	(INVTI.TI014+'-'+TRIM(INVTI.TI015)+'-'+INVTI.TI016) AS TI014_TI015_TI016,"// --來源
+			+ "	(TRIM(INVTI.TI001)+'-'+TRIM(INVTI.TI002)+'-'+TRIM(INVTI.TI003)) AS INVTH_ID,"//
+			+ "	(TRIM(INVTI.TI001)+'-'+TRIM(INVTI.TI002)+'-'+TRIM(INVTI.TI003)) AS TI001_TI002_TI003,"// ---借出歸還單
+			+ "	(TRIM(INVTI.TI014)+'-'+TRIM(INVTI.TI015)+'-'+TRIM(INVTI.TI016)) AS TI014_TI015_TI016,"// --來源
 			+ "	CEILING(INVTI.TI009) AS TI009, "// --數量
 			+ "	INVTI.TI022,"// --確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVTI.TI007,"// --轉出庫別
@@ -63,9 +63,9 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --借出歸還A151+借入歸還單A161
-			+ "	ROW_NUMBER() OVER(order by INVTI.TI001) AS INVTH_ID,"//
-			+ "	(INVTI.TI001+'-'+TRIM(INVTI.TI002)+'-'+INVTI.TI003) AS TI001_TI002_TI003,"// ---借出歸還單
-			+ "	(INVTI.TI014+'-'+TRIM(INVTI.TI015)+'-'+INVTI.TI016) AS TI014_TI015_TI016,"// --來源
+			+ "	(TRIM(INVTI.TI001)+'-'+TRIM(INVTI.TI002)+'-'+TRIM(INVTI.TI003)) AS INVTH_ID,"//
+			+ "	(TRIM(INVTI.TI001)+'-'+TRIM(INVTI.TI002)+'-'+TRIM(INVTI.TI003)) AS TI001_TI002_TI003,"// ---借出歸還單
+			+ "	(TRIM(INVTI.TI014)+'-'+TRIM(INVTI.TI015)+'-'+TRIM(INVTI.TI016)) AS TI014_TI015_TI016,"// --來源
 			+ "	CEILING(INVTI.TI009) AS TI009, "// --數量
 			+ "	INVTI.TI022,"// --確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVTI.TI007,"// --轉出庫別
@@ -103,7 +103,7 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "WHERE "//
 			+ "	INVTI.TI001 is not null "//
 			+ "	AND INVTI.TI009 > 0 "// 數量大於0
-			+ "	AND INVTI.TI022 !='V' "// 
+			+ "	AND INVTI.TI022 !='V' "//
 			+ " AND (INVTI.TI001='A151' OR INVTI.TI001='A161')"//
 			+ "	AND (INVTI.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
 			+ "	OR INVTI.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天

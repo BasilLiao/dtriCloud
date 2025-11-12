@@ -208,6 +208,11 @@
 								<b>Conditions<br>Save(AC/AU/DD)
 								</b>
 							</button>
+							<button id="btn_w_allbom" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
+								<b>Syn All<br>Bom(S1)
+								</b>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -393,7 +398,8 @@
 					<!--自動導入-->
 					<div class="col-6 col-lg-1 p-1">
 						<div class=" border border-secondary rounded">
-							<div class="title_color fw-bolder rounded-top">ERP Import(導入)</div>
+							<div class="title_color fw-bolder rounded-top">ERP
+								Import(導入)</div>
 							<div class="row p-1 m-0">
 								<div class="col-12 p-1">
 									Auto:<input id="other_bisiauto" type="checkbox"
@@ -482,8 +488,7 @@
 										class="m-0 form-check-input checkbox_24 border border-dark">
 								</div>
 								<div class="col-2 p-1">
-									開發/必選<br> <input id="other_bisdevelopment"
-										type="checkbox"
+									開發/必選<br> <input id="other_bisdevelopment" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
 									／<input id="other_m_bisdevelopment" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
@@ -495,8 +500,7 @@
 										class="m-0 form-check-input checkbox_24 border border-dark">
 								</div>
 								<div class="col-2 p-1">
-									半品/必選<br> <input id="other_bissfproduct"
-										type="checkbox"
+									半品/必選<br> <input id="other_bissfproduct" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
 									／<input id="other_m_bissfproduct" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
@@ -508,8 +512,7 @@
 										class="m-0 form-check-input checkbox_24 border border-dark">
 								</div>
 								<div class="col-2 p-1">
-									配件/必選<br> <input id="other_bisaccessories"
-										type="checkbox"
+									配件/必選<br> <input id="other_bisaccessories" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
 									／<input id="other_m_bisaccessories" type="checkbox"
 										class="m-0 form-check-input checkbox_24 border border-dark">
@@ -566,12 +569,13 @@
 			markDetails: {},//有選取的IKeyGKey
 			entityFormatJson: {},//查詢格式
 			btn_other_send_auto: "",//自動傳送
+			local_choose:"",//查詢前選擇
 			//換頁設置
 			otherItemPageSet: {
 				total: 10000,//批次數量(1-1000)
 				batch: 0,//第幾批次(1-1000)
 				pageNew: 1,//單前頁碼(1-50)
-				pageSize: 200,//每頁數量(1-20)
+				pageSize: 100,//每頁數量(1-20)
 				entityJsons: [],//資料
 				entityDetailJsons: [],//細節資料
 				entityIKey: "",//ID
@@ -614,7 +618,10 @@
 					$("#btn_i_remove").addClass("disabled");
 				} if (ps[6] != 1 && ps[8] != 1 && ps[9] != 1) {//存入資料內容
 					$("#btn_w_save").addClass("disabled");
+				} if (ps[5] != 1) {//BOM 同步
+					$("#btn_w_allbom").addClass("disabled");
 				}
+				
 
 				//Step1.查詢結果標題-排序
 				let resultThead = otherSetJson['resultThead'];
@@ -979,6 +986,10 @@
 							//傳送查詢資料
 							other.methods.confirmSend("Search");
 							break;
+						case "btn_w_allbom":
+							//傳送查詢資料
+							other.methods.confirmSend("SynAllbom");
+							break;
 					}
 				});
 				//移除觸發-條件
@@ -1267,6 +1278,8 @@
 								entityFormatJson["bisgcondition"] = bisgcondition;
 								entityDetailJsons.push(entityFormatJson);
 							});
+							
+							
 							//傳送對象
 							req_data['type'] = "POST";
 							req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AC";
@@ -1416,11 +1429,32 @@
 								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = $(this).val() == "" ? null : $(this).val();
 							}
 						});
+						//如果有選擇
+						$('#other_cr_open tbody tr').each(function (index) {
+							 let checkedRadio = $(this).find('input[type="radio"]:checked');
+							 if (checkedRadio.length > 0) {
+								 other.data.local_choose =	$(this).attr("class");
+							 }
+						});
 						req_data['type'] = "POST";
 						req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.AR";
 						data['callBackFunction'] = "other_search";
 						break;
-
+					case "SynAllbom":
+						//傳送對象-同步指令
+						$("#otherItemItem .searchVal").each(function (index) {
+							console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
+							if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = new Date($(this).val()).getTime();
+							} else {
+								entityJsons[$(this).attr("id").replaceAll("other_s_", "")] = $(this).val() == "" ? null : $(this).val();
+							}
+						});
+						req_data['type'] = "POST";
+						req_data['url'] = $('#nav_functional_unit').attr('title') + ".basil.S1";
+						data['callBackFunction'] = "other_search";
+						break;
+						
 				}
 				console.log(entityJsons);
 				console.log(entityDetailJsons);
@@ -1541,6 +1575,8 @@
 				$('#other_c .exTbodyTh input').attr("title", "IKey_GKey");
 				$('#other_c .exTbodyTh input').prop("checked", false);
 				$('#other_cr_open tbody td').removeClass('bg-warning');
+				//清除下面資料
+				$('#other_dcr_open .valTbodyTrD').remove();
 				//版面預設
 				if ($('#other_dcr_open').hasClass('show')) {
 					$('#other_dcr .btn-outline-white').trigger('click');
@@ -1587,6 +1623,16 @@
 							}
 							//marks標記?
 							$('.valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
+							//如果有配上 自動選擇
+							if(other.data.local_choose==='valTbodyTr_' + valTrNb){
+								let $radio = $('.valTbodyTr_' + valTrNb + ' input[type="radio"]');
+								if ($radio.length > 0) {
+							    	// ✅ 自動設為選取狀態
+							    	$radio.prop('checked', true);
+							    }
+							}
+							
+							
 						});
 					}
 				}

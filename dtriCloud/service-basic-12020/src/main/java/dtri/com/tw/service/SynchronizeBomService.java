@@ -448,7 +448,7 @@ public class SynchronizeBomService {
 			}
 
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.iterator().next().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {
@@ -551,6 +551,7 @@ public class SynchronizeBomService {
 				bnmcontent += "<div>Old=原先舊[物料]/Update=更新後[物料]/";
 				bnmcontent += "<br>Delete=已被移除[物料]/New=新增加[物料]/";
 				bnmcontent += "<br>All New=新增[BOM]產品/All Delete=移除[BOM]產品</div>";
+				bnmcontent += "<br>";
 
 				// 如果是急單 查出在途製令單
 				if (bhinproduction) {
@@ -667,7 +668,7 @@ public class SynchronizeBomService {
 			});
 
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.iterator().next().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {
@@ -715,6 +716,8 @@ public class SynchronizeBomService {
 						+ "<th>產品型號</th>"//
 						+ "<th>異動類型</th>"//
 						+ "<th>組成-物料號</th>"//
+						+ "<th>組成-物料名</th>"//
+						+ "<th>組成-物料規格</th>"//
 						+ "<th>組成-製成</th>"//
 						+ "<th>組成-數量</th>"//
 						+ "</tr></thead>"//
@@ -734,7 +737,13 @@ public class SynchronizeBomService {
 						dataRow.createCell(2).setCellValue(oss.getBhpqty());
 						dataRow.createCell(8).setCellValue(oss.getBhpprocess());
 					}
-
+					// 抓取規格(去除空格)
+					String getWmname = wMs.containsKey(oss.getBhpnb().trim())
+							? wMs.get(oss.getBhpnb().trim()).getWmname()
+							: "";
+					String getWmspecification = wMs.containsKey(oss.getBhpnb().trim())
+							? wMs.get(oss.getBhpnb().trim()).getWmspecification()
+							: "";
 					// 信件資料結構
 					bnmcontent += "<tr>"//
 							+ "<td>" + (checkX ? "X" : r) + "</td>"// 項次
@@ -742,6 +751,8 @@ public class SynchronizeBomService {
 							+ "<td>" + oss.getBhmodel() + "</td>"// 產品型號
 							+ "<td>" + oss.getBhatype() + "</td>"// 異動類型
 							+ "<td>" + oss.getBhpnb() + "</td>"// 組成-物料號
+							+ "<td>" + getWmname + "</td>"// 組成-物料名
+							+ "<td>" + getWmspecification + "</td>"// 組成-物料規格
 							+ "<td>" + oss.getBhpprocess() + "</td>"// 組成-製成
 							+ "<td>" + oss.getBhpqty() + "</td>"// 組成-數量
 							+ "</tr>";
@@ -826,7 +837,7 @@ public class SynchronizeBomService {
 				}
 			});
 			// 建立信件
-			if (mainUsers.size() > 0 && !mainUsers.getFirst().equals("")) {
+			if (mainUsers.size() > 0 && !mainUsers.iterator().next().equals("")) {
 				// 時間配置
 				String dateTime = Fm_T.to_y_M_d(new Date()) + "";
 				if (mv.size() > 0) {

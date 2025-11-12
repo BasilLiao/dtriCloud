@@ -18,7 +18,7 @@ import jakarta.persistence.Transient;
 public class Mocth {
 	@Id
 	@Column(name = "MOCTH_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TI001_TI002_TI003")
 	private String ti001_ti002_ti003;// --委外入庫單
@@ -72,11 +72,11 @@ public class Mocth {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

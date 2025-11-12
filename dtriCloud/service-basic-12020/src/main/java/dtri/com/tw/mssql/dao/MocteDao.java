@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import dtri.com.tw.mssql.entity.Mocte;
 
@@ -12,8 +13,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --OK 領/退料單 A541 廠內領料單/ A542 補料單/A543 超領單/ A551 委外領料單/ A561 廠內退料單/ A571 委外退料單
-			+ "	ROW_NUMBER() OVER(order by MOCTE.TE001) AS MOCTE_ID,"//
-			+ "	MOCTE.TE001+'-'+TRIM(MOCTE.TE002)+'-'+MOCTE.TE003 AS TE001_TE002_TE003,"// --出料單號
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
@@ -76,8 +77,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A542')"//
 			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A543')"//
 			+ " OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A551')"//
-			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A561')"//產線須提前印資料
-			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A571')) "//產線須提前印資料
+			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A561')"// 產線須提前印資料
+			+ "	OR (MOCTE.TE019 ='N' AND MOCTE.TE001 = 'A571')) "// 產線須提前印資料
 			+ "	OR (MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
 			// + " AND TE001+'-'+TRIM(TE002) = 'A542-240529007' "//
 			+ " ORDER BY "//
@@ -88,8 +89,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --OK /A543 超領單 / A561 廠內退料單/ A571 委外退料單
-			+ "	ROW_NUMBER() OVER(order by MOCTE.TE001) AS MOCTE_ID,"//
-			+ "	MOCTE.TE001+'-'+TRIM(MOCTE.TE002)+'-'+MOCTE.TE003 AS TE001_TE002_TE003,"// --出料單號
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
@@ -156,8 +157,8 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --OK 領/退料單 A541 廠內領料單/ A542 補料單/A543 超領單/ A551 委外領料單/ A561 廠內退料單/ A571 委外退料單
-			+ "	ROW_NUMBER() OVER(order by MOCTE.TE001) AS MOCTE_ID,"//
-			+ "	MOCTE.TE001+'-'+TRIM(MOCTE.TE002)+'-'+MOCTE.TE003 AS TE001_TE002_TE003,"// --出料單號
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
+			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
@@ -224,12 +225,12 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ " OR (MOCTE.TE019 !='V' AND MOCTE.TE001 = 'A561')"//
 			+ " OR (MOCTE.TE019 !='V' AND MOCTE.TE001 = 'A571')) "//
 			+ "	OR (MOCTE.TE019 !='V' AND MOCTE.TE005 >0 AND (MOCTE.TE001 = 'A543' OR MOCTE.TE001 = 'A561' OR MOCTE.TE001 = 'A571')))	"//
-			+ " AND(CONCAT(MOCTE.TE001, '-', TRIM(MOCTE.TE002), '-', MOCTE.TE003) IN (:TE001TE002TE003)) "// 比對製令單+序號?
+			+ " AND(CONCAT(MOCTE.TE001, '-', TRIM(MOCTE.TE002), '-', TRIM(MOCTE.TE003)) IN (:TE001TE002TE003)) "// 比對製令單+序號?
 			// + " AND TE001+'-'+TRIM(TE002) = 'A542-240529007' "//
 			+ " ORDER BY "//
 			+ "	MOCTC.TC008 asc, "//
 			+ "	(MOCTE.TE001 + MOCTE.TE002+MOCTE.TE003) asc "// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Mocte> findAllByMocte(List<String> TE001TE002TE003);
+	ArrayList<Mocte> findAllByMocte60(@Param("TE001TE002TE003") List<String> TE001TE002TE003);
 
 }

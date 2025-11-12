@@ -22,7 +22,7 @@ import jakarta.persistence.Transient;
 public class MoctaScheduleInfactory {
 	@Id
 	@Column(name = "MOCTA_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TA001_TA002")
 	private String ta001_ta002;// 製令單
@@ -100,11 +100,11 @@ public class MoctaScheduleInfactory {
 		this.ta010 = ta010;
 	}
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 

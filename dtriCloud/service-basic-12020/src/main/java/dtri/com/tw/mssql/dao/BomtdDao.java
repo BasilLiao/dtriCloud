@@ -12,8 +12,8 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --OK 組合單/A421
-			+ "	ROW_NUMBER() OVER(order by BOMTD.TD001) AS BOMTD_ID,"//
-			+ "	(BOMTE.TE001+'-'+TRIM(BOMTE.TE002)+'-'+BOMTE.TE003) as TE001_TE002_TE003,"// --單號
+			+ "	(TRIM(BOMTE.TE001)+'-'+TRIM(BOMTE.TE002)+'-'+TRIM(BOMTE.TE003)) AS BOMTD_ID,"//
+			+ "	(TRIM(BOMTE.TE001)+'-'+TRIM(BOMTE.TE002)+'-'+TRIM(BOMTE.TE003)) as TE001_TE002_TE003,"// --單號
 			+ "	BOMTE.TE004,"// --(-)元件號
 			+ "	BOMTE.TE007,"// --(-)出庫
 			+ "	BOMTE.TE008,"// --(-)元件數量
@@ -64,8 +64,8 @@ public interface BomtdDao extends JpaRepository<Bomtd, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --OK 組合單/A421
-			+ "	ROW_NUMBER() OVER(order by BOMTD.TD001) AS BOMTD_ID,"//
-			+ "	(BOMTE.TE001+'-'+TRIM(BOMTE.TE002)+'-'+BOMTE.TE003) as TE001_TE002_TE003,"// --單號
+			+ "	(TRIM(BOMTE.TE001)+'-'+TRIM(BOMTE.TE002)+'-'+TRIM(BOMTE.TE003)) AS BOMTD_ID,"//
+			+ "	(TRIM(BOMTE.TE001)+'-'+TRIM(BOMTE.TE002)+'-'+TRIM(BOMTE.TE003)) as TE001_TE002_TE003,"// --單號
 			+ "	BOMTE.TE004,"// --(-)元件號
 			+ "	BOMTE.TE007,"// --(-)出庫
 			+ "	BOMTE.TE008,"// --(-)元件數量

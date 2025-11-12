@@ -11,7 +11,7 @@ public interface MoctaScheduleInfactoryDao extends JpaRepository<MoctaScheduleIn
 
 	// 多筆查詢範例
 	@Query(value = "SELECT "// --
-			+ "  ROW_NUMBER() OVER (ORDER BY CTA.TA001) AS MOCTA_ID, "// --ID
+			+ "  REPLACE(CTA.TA001+'-'+CTA.TA002, ' ', '') AS MOCTA_ID, "// --ID
 			+ "  REPLACE(CTA.TA001+'-'+CTA.TA002, ' ', '') AS TA001_TA002,"// -- 製令單
 			+ "  CTA.TA006, "// --產品品號
 			+ "  CTA.TA034, "// --產品品名

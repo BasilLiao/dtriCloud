@@ -21,7 +21,7 @@ import jakarta.persistence.Transient;
 public class Purth {
 	@Id
 	@Column(name = "PURTH_ID")
-	private Long purid;
+	private String purid;
 
 	@Column(name = "TH011_TH012_TH013")
 	private String th011_th012_th013;// 採購單
@@ -171,11 +171,11 @@ public class Purth {
 		this.newone = newone;
 	}
 
-	public Long getPurid() {
+	public String getPurid() {
 		return purid;
 	}
 
-	public void setPurid(Long purid) {
+	public void setPurid(String purid) {
 		this.purid = purid;
 	}
 

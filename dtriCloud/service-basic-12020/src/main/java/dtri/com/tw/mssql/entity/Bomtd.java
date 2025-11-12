@@ -22,7 +22,7 @@ public class Bomtd implements Cloneable {
 
 	@Id
 	@Column(name = "BOMTD_ID")
-	private Long mocid;
+	private String mocid;
 
 	@Column(name = "TE001_TE002_TE003")
 	private String te001_te002_te003;// 組合單/A421
@@ -78,11 +78,11 @@ public class Bomtd implements Cloneable {
 	@Transient
 	private boolean newone;
 
-	public Long getMocid() {
+	public String getMocid() {
 		return mocid;
 	}
 
-	public void setMocid(Long mocid) {
+	public void setMocid(String mocid) {
 		this.mocid = mocid;
 	}
 
