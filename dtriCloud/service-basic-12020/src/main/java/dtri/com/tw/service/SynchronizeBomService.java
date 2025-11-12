@@ -482,7 +482,7 @@ public class SynchronizeBomService {
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>新舊</th>"//
-						+ "<th>產品說明</th>"//
+						+ "<th>品規修改</th>"//
 						+ "</tr></thead>"//
 						+ "<tbody>"// 模擬12筆資料
 						+ "<tr><td>New</td><td>" + newDiff + "</td><tr>"// 新備註
@@ -703,7 +703,7 @@ public class SynchronizeBomService {
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>新舊</th>"//
-						+ "<th>產品說明</th>"//
+						+ "<th>品規修改</th>"//
 						+ "</tr></thead>"//
 						+ "<tbody>"// 模擬12筆資料
 						+ "<tr><td>New</td><td>" + sysnote + "</td><tr>"// 新備註
@@ -859,7 +859,7 @@ public class SynchronizeBomService {
 				String bnmcontent = "<table border='1' cellpadding='10' cellspacing='0' style='font-size: 12px;'>"//
 						+ "<thead><tr style= 'background-color: aliceblue;'>"//
 						+ "<th>新舊</th>"//
-						+ "<th>產品說明</th>"//
+						+ "<th>品規修改</th>"//
 						+ "</tr></thead>"//
 						+ "<tbody>"// 模擬12筆資料
 						+ "<tr><td>Delete</td><td>" + sysnoteOld + "</td><tr>"// 備註
