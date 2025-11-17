@@ -625,6 +625,23 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> saveDatasUpdate = new ArrayList<BomProductManagement>();
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
+		ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
+		Map<String, Boolean> entityCheckBismproduct = new HashMap<String, Boolean>();// GID 必填?成品
+		Map<String, Boolean> entityCheckBismaccessories = new HashMap<String, Boolean>();// GID 必填?配件
+		
+		entityBIS.forEach(b -> {
+			// 有必填?
+			System.out.println(b.getBisgid() + " 成品:" + b.getBismproduct() + " 配件:" + b.getBismaccessories());
+			// GID 必填?成品
+			if (b.getBismproduct() && !entityCheckBismproduct.containsKey(b.getBisgid() + "")) {
+				entityCheckBismproduct.put(b.getBisgid() + "", true);
+			}
+			// GID 必填?配件
+			if (b.getBismaccessories() && !entityCheckBismaccessories.containsKey(b.getBisgid() + "")) {
+				entityCheckBismaccessories.put(b.getBisgid() + "", true);
+			}
+		});
+
 		Boolean in_Production = false;
 		Boolean auto_Item = false;
 		// =======================資料檢查=======================
@@ -711,8 +728,43 @@ public class BomProductManagementServiceAc {
 					}
 					checkGorupItems.put(key, true);
 				}
+				// Step2-5.檢查 項目是否缺少
+				// Step2-5.檢查 項目是否缺少
+				if (entityData.getBpmtypename().equals("產品BOM")) {
+					// 成品類 ?
+					JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+					JsonArray items = entityV.getAsJsonArray("items");
+					for (JsonElement itemCheck : items) {
+						String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+						if (entityCheckBismproduct.containsKey(bisgid)) {
+							entityCheckBismproduct.put(bisgid, false);
+						}
+					}
+					for (Map.Entry<String, Boolean> entry : entityCheckBismproduct.entrySet()) {
+						if (entry.getValue()) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+									new String[] { "Some BOM items are missing. Please check again. !!" });
+						}
+					}
+				} else if (entityData.getBpmtypename().equals("配件BOM")) {
+					// 配件類 ?
+					JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+					JsonArray items = entityV.getAsJsonArray("items");
+					for (JsonElement itemCheck : items) {
+						String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+						if (entityCheckBismaccessories.containsKey(bisgid)) {
+							entityCheckBismaccessories.put(bisgid, false);
+						}
+					}
+					for (Map.Entry<String, Boolean> entry : entityCheckBismaccessories.entrySet()) {
+						if (entry.getValue()) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+									new String[] { "Some BOM items are missing. Please check again. !!" });
+						}
+					}
+				}
 
-				// Step2-5.檢查匹配權限?
+				// Step2-6.檢查匹配權限?
 				BomProductManagement checkDataOne = new BomProductManagement();
 				// 有可能直接覆蓋?
 				if (entityData.getBpmid() == null) {
@@ -997,11 +1049,10 @@ public class BomProductManagementServiceAc {
 			}
 		});
 		// 需要檢查是否連動?
-		Map<String, BomItemSpecifications> entityMapBIS = new HashMap<String, BomItemSpecifications>();
+		Map<String, BomItemSpecifications> entityMapBIS = new HashMap<String, BomItemSpecifications>();// 物料號
 		// 哪個 90BOM<哪個選項>
 		Map<String, HashMap<String, BomItemSpecifications>> entityMatchBIS = new HashMap<String, HashMap<String, BomItemSpecifications>>();
 		if (all_auto_Item) {
-			ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
 			entityBIS.forEach(bis -> {
 				entityMapBIS.put(bis.getBisnb(), bis);
 			});
@@ -1118,6 +1169,22 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomProductManagement> entitySave = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
+		ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
+		Map<String, Boolean> entityCheckBismproduct = new HashMap<String, Boolean>();// GID 必填?成品
+		Map<String, Boolean> entityCheckBismaccessories = new HashMap<String, Boolean>();// GID 必填?配件
+
+		entityBIS.forEach(b -> {
+			// 有必填?
+			System.out.println(b.getBisgid() + " 成品:" + b.getBismproduct() + " 配件:" + b.getBismaccessories());
+			// GID 必填?成品
+			if (b.getBismproduct() && !entityCheckBismproduct.containsKey(b.getBisgid() + "")) {
+				entityCheckBismproduct.put(b.getBisgid() + "", true);
+			}
+			// GID 必填?配件
+			if (b.getBismaccessories() && !entityCheckBismaccessories.containsKey(b.getBisgid() + "")) {
+				entityCheckBismaccessories.put(b.getBisgid() + "", true);
+			}
+		});
 		// 連續號檢查?(末3碼)SN_check
 		JsonObject sn_checkJson = new JsonObject();
 		sn_checkJson = JsonParser.parseString(packageBean.getCallBackValue()).getAsJsonObject();
@@ -1195,7 +1262,42 @@ public class BomProductManagementServiceAc {
 						}
 						checkGorupItems.put(key, true);
 					}
-					// Step2-5.檢查匹配權限?
+
+					// Step2-5.檢查 項目是否缺少
+					if (entityData.getBpmtypename().equals("產品BOM")) {
+						// 成品類 ?
+						JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+						JsonArray items = entityV.getAsJsonArray("items");
+						for (JsonElement itemCheck : items) {
+							String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+							if (entityCheckBismproduct.containsKey(bisgid)) {
+								entityCheckBismproduct.put(bisgid, false);
+							}
+						}
+						for (Map.Entry<String, Boolean> entry : entityCheckBismproduct.entrySet()) {
+							if (entry.getValue()) {
+								throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+										new String[] { "Some BOM items are missing. Please check again. !!" });
+							}
+						}
+					} else if (entityData.getBpmtypename().equals("配件BOM")) {
+						// 配件類 ?
+						JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
+						JsonArray items = entityV.getAsJsonArray("items");
+						for (JsonElement itemCheck : items) {
+							String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+							if (entityCheckBismaccessories.containsKey(bisgid)) {
+								entityCheckBismaccessories.put(bisgid, false);
+							}
+						}
+						for (Map.Entry<String, Boolean> entry : entityCheckBismaccessories.entrySet()) {
+							if (entry.getValue()) {
+								throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+										new String[] { "Some BOM items are missing. Please check again. !!" });
+							}
+						}
+					}
+					// Step2-6.檢查匹配權限?
 					Boolean throwCheck = true;
 					String info = entityData.getBpmnb() + " / " + entityData.getBpmmodel();
 					for (BomKeeper keeper : bomKeepers) {

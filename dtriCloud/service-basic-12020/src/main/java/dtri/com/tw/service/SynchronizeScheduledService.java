@@ -41,6 +41,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -204,7 +205,8 @@ public class SynchronizeScheduledService {
 		}
 	}
 
-	// ============ 同步廠內生管平台() ============
+	// ============ 同步廠內生管平台()Transactional不可去除->動態存入SQL->第2次更新暫存 ============
+	@Transactional
 	public void erpSynchronizeScheduleInfactory() throws Exception {
 		ArrayList<MoctaScheduleInfactory> erpInfactorys = erpInfactoryDao.findAllByMocta(null, "Y");// 目前ERP有的資料
 		Map<String, MoctaScheduleInfactory> erpMapInfactorys = new HashMap<String, MoctaScheduleInfactory>();// ERP整理後資料
@@ -250,6 +252,11 @@ public class SynchronizeScheduledService {
 				// 如果要轉成字串
 				String valueStr = value.getAsString();
 				System.out.println("Key: " + key + ", Value: " + valueStr);
+				// 測試用
+				if ("A511-250922026".equals(key)) {
+					System.out.println("A511-250922026");
+				}
+
 			}
 		}
 
@@ -445,6 +452,10 @@ public class SynchronizeScheduledService {
 				newScheduleInfactorys.add(o);
 			}
 			// ========更新產線狀況========
+			//測試用
+			if ("A511-250922026".equals(o.getSinb())) {
+				System.out.println("A511-250922026");
+			}
 			// 同一張工單?
 			if (mesMapInfactorys.containsKey(o.getSinb())) {
 				JsonObject mesWorkOrder = mesMapInfactorys.get(o.getSinb());
@@ -466,7 +477,7 @@ public class SynchronizeScheduledService {
 				} else {
 					// 不是空的(第N筆資料)->取出轉換->比對最新資料
 					simpnotes = JsonParser.parseString(o.getSimpnote()).getAsJsonArray();
-					// ===只保留最新3筆資料===
+					// ===只保留最新5筆資料===
 					JsonArray newSimpnotes = new JsonArray();
 					int size = simpnotes.size();
 					// 保留最後 5 筆 (假設最新資料在陣列尾端)
@@ -497,8 +508,8 @@ public class SynchronizeScheduledService {
 						simpnoteOne.addProperty("user", "system");
 						simpnoteOne.addProperty("content", contentNew);//
 						simpnotes.add(simpnoteOne);
-						o.setSimpprogress(mesWorkOrder.get("lineTotal").getAsString());
 						o.setSimpnote(simpnotes.toString());// 製造備註(格式)人+時間+內容
+						o.setSimpprogress(mesWorkOrder.get("lineTotal").getAsString());
 					}
 					//
 				}

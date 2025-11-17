@@ -314,24 +314,29 @@ public class ManufactureProcessCardServiceAc {
 						// 無須檢查
 						continue;
 					}
-					// 2. 檢查 SN是否重複?
-					String sphssn = entityData.getSphssn();// 開始SN
-					String sphesn = entityData.getSphesn();// 結束SN
-					ArrayList<ManufactureSerialNumber> numbers = serialNumberDao.findAllByCheck(sphssn, sphesn, null,
-							null);
-					Boolean checknb = false;
-					String checkVal = "";
-					for (ManufactureSerialNumber n : numbers) {
-						// 排除相同工單
-						if (!n.getMsnwo().equals(entityData.getSphpon())) {
-							checknb = true;
-							checkVal = n.getMsnwo() + " :S_SN: " + n.getMsnssn() + " :E_SN: " + n.getMsnesn() + " & ";
-						}
-					}
-					if (checknb) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { checkVal });
+					// 2. 檢查 SN是否重複?(無SN除外)
+					if (!entityData.getSphpontype().equals("A511_no_sn")
+							&& !entityData.getSphpontype().equals("A521_old_sn")) {
 
+						String sphssn = entityData.getSphssn();// 開始SN
+						String sphesn = entityData.getSphesn();// 結束SN
+						ArrayList<ManufactureSerialNumber> numbers = serialNumberDao.findAllByCheck(sphssn, sphesn,
+								null, null);
+						Boolean checknb = false;
+						String checkVal = "";
+						for (ManufactureSerialNumber n : numbers) {
+							// 排除相同工單
+							if (!n.getMsnwo().equals(entityData.getSphpon())) {
+								checknb = true;
+								checkVal = n.getMsnwo() + " :S_SN: " + n.getMsnssn() + " :E_SN: " + n.getMsnesn()
+										+ " & ";
+							}
+						}
+						if (checknb) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+									new String[] { checkVal });
+
+						}
 					}
 				} else {
 					// 沒有此工單?
@@ -361,8 +366,16 @@ public class ManufactureProcessCardServiceAc {
 				} else {
 					entityDataOld.setSysmdate(new Date());
 					entityDataOld.setSysmuser(packageBean.getUserAccount());
-					entityDataOld.setSphssn(x.getSphssn());// 開始SN
-					entityDataOld.setSphesn(x.getSphesn());// 結束SN
+
+					if (!x.getSphpontype().equals("A511_no_sn") && !x.getSphpontype().equals("A521_old_sn")) {
+						entityDataOld.setSphssn(x.getSphssn());// 開始SN
+						entityDataOld.setSphesn(x.getSphesn());// 結束SN
+					} else {
+						// 無SN
+						entityDataOld.setSphssn("");// 開始SN
+						entityDataOld.setSphesn("");// 結束SN
+					}
+
 					entityDataOld.setSphprnote1(x.getSphprnote1());// 製造1
 					entityDataOld.setSphprnote2(x.getSphprnote2());// 製造2
 					entityDataOld.setSphbsh(x.getSphbsh());// 產品軟硬體
@@ -412,17 +425,20 @@ public class ManufactureProcessCardServiceAc {
 					hardware.setSysnote1(sphbshJSON.get("Note1").getAsString());
 					hardware.setSysnote2(sphbshJSON.get("Note2").getAsString());
 
-					// 更新SN序號規則
-					if (!x.getSphrsn().equals("") && !x.getSphrsn().split("_")[0].equals("")) {
-						number = ruleNumberDao.getReferenceById(Long.parseLong(x.getSphrsn().split("_")[0]));
-						Integer mrn0000 = Integer.parseInt(number.getMrn0000());
-						int increment = entityDataOld.getSphoqty();
-						// 模擬環狀累加，超過 9999 時從 1 開始
-						mrn0000 = (mrn0000 + increment) % 10000;
-						// 防止結果為 0（0000 不合法），強制補為 1
-						mrn0000 = (mrn0000 == 0) ? 1 : mrn0000;
-						String mrnStr = String.format("%04d", mrn0000);
-						number.setMrn0000(mrnStr);
+					// 如果吳SN掠過 更新SN序號規則
+					if (!x.getSphpontype().equals("A511_no_sn") && !x.getSphpontype().equals("A521_old_sn")) {
+
+						if (!x.getSphrsn().equals("") && !x.getSphrsn().split("_")[0].equals("")) {
+							number = ruleNumberDao.getReferenceById(Long.parseLong(x.getSphrsn().split("_")[0]));
+							Integer mrn0000 = Integer.parseInt(number.getMrn0000());
+							int increment = entityDataOld.getSphoqty();
+							// 模擬環狀累加，超過 9999 時從 1 開始
+							mrn0000 = (mrn0000 + increment) % 10000;
+							// 防止結果為 0（0000 不合法），強制補為 1
+							mrn0000 = (mrn0000 == 0) ? 1 : mrn0000;
+							String mrnStr = String.format("%04d", mrn0000);
+							number.setMrn0000(mrnStr);
+						}
 					}
 					// 暫存
 					serialNumbers.add(serialNumber);

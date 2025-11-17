@@ -901,6 +901,7 @@
 				entity: [],//資料
 				entityDetailJsons: [],//細節資料
 				entityOther: {},//其他資料
+				chooseSelect:"",//目前選取的select物件
 			},
 			otherItemSet: {},
 			entityIKey: {BBI: "", BPR: "", BPM: ""},
@@ -1495,6 +1496,8 @@
 					let od_bpm_batch = $("#od_bpm_batch option:selected").val();
 					let bpmStatus = $('#od_bpm_status select');
 					let bprStatus = $('#od_bpr_status select');
+					//關閉浮動查詢
+					$(".temp-float-input").remove();
 					//點擊動作
 					switch (clickId) {
 						case "btn_erp_bom":
@@ -1838,6 +1841,7 @@
 							let b_w = "";
 							let b_w_m = "";
 							let b_p_s = "";
+							
 							//=======確認哪一類?Format / Rule=======
 							if (clickId === "btn_bpm_back") {	
 								//異常觸發?是否選取?
@@ -2240,18 +2244,16 @@
 									let sysnote = "☑Product Name: "+bbi.find(".bbiname").text()+" \n☑Specifications: "+ bbi.find(".bbispecification").text()+" \n☑PM: "+$('#menu_login_name').text();//PM說明
 									//型號
 									let bpmmodel = "";
-									if (typeof bbisn === 'string') {
-									    const parts = bbisn.split("-");
-									    if (parts.length === 3) {
-									        const middle = parts[1];         // 中間段，例如 "302"
-									        const last = parts[2];           // 最後段，例如 "P11MUL2"
-									        const firstChar = last.charAt(0) || "";
-									        const fourthChar = last.length >= 4 ? last.charAt(3) : "";
-									        if (firstChar && fourthChar) {
-									            bpmmodel = middle + firstChar + fourthChar;
-									        }
-									    }
+									// 取得 .bbiname 的文字，切割並限制長度
+									let text = bbi.find(".bbiname").text().trim(); // 取得文字並去除前後空白
+									// 以 "_" 或空格分割，只取第一段
+									bpmmodel = text.split(/[_\s]+/)[0]; // 使用正規表達式同時匹配底線與空格
+									// 若長度超過7碼，則只取前7碼
+									if (bpmmodel.length > 7) {
+										bpmmodel = bpmmodel.substring(0, 7);
 									}
+									
+									
 									bpm.find(".bpmnb").text(bbisn);
 									bpm.find(".sysnote").text(sysnote);
 									bpm.find(".bpmmodel").text(bpmmodel);//
@@ -3301,10 +3303,145 @@
 						}
 					});
 				});
-				
+				//
+				//=====浮動->監聽選項=====
+				// === 一次性初始化：對頁面上所有 .form-select 啟用延遲建立 ===
+				$(document).off("click", "#other_Detail_BPM tbody .bisnb input");
+				$(document).on('click', '#other_Detail_BPM tbody .bisnb input', function () {
+					console.log('#other_Detail_BPM tbody .bisnb input');
+					//'.bisfname  select.form-select'
+					  const $select = $(this).closest('tr').find('.bisfname select.form-select');
+					  const offset = $select.offset();              // 取得 select 的絕對位置
+					  const selectWidth = $select.outerWidth();     // 寬度
+					  const selectHeight = $select.outerHeight();   // 高度
+					  //不觸發
+					  if($(this).closest('tr').find('.bisgname select option:selected').val()==="0"){
+						  return null;
+					  }	
+
+					  // 動態建立 input
+					  let $input = $(`
+					    <input type="text" class="temp-float-input"
+					      placeholder="關鍵字(料號/名稱)"
+					      style="
+					        position: absolute;
+					        top: ${offset.top + (selectHeight - 29) / 2}px;
+					        left: ${offset.left + selectWidth + 90}px;
+					        width: 250px;
+					        height: 30px;
+					        font-size: 20px;
+					        padding: 2px 6px;
+					        border: 1px solid #bbb;
+					        border-radius: 4px;
+					        background: #fff;
+					        box-shadow: 0 1px 2px rgba(0,0,0,.1);
+					        z-index: 9999;
+					      ">
+					  `);
+						  // 移除舊的浮動 input（確保只出現一個）
+						  $(".temp-float-input").remove();
+						  
+						  // 插入到 body
+						  $("body").append($input);
+					  
+					  
+					  // ---- 3) 快取原始 options（只做一次，存在 data 上）----
+					  if (!$select.data("optionsCache")) {
+					    const cache = [];
+					    $select.find("option").each(function () {
+					      cache.push({
+					        value: this.value,
+					        text: $(this).text(),                    // 顯示文字
+					        title: $(this).attr("title") || "",      // title 屬性
+					        disabled: this.disabled,
+					        className: this.className,
+					        selected: this.selected
+					      });
+					    });
+					    $select.data("optionsCache", cache);
+					  }
+
+					  // ---- 4) 定義過濾函式（只比對 text 與 title；含效能優化）----
+					  const debounce = (fn, d = 120) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), d); }; };
+					  const filterOptions = debounce(() => {
+					    const kw = $input.val().trim().toLowerCase();
+					    const cache = $select.data("optionsCache") || [];
+					    const current = $select.val();                          // 先記住目前選定值
+					    const frag = document.createDocumentFragment();
+
+					    // 先清空再重建（用 fragment 降低重排/閃爍）
+					    $select.empty();
+
+					    cache.forEach(it => {
+					      // 永遠保留 disabled 的提示項（如「請選擇」「裝配」）
+					      if (it.disabled) {
+					        const opt = $('<option/>', {
+					          value: it.value, text: it.text, disabled: true, title: it.title
+					        }).addClass(it.className)[0];
+					        frag.appendChild(opt);
+					        return;
+					      }
+
+					      // 只比對 顯示文字 or title
+					      const hit = !kw ||
+					        it.text.toLowerCase().includes(kw) ||
+					        it.title.toLowerCase().includes(kw);
+
+					      if (hit) {
+					        const $opt = $('<option/>', { value: it.value, text: it.text, title: it.title })
+					          .addClass(it.className);
+					        if (it.value === current) $opt.prop("selected", true);  // 儘量保留選中
+					        frag.appendChild($opt[0]);
+					      }
+					    });
+
+					    $select[0].appendChild(frag);
+
+					    // 若當前選項被濾掉了，預設選第一個可用項（避免變成 null）
+					    if ($select.val() == null) {
+					      const $first = $select.find("option:not(:disabled)").first();
+					      if ($first.length) $select.val($first.val());
+					    }
+					    // ✅ 若只剩 1 筆可用選項 → 自動選取並觸發 change
+					    const $availableOptions = $select.find("option:not(:disabled)");
+					    if ($availableOptions.length === 1) {
+					      $select.val($availableOptions.first().val());
+					      $select.trigger("change");
+					    }
+					  });
+
+					  // ---- 5) 輸入即時過濾；清空時恢復完整清單 ----
+					  $input.on("input", filterOptions);
+						// 🔸若 input 為空，主動觸發一次過濾→等同「恢復完整選項」
+					  if ($(".temp-float-input").val() === "") {
+					    $input.trigger("input");
+					  }
+						// 綁定監聽事件：當使用者在 input 內按下 Enter 鍵時觸發
+					  $input.on("keydown", function (e) {
+					    if (e.key === "Enter") { // 🔸偵測是否為 Enter 鍵
+					      console.log("Enter");
+					      //filterOptions();      // 🔹呼叫篩選函式
+					      //觸發選擇
+					      $select.trigger("change");
+					      //移除
+					      $(".temp-float-input").remove();
+					    }
+					  });
+					  // 聚焦輸入框
+					  // ② 延後把焦點給 input，避免被同一次點擊覆蓋
+					  setTimeout(() => {$(".temp-float-input").focus(); }, 50);
+					  
+				});
+			  // 點擊其他地方時自動移除輸入框
+			  $(document).off("mousedown", "html");
+			  $(document).on("mousedown", "html",function(e) {
+			    
+			    $(".temp-float-input").remove();
+			    
+			  });  
 			},
 			//==========================遞迴結構==========================
-			crossProduct(groups) {
+			crossProduct(groups) {	
 				// 如果群組為空，返回空陣列
 				if (groups.length === 0) return [[]];
 				// 取得第一個群組的項目
@@ -3841,6 +3978,7 @@
 				$(document).off("dblclick", "#other_BPM_open tbody .exTbodyTh input");
 				$(document).off("dblclick", "#other_BPR_open tbody .exTbodyTh input");
 				$(document).off("change", "#other_Detail_BPM #od_bpm_type select,#other_Detail_BPR #od_bpr_type select");
+				$(document).off("mousedown", "html");
 
 				console.log("other.html(destroy)");
 			},

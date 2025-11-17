@@ -1641,7 +1641,19 @@
 				$(document).off("click", "#search_c #btn_printerForm");
 				$(document).on("click", "#search_c #btn_printerForm", function (event) {
 					console.log("btn_printerForm");
-
+					//沒開啟分頁?
+					if($('#modify_cr .btn-outline-white').attr('aria-expanded')==="false"){
+						return null;
+					}
+					//必須先預覽->才能打印
+					if(other.data.btn_intoForm !== true){
+						nav_alert.methods.alertshow("warning", "[622] Please 'Preview' first! [Warning]!!");
+						return null;
+					}
+					
+					let sphpontype = $('#c_sphpontype select').find("option:selected").val();
+					let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn');// 判斷是否略過SN打印
+					 
 					// 取得 HTML 模板
 					const content = $("#printNotes").clone();
 					content.children("div").first().css({
@@ -1659,7 +1671,7 @@
 					let batchIndex = 0;
 					
 					function printBatch() {
-						if (batchIndex * batchSize >= total){
+						if (isNaN(total) ||batchIndex * batchSize >= total ){
 							if($("#btn_save_auto input:checked").length > 0){
 								other.methods.btn_saveForm(3);
 							}
@@ -1685,28 +1697,36 @@
 						    }
 						    // 取得 svg 元素並清除舊內容
 						    let svgElement = rawHtml.find(".f_p_sn svg")[0];
-						    while (svgElement.firstChild) {
-						        svgElement.removeChild(svgElement.firstChild);
+						    if(svgElement != null){//不是空的才要清空
+							    while (svgElement.firstChild) {
+							        svgElement.removeChild(svgElement.firstChild);
+							    }						    	
 						    }
+							if (!nosn) {//可能不需要顯示
 							//轉Qrcode 
-							JsBarcode(svgElement, fullCode, {//產品SN號 Code
-								format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
-								lineColor: "#000",   // 線條顏色
-								width: 0.7,            // 線條寬度
-								height: 25,          // 條碼高度
-								displayValue: true,   // 是否顯示文字
-								margin: 1,             // 四邊統一邊距（預設是 10）
-								marginTop: 8,           // 上邊距
-								marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
-								marginLeft: 10,         // 左邊距
-								marginRight: 2,        // 右邊距
-								fontSize: 12,              // 調整文字大小（預設為 20）
-								font: "Arial",             // 指定字型（可用 CSS 字型名稱）
-								fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
-								textMargin: 3,             // 條碼與文字之間的間距（預設 2）
-								textAlign: "center",       // 對齊方式："left", "center", "right"
-								marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
-							 });
+								JsBarcode(svgElement, fullCode, {//產品SN號 Code
+									format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
+									lineColor: "#000",   // 線條顏色
+									width: 0.7,            // 線條寬度
+									height: 25,          // 條碼高度
+									displayValue: true,   // 是否顯示文字
+									margin: 1,             // 四邊統一邊距（預設是 10）
+									marginTop: 8,           // 上邊距
+									marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
+									marginLeft: 10,         // 左邊距
+									marginRight: 2,        // 右邊距
+									fontSize: 12,              // 調整文字大小（預設為 20）
+									font: "Arial",             // 指定字型（可用 CSS 字型名稱）
+									fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
+									textMargin: 3,             // 條碼與文字之間的間距（預設 2）
+									textAlign: "center",       // 對齊方式："left", "center", "right"
+									marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
+								 });
+							}else{
+								// 略過顯示條碼，可放空或顯示替代文字
+				                $(svgElement).replaceWith("<div style='height:25px;text-align:center;font-size:10px;'>請自行:（登記SN/繼承SN）</div>");
+				            
+							}
 							// 儲存條碼 HTML
 						    contentHtml += rawHtml.html()
 							// 累加，並檢查是否超過最大值
@@ -1851,8 +1871,16 @@
 			},
 			//預覽資料// 完成->流程卡(準備生產)=3 (生產中)=4 (生產結束)=5
 			btn_intoForm() {
+				
 				//預覽內容
 				console.log("btn_intoForm");
+				let sphpontype = $('#c_sphpontype select').find("option:selected").val();
+				let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn');// 判斷是否略過SN打印
+				
+				//防呆帶回資料
+				if($("#search_cr_open tbody input:checked").length==0){
+					return null;
+				}
 				//單據內容				
 				let c_sphlineText = $('#c_sphline select option:selected').text();     // 產線: 選中的顯示文字
 				let c_sphlineValue = $('#c_sphline select').val();                     // 產線:選中的 value
@@ -1888,27 +1916,29 @@
 				let printNotes = $('#printNotes');//預覽物件
 				let c_sphxnbText = $("#c_sphxnb input").val();//固定
 				let c_sphfnbText = $("#c_sphfnb input").val();//浮動
+				//是否選擇無SN
+				if(!nosn){
+					JsBarcode("#printNotes .f_p_sn svg",c_sphxnbText+c_sphfnbText, {//產品SN號 Code
+						format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
+						lineColor: "#000",   // 線條顏色
+						width: 0.7,            // 線條寬度
+						height: 25,          // 條碼高度
+						displayValue: true,   // 是否顯示文字
+						margin: 1,             // 四邊統一邊距（預設是 10）
+						marginTop: 8,           // 上邊距
+						marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
+						marginLeft: 10,         // 左邊距
+						marginRight: 2,        // 右邊距
+						fontSize: 12,              // 調整文字大小（預設為 20）
+						font: "Arial",             // 指定字型（可用 CSS 字型名稱）
+						fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
+						textMargin: 3,             // 條碼與文字之間的間距（預設 2）
+						textAlign: "center",       // 對齊方式："left", "center", "right"
+						marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
+					 });
+				}
 				
-				JsBarcode("#printNotes .f_p_sn svg",c_sphxnbText+c_sphfnbText, {//產品SN號 Code
-					format: "CODE39",   // 條碼類型，可改成 code39, EAN13 等
-					lineColor: "#000",   // 線條顏色
-					width: 0.7,            // 線條寬度
-					height: 25,          // 條碼高度
-					displayValue: true,   // 是否顯示文字
-					margin: 1,             // 四邊統一邊距（預設是 10）
-					marginTop: 8,           // 上邊距
-					marginBottom: 3,       // 下邊距（若顯示文字，建議拉開一點）
-					marginLeft: 10,         // 左邊距
-					marginRight: 2,        // 右邊距
-					fontSize: 12,              // 調整文字大小（預設為 20）
-					font: "Arial",             // 指定字型（可用 CSS 字型名稱）
-					fontOptions: "bold",       // 字型樣式："bold", "italic", "bold italic"
-					textMargin: 3,             // 條碼與文字之間的間距（預設 2）
-					textAlign: "center",       // 對齊方式："left", "center", "right"
-					marginBottom: 2           // 若文字高度加大，建議增加底部邊距避免擠壓
-				 });
 				
-				//帶回資料
 				let n = $("#search_cr_open tbody input:checked").attr("alt").replaceAll("row_", "");
 				let entity = $(".valTbodyTr_" + n);
 					

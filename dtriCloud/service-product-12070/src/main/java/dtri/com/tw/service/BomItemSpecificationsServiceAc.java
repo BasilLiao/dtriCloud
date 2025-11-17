@@ -643,7 +643,9 @@ public class BomItemSpecificationsServiceAc {
 					getBisgname = entityData.getBisgname();
 					for (BomItemSpecifications checkOneBIS : checkBIS) {
 						// 如果不同群組 卻相同GID 則不可更新
-						if (checkOneBIS.getBisgid() != entityData.getBisgid()) {
+						Long checkBisgid = checkOneBIS.getBisgid();
+						Long entityBisgid = entityData.getBisgid();
+						if (!checkBisgid.equals(entityBisgid)) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 									new String[] {
 											"Item group name has been used already. : " + checkOneBIS.getBisgname() });
