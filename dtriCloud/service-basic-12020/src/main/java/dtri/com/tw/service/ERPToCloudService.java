@@ -47,7 +47,7 @@ public class ERPToCloudService {
 		o.setChecksum(checkSum);
 		o.setBclfuser("");
 		o.setBclproduct(m.getTa006());// 成品號
-		o.setBclcproduct(m.getTd004());//客戶品號
+		o.setBclcproduct(m.getTd004());// 客戶品號
 		// 單頭
 		o.setBclclass(m.getTa001_ta002().split("-")[0]);// 製令單[別]
 		o.setBclsn(m.getTa001_ta002().split("-")[1]);// 製令單[號]
@@ -261,6 +261,7 @@ public class ERPToCloudService {
 		o.setSysnote(m.getTe014());// 備註
 		o.setBslerpcuser(m.getCreator());// 開單人
 		o.setSyshnote(m.getTc007());// 單據備註
+		o.setBslfromcustomer(m.getTa050());// 客戶
 		// 單據急迫性
 		if (wTFs.containsKey(o.getBslclass())) {
 			o.setBslstatus(wTFs.get(o.getBslclass()).getWtfurgency());
@@ -1303,7 +1304,7 @@ public class ERPToCloudService {
 		o.setBbispecification(bommd.getMb003());
 		o.setBbidescription(bommd.getMb009());
 		// 子
-		o.setBbiiqty(bommd.getMd006());//數量
+		o.setBbiiqty(bommd.getMd006());// 數量
 		o.setBbiisn(bommd.getMd003());
 		o.setBbiiname(bommd.getCmb002());
 		o.setBbiispecification(bommd.getCmb003());

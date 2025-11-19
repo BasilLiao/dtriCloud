@@ -53,6 +53,7 @@ import jakarta.persistence.Table;
  *      bcl_t_qty : 0;預計生產數量<br>
  *		bcl_tr_qty: 0;已生產數量<br>
  *		bcl_tr_confirm: 0;確認結單<br>
+ *		bcl_customer: 客戶名稱<br>
  * 
  * 
  */

@@ -70,6 +70,7 @@ public class WarehouseAssignmentDetailFront {
 		this.waspngqty = 0;
 		this.wassmuser = "";
 		this.wasfucheckin = false;
+		this.wasfromcustomer = "";
 	}
 
 	// 共用型
@@ -157,6 +158,8 @@ public class WarehouseAssignmentDetailFront {
 	private String wasfromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
 	@Transient
 	private String wastowho;// 物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
+	@Transient
+	private String wasfromcustomer;// 單據來源客戶
 
 	public String getWassmuser() {
 		return wassmuser;
@@ -468,6 +471,20 @@ public class WarehouseAssignmentDetailFront {
 
 	public void setWasfucheckin(Boolean wasfucheckin) {
 		this.wasfucheckin = wasfucheckin;
+	}
+
+	/**
+	 * @return the wasfromcustomer
+	 */
+	public String getWasfromcustomer() {
+		return wasfromcustomer;
+	}
+
+	/**
+	 * @param wasfromcustomer the wasfromcustomer to set
+	 */
+	public void setWasfromcustomer(String wasfromcustomer) {
+		this.wasfromcustomer = wasfromcustomer;
 	}
 
 }

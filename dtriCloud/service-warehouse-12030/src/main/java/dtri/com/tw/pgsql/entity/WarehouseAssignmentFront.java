@@ -41,6 +41,7 @@ import jakarta.persistence.Transient;
  *      was_status : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=立即 / 2=完成<br>
  *      was_e_date : 預計領料日 <br>
  *      was_from_command : 指示來源<br>
+ *      was_from_customer : 客戶資訊<br>
  */
 @Entity
 public class WarehouseAssignmentFront {
@@ -65,6 +66,7 @@ public class WarehouseAssignmentFront {
 		this.wascischedule = "0/0";
 		this.waserpcuser = "";
 		this.wassmuser = "";
+		this.setWasfromcustomer("");
 	}
 
 	// 共用型
@@ -141,6 +143,9 @@ public class WarehouseAssignmentFront {
 	private String wastocommand;// 單據指令對象 json [] A511-123456....<br>
 	@Transient
 	private String wasfromcommand;// 單據指令來源 json [] A511-123456....<br>
+	@Transient
+	private String wasfromcustomer;// 單據來源客戶
+
 	@Transient
 	private String wasfromwho;// :物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
 	@Transient
@@ -442,6 +447,20 @@ public class WarehouseAssignmentFront {
 
 	public void setWassdate(Date wassdate) {
 		this.wassdate = wassdate;
+	}
+
+	/**
+	 * @return the wasfromcustomer
+	 */
+	public String getWasfromcustomer() {
+		return wasfromcustomer;
+	}
+
+	/**
+	 * @param wasfromcustomer the wasfromcustomer to set
+	 */
+	public void setWasfromcustomer(String wasfromcustomer) {
+		this.wasfromcustomer = wasfromcustomer;
 	}
 
 }

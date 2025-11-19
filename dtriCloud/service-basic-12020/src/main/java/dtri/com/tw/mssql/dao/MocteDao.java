@@ -16,6 +16,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
+			+ "	MOCTA.TA050,"// --訂單生產加工包裝資訊(客戶資訊)
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
 			+ "	MOCTA.TA010,"// --預計完工日
@@ -92,6 +93,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
+			+ "	MOCTA.TA050,"// --訂單生產加工包裝資訊(客戶資訊)
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
 			+ "	MOCTA.TA010,"// --預計完工日
@@ -160,6 +162,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS MOCTE_ID,"//
 			+ "	TRIM(MOCTE.TE001)+'-'+TRIM(MOCTE.TE002)+'-'+TRIM(MOCTE.TE003) AS TE001_TE002_TE003,"// --出料單號
 			+ "	(MOCTA.TA001+'-'+MOCTA.TA002) AS TA001_TA002,"// --製令單
+			+ "	MOCTA.TA050,"// --訂單生產加工包裝資訊(客戶資訊)
 			+ "	MOCTA.TA006,"// --產品品號
 			+ "	MOCTA.TA009,"// --預計開工
 			+ "	MOCTA.TA010,"// --預計完工日

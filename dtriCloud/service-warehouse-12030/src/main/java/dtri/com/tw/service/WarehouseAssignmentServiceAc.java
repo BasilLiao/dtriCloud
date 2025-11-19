@@ -137,6 +137,7 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWaspngqty(in.getBilpngqty());// : (已)數量<br>
 				ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
+				ed.setWasfromcustomer("");//客戶
 				ed.setWasfucheckin(false);// 集結
 
 				switch (in.getBilstatus()) {
@@ -207,6 +208,7 @@ public class WarehouseAssignmentServiceAc {
 					e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
 					e.setWastowho(in.getBiltowho());// 物件(對象)
 					e.setWasfromwho(in.getBilfromwho());// 物件(來源)
+					e.setWasfromcustomer("");
 					//
 					e.setSyscdate(in.getSyscdate());
 					e.setSyscuser(in.getSyscuser());
@@ -255,6 +257,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(sh.getBslfucheckin());// 集結
+					ed.setWasfromcustomer(sh.getBslfromcustomer());//客戶
 					switch (sh.getBslstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -326,6 +329,7 @@ public class WarehouseAssignmentServiceAc {
 						e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 						e.setWastowho(sh.getBsltowho());// 物件(對象)
 						e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+						e.setWasfromcustomer(sh.getBslfromcustomer());//客戶
 						//
 						e.setSyscdate(sh.getSyscdate());
 						e.setSyscuser(sh.getSyscuser());
@@ -525,6 +529,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(false);// 集結
+					ed.setWasfromcustomer("");//客戶
 					switch (in.getBilstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -593,6 +598,7 @@ public class WarehouseAssignmentServiceAc {
 						e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
 						e.setWastowho(in.getBiltowho());// 物件(對象)
 						e.setWasfromwho(in.getBilfromwho());// 物件(來源)
+						e.setWasfromcustomer("");//客戶
 						//
 						e.setSyscdate(in.getSyscdate());
 						e.setSyscuser(in.getSyscuser());
@@ -647,6 +653,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(sh.getBslfucheckin());// 集結
+					ed.setWasfromcustomer(sh.getBslfromcustomer());//客戶
 					switch (sh.getBslstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -717,6 +724,7 @@ public class WarehouseAssignmentServiceAc {
 						e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 						e.setWastowho(sh.getBsltowho());// 物件(對象)
 						e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
+						e.setWasfromcustomer(sh.getBslfromcustomer());//客戶
 						//
 						e.setSyscdate(sh.getSyscdate());
 						e.setSyscuser(sh.getSyscuser());

@@ -4,12 +4,14 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -626,9 +628,11 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> entityDatas = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
 		ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
+
+		Map<String, ArrayList<BomItemSpecifications>> entityCheckSame = new HashMap<String, ArrayList<BomItemSpecifications>>();// 為了:去除同類型物料()
 		Map<String, Boolean> entityCheckBismproduct = new HashMap<String, Boolean>();// GID 必填?成品
 		Map<String, Boolean> entityCheckBismaccessories = new HashMap<String, Boolean>();// GID 必填?配件
-		
+
 		entityBIS.forEach(b -> {
 			// 有必填?
 			System.out.println(b.getBisgid() + " 成品:" + b.getBismproduct() + " 配件:" + b.getBismaccessories());
@@ -639,6 +643,16 @@ public class BomProductManagementServiceAc {
 			// GID 必填?配件
 			if (b.getBismaccessories() && !entityCheckBismaccessories.containsKey(b.getBisgid() + "")) {
 				entityCheckBismaccessories.put(b.getBisgid() + "", true);
+			}
+			// 為了:去除同類型資料item->basic
+			ArrayList<BomItemSpecifications> newCheckSame = new ArrayList<BomItemSpecifications>();
+			if (entityCheckSame.containsKey(b.getBisgid() + "")) {
+				newCheckSame = entityCheckSame.get(b.getBisgid() + "");
+				newCheckSame.add(b);
+				entityCheckSame.put(b.getBisgid() + "", newCheckSame);
+			} else {
+				newCheckSame.add(b);
+				entityCheckSame.put(b.getBisgid() + "", newCheckSame);
 			}
 		});
 
@@ -842,6 +856,57 @@ public class BomProductManagementServiceAc {
 				}
 			}
 			if (c.getBpmid() != null) {
+				String jsonStr = c.getBpmbisitem();
+				// 解析 JSON-> 沒有 JSON 資料就不處理，
+				if (jsonStr != null) {
+					// 取出Basil vs Item 裡面項目 比對->如有類似 則去除Basic項目
+					Set<String> removeBisnbSet = new HashSet<>();// 有比對到的移除清單
+					JsonObject entityV = JsonParser.parseString(c.getBpmbisitem()).getAsJsonObject();
+					JsonArray items = entityV.getAsJsonArray("items");
+					String basic = entityV.getAsJsonArray("basic").toString();
+					JsonArray filteredBasic = new JsonArray();// 過濾後的Basic
+					// 結構不完整，不處理或記錄
+					if (items != null && basic != null) {
+						for (JsonElement itemCheck : items) {
+							String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+							String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();
+							String bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsString();
+							// 有比對到此物料群組 && 有物料號 && 此物料放置第一階層
+							if (entityCheckSame.containsKey(bisgid) && !bisnb.equals("") && bislevel.equals("1")) {
+								// 取得清單
+								for (BomItemSpecifications checkSame : entityCheckSame.get(bisgid)) {
+									String bisnbCheck = checkSame.getBisnb();// 物料號
+									// 有比對到物料?
+									if (basic.contains(bisnbCheck)) {
+										removeBisnbSet.add(bisnbCheck);
+									}
+								}
+							}
+						}
+						// 有要移除Basic 內容?
+						for (JsonElement oneBasic : entityV.getAsJsonArray("basic")) {
+							String checkOneBasic = oneBasic.getAsString().split("_")[0];
+							Boolean isSame = false;
+							for (String removeOne : removeBisnbSet) {
+								if (checkOneBasic.contains(removeOne)) {
+									isSame = true;
+									break;
+								}
+							}
+							// 如果不同則OK
+							if (!isSame) {
+								filteredBasic.add(oneBasic.getAsString());
+							}
+						}
+						// ===========================
+						// ★ 把新的 basic 放回 entityV
+						// ★ 重要：把更新後 JSON 回寫回 c
+						// ===========================
+						entityV.add("basic", filteredBasic);
+						c.setBpmbisitem(entityV.toString());
+					}
+				}
+
 				BomProductManagement oldData = managementDao.getReferenceById(c.getBpmid());
 				// 內容不同?->比對差異->登記異動紀錄->待發信件通知
 				if (!oldData.getBpmbisitem().equals(c.getBpmbisitem())) {
@@ -860,6 +925,7 @@ public class BomProductManagementServiceAc {
 				if (!oldData.getBpmnb().equals(c.getBpmnb())) {
 					changeBpmnb.put(c.getBpmnb(), oldData.getBpmnb());
 				}
+
 				//
 				oldData.setSysmdate(new Date());
 				oldData.setSysmuser(packageBean.getUserAccount());
@@ -1170,6 +1236,7 @@ public class BomProductManagementServiceAc {
 		ArrayList<BomProductManagement> entitySave = new ArrayList<>();
 		ArrayList<BomKeeper> bomKeepers = bomKeeperDao.findAllBySearch(packageBean.getUserAccount(), null, null, null);
 		ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null, null);// 選擇清單項目
+		Map<String, ArrayList<BomItemSpecifications>> entityCheckSame = new HashMap<String, ArrayList<BomItemSpecifications>>();// 為了:去除同類型物料()
 		Map<String, Boolean> entityCheckBismproduct = new HashMap<String, Boolean>();// GID 必填?成品
 		Map<String, Boolean> entityCheckBismaccessories = new HashMap<String, Boolean>();// GID 必填?配件
 
@@ -1183,6 +1250,16 @@ public class BomProductManagementServiceAc {
 			// GID 必填?配件
 			if (b.getBismaccessories() && !entityCheckBismaccessories.containsKey(b.getBisgid() + "")) {
 				entityCheckBismaccessories.put(b.getBisgid() + "", true);
+			}
+			// 為了:去除同類型資料item->basic
+			ArrayList<BomItemSpecifications> newCheckSame = new ArrayList<BomItemSpecifications>();
+			if (entityCheckSame.containsKey(b.getBisgid() + "")) {
+				newCheckSame = entityCheckSame.get(b.getBisgid() + "");
+				newCheckSame.add(b);
+				entityCheckSame.put(b.getBisgid() + "", newCheckSame);
+			} else {
+				newCheckSame.add(b);
+				entityCheckSame.put(b.getBisgid() + "", newCheckSame);
 			}
 		});
 		// 連續號檢查?(末3碼)SN_check
@@ -1388,6 +1465,58 @@ public class BomProductManagementServiceAc {
 				// 登記異動紀錄->待發信件通知
 				newBPM.put(x.getBpmnb() + "_" + x.getBpmmodel(),
 						JsonParser.parseString(x.getBpmbisitem()).getAsJsonObject());
+
+				String jsonStr = x.getBpmbisitem();
+				// 解析 JSON-> 沒有 JSON 資料就不處理，
+				if (jsonStr != null) {
+					// 取出Basil vs Item 裡面項目 比對->如有類似 則去除Basic項目
+					Set<String> removeBisnbSet = new HashSet<>();// 有比對到的移除清單
+					JsonObject entityV = JsonParser.parseString(x.getBpmbisitem()).getAsJsonObject();
+					JsonArray items = entityV.getAsJsonArray("items");
+					String basic = entityV.getAsJsonArray("basic").toString();
+					JsonArray filteredBasic = new JsonArray();// 過濾後的Basic
+					// 結構不完整，不處理或記錄
+					if (items != null && basic != null) {
+						for (JsonElement itemCheck : items) {
+							String bisgid = itemCheck.getAsJsonObject().get("bisgid").getAsString();
+							String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();
+							String bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsString();
+							// 有比對到此物料群組 && 有物料號 && 此物料放置第一階層
+							if (entityCheckSame.containsKey(bisgid) && !bisnb.equals("") && bislevel.equals("1")) {
+								// 取得清單
+								for (BomItemSpecifications checkSame : entityCheckSame.get(bisgid)) {
+									String bisnbCheck = checkSame.getBisnb();// 物料號
+									// 有比對到物料?
+									if (basic.contains(bisnbCheck)) {
+										removeBisnbSet.add(bisnbCheck);
+									}
+								}
+							}
+						}
+						// 有要移除Basic 內容?
+						for (JsonElement oneBasic : entityV.getAsJsonArray("basic")) {
+							String checkOneBasic = oneBasic.getAsString().split("_")[0];
+							Boolean isSame = false;
+							for (String removeOne : removeBisnbSet) {
+								if (checkOneBasic.contains(removeOne)) {
+									isSame = true;
+									break;
+								}
+							}
+							// 如果不同則OK
+							if (!isSame) {
+								filteredBasic.add(oneBasic.getAsString());
+							}
+						}
+						// ===========================
+						// ★ 把新的 basic 放回 entityV
+						// ★ 重要：把更新後 JSON 回寫回 c
+						// ===========================
+						entityV.add("basic", filteredBasic);
+						x.setBpmbisitem(entityV.toString());
+					}
+				}
+
 				// 新增
 				x.setBpmid(null);
 				x.setSysmdate(new Date());

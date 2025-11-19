@@ -119,54 +119,67 @@
 							class="noprint border border-info mt-1 mb-1 text-start"
 							style="page-break-after: always; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: auto;">
 							<table
-								style="border: 1px solid rgb(0, 0, 0); width: 100%; font-size: 50px;">
+								style="border: 1px solid rgb(0, 0, 0); width: 100%; font-size: 40px;">
 								<tbody>
+									<tr>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+										<td style="width: 10%;"></td>
+
+									</tr>
 									<tr style="height: 100px;">
-										<td
-											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 22.5%;">
+										<td colspan="3"
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top;">
 											預計(發料日):
-											<div class="pr_wasedate"></div>
+											<div class="pr_wasedate" style="font-size: 35px;"></div>
 										</td>
-										<td
-											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 30%;">
+										<td colspan="2"
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top;">
 											優先順序:</td>
-										<td
-											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 25%;">
+										<td colspan="2"
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top;">
 											標記集結:</td>
-										<td
-											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top; width: 22.5%;">
+										<td colspan="3"
+											style="border: 1px solid rgb(0, 0, 0); font-size: 25px; vertical-align: top;">
 											預計(出貨日):
-											<div class="pr_wassdate"></div>
+											<div class="pr_wassdate" style="font-size: 35px;"></div>
 										</td>
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
-										<td>工單:</td>
-										<td class="pr_bslfromcommand" colspan="2">A577-123456789</td>
-										<td class="pr_bslfromcommand_qrcode">QRcode</td>
+										<td colspan="2">工單:</td>
+										<td colspan="6" class="pr_bslfromcommand">A577-123456789</td>
+										<td colspan="2" class="pr_bslfromcommand_qrcode">QRcode</td>
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
-										<td>品號:</td>
-										<td class="pr_bslfromcommand_sn" colspan="2">90-123-123456</td>
-										<td class="pr_cell"></td>
+										<td colspan="2">品號:</td>
+										<td colspan="6" class="pr_bslfromcommand_sn">90-123-123456</td>
+										<td colspan="2" class="pr_cell"></td>
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
-										<td>套數:</td>
-										<td class="pr_bslfromcommand_qty" style="text-align: center">100</td>
-										<td>客戶:</td>
-										<td class="pr_bslfromcommand_client"
-											style="text-align: center"></td>
+										<td colspan="2">客戶:</td>
+										<td colspan="5" class="pr_bslfromcommand_client" style=""></td>
+										<td colspan="2">套數:</td>
+										<td colspan="1" class="pr_bslfromcommand_qty"
+											style="text-align: center">100</td>
 									</tr>
 									<tr style="height: 100px; font-size: 30px;">
-										<td>樓層<br>&備註:
+										<td colspan="2">樓層:<br>備註:
 										</td>
-										<td colspan="3" class="pr_syshnote"
+										<td colspan="8" class="pr_syshnote"
 											style="white-space: normal; word-break: break-all;"></td>
 										<td></td>
 									</tr>
 									<tr style="border: 1px solid rgb(0, 0, 0);">
-										<td>料單:</td>
-										<td class="pr_bslclass_bslsn" colspan="2">A577-123456789</td>
-										<td class="pr_bslclass_bslsn_qrcode">QRcode</td>
+										<td colspan="2">料單:</td>
+										<td colspan="6" class="pr_bslclass_bslsn">A577-123456789</td>
+										<td colspan="2" class="pr_bslclass_bslsn_qrcode">QRcode</td>
 									</tr>
 								</tbody>
 							</table>
@@ -338,6 +351,8 @@
 							print_m_ex.find(".pr_bslfromcommand").text(pr_bslfromcommand[0].replaceAll("_生產入庫單",""));//製令單(特定單據會有需要去除)
 							print_m_ex.find(".pr_bslfromcommand_sn").text(pr_bslfromcommand[1]);//品號
 							print_m_ex.find(".pr_bslfromcommand_qty").text(pr_bslfromcommand[2]);//數量 
+							print_m_ex.find(".pr_bslfromcommand_client").text(h.wasfromcustomer);//客戶
+							//客戶
 							print_m_ex.find(".pr_cell").text(print.data.cells[print_ex.find(".pr_bslclass_bslsn").text()]);//標記①②③④-領料單
 							 
 							dataHeader.forEach(function (hds) {

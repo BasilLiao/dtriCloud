@@ -52,12 +52,12 @@ import jakarta.persistence.Table;
  *      bsl_pn_a_qty:提前領取量<br>
  *      bsl_to_command:單據指令對象 json [] A511-123456....<br>
  *      bsl_from_command:單據指令來源 json [] A511-123456....<br>
+ *      bsl_from_customer:訂單客戶來源<br>
  *      bsl_to_who:物料對象 (倉庫)EX:A0001_原物料倉<br>
  *      bsl_from_who:物料來源 (廠商 or 倉庫 or 產線) EX:A0001_原物料倉<br>
  *      bsl_status:單據狀態 3 = 取消 / 4=暫停/5=全數歸還 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
  *      bsl_e_date:預計時間(領料日) 指 單一項目 到齊時間 或是預定 領料時間<br>
  *      bsl_f_date:預計時間(到齊日) 指 整張單都到齊 的時間<br>
- *      bsl_f_u_checkin:已經集結?<br>
  * 
  * 
  */
@@ -116,6 +116,7 @@ public class BasicShippingList {
 		this.checkrm = true;
 		this.bslerpcuser = "";
 		this.setBslsmuser("");
+		this.bslfromcustomer = "";
 	}
 
 	// 共用型
@@ -198,8 +199,11 @@ public class BasicShippingList {
 
 	@Column(name = "bsl_to_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltocommand;
-	@Column(name = "bsl_from_command", nullable = false, columnDefinition = "varchar(150) default '[]'")
+	@Column(name = "bsl_from_command", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String bslfromcommand;
+	@Column(name = "bsl_from_customer", nullable = false, columnDefinition = "varchar(150) default '[]'")
+	private String bslfromcustomer;
+
 	@Column(name = "bsl_to_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
 	private String bsltowho;
 	@Column(name = "bsl_from_who", nullable = false, columnDefinition = "varchar(150) default '[]'")
@@ -618,6 +622,20 @@ public class BasicShippingList {
 
 	public void setBslsdate(Date bslsdate) {
 		this.bslsdate = bslsdate;
+	}
+
+	/**
+	 * @return the bslfromcustomer
+	 */
+	public String getBslfromcustomer() {
+		return bslfromcustomer;
+	}
+
+	/**
+	 * @param bslfromcustomer the bslfromcustomer to set
+	 */
+	public void setBslfromcustomer(String bslfromcustomer) {
+		this.bslfromcustomer = bslfromcustomer;
 	}
 
 }
