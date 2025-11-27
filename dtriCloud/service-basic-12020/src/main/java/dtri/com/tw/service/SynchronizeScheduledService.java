@@ -253,9 +253,9 @@ public class SynchronizeScheduledService {
 				String valueStr = value.getAsString();
 				System.out.println("Key: " + key + ", Value: " + valueStr);
 				// 測試用
-				if ("A511-250922026".equals(key)) {
-					System.out.println("A511-250922026");
-				}
+//				if ("A511-250922026".equals(key)) {
+//					System.out.println("A511-250922026");
+//				}
 
 			}
 		}
@@ -301,7 +301,7 @@ public class SynchronizeScheduledService {
 			// 有抓取到同樣單據
 			// ========更新倉儲狀況========
 			if (erpMapInfactorys.containsKey(o.getSinb())) {
-				erpMapInfactorys.get(o.getSinb()).setNewone(false);
+				erpMapInfactorys.get(o.getSinb()).setNewone(false);//標記不是新的
 				// sum不同->更新
 				String sum = erpMapInfactorys.get(o.getSinb()).toString();
 				if (!sum.equals(o.getSisum())) {
@@ -453,9 +453,9 @@ public class SynchronizeScheduledService {
 			}
 			// ========更新產線狀況========
 			//測試用
-			if ("A511-250922026".equals(o.getSinb())) {
-				System.out.println("A511-250922026");
-			}
+//			if ("A511-250922026".equals(o.getSinb())) {
+//				System.out.println("A511-250922026");
+//			}
 			// 同一張工單?
 			if (mesMapInfactorys.containsKey(o.getSinb())) {
 				JsonObject mesWorkOrder = mesMapInfactorys.get(o.getSinb());

@@ -494,8 +494,16 @@ public class ScheduleProductionNotesServiceAc {
 					e.setSphspecification(ingredients.get(0).getBbispecification());
 				}
 			}
-
+			// 標記-修改廠內排程
+			ArrayList<ScheduleInfactory> infactories = infactoryDao.findAllByCheck(e.getSphpon(), null, null);
+			if (infactories.size() == 1) {
+				ScheduleInfactory infactory = infactories.get(0);
+				infactory.setSiscstatus(1);// 已經單據->為1
+				infactoryDao.save(infactory);
+			}
 		});
+		// 更新
+
 		historyDao.saveAll(entityDatas);
 		return packageBean;
 	}

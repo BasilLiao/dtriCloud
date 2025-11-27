@@ -11,14 +11,14 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 
 	// 多筆查詢範例
 	@Query(value = "SELECT	"// --倉儲
-			+ "	TRIM(INVMB.MB001)+'_'+TRIM(ISNULL(INVMC.MC003, '')) AS INVTB_ID,"//
+			+ "	TRIM(INVMB.MB001)+'_'+TRIM(ISNULL(INVMC.MC002,''))+'_'+TRIM(ISNULL(INVMC.MC003, '')) AS INVTB_ID,"//
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格
 			+ "	INVMB.MB009, "// --商品描述
-			+ "	INVMC.MC002, "// --倉別代號
+			+ "	ISNULL(INVMC.MC002,'') AS MC002, "// --倉別代號
 			+ "	CMSMC.MC002 AS CMC002, "// --倉別名稱
-			+ "	INVMC.MC003, "// --儲位位置
+			+ "	ISNULL(INVMC.MC003,'') AS MC003, "// --儲位位置
 			+ "	FLOOR(INVMC.MC007) AS MC007, "// --儲位數量
 			+ "	INVMB.MB017, "// --主要-倉別代號
 			+ "	INVMB.MB032, "// --主要-供應商代號

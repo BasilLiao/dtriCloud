@@ -1,75 +1,83 @@
 <style>
-	/*Table 寬度滾動*/
-	#report_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-		min-height: 400px;
-	}
+/*Table 寬度滾動*/
+#report_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+	min-height: 400px;
+}
 
-	/*Table 自動隱藏*/
-	#report_c .table-responsive th,
-	#report_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#report_c .table-responsive th, #report_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#report_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#report_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	/*Table 每隔表格內_框線*/
-	#report_c .table-bordered td,
-	#report_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#report_c .table-bordered td, #report_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#report_c #rcReport table {
-		min-height: 210px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#report_c #rcReport table {
+	min-height: 210px;
+	max-height: 50vh; border-collapse : separate;
+	border-spacing: 0px;
+	border-collapse: separate;
+}
 
-	/*Table 表格內 背景色*/
-	#report_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#report_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*標題色彩*/
-	#report_c .titleColor {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#report_c .titleColor {
+	background-color: #cfe2ff;
+}
 
-	/*直立式呈現邊字*/
-	#report_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#report_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_24*/
-	#report_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#report_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
+
+#report_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 </style>
 <div id="report_c" class="row m-0 p-0">
 	<div class="col-lg-3 p-0">
 		<!-- 控制面板 -->
 		<div id="rcCell" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcCellOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-success  text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcCellOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcCellOpen" class="row m-0 collapse show">
-				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Choose table cell </b>
+				<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Choose table
+					cell </b>
 				<div id="exReportItemList"
 					class="col border border-primary justify-content-around row m-0 p-1 overflow-auto"
-					style="max-height: 60vh;">
+					style="min-height: 330px; max-height: 30vh;">
 					<button type="button"
 						class="exItemBtn lh-1 col-3 col-lg-5 p-2 m-1 btn btn-sm btn-outline-primary d-none">
 						<b class="itemBtnShow">Table cell1</b><br>
@@ -82,9 +90,11 @@
 	<div class="col-lg-5 p-0">
 		<!-- 條件面板 -->
 		<div id="rcItem" class="col-lg-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcItemOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcItemOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div class="row m-0 collapse show" id="rcItemOpen">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> where? </b>
@@ -94,8 +104,9 @@
 							<div class="titleColor fw-bolder rounded-top">Cell name</div>
 							<div class="p-1">
 								<input id="rcCellName" disabled="disabled"
-									class="col-12 m-0 p-1 border border-dark form-control" type="text" name="ex_name"
-									placeholder="Ex:choose table cell" autofocus>
+									class="col-12 m-0 p-1 border border-dark form-control"
+									type="text" name="ex_name" placeholder="Ex:choose table cell"
+									autofocus>
 							</div>
 						</div>
 					</div>
@@ -103,7 +114,8 @@
 						<div class="border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Where?</div>
 							<div class="p-1">
-								<select id="rcWhere" class="col-12 m-0 p-1 border border-dark form-select">
+								<select id="rcWhere"
+									class="col-12 m-0 p-1 border border-dark form-select">
 									<option value="AllSame">All same(完全相同)</option>
 									<option value="NotSame">Not same(完全不同)</option>
 									<option value="Like">Like %..%(有包含)</option>
@@ -118,7 +130,8 @@
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Value type?</div>
 							<div class="p-1">
-								<select id="rcValueType" class="col-12 m-0 p-1 border border-dark form-select">
+								<select id="rcValueType"
+									class="col-12 m-0 p-1 border border-dark form-select">
 									<option value="text">Text(文字)</option>
 									<option value="number">Number(數字)</option>
 									<option value="dateTime">Date time(時間)</option>
@@ -132,8 +145,9 @@
 							<div class="p-1">
 								<div>
 									<input id="rcValueText"
-										class="rcValues col-12 m-0 p-1 border border-dark form-control" type="text"
-										id="" name="ex_name2" placeholder="Ex:Search something">
+										class="rcValues col-12 m-0 p-1 border border-dark form-control"
+										type="text" id="" name="ex_name2"
+										placeholder="Ex:Search something">
 								</div>
 								<div>
 									<input id="rcValueNumber"
@@ -143,7 +157,8 @@
 								<div>
 									<input id="rcValueDateTime"
 										class="rcValues col-12 m-0 p-1 border border-dark form-control datetimepicker_date d-none"
-										type="text" id="" name="ex_name4" placeholder="Ex:1990-01-01 23:30:30">
+										type="text" id="" name="ex_name4"
+										placeholder="Ex:1990-01-01 23:30:30">
 								</div>
 							</div>
 						</div>
@@ -153,13 +168,16 @@
 		</div>
 		<!-- 控制面板 -->
 		<div id="rcController" class="col-lg-12 p-1 ">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcControllerOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcControllerOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcControllerOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-				<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+				<div
+					class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 					<div class="col-5 p-1">
 						<div class=" border border-secondary rounded">
 							<div class="titleColor fw-bolder rounded-top">Conditions</div>
@@ -208,8 +226,9 @@
 					</div>
 					<div class="col-12 p-1">
 						<div class="progress p-0">
-							<div id="report_pro" class="progress-bar progress-bar-striped bg-success" role="progressbar"
-								style="width: 0%">0%...Wait...</div>
+							<div id="report_pro"
+								class="progress-bar progress-bar-striped bg-success"
+								role="progressbar" style="width: 0%">0%...Wait...</div>
 						</div>
 					</div>
 				</div>
@@ -219,31 +238,40 @@
 	<div class="col-lg-4 p-0">
 		<!-- 條件清單面板 -->
 		<div id="rcQueryList" class="col-12 p-1 ">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcQueryListOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcQueryListOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcQueryListOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> Query list </b>
-				<div class="col p-1 m-0 border border-primary shadow-sm justify-content-between">
-					<div id="rcQueryOneEx" class="d-none row m-0 p-1 border border-warning">
+				<div
+					class="col p-1 m-0 border border-primary shadow-sm justify-content-between">
+					<div id="rcQueryOneEx"
+						class="d-none row m-0 p-1 border border-warning">
 						<div class="col-11 p-0 m-0">XXXX Where XXXX</div>
-						<i class="btn btn-outline-danger p-0 bi bi-x-lg" style="width: 24px; height: 24px;"></i>
+						<i class="btn btn-outline-danger p-0 bi bi-x-lg"
+							style="width: 24px; height: 24px;"></i>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- 紀錄面板 -->
 		<div id="rcHistory" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcHistoryOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-warning  text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcHistoryOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i>
 			</div>
 			<div id="rcHistoryOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-warning text-white"> History </b>
-				<div class="col border border-primary shadow-sm justify-content-around row m-0 p-1 overflow-auto"
+				<div
+					class="col border border-primary shadow-sm justify-content-around row m-0 p-1 overflow-auto"
 					style="max-height: 80vh;">
-					<button type="button" class="lh-1 col-11 p-1 m-1 btn btn-sm btn-outline-primary">
+					<button type="button"
+						class="lh-1 col-11 p-1 m-1 btn btn-sm btn-outline-primary">
 						<b>XXXX 條件 XXXX<br>(時間)
 						</b>
 					</button>
@@ -254,15 +282,22 @@
 	<div class="col-12 p-0">
 		<!-- 報告面板 -->
 		<div id="rcReport" class="col-12 p-1">
-			<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-					data-bs-target="#rcReportOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+			<div
+				class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+				<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+					data-bs-toggle="collapse" data-bs-target="#rcReportOpen"
+					aria-expanded="false" style="width: 22px; height: 24px;"></i> Copy
+				: <i id="btnCopyReport"
+					class="bi bi-wallet2 btn btn-outline-white p-0 pr-1 pl-1"
+					style="width: 22px; height: 24px;"></i> If over 500 records, please
+				copy to Excel.
 			</div>
 			<div id="rcReportOpen" class="row m-0 collapse show">
 				<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Report </b>
-				<table id="rcReportExcel" class=" col m-0 p-0 border border-primary  table table-striped table-hover 
+				<table id="rcReportExcel"
+					class=" col m-0 p-0 border border-primary  table table-striped table-hover 
 				table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-					<thead class="table-primary">
+					<thead class="table-primary fixedCt">
 						<tr id="reportTitleList">
 							<th class="exReportTitle d-none" style="min-width: 100px;">First</th>
 						</tr>
@@ -529,6 +564,38 @@
 					const table2Excel = new Table2Excel('#rcReportExcel', options);//id or class or table
 					table2Excel.export($('#nav_functional_unit').text(), 'xlsx');//檔案名稱+副檔名
 				});
+				
+				// 按 Copy 觸發複製
+				$(document).off("click", "#btnCopyReport");
+				$(document).on('click', '#btnCopyReport', function () {
+				    let table = document.getElementById("rcReportExcel");
+
+				    // 建立 Range 物件
+				    let range = document.createRange();
+				    range.selectNode(table);
+
+				    // 清除先前選取
+				    window.getSelection().removeAllRanges();
+
+				    // 全選 table
+				    window.getSelection().addRange(range);
+
+				    try {
+				        // 執行複製
+				        let success = document.execCommand('copy');
+				        if (success) {
+				            console.log("Table copied.");
+				        } else {
+				            console.log("Copy failed.");
+				        }
+				    } catch (err) {
+				        console.error("Copy error:", err);
+				    }
+
+				    // 清除選取
+				    window.getSelection().removeAllRanges();
+				});
+
 
 				//時間格式
 				report.methods.datetimepickerDate();
@@ -643,6 +710,7 @@
 			},
 			destroy() {
 				//銷毀
+				$(document).off("click", "#btnCopyReport");
 				console.log("report.html(destroy)");
 
 			},

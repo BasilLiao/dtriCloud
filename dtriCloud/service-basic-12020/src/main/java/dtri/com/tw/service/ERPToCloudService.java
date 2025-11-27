@@ -1244,6 +1244,7 @@ public class ERPToCloudService {
 		i.setSicpnb(m.getTd004() == null ? "" : m.getTd004());// 客戶產品號
 		i.setSinote(m.getTa029());// 製令備註(客戶/國家/訂單)
 		i.setSiuname(m.getCreator());// 開單人
+		i.setSiscstatus(0);// 新單據->為0
 		// 作廢?
 		if (m.getTa013().equals("V")) {
 			i.setSistatus("V");

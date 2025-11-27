@@ -2714,24 +2714,23 @@ public class SynchronizeERPService {
 		Map<String, String> erpConfigMaps = new HashMap<>();// A1500+原物料倉
 
 		erpEntitys.forEach(m -> {
-			// 測試用
-//			if(m.getMb001().replaceAll("\\s", "").equals("81-105-38210G") && m.getMb017().equals("A0041")) {
-//				System.out.println(m.getMb001());
-//			}
 			// 物料號+倉別號+位置
 			m.setMb001(m.getMb001().replaceAll("\\s", ""));
 			m.setMb002(m.getMb002().replaceAll("[\\n\\r\\t]+", " ").trim());
 			m.setMb003(m.getMb003().replaceAll("[\\n\\r\\t]+", " ").trim());
 			m.setMb009(m.getMb009().replaceAll("[\\n\\r\\t]+", " ").trim());
+			m.setMc002(m.getMc002().trim());
 			m.setNewone(true);
+			// 測試用
+			if(m.getMb001().equals("81-105-382138")) {
+				System.out.println(m.getMb001()+":"+m.getMc002());
+			}
 			// ERP 倉別異常Null
-			if (m.getMc002() == null) {
+			if (m.getMc002().equals("")) {
 				m.setMc002(m.getMb017());// --倉別代號
 				m.setCmc002(erpConfigMaps.get(m.getMb017()));// --倉別名稱
 				m.setMc003("FF-FF-FF-FF");// --儲位
 				m.setMc007(0);// 數量
-			} else {
-				m.setMc002(m.getMc002().replaceAll("\\s", ""));// --倉別代號
 			}
 
 			// list(物料清單)-物料

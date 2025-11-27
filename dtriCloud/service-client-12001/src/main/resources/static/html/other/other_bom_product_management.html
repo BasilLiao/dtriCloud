@@ -148,15 +148,15 @@
 				</div>
 				<!--BBI(料BOM)-->
 				<div id="BBI"
-					class="col-12 col-lg-4 p-0 row m-0 collapse other_BBI_open">
+					class="col-12 col-lg-6 p-0 row m-0 collapse other_BBI_open">
 				</div>
 				<!--BPR(BOM規則)-->
 				<div id="BPR"
-					class="col-12 col-lg-4 p-0 row m-0 collapse other_BPR_open">
+					class="col-12 col-lg-6 p-0 row m-0 collapse other_BPR_open">
 				</div>
 				<!--BPM(BOM規格)-->
 				<div id="BPM"
-					class="col-12 col-lg-4 p-0 row m-0 collapse show other_BPM_open">
+					class="col-12 col-lg-6 p-0 row m-0 collapse show other_BPM_open">
 				</div>
 			</div>
 		</div>
@@ -701,7 +701,7 @@
 						</div>
 					</div>
 					<!---->
-					<table style="max-height: 430px; min-height: 430px;"
+					<table style="max-height: calc(100vh - 560px); min-height: 430px;"
 						class="col m-0 p-0  mt-1 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 						<thead class="table-success fixedCt">
 							<tr>
@@ -844,7 +844,7 @@
 						<div class="col m-0 p-0" style="width: 95%;">
 							<table
 								class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm"
-								style="max-height: 530px; min-height: 530px;">
+								style="max-height: calc(100vh - 396px); min-height: 596px;">
 								<thead class="table-warning  fixedCt">
 									<tr>
 										<th class="fixedC1" style="min-width: 40px;">
@@ -1293,6 +1293,14 @@
 										    })
 										    .text(v.bisgname)
 										    .val(v.bisgid);
+											
+											//必填->顏色
+											if( v['bismproduct']){
+												bisgoption.addClass('bg-warning');
+											}
+											if(v['bismaccessories']){
+												bisgoption.addClass('bg-warning');
+											}
 											bisgselect.append(bisgoption);
 										}
 									});
@@ -1668,7 +1676,7 @@
 								}).get();
 								whois = "BPM";
 								whoisbpsnv = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + " .bpmbpsnv").text());//產品參數
-								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bpmbisitem').text());//指定的物料內容
+								whoisbisitem = JSON.parse($("#other_" + whois + " ." + checkedBPM_R + ' .bpmbisitem').text());//指定的物料內容	
 							} else if (clickId === "btn_bpr_detail" && $("#other_BPR tbody input:checked").length > 0) {
 								//勾選那些產品?
 								checkedBPM_R = $("#other_BPR tbody input:checked").map(function () {
@@ -1726,6 +1734,33 @@
 											}
 										});
 									});
+									
+									//產品類型->選擇顏色->必填
+									let selectedValue  = $('#other_Detail_'+whois).find("#od_bpm_type option:selected").val(); // 取得顯示文字
+									// 對照表
+									const valueMap = {
+										0: "bisdevelopment",
+										1: "bisproduct",
+										2: "bisaccessories",
+										3: "bissfproduct",
+										4: "bispcb"
+									};
+									let mappedKey = valueMap[selectedValue]; // 對應到屬性名稱
+									// 假設 <option> 已存在於 DOM
+									// 針對頁面所有 select 內的 option 重新處理
+								    $("#other_Detail_BPM .bisgname select.form-select option").each(function () {
+								        // 先清除既有樣式，避免殘留
+								        $(this).removeClass("bg-warning");
+								
+								        // 依屬性設定樣式
+								        if (mappedKey=='bisproduct' && $(this).attr("bismproduct") === "true") {
+								            $(this).addClass("bg-warning");
+								        }
+								     	// 依屬性設定樣式
+								        if (mappedKey=='bisaccessories' && $(this).attr("bismaccessories") === "true") {
+								            $(this).addClass("bg-warning");
+								        }
+								    });
 								} else if (whois === "BPR") {
 									bprStatus.val("").trigger('change');
 									$("#other_Detail_" + whois + " #od_bpr_name input").val("");
@@ -2840,7 +2875,32 @@
 						selectPePe.find(".bisfname select").removeAttr("disabled");
 						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
 						selectPePe.find(".bislevel input").removeAttr("disabled");
-						
+						//限定BPM
+						if(checkBPM){
+						//產品類型->選擇顏色->必填
+						let selectedValue  = $('#other_Detail_BPM').find("#od_bpm_type option:selected").val(); // 取得顯示文字
+						// 對照表
+						const valueMap = {
+							0: "bisdevelopment",
+							1: "bisproduct",
+							2: "bisaccessories",
+							3: "bissfproduct",
+							4: "bispcb"
+						};
+						let mappedKey = valueMap[selectedValue]; // 對應到屬性名稱
+						//必填->顏色+鎖定?
+							selectPePe.find("th").removeClass("bg-warning");
+							selectPePe.find("th").css("pointer-events", "");
+							if(mappedKey=='bisproduct' && selectPePe.find(".bisgname select option:selected").attr("bismproduct")=="true"){
+								selectPePe.find("th").addClass("bg-warning");
+								selectPePe.find("th").css("pointer-events", "none");
+							}
+							if(mappedKey=='bisaccessories' && selectPePe.find(".bisgname select option:selected").attr("bismaccessories")=="true"){
+								selectPePe.find("th").addClass("bg-warning");
+								selectPePe.find("th").css("pointer-events", "none");
+							}
+							
+						}
 						//預設->數量1 ->顏色綠色
 						selectPePe.find(".bisqty").addClass("bg-success");
 						selectPePe.find(".bisfname").addClass("bg-success");
@@ -2937,6 +2997,7 @@
 						//還原顏色
 						$(event.target).removeClass("btn-outline-primary");
 						$(event.target).removeClass("btn-outline-warning");
+						
 						//解鎖定
 						//$(event.target).parent().parent().parent().find(".detailTbodyTr").removeClass("locked-do");
 
@@ -3236,6 +3297,9 @@
 					let whois = $(event.currentTarget).attr("title");
 				    let selectedValue = $(this).val();   // 取得 value
 				    let selectedText  = $(this).find("option:selected").text(); // 取得顯示文字
+				    //還原顏色&鎖定
+				    $("#other_c #" + whois+" tbody").find("th").removeClass("bg-warning");
+				    $("#other_c #" + whois+" tbody").find("th").css("pointer-events", "");
 				 	// 對照表
 				    const valueMap = {
 				        0: "bisdevelopment",
@@ -3265,6 +3329,24 @@
 					    optionData[key] = attrs;
 				    	}
 					});
+					//產品類型->選擇顏色+鎖定->必填
+					// 假設 <option> 已存在於 DOM
+					// 針對頁面所有 select 內的 option 重新處理
+					$("#"+whois+" .bisgname select.form-select option").each(function () {
+						// 先清除既有樣式，避免殘留
+						$(this).removeClass("bg-warning");
+
+						// 依屬性設定樣式
+						if (mappedKey=='bisproduct' && $(this).attr("bismproduct") === "true") {
+							$(this).addClass("bg-warning");
+						}
+						// 依屬性設定樣式
+						if (mappedKey=='bisaccessories' && $(this).attr("bismaccessories") === "true") {
+							$(this).addClass("bg-warning");
+						}
+					});
+					
+					
 					console.log(optionData);
 					//取得目前資料
 					let other_Detail_s = $("#other_c #" + whois + " table tbody");

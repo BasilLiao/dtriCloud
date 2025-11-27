@@ -36,11 +36,13 @@ import com.google.gson.JsonParser;
 import dtri.com.tw.pgsql.dao.BomSoftwareHardwareDao;
 import dtri.com.tw.pgsql.dao.ManufactureRuleNumberDao;
 import dtri.com.tw.pgsql.dao.ManufactureSerialNumberDao;
+import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.ScheduleProductionHistoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.BomSoftwareHardware;
 import dtri.com.tw.pgsql.entity.ManufactureRuleNumber;
 import dtri.com.tw.pgsql.entity.ManufactureSerialNumber;
+import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.ScheduleProductionHistory;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -72,6 +74,9 @@ public class ManufactureProcessCardServiceAc {
 
 	@Autowired
 	private BomSoftwareHardwareDao bomSoftwareHardwareDao;
+
+	@Autowired
+	private ScheduleInfactoryDao infactoryDao;
 
 	@Autowired
 	private EntityManager em;
@@ -391,6 +396,15 @@ public class ManufactureProcessCardServiceAc {
 																		// (生產中)=4 (生產結束)=5
 					entityDataOld.setSphrsn(x.getSphrsn());// 序號規則
 					entityDataOld.setSphpmnote(x.getSphpmnote());// 製造 PM添加備註
+					// 標記-修改廠內排程
+					ArrayList<ScheduleInfactory> infactories = infactoryDao.findAllByCheck(entityDataOld.getSphpon(),
+							null, null);
+					if (infactories.size() == 1) {
+						ScheduleInfactory infactory = infactories.get(0);
+						infactory.setSiscstatus(2);// 已經單據->為2已經開流程卡
+						infactoryDao.save(infactory);
+					}
+
 					// 更新或新增SN清單
 					ArrayList<ManufactureSerialNumber> numbers = serialNumberDao.findAllBySearch(null, x.getSphpon(),
 							null, null);
@@ -578,8 +592,8 @@ public class ManufactureProcessCardServiceAc {
 								.build();
 
 						// 5. 建立 POST 請求
-						// HttpPost request = new
-						// HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
+						 //HttpPost request = new
+						 //HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
 						HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil");
 						request.setHeader("Content-Type", "application/json;charset=UTF-8");
 						request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));
