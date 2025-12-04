@@ -64,13 +64,14 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].INVMB AS INVMB "// --倉庫別
 			+ "	ON MOCTE.TE004 = INVMB.MB001 "//
-			+ "	LEFT JOIN " + "	[DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
+			+ "	LEFT JOIN " //
+			+ "	[DTR_TW].[dbo].CMSMC AS CMSMC "// --基本資料
 			+ "	ON INVMB.MB017 = CMSMC.MC001 "//
 			+ "	LEFT JOIN "//
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "//
+			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-15, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "//
 			// + " AND MOCTE.TE019 ='N' "//

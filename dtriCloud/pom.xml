@@ -75,5 +75,6 @@
 		<module>service-bios-12060</module>
 		<module>service-product-12070</module>
 		<module>service-material-12080</module>
+		<module>service-ai-12090</module>
 	</modules>
 </project>

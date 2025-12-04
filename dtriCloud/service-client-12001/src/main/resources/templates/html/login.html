@@ -49,7 +49,7 @@
 
 		/*輸入框*/
 		.rainbow-box {
-			border: 2px solid transparent;
+			border: 3px solid transparent;
 			border-image: linear-gradient(to bottom right, #b827fc, #2c90fc, #b8fd33, #fec837, #fd1892, #b827fc) 1;
 			border-radius: 10px;
 			animation: rainbowBorder 3s infinite linear;
@@ -66,6 +66,9 @@
 			width: 100%;
 			/*opacity: 0.7;*/
 		}
+		.text-mobile-bigger {
+		    font-size: clamp(18px, calc(30px - 1vw), 40px);
+		}
 	</style>
 </head>
 
@@ -74,8 +77,8 @@
 		<div class="pt-5 pb-3" id="nav">
 			<h6 id="system_name" class="">DTR CLOUD SYSTEM</h6>
 		</div>
-		<div class="row justify-content-center m-4" id="body">
-			<div class="p-4 col-lg-3 col-md-5 col-sm-6 rainbow-box bg-white shadow-lg">
+		<div class="row justify-content-center m-4 text-mobile-bigger" id="body">
+			<div class="p-4 col-lg-4 col-md-8 col-sm-10 rainbow-box bg-white shadow-lg">
 				<div class="mt-0  mb-3" id="header">
 					<img class="drop-shadow col-12" id="logo" src="./img/login.png" alt="DTR ERP">
 				</div>
@@ -106,8 +109,8 @@
 					</div>
 				</div>
 				<div class="m-0 mb-1 mt-3 row justify-content-between">
-					<button class="mt-1 col-md-6 btn btn-warning btn-sm" type="button">Forgot password?</button>
-					<button class="mt-1 col-md-5 btn btn-primary btn-sm" type="submit">Sign in</button>
+					<button class="mt-1 col-md-6 btn btn-warning btn-sm text-mobile-bigger" type="button">Forgot password?</button>
+					<button class="mt-1 col-md-5 btn btn-primary btn-sm text-mobile-bigger" type="submit">Sign in</button>
 				</div>
 			</div>
 		</div>
@@ -115,7 +118,7 @@
 	<div id="footer_t_all" class="text-muted col-md fixed-bottom bg-light" style="font-size: 12px;">
 		<div class="m-0 p-1 text-center row justify-content-around" id="footer">
 			<div class="col-4">Browser:1.Brave 2.Chrome :1920*1080</div>
-			<div class="col-4">&copy; 2023 DT Research, Inc. All Rights Reserved. ver: Beta v0.01.73</div>
+			<div class="col-4">&copy; 2023 DT Research, Inc. All Rights Reserved. ver: Beta v0.01.74</div>
 			<div class="col-4">Any questions, please consult the administrator DTR_Taipei_TE:321</div> 
 		</div>
 	</div>

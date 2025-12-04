@@ -212,6 +212,28 @@ public interface WarehouseServiceFeign {
 	@RequestMapping(value = { "/warehouseArea/setDetele" }, method = RequestMethod.POST)
 	PackageBean setAreaDetele(@RequestBody String jsonPackageBean);
 
+	// ================================通用-盤點區塊================================
+	@RequestMapping(value = { "/warehouseInventory/getSearch" }, method = RequestMethod.POST)
+	PackageBean getInventorySearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseInventory/getReport" }, method = RequestMethod.POST)
+	PackageBean getInventoryReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseInventory/setModify" }, method = RequestMethod.POST)
+	PackageBean setInventoryModify(@RequestBody String jsonPackageBean);
+	
+	@RequestMapping(value = { "/warehouseInventory/setModifyLimit" }, method = RequestMethod.POST)
+	PackageBean setInventoryModifyLimit(@RequestBody String jsonPackageBean);//一般人員盤點用
+
+	@RequestMapping(value = { "/warehouseInventory/setAdd" }, method = RequestMethod.POST)
+	PackageBean setInventoryAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseInventory/setInvalid" }, method = RequestMethod.POST)
+	PackageBean setInventoryInvalid(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/warehouseInventory/setDetele" }, method = RequestMethod.POST)
+	PackageBean setInventoryDetele(@RequestBody String jsonPackageBean);
+
 	// ================================通用-物料清單================================
 	@RequestMapping(value = { "/warehouseMaterial/getSearch" }, method = RequestMethod.POST)
 	PackageBean getMaterialSearch(@RequestBody String jsonPackageBean);

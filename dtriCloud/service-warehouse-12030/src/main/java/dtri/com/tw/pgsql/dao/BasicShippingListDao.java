@@ -85,6 +85,13 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslnb is null or c.bslnb=:bslnb) ")
 	ArrayList<BasicShippingList> findAllByCheckUser(String bslclass, String bslsn, String bslnb);
 
+	// 列出 -倉儲負責人 "已領料" 領料單類 -領料單類的 "未核單" 狀態
+	@Query("SELECT c FROM BasicShippingList c WHERE "//
+			+ "(c.bslmuser!='') and "// 已經領料
+			+ "(c.bslpngqty>0) and "// 已經領料>0
+			+ "(c.bslcheckin = 0) ") // 未核單
+	ArrayList<BasicShippingList> findAllByCheckBslpngqty();
+
 	// 缺料單
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass=:bslclass) and "//

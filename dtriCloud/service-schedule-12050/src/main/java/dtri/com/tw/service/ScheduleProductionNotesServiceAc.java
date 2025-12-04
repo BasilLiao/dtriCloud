@@ -377,6 +377,7 @@ public class ScheduleProductionNotesServiceAc {
 				if (managements.size() > 0) {
 					entityDetails = managements;
 					// 補充
+					entity.setSphbpmnb(managements.get(0).getBpmnb());// BOM 的產品號(如果有則復寫)
 					entity.setSphbpmmodel(managements.get(0).getBpmmodel());// BOM 的產品型號
 					entity.setSphbisitem(managements.get(0).getBpmbisitem());// 產品-物料結構
 					entity.setSphbpsnv(managements.get(0).getBpmbpsnv());// 產品-參數設置

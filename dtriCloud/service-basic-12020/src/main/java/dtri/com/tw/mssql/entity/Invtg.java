@@ -32,7 +32,9 @@ public class Invtg {
 	@Column(name = "TG009")
 	private Integer tg009;// 數量
 	@Column(name = "TG022")
-	private String tg022;// --確認碼
+	private String tg022;// --確認碼(單身)
+	@Column(name = "TF020")
+	private String tf020;// --確認碼(頭身)
 	@Column(name = "TF028")
 	private String tf028;// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
 
@@ -259,6 +261,20 @@ public class Invtg {
 				+ ", tg022=" + tg022 + ", tf028=" + tf028 + ", mb001=" + mb001 + ", mb002=" + mb002 + ", mb003=" + mb003 + ", mb017=" + mb017
 				+ ", mb032=" + mb032 + ", mb036=" + mb036 + ", mb039=" + mb039 + ", mb040=" + mb040 + ", mc002=" + mc002 + ", ma002=" + ma002
 				+ ", tk000=" + tk000 + "]";
+	}
+
+	/**
+	 * @return the tf020
+	 */
+	public String getTf020() {
+		return tf020;
+	}
+
+	/**
+	 * @param tf020 the tf020 to set
+	 */
+	public void setTf020(String tf020) {
+		this.tf020 = tf020;
 	}
 
 }

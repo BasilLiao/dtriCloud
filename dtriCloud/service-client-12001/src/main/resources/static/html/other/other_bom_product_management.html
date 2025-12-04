@@ -156,7 +156,7 @@
 				</div>
 				<!--BPM(BOM規格)-->
 				<div id="BPM"
-					class="col-12 col-lg-6 p-0 row m-0 collapse show other_BPM_open">
+					class="col-12 col-lg-10 p-0 row m-0 collapse show other_BPM_open">
 				</div>
 			</div>
 		</div>
@@ -1927,7 +1927,7 @@
 								//bismpcb: "false" //板階
 								//bismproduct: "false"//產品
 								//bismsfproduct: "false"//半成品
-								let selectedValue = $("#other_Detail_" + b_w + " #od_bpm_type select").val();//產品類型
+								let selectedValue = $("#other_Detail_" + b_w + " #od_"+b_w_m+"_type select").val();//產品類型
 							 	// 對照表
 							    const valueMap = {
 							        0: "bismdevelopment",
@@ -2077,7 +2077,6 @@
 								});
 							}
 							
-							
 							//回存資料
 							let bpmbisitem = {};//結構化
 							let bpmbasicSort = {};//排序?
@@ -2085,6 +2084,20 @@
 							bpmbisitem.basic = [];
 							let bpmbisitemOne = {}
 							let bis = other.data.otherItemPageSet.entityOther['BIS'];
+							//抓取原本BOM(未修改前)->之後比對那些修改了?->其他BOM可連棟修改?(當勾選od_bpm_batch批次時候用) 
+							let modifyBom =  $("#other_"+b_w+" tbody tr input:checked").closest("tr");
+							let modifyBomText = modifyBom.find(".bpmbisitem").text().trim();
+							let modifyBomJson = null;
+							let modifyBomDiff =[];//有哪些不同?(items)
+							let modifyBomDiffBasic =[];//有哪些不同?(Basic)
+							try {
+							    modifyBomJson = JSON.parse(modifyBomText);
+							} catch (err) {
+							    console.error("JSON parse error:", err, modifyBomText);
+							  	// 或 alert("資料格式錯誤，無法解析");
+							}
+							
+							//目前正在修正的BOM資料
 							$("#other_Detail_" + b_w + " .detailTbodyTr").each(s => {
 								let detail = $($("#other_Detail_" + b_w + " .detailTbodyTr")[s]);
 								let bisgid = detail.find(".bisgname select").val();
@@ -2121,22 +2134,16 @@
 									let key = result[0].syssort.toString().padStart(3, '0') + "_sort_" + bisgname + ":" + bisfname;
 									console.log(key);
 									bpmbasicSort[key] = bpmbisitemOne;//每個規格項目
+									
 									//====批次作業(覆蓋)->***插入比對檢查***====
 									if(od_bpm_batch==="list"){
-										$("#other_BPM tbody tr").each(function () {
-											let thisText = $(this).find('.bpmbisitem').text();
-											if(thisText!=""){
-												let thisJson = JSON.parse(thisText);
-												console.log(thisJson.items);
-												//每一項檢查取代
-												thisJson.items.forEach((o,i) => {
-													if(o.bisgname === bpmbisitemOne.bisgname){
-														thisJson.items[i] = bpmbisitemOne;
-													}
-												});
-												//放回去
-												$(this).find('.bpmbisitem').text(JSON.stringify(thisJson));
-												$(this).find('.bpmnb').addClass('text-warning');
+										//檢查不同?->沒有不同則不修改
+										modifyBomJson.items.forEach((o,i)=>{
+											//同一個群組項目+數量稱不同+選擇名稱不同
+											if(o.bisgid == bpmbisitemOne.bisgid){
+												if(o.bisfname !==bpmbisitemOne.bisfname || o.bisqty !== bpmbisitemOne.bisqty || o.bislevel !== bpmbisitemOne.bislevel){
+													modifyBomDiff.push(bpmbisitemOne);
+												}
 											}
 										});
 									}
@@ -2144,8 +2151,140 @@
 								} else if (bisgname === "Basic") {
 									//基本資料
 									bpmbisitem.basic = bisnb.split(',').length > 0 ? bisnb.split(',') : [];
+									
+									//====批次作業(覆蓋)->***插入比對檢查***====
+									if(od_bpm_batch==="list"){
+										//檢查不同?->沒有不同則不修改
+										let aList = modifyBomJson.basic;
+										let bList = bpmbisitem.basic;
+										// 建立快速查詢 map（以料號為 key）
+									    const mapA = new Map();
+									    const mapB = new Map();
+									    
+									    aList.forEach(item => {
+									        const key = item.split("_")[0]; // 料號
+									        mapA.set(key, item);
+									    });
+
+									    bList.forEach(item => {
+									        const key = item.split("_")[0]; // 料號
+									        mapB.set(key, item);
+									    });
+
+									    // === 1. 以 A 為基準：找 MISSING + UPDATED ===
+									    mapA.forEach((valueA, key) => {
+									        let valueB = mapB.get(key);
+
+									        if (!valueB) {
+									            // B 沒有 → Missing
+									            modifyBomDiffBasic.push({
+									                type: "MISSING",
+									                a_value: valueA
+									            });
+									        } else if (valueA !== valueB) {
+									            // 同料號但內容不同 → Updated
+									            modifyBomDiffBasic.push({
+									                type: "UPDATED",
+									                a_value: valueA,
+									                b_value: valueB
+									            });
+									        }
+									    });
+
+									    // === 2. 以 B 為基準：找 ADD（A 沒有但 B 多了）===
+									    mapB.forEach((valueB, key) => {
+									        if (!mapA.has(key)) {
+									        	modifyBomDiffBasic.push({
+									                type: "ADD",
+									                a_value: valueB
+									            });
+									        }
+									    });
+									}
 								}
 							});
+							
+							//====批次作業(覆蓋)->***插入比對檢查***====
+							if(od_bpm_batch==="list"){
+								//取得目前產品清單
+								$("#other_BPM tbody tr").each(function () {
+									let thisText = $(this).find('.bpmbisitem').text();
+									if(thisText!=""){
+										let thisJson = JSON.parse(thisText);
+										console.log(thisJson.items);
+										//(Key Part部分)每一項檢查取代
+										modifyBomDiff.forEach((def)=>{//每個不同的
+											thisJson.items.forEach((o,i) => {
+												if(o.bisgname === def.bisgname){
+													thisJson.items[i] = def;
+												}
+											});
+										});
+										
+										// (物料部分)
+										let newBasic = [];
+										// 先把差異塞成 map，key 用 a_value，方便查詢
+										const diffMap = new Map();
+										modifyBomDiffBasic.forEach(bn => {
+										    diffMap.set(bn.a_value, bn);
+										});
+
+										// === 1. 先處理 MISSING / UPDATED / 保留原資料 ===
+										// 這個 Set 用來記錄「目前 newBasic 裡已存在的值」，方便後面 ADD 防重複
+										const existsSet = new Set();
+
+										thisJson.basic.forEach(bo => {
+										    const bn = diffMap.get(bo);  // 查這筆 bo 是否在差異清單裡
+
+										    if (!bn) {
+										        // 沒異動 → 原樣保留
+										        newBasic.push(bo);
+										        existsSet.add(bo);
+										        return;
+										    }
+
+										    if (bn.type === "MISSING") {
+										        // 要刪除 → 不 push 就是刪除
+										        return;
+										    }
+
+										    if (bn.type === "UPDATED") {
+										        // 更新成 b_value
+										        const val = bn.b_value;   // 差異物件裡的新值
+										        newBasic.push(val);
+										        existsSet.add(val);
+										        return;
+										    }
+
+										    // ADD 在這裡不處理（ADD 通常原本不在 thisJson.basic）
+										});
+
+										// === 2. 處理 ADD：但要先檢查是否已存在 ===
+										modifyBomDiffBasic.forEach(bn => {
+										    if (bn.type === "ADD") {
+										        // 依你的差異結構選擇使用 a_value 或 b_value
+										        // 目前前面程式是用 a_value 裝 B 多出來的那筆
+										        const val = bn.a_value;
+
+										        // 防重複：如果 newBasic / existsSet 裡已經有了，就不新增
+										        if (!existsSet.has(val)) {
+										            newBasic.push(val);
+										            existsSet.add(val);
+										        }
+										    }
+										});
+
+										// === 3. 回寫 ===
+										thisJson.basic = newBasic;
+										
+										//放回去
+										$(this).find('.bpmbisitem').text(JSON.stringify(thisJson));
+										$(this).find('.bpmnb').addClass('text-warning');
+									}
+								});
+							}
+							
+							
 							
 							//========排序整理========
 							bpmbasicSort = main.methods.orderedSort(bpmbasicSort);
@@ -2221,10 +2360,13 @@
 							break;
 						case "btn_send":
 							//必須含有searchVal 的才算
-							let focusedElementParent = $(document.activeElement.parentElement.parentElement.parentElement.parentElement);
+							let otherItemItem = $("#otherItemItem .collapse.show").attr("id");
+							$("#"+otherItemItem+" input").first().focus();
+							let focusedElementParent = $("#otherItemItem .collapse.show");
 							let focusedElement = $(document.activeElement);
+							
 							//查詢
-							if (focusedElement.is('input.searchVal, select.searchVal') && focusedElementParent != null) {
+							if (focusedElement.is('.searchVal') && focusedElementParent != null) {
 								console.log(focusedElementParent.attr("id"));
 								console.log(focusedElement.attr("id"));
 								other.methods.confirmSend("Search", focusedElementParent.attr("id"));

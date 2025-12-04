@@ -556,8 +556,32 @@ public class BomProductManagementServiceAc {
 				BomProductManagement searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 						BomProductManagement.class);
 				// Step3-1.取得資料(一般/細節)
-				entitys = managementDao.findAllBySearch(searchData.getBpmnb(), searchData.getBpmmodel(), null,
-						searchData.getBpmbisitem(), searchData.getSyscuser(), pageable);
+				if (searchData.getBpmnb() != null && searchData.getBpmnb().split(" ").length > 0) {
+					// 多筆查詢
+					String bpmnb[] = searchData.getBpmnb().split(" ");
+					String checkSame = "";
+					for (String bpmnbOne : bpmnb) {
+						if (!bpmnbOne.equals("")) {
+							ArrayList<BomProductManagement> someBom = managementDao.findAllBySearch(bpmnbOne,
+									searchData.getBpmmodel(), null, searchData.getBpmbisitem(),
+									searchData.getSyscuser(), pageable);
+							if (someBom.size() > 0) {
+								for (BomProductManagement aBom : someBom) {
+									// 避免重複
+									if (!checkSame.contains(aBom.getBpmnb())) {
+										checkSame += aBom.getBpmnb() + "_";
+										entitys.add(aBom);
+									}
+								}
+							}
+						}
+					}
+				} else {
+					// 單筆資料查詢
+					entitys = managementDao.findAllBySearch(searchData.getBpmnb(), searchData.getBpmmodel(), null,
+							searchData.getBpmbisitem(), searchData.getSyscuser(), pageable);
+				}
+
 				ArrayList<BomProductManagementDetailFront> entityNewDetails = new ArrayList<BomProductManagementDetailFront>();
 
 				// Step3-2.資料區分(一般/細節)

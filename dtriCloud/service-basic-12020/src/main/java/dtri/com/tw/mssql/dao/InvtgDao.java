@@ -18,9 +18,9 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	INVTG.TG007, "// --轉出庫別
 			+ "	INVTG.TG008, "// --轉入庫別
 			+ "	CEILING(INVTG.TG009) AS TG009, "// --數量
-			+ " INVTG.TG022, "// --確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
+			+ " INVTG.TG022, "// --(單身)確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVTF.TF028, "// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
-
+			+ " INVTF.TF020, "// --(單頭)確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
 			+ "	INVMB.MB003, "// --規格
@@ -71,6 +71,7 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	CEILING(INVTG.TG009) AS TG009, "// --數量
 			+ " INVTG.TG022, "// --確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 			+ "	INVTF.TF028, "// --簽核狀態碼0.待處理,1.簽核中,2.退件,3.已核准,4.取消確認中,5.作廢中,6.取消作廢中,N.不執行電子簽核[DEF:N]
+			+ " INVTF.TF020, "// --(單頭)確認碼Y:已確認,N:未確認,U:確認失敗,V:作廢
 
 			+ "	INVMB.MB001, "// --品號
 			+ "	INVMB.MB002, "// --品名
