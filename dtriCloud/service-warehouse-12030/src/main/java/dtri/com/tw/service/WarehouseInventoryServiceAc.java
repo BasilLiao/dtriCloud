@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,12 @@ import com.google.gson.JsonParser;
 import dtri.com.tw.pgsql.dao.BasicIncomingListDao;
 import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.dao.WarehouseAreaDao;
 import dtri.com.tw.pgsql.dao.WarehouseInventoryDao;
 import dtri.com.tw.pgsql.entity.BasicIncomingList;
 import dtri.com.tw.pgsql.entity.BasicShippingList;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
+import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseInventory;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -52,6 +55,9 @@ public class WarehouseInventoryServiceAc {
 
 	@Autowired
 	private WarehouseInventoryDao inventoryDao;
+
+	@Autowired
+	private WarehouseAreaDao areaDao;
 
 	@Autowired
 	private BasicIncomingListDao incomingListDao;
@@ -84,10 +90,168 @@ public class WarehouseInventoryServiceAc {
 
 			// Step3-1.取得資料(一般/細節)
 			ArrayList<WarehouseInventory> entitys = inventoryDao.findAllBySearch(null, null, null, null, null, null,
-					null, pageable);
+					null, null, null);
+			ArrayList<WarehouseArea> warehouseAreas = (ArrayList<WarehouseArea>) areaDao.findAll();
+			ArrayList<BasicIncomingList> basicIncomingLists = incomingListDao.findAllByCheckInventory(null, null, null);// 未入+已入數量->不等同於->須入數量
+			ArrayList<BasicShippingList> basicShippingLists = shippingListDao.findAllByCheckBslpngqty();// 已領+未核單
 
 			// Step3-2.資料區分(一般/細節)
+			// 取得物料位置
+			ArrayList<WarehouseInventory> entityNews = new ArrayList<WarehouseInventory>();
+			ArrayList<WarehouseInventory> entityRemoves = new ArrayList<WarehouseInventory>();
+			Map<String, WarehouseArea> mapWarehouseAreas = new TreeMap<String, WarehouseArea>();
+			Map<String, TreeMap<String, Integer>> mapBasicIncomings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
+			Map<String, TreeMap<String, Integer>> mapBasicShippings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
+			warehouseAreas.forEach(w -> {
+				// 帳上+實際數量 不可為0
+				if (!w.getWatqty().equals(0) || !w.getWaerptqty().equals(0)) {
+					w.setSysstatus(0);
+					mapWarehouseAreas.put(w.getWaaliasawmpnb(), w);// 倉儲_物料:
+				}
+			});
+			basicIncomingLists.forEach(i -> {// 入料
+				String docKey = i.getBilclass() + "-" + i.getBilsn() + "-" + i.getBilnb();
+				Integer qty = i.getBilpnqty();
+				String pnumber = i.getBilpnumber(); // 物料號
+				String towho = i.getBiltowho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
+				// 物料號:<工單號-流水號:數量>
+				// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
+				mapBasicIncomings.computeIfAbsent(towho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+			});
+			basicShippingLists.forEach(o -> {// 領料
+				String docKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
+				Integer qty = o.getBslpnqty();
+				String pnumber = o.getBslpnumber(); // 物料號
+				String fromwho = o.getBslfromwho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
+				// 物料號:<工單號-流水號:數量>
+				// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
+				mapBasicShippings.computeIfAbsent(fromwho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+			});
 
+			// 檢查看看是否有->更新的資料?
+			entitys.forEach(e -> {
+				String waaliasawmpnb = e.getWiwaaliasnb();// 倉儲_物料
+
+				if (mapWarehouseAreas.containsKey(waaliasawmpnb)) {// 倉儲_物料
+					// WarehouseArea->資料轉換->WarehouseInventory;
+					// 標記已使用過
+					WarehouseArea oneArea = mapWarehouseAreas.get(waaliasawmpnb);
+					oneArea.setSysstatus(1);
+					mapWarehouseAreas.put(oneArea.getWaaliasawmpnb(), oneArea);
+
+					// === 依物料號填入 入料 / 領料 JSON ===
+					// String pnumber = oneArea.getWawmpnb(); // 物料號（關鍵）
+					TreeMap<String, Integer> incomingMap = mapBasicIncomings.get(e.getWiwaaliasnb());
+					TreeMap<String, Integer> shippingMap = mapBasicShippings.get(e.getWiwaaliasnb());
+					JsonArray incomingString = new JsonArray();
+					JsonArray shippingString = new JsonArray();
+					Integer incomingTotal = 0;// 在途入_總數
+					Integer shippingTotal = 0;// 在途出_總數
+					// 入料清單
+					if (incomingMap != null && incomingMap.size() > 0) {
+						for (Map.Entry<String, Integer> entry : incomingMap.entrySet()) {
+							String key = entry.getKey();
+							Integer val = entry.getValue();
+							incomingTotal += val;
+							incomingString.add(key + "_" + val);// 單據_數量
+						}
+						incomingString.add("All_" + incomingTotal);
+					}
+					// 領料清單
+					if (shippingMap != null && shippingMap.size() > 0) {
+						for (Map.Entry<String, Integer> entry : shippingMap.entrySet()) {
+							String key = entry.getKey();
+							Integer val = entry.getValue();
+							shippingTotal += val;
+							shippingString.add(key + "_" + val);// 單據_數量
+						}
+						shippingString.add("All_" + shippingTotal);
+					}
+					// 在途數量+實際數量+帳務數 = 不同在更新
+					boolean witqtyCheck = e.getWitqty() != (incomingTotal - shippingTotal);
+					boolean wirqtyCheck = !e.getWirqty().equals(oneArea.getWatqty());
+					boolean winqtyCheck = !e.getWinqty().equals(oneArea.getWaerptqty());
+					boolean wiincoming = !e.getWiincoming().equals(incomingString.toString());
+					boolean wishipping = !e.getWishipping().equals(shippingString.toString());
+
+					if (witqtyCheck || wirqtyCheck || winqtyCheck || wiincoming || wishipping) {
+						e.setWitqty(incomingTotal - shippingTotal);// 在途數量
+						e.setWiincoming(incomingString.toString());// 入料單類型 JSON格式['單據_數量']
+						e.setWishipping(shippingString.toString());// 領料單類型 JSON格式['單據_數量']
+						//
+						e.setWiwmpnb(oneArea.getWawmpnb());// 物料號
+						e.setWiwmname("");// 物料名
+						e.setWiwaalias(oneArea.getWaalias());// 倉別
+						e.setWiwaaliasname(oneArea.getWaaname() == null ? "" : oneArea.getWaaname());// 庫別名稱
+						e.setWiwaslocation(oneArea.getWaslocation());// 物料儲位
+						e.setWirqty(oneArea.getWatqty());// 實際數量
+						e.setWinqty(oneArea.getWaerptqty());// 帳務數
+						e.setSysmdate(new Date());
+						e.setSysmuser("system");
+
+						// 標記已更新
+						entityNews.add(e);
+					}
+				} else {
+					// 沒有比對到?->標記移除?
+					entityRemoves.add(e);
+				}
+
+			});
+			// 新增?
+			mapWarehouseAreas.forEach((k, w) -> {
+				if (w.getSysstatus() == 0) {
+					WarehouseInventory oneNew = new WarehouseInventory();
+					oneNew.setWiwmpnb(w.getWawmpnb());// 物料號
+					oneNew.setWiwmname("");// 物料名
+					oneNew.setWiwaaliasname(w.getWaaname() == null ? "" : w.getWaaname());// 庫別名稱
+					oneNew.setWiwaalias(w.getWaalias());// 倉別
+					oneNew.setWiwaslocation(w.getWaslocation());// 物料儲位
+					oneNew.setWirqty(w.getWatqty());// 實際數量
+					oneNew.setWinqty(w.getWaerptqty());// 帳務數
+					oneNew.setWiwaaliasnb(k);// 倉別_物料
+					// === 依物料號填入 入料 / 領料 JSON ===
+					TreeMap<String, Integer> incomingMap = mapBasicIncomings.get(k);
+					TreeMap<String, Integer> shippingMap = mapBasicShippings.get(k);
+					JsonArray incomingString = new JsonArray();
+					JsonArray shippingString = new JsonArray();
+					Integer incomingTotal = 0;// 在途入_總數
+					Integer shippingTotal = 0;// 在途出_總數
+					// 入料清單
+					if (incomingMap != null && incomingMap.size() > 0) {
+						for (Map.Entry<String, Integer> entry : incomingMap.entrySet()) {
+							String key = entry.getKey();
+							Integer val = entry.getValue();
+							incomingTotal += val;
+							incomingString.add(key + "_" + val);// 單據_數量
+						}
+						incomingString.add("All_" + incomingTotal);
+					}
+					// 領料清單
+					if (shippingMap != null && shippingMap.size() > 0) {
+						for (Map.Entry<String, Integer> entry : shippingMap.entrySet()) {
+							String key = entry.getKey();
+							Integer val = entry.getValue();
+							shippingTotal += val;
+							shippingString.add(key + "_" + val);// 單據_數量
+						}
+						shippingString.add("All_" + shippingTotal);
+					}
+
+					oneNew.setWitqty(incomingTotal - shippingTotal);// 在途數量
+					oneNew.setWiincoming(incomingString.toString());// 入料單類型 JSON格式['單據_數量']
+					oneNew.setWishipping(shippingString.toString());// 領料單類型 JSON格式['單據_數量']
+					entityNews.add(oneNew);
+				}
+				w.setSysstatus(0);
+			});
+
+			// 移除
+			inventoryDao.deleteAll(entityRemoves);
+			// 須更新+新增
+			inventoryDao.saveAll(entityNews);
+			// 重新查
+			entitys = inventoryDao.findAllBySearch(null, null, null, null, null, null, null, null, pageable);
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);
 			// 資料包裝
@@ -120,11 +284,12 @@ public class WarehouseInventoryServiceAc {
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "wiwmpnb", "Ex:物料號?", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "wiwaaliasnb", "Ex:物料儲位_品名?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "wiwaslocation", "Ex:物料位置?", true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
+
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "ssyscdate", "Ex:開始時間?", true, //
 					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
@@ -133,8 +298,8 @@ public class WarehouseInventoryServiceAc {
 					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			JsonArray selectWicheckArr = new JsonArray();
-			selectWicheckArr.add("確認_true");
-			selectWicheckArr.add("尚未確認_false");
+			selectWicheckArr.add("未確認_false");
+			selectWicheckArr.add("確認盤點_true");
 			searchJsons = packageService.searchSet(searchJsons, selectWicheckArr, "wicheck", "Ex:確認?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
@@ -148,8 +313,9 @@ public class WarehouseInventoryServiceAc {
 			WarehouseInventory searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					WarehouseInventory.class);
 
-			ArrayList<WarehouseInventory> entitys = inventoryDao.findAllBySearch(null, null, null, null, null, null,
-					null, pageable);
+			ArrayList<WarehouseInventory> entitys = inventoryDao.findAllBySearch(searchData.getWiwmpnb(),
+					searchData.getWiwaslocation(), searchData.getWiwaalias(), searchData.getWiwaaliasnb(),
+					searchData.getSsyscdate(), searchData.getEsyscdate(), null, null, pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -170,7 +336,7 @@ public class WarehouseInventoryServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("wiid_");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_widate_ssyscdate_esyscdate");
 		return packageBean;
 	}
 
@@ -188,15 +354,12 @@ public class WarehouseInventoryServiceAc {
 
 			// Step2.資料檢查
 			for (WarehouseInventory entityData : entityDatas) {
-				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-//				ArrayList<WarehouseInventory> checkDatas = inventoryDao.findAllByCheck(entityData.getWawmpnb(), null,
-//						entityData.getWaalias());
-//				for (WarehouseInventory checkData : checkDatas) {
-//					if (checkData.getWaid().compareTo(entityData.getWaid()) != 0) {
-//						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-//								new String[] { entityData.getWawmpnb() });
-//					}
-//				}
+				// 檢查-名稱使否有盤點人
+				if (entityData.getWiuser().equals("") || !entityData.getWicuser().equals("")) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
+							new String[] { "無盤點人 or 已確認!" });
+
+				}
 			}
 		}
 		// =======================資料整理=======================
@@ -217,9 +380,9 @@ public class WarehouseInventoryServiceAc {
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
 				// 修改
-				entityDataOld.setWicuser(packageBean.getUserAccount());
-				entityDataOld.setWicheck(x.getWicheck());
-
+				entityDataOld.setWiuser("");// 盤點人
+				entityDataOld.setWicuser(x.getWiuser() + "_(" + packageBean.getUserAccount() + ")");// 盤點人+確認人
+				entityDataOld.setWicheck(true);
 				saveDatas.add(entityDataOld);
 			}
 		});
@@ -234,30 +397,30 @@ public class WarehouseInventoryServiceAc {
 	/** 新增資料 */
 	// @Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
-		// =======================資料準備=======================
-		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
-		// =======================資料檢查=======================
-		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
-			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-					new TypeReference<ArrayList<WarehouseInventory>>() {
-					});
+//		// =======================資料準備=======================
+//		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
+//		// =======================資料檢查=======================
+//		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+//			// Step1.資料轉譯(一般)
+//			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+//					new TypeReference<ArrayList<WarehouseInventory>>() {
+//					});
 
-			// Step2.資料檢查
-			for (WarehouseInventory entityData : entityDatas) {
-				// 檢查-名稱重複(有資料 && 不是同一筆資料)
+//			// Step2.資料檢查
+//			for (WarehouseInventory entityData : entityDatas) {
+//				// 檢查-名稱重複(有資料 && 不是同一筆資料)
 //				ArrayList<WarehouseInventory> checkDatas = inventoryDao.findAllByCheck(entityData.getWawmpnb(), null,
 //						entityData.getWaalias());
 //				if (checkDatas.size() > 0) {
 //					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
 //							new String[] { entityData.getWawmpnb() });
 //				}
-			}
-		}
+//			}
+//		}
 
 		// =======================資料整理=======================
 		// 資料Data
-		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
+//		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
 //		entityDatas.forEach(x -> {
 //			x.setSysmdate(new Date());
 //			x.setSysmuser(packageBean.getUserAccount());
@@ -272,70 +435,70 @@ public class WarehouseInventoryServiceAc {
 //		});
 		// =======================資料儲存=======================
 		// 資料Detail
-		inventoryDao.saveAll(saveDatas);
+//		inventoryDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
 	/** 作廢資料 */
 	@Transactional
 	public PackageBean setInvalid(PackageBean packageBean) throws Exception {
-		// =======================資料準備 =======================
-		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
-		// =======================資料檢查=======================
-		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
-			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-					new TypeReference<ArrayList<WarehouseInventory>>() {
-					});
-			// Step2.資料檢查
-		}
-		// =======================資料整理=======================
-		// Step3.一般資料->寫入
-		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
-		entityDatas.forEach(x -> {
-			// 排除 沒有ID
-			if (x.getWiid() != null) {
-				WarehouseInventory entityDataOld = inventoryDao.findById(x.getWiid()).get();
-				entityDataOld.setSysmdate(new Date());
-				entityDataOld.setSysmuser(packageBean.getUserAccount());
-				entityDataOld.setSysstatus(2);
-				saveDatas.add(entityDataOld);
-			}
-		});
-		// =======================資料儲存=======================
-		// 資料Data
-		inventoryDao.saveAll(saveDatas);
+//		// =======================資料準備 =======================
+//		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
+//		// =======================資料檢查=======================
+//		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+//			// Step1.資料轉譯(一般)
+//			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+//					new TypeReference<ArrayList<WarehouseInventory>>() {
+//					});
+//			// Step2.資料檢查
+//		}
+//		// =======================資料整理=======================
+//		// Step3.一般資料->寫入
+//		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
+//		entityDatas.forEach(x -> {
+//			// 排除 沒有ID
+//			if (x.getWiid() != null) {
+//				WarehouseInventory entityDataOld = inventoryDao.findById(x.getWiid()).get();
+//				entityDataOld.setSysmdate(new Date());
+//				entityDataOld.setSysmuser(packageBean.getUserAccount());
+//				entityDataOld.setSysstatus(2);
+//				saveDatas.add(entityDataOld);
+//			}
+//		});
+//		// =======================資料儲存=======================
+//		// 資料Data
+//		inventoryDao.saveAll(saveDatas);
 		return packageBean;
 	}
 
 	/** 移除資料 */
 	@Transactional
 	public PackageBean setDetele(PackageBean packageBean) throws Exception {
-		// =======================資料準備 =======================
-		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
-		// =======================資料檢查=======================
-		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
-			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
-					new TypeReference<ArrayList<WarehouseInventory>>() {
-					});
-			// Step2.資料檢查
-		}
-		// =======================資料整理=======================
-		// Step3.一般資料->寫入
-		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
-		// 一般-移除內容
-		entityDatas.forEach(x -> {
-			// 排除 沒有ID
-			if (x.getWiid() != null) {
-				WarehouseInventory entityDataOld = inventoryDao.getReferenceById(x.getWiid());
-				saveDatas.add(entityDataOld);
-			}
-		});
-
-		// =======================資料儲存=======================
-		// 資料Data
-		inventoryDao.deleteAll(saveDatas);
+//		// =======================資料準備 =======================
+//		ArrayList<WarehouseInventory> entityDatas = new ArrayList<>();
+//		// =======================資料檢查=======================
+//		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
+//			// Step1.資料轉譯(一般)
+//			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+//					new TypeReference<ArrayList<WarehouseInventory>>() {
+//					});
+//			// Step2.資料檢查
+//		}
+//		// =======================資料整理=======================
+//		// Step3.一般資料->寫入
+//		ArrayList<WarehouseInventory> saveDatas = new ArrayList<>();
+//		// 一般-移除內容
+//		entityDatas.forEach(x -> {
+//			// 排除 沒有ID
+//			if (x.getWiid() != null) {
+//				WarehouseInventory entityDataOld = inventoryDao.getReferenceById(x.getWiid());
+//				saveDatas.add(entityDataOld);
+//			}
+//		});
+//
+//		// =======================資料儲存=======================
+//		// 資料Data
+//		inventoryDao.deleteAll(saveDatas);
 		return packageBean;
 	}
 

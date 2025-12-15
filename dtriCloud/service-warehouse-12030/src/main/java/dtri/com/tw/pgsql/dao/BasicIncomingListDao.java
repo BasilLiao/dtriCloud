@@ -83,4 +83,12 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:bilnb is null or c.bilnb=:bilnb) ")
 	ArrayList<BasicIncomingList> findAllByCheckUser(String bilclass, String bilsn, String bilnb);
 
+	@Query("SELECT c FROM BasicIncomingList c WHERE "//
+			+ "(:bilclass is null or c.bilclass=:bilclass) and "//
+			+ "(:bilsn is null or c.bilsn=:bilsn) and "//
+			+ "(c.bilfuser='') and "// 還沒 登記入料人
+			+ "(c.bilpngqty!=c.bilpnqty) and "// 已入 數量不可 等同於 須入數量
+			+ "(:bilnb is null or c.bilnb=:bilnb) ")
+	ArrayList<BasicIncomingList> findAllByCheckInventory(String bilclass, String bilsn, String bilnb);
+
 }

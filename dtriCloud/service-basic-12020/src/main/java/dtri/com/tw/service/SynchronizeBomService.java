@@ -942,13 +942,16 @@ public class SynchronizeBomService {
 		sendAllData.addProperty("update", "checkUpdate");
 		sendAllData.addProperty("action", "sendAllData");
 		// 測試 通知Client->autoSearchTestAndUpdate(BOM 規格檢查)
-		AutoBomItemSpecifications specifications = new AutoBomItemSpecifications();
-		specifications.setSendAllData(sendAllData.toString());
-		specifications.run();
+		AutoBomItemSpecifications taskSpecifications = new AutoBomItemSpecifications();
+		taskSpecifications.setSendAllData(sendAllData.toString());
+
+		// ★ 改成丟給新執行緒跑，不要直接呼叫 run()
+		Thread t = new Thread(taskSpecifications, "getAutoSearchTestAndUpdate-Thread");
+		t.start();
 	}
 
 	// 而外執行(BOM規則同步)
-	public class AutoBomItemSpecifications implements Runnable {
+	private class AutoBomItemSpecifications implements Runnable {
 		private String sendAllData;
 
 		@Override
@@ -962,10 +965,6 @@ public class SynchronizeBomService {
 			} catch (Exception e) {
 				logger.warn(CloudExceptionService.eStktToSg(e));
 			}
-		}
-
-		public String getSendAllData() {
-			return sendAllData;
 		}
 
 		public void setSendAllData(String sendAllData) {
@@ -1020,5 +1019,39 @@ public class SynchronizeBomService {
 			}
 		});
 		return result.toString();
+	}
+
+	// ============ 規格BOM更正 & 修正規格名稱() ============
+	public void bomRevisedSpecifications() {
+
+		JsonObject sendAllData = new JsonObject();
+		AutogetSynBomAll taskAutogetSynBomAll = new AutogetSynBomAll();
+		taskAutogetSynBomAll.setSendAllData(sendAllData.toString());
+
+		// ★ 改成丟給新執行緒跑，不要直接呼叫 run()
+		Thread t = new Thread(taskAutogetSynBomAll, "AutogetSynBomAll-Thread");
+		t.start();
+	}
+
+	// 而外執行(規格BOM更正 & 修正規格名稱)
+	private class AutogetSynBomAll implements Runnable {
+		private String sendAllData;
+
+		@Override
+		public void run() {
+			try {
+				List<ServiceInstance> instances = discoveryClient.getInstances("service-bom");
+				boolean check = instances != null && !instances.isEmpty();
+				if (check) {// 有再傳送
+					serviceFeign.autogetSynBomAll(sendAllData);
+				}
+			} catch (Exception e) {
+				logger.warn(CloudExceptionService.eStktToSg(e));
+			}
+		}
+
+		public void setSendAllData(String sendAllData) {
+			this.sendAllData = sendAllData;
+		}
 	}
 }

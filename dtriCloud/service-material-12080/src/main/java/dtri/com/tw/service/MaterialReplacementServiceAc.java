@@ -161,7 +161,7 @@ public class MaterialReplacementServiceAc {
 					entityOne.setMrid(keyId.getAndIncrement());
 					materialsAll.add(entityOne);
 				});
-				//替代料
+				// 替代料
 				materialsAll.forEach(m -> {
 					// 有匹配到替代料?
 					if (entitysAll.containsKey(m.getMrnb())) {
@@ -281,12 +281,13 @@ public class MaterialReplacementServiceAc {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
 				ArrayList<MaterialReplacement> checkDatas = materialReplacementDao.findAllByCheck(entityData.getMrnb(),
 						null, null);
-				for (MaterialReplacement checkData : checkDatas) {
-					if (checkData.getMrid().compareTo(entityData.getMrid()) != 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
-								new String[] { entityData.getMrnb() });
-					}
+
+				if (checkDatas.size() > 0) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getMrnb()
+									+ ". This ID already exists. Please use the 'Modify' function to update records. " });
 				}
+
 			}
 		}
 

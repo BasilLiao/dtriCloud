@@ -27,9 +27,10 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			+ "(:bbiname is null or c.bbiname LIKE %:bbiname%) and "//
 			+ "(:bbiisn is null or c.bbiisn LIKE %:bbiisn%) and "//
 			+ "(:bbiiname is null or c.bbiiname LIKE %:bbiiname%) and "//
+			+ "(:bbiiqty is null or c.bbiiqty >= :bbiiqty) and "//
 			+ "(:bbiispecification is null or c.bbiispecification LIKE %:bbiispecification%) ")
 	ArrayList<BasicBomIngredients> findAllBySearch(String bbisn, String bbiname, String bbiisn, String bbiiname,
-			String bbiispecification, Pageable pageable);
+			Integer bbiiqty, String bbiispecification, Pageable pageable);
 
 	@Query(value = """
 			-- 使用遞迴展開 BOM 結構，並針對子項描述包含「正規化」的項目做過濾
@@ -39,13 +40,13 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			    SELECT
 			        b.*,                                          -- 取得該筆 BOM 所有欄位
 			        1 AS level,                                   -- 記錄階層層數，第一層為 1
-			        b.bbi_sn AS root_bbi_sn,                      -- 記錄此展開樹的起始成品料號（根）   
-			        CAST(b.bbi_sn ||' → ' ||  CAST(b.bbi_id AS TEXT) AS TEXT) AS root_bbi_id,   -- 記錄此展開樹的起始成品ID（根）  
+			        b.bbi_sn AS root_bbi_sn,                      -- 記錄此展開樹的起始成品料號（根）
+			        CAST(b.bbi_sn ||' → ' ||  CAST(b.bbi_id AS TEXT) AS TEXT) AS root_bbi_id,   -- 記錄此展開樹的起始成品ID（根）
 			        CAST((b.bbi_sn || ' → ' || b.bbi_i_sn) AS TEXT) AS current_bbi_path 		-- 初始化目前展開路徑為子項料號
 			    FROM basic_bom_ingredients b
 			    WHERE (:bbisn IS NULL OR b.bbi_sn LIKE CONCAT('%', :bbisn, '%'))             	-- ✅ 限定從指定的成品料號開始展開
-					AND (:bbiname IS NULL OR b.bbi_name LIKE  CONCAT('%', :bbiname, '%')) 
-				
+					AND (:bbiname IS NULL OR b.bbi_name LIKE  CONCAT('%', :bbiname, '%'))
+
 			    UNION ALL
 
 			    -- 🔁 遞迴展開其他階層：以上一層的子項作為下一層的父項繼續展開
@@ -57,7 +58,7 @@ public interface BasicBomIngredientsDao extends JpaRepository<BasicBomIngredient
 			        (bt.current_bbi_path || ' → ' || b.bbi_i_sn)  -- 更新展開路徑：加上本層子項料號
 			    FROM basic_bom_ingredients b
 			    INNER JOIN bom_tree bt ON b.bbi_sn = bt.bbi_i_sn  -- 🔗 關鍵：將上一層的子項對應為本層的父項
-			    
+
 			    WHERE bt.level < 5                               -- ✅ 限制展開最大階層深度為 10 層（避免無限遞迴）
 			      AND position(b.bbi_i_sn in bt.current_bbi_path) = 0  -- ✅ 防止循環展開（例如 A → B → A）
 			      AND b.bbi_i_qty >0 --組成用量要大於0

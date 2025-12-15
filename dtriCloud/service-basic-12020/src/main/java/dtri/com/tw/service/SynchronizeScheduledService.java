@@ -176,7 +176,9 @@ public class SynchronizeScheduledService {
 		// 測試 通知Client->Websocket(sendAllUsers)
 		OutsourcerSynchronizeCell sendTo = new OutsourcerSynchronizeCell();
 		sendTo.setSendAllData(sendAllData.toString());
-		sendTo.run();
+		Thread t = new Thread(sendTo, "newScheduleOutsourcers-Thread");
+		t.start();
+
 	}
 
 	// 而外執行(外包生管同步)
@@ -301,7 +303,7 @@ public class SynchronizeScheduledService {
 			// 有抓取到同樣單據
 			// ========更新倉儲狀況========
 			if (erpMapInfactorys.containsKey(o.getSinb())) {
-				erpMapInfactorys.get(o.getSinb()).setNewone(false);//標記不是新的
+				erpMapInfactorys.get(o.getSinb()).setNewone(false);// 標記不是新的
 				// sum不同->更新
 				String sum = erpMapInfactorys.get(o.getSinb()).toString();
 				if (!sum.equals(o.getSisum())) {
@@ -452,7 +454,7 @@ public class SynchronizeScheduledService {
 				newScheduleInfactorys.add(o);
 			}
 			// ========更新產線狀況========
-			//測試用
+			// 測試用
 //			if ("A511-250922026".equals(o.getSinb())) {
 //				System.out.println("A511-250922026");
 //			}
@@ -539,7 +541,9 @@ public class SynchronizeScheduledService {
 		// 測試 通知Client->Websocket(sendAllUsers)
 		InfactorySynchronizeCell sendTo = new InfactorySynchronizeCell();
 		sendTo.setSendAllData(sendAllData.toString());
-		sendTo.run();
+		Thread t = new Thread(sendTo, "InfactorySynchronizeCell-Thread");
+		t.start();
+
 	}
 
 	// 而外執行(廠內生管同步)
@@ -1051,7 +1055,8 @@ public class SynchronizeScheduledService {
 		sendAllData.addProperty("update", "");
 		sendAllData.addProperty("action", "sendAllData");
 		sendTo.setSendAllData(sendAllData.toString());
-		sendTo.run();
+		Thread t = new Thread(sendTo, "InfactoryDftCell-Thread");
+		t.start();
 
 	}
 
@@ -1064,7 +1069,8 @@ public class SynchronizeScheduledService {
 		sendAllData.addProperty("update", "");
 		sendAllData.addProperty("action", "sendAllData");
 		sendTo.setSendAllData(sendAllData.toString());
-		sendTo.run();
+		Thread t = new Thread(sendTo, "InfactoryNewDftCell-Thread");
+		t.start();
 	}
 
 	// 而外執行(異動調查)

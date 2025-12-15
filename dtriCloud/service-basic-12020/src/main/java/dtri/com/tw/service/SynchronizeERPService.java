@@ -312,7 +312,7 @@ public class SynchronizeERPService {
 					// 納入完結更新 -> 不需移除
 					BasicCommandList ok = removeCommandMap.get(nKey);
 					if (ok != null) {
-						//System.out.println(nKey);
+						// System.out.println(nKey);
 						ok.setSysstatus(1);
 						ok.setBclerpconfirm("Y".equals(r.getTa011()) ? "已完工" : "y".equals(r.getTa011()) ? "指定完工" : // 不區分大小寫
 								"未知狀態");
@@ -442,7 +442,10 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
@@ -568,10 +571,10 @@ public class SynchronizeERPService {
 			oKey = oKey.replaceAll("\\s", "");
 			// 比對同一筆資料?->修正
 			// 測試用
-//			if (oKey.contains("A541-251125012")) {
-//				System.out.println(oKey);
-//				// 50-122-210010
-//			}
+			if (oKey.contains("A541-251208013")) {
+				System.out.println(oKey);
+				// 50-122-210010
+			}
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");// ERP檢查碼
 				erpShMaps.get(oKey).setNewone(false);// 標記:不是新的
@@ -598,6 +601,10 @@ public class SynchronizeERPService {
 					o.setBslfuser("✪ " + bslfuser);
 				}
 			} else if (o.getBslcheckin() != 1) {
+				// 測試用
+//				if (oKey.indexOf("A551-251209001-0102") >= 0) {
+//					System.out.println("測試:A551-251209001-0102");
+//				}
 				// 可能移除? 結單?
 				removeShMap.put(oKey, o);
 			}
@@ -672,11 +679,11 @@ public class SynchronizeERPService {
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
-				// 測試用A541-250401003-0018
 //				System.out.println(nKey);
-//				if (nKey.indexOf("A541-251110001") >= 0) {
-//					System.out.println("測試:A541-251110001-0004");
-//				}
+				// 測試用A551-251209001-0102
+				if (nKey.indexOf("A541-251208013-0001") >= 0) {
+					System.out.println("測試:A541-251208013-0001");
+				}
 				// 已經完成->標記更新
 				// if ("3".equals(r.getTc016()) || "N".equals(r.getTc016())) {
 				if ("Y".equals(r.getTe019()) && removeShMap.containsKey(nKey)) {
@@ -694,13 +701,25 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
+			// 測試用A551-251209001-0102
+			String oKey = r.getBslclass() + "-" + r.getBslsn() + "-" + r.getBslnb();
+			if (oKey.indexOf("A541-251208013-0001") >= 0) {
+				System.out.println("測試:A541-251208013-0001");
+			}
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -927,13 +946,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -1142,13 +1168,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -1158,6 +1191,7 @@ public class SynchronizeERPService {
 		shippingListDao.saveAll(saveShLists);
 		incomingListDao.saveAll(removeInLists);
 		shippingListDao.saveAll(removeShLists);
+
 	}
 
 	// ============A581 生產入庫單 ============
@@ -1262,7 +1296,10 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
@@ -1375,7 +1412,10 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
@@ -1486,7 +1526,10 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
@@ -1689,13 +1732,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -1908,13 +1958,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -2167,13 +2224,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -2390,13 +2454,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -2618,13 +2689,20 @@ public class SynchronizeERPService {
 		// 添加:移除標記
 		removeInLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBilmuser().equals("")) {
+			if (r.getBilfuser().equals("")) {
+				r = autoRemoveService.incomingAuto(r);
+			} else if (r.getBilfuser().contains("System")) {
+				erpAutoCheckService.incomingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.incomingAuto(r);
 			}
 		});
 		removeShLists.forEach(r -> {
 			// 排除已經有User
-			if (r.getBslmuser().equals("")) {
+			if (r.getBslfuser().equals("")) {
+				r = autoRemoveService.shippingAuto(r);
+			} else if (r.getBslfuser().contains("System")) {
+				// 如果是 有System自動 則須歸還
+				erpAutoCheckService.shippingAutoRe(r, wAsSave, wTFs, wCs, wMs, wAs);
 				r = autoRemoveService.shippingAuto(r);
 			}
 		});
@@ -2709,7 +2787,7 @@ public class SynchronizeERPService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-//				if(key.indexOf("A541-231122019")>=0) {
+//				if(key.indexOf("A232-251030002")>=0) {
 //					System.out.println(key);
 //				}
 			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTh020().equals("N")) {
@@ -2737,8 +2815,12 @@ public class SynchronizeERPService {
 			removeShCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTh001_th002_th003().replaceAll("\\s", "");
+				// 測試用
+				if (nKey.indexOf("A232-251030002") >= 0) {
+					System.out.println(nKey);
+				}
 				// 已經完成->標記更新
-				if ("Y".equals(r.getTg047()) && removeShMap.containsKey(nKey)) {
+				if ("Y".equals(r.getTh020()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
 					o.setSysmuser("system");
 					o.setSysstatus(1);// 完成

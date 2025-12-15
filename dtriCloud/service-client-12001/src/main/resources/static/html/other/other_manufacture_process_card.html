@@ -1479,7 +1479,7 @@
 							let del = items[i]['del'];
 							//每個項目(有?沒有?)
 							if (bisqty > 0) {
-								let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+								let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 								if (del) {
 									htmlc = "<del  style='color: #ccc; '>" + htmlc + "</del>";
 								}
@@ -1540,7 +1540,7 @@
 						let bisnb = bom_items.split("<_>")[2];
 						let bisqty = $('#bom_items_qty').val();
 						//
-						let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+						let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 						let sphbisitemEx = $('#sphbisitemEx_val').clone();
 						sphbisitemEx.removeAttr("id");
 						sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
@@ -2245,7 +2245,7 @@
 									let bisqty = Number(items[i]['bisqty']);
 									//每個項目(有?沒有?)
 									if (bisqty > 0) {
-										let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '(x' + bisqty + ")" : "");
+										let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 										let sphbisitemEx = $('#sphbisitemEx_val').clone();
 										sphbisitemEx.removeAttr("id");
 										sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");

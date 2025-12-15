@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import dtri.com.tw.shared.Fm_T;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -28,7 +29,9 @@ import jakarta.persistence.Transient;
  *      ---盤點清單-清單---<br>
  *		wi_wm_p_nb : 物料號(品號)<br>
  *		wi_wa_s_location : 物料儲位<br>
+ * *	wi_wa_alias_name : 物料倉儲(名稱)<br>
  *		wi_wa_alias : 物料倉儲<br>
+ *		wi_wa_alias_nb : 物料倉儲_物料號<br>
  *		wi_date : 盤點時間<br>
  *		wi_user : 盤點人<br>
  *		wi_now_qty : 盤點數<br>
@@ -64,13 +67,13 @@ public class WarehouseInventory {
 		this.sysstatus = 0;
 		this.syssort = 0;// 欄位?排序
 		this.sysnote = "";
-		this.syshnote = "";
 		// 盤點-清單
 		this.wiwmpnb = "";
 		this.wiwmname = "";
 		this.wiwaslocation = "";
 		this.wiwaalias = "";
-		this.widate = new Date();
+		this.setWiwaaliasnb("");
+		this.widate = Fm_T.toDate("2000-01-01");
 		this.wiuser = "";
 		this.winowqty = 0;
 		this.wignowqty = 0;
@@ -106,10 +109,6 @@ public class WarehouseInventory {
 	private Integer syssort;
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
-	@Column(name = "sys_h_note", nullable = false, columnDefinition = "text default ''")
-	private String syshnote;
-	@Column(name = "sys_ho_note", nullable = false, columnDefinition = "text default ''")
-	private String syshonote;
 
 	// 盤點-清單
 	@Id
@@ -126,6 +125,12 @@ public class WarehouseInventory {
 	private String wiwaslocation;
 	@Column(name = "wi_wa_alias", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String wiwaalias;
+	@Column(name = "wi_wa_alias_name", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String wiwaaliasname;
+
+	@Column(name = "wi_wa_alias_nb", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String wiwaaliasnb;
+
 	@Column(name = "wi_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date widate;
 	@Column(name = "wi_user", nullable = false, columnDefinition = "varchar(50) default ''")
@@ -153,14 +158,6 @@ public class WarehouseInventory {
 	private Date ssyscdate;// 起始時間
 	@Transient
 	private Date esyscdate;// 結束時間
-
-	public String getSyshnote() {
-		return syshnote;
-	}
-
-	public void setSyshnote(String syshnote) {
-		this.syshnote = syshnote;
-	}
 
 	public String getWiwmpnb() {
 		return wiwmpnb;
@@ -354,14 +351,6 @@ public class WarehouseInventory {
 		this.sysnote = sysnote;
 	}
 
-	public String getSyshonote() {
-		return syshonote;
-	}
-
-	public void setSyshonote(String syshonote) {
-		this.syshonote = syshonote;
-	}
-
 	public Long getWiid() {
 		return wiid;
 	}
@@ -382,6 +371,62 @@ public class WarehouseInventory {
 	 */
 	public void setWiwmname(String wiwmname) {
 		this.wiwmname = wiwmname;
+	}
+
+	/**
+	 * @return the esyscdate
+	 */
+	public Date getEsyscdate() {
+		return esyscdate;
+	}
+
+	/**
+	 * @param esyscdate the esyscdate to set
+	 */
+	public void setEsyscdate(Date esyscdate) {
+		this.esyscdate = esyscdate;
+	}
+
+	/**
+	 * @return the ssyscdate
+	 */
+	public Date getSsyscdate() {
+		return ssyscdate;
+	}
+
+	/**
+	 * @param ssyscdate the ssyscdate to set
+	 */
+	public void setSsyscdate(Date ssyscdate) {
+		this.ssyscdate = ssyscdate;
+	}
+
+	/**
+	 * @return the wiwaaliasnb
+	 */
+	public String getWiwaaliasnb() {
+		return wiwaaliasnb;
+	}
+
+	/**
+	 * @param wiwaaliasnb the wiwaaliasnb to set
+	 */
+	public void setWiwaaliasnb(String wiwaaliasnb) {
+		this.wiwaaliasnb = wiwaaliasnb;
+	}
+
+	/**
+	 * @return the wiwaaliasname
+	 */
+	public String getWiwaaliasname() {
+		return wiwaaliasname;
+	}
+
+	/**
+	 * @param wiwaaliasname the wiwaaliasname to set
+	 */
+	public void setWiwaaliasname(String wiwaaliasname) {
+		this.wiwaaliasname = wiwaaliasname;
 	}
 
 }

@@ -15,7 +15,7 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 
 	// 查詢全部含-頁數
 	@Query("SELECT c FROM BomProductManagement c "//
-			+ "WHERE (:bpmnb is null or c.bpmnb LIKE %:bpmnb% ) and "// BOM號
+			+ "WHERE (:bpmnb is null or c.bpmnb LIKE :bpmnb% ) and "// BOM號
 			+ "(:bpmmodel is null or c.bpmmodel LIKE %:bpmmodel% ) and "// BOM型號
 			+ "(:bpmtypename is null or c.bpmtypename LIKE %:bpmtypename% ) and" // 產品歸類-名稱
 			+ "(:bpmbisitem is null or c.bpmbisitem LIKE %:bpmbisitem% ) and " // 產品規格

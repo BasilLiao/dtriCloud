@@ -154,8 +154,11 @@
 									<td style="max-width: 200px" id="modify_c_ex_in"><input
 										class="col-12 m-0 p-1 border border-dark form-control"
 										type="number" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_id"><input
+									<td style="max-width: 200px" id="modify_c_ex_date"><input
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
+										type="text" value="" placeholder="Ex:"></td>
+									<td style="max-width: 200px" id="modify_c_ex_datetime"><input
+										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_datetime"
 										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_t"><input
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
@@ -492,11 +495,18 @@
 						case "textarea":
 							cloneBhv = $("#modify_c_ex_tt").clone();
 							break;
+						case "textareajson":
+							cloneBhv = $("#modify_c_ex_tt").clone();
+							cloneBhv.find("textarea").addClass('textareajson');
+							break;
 						case "number":
 							cloneBhv = $("#modify_c_ex_in").clone();
 							break;
+						case "date":
+							cloneBhv = $("#modify_c_ex_date").clone();
+							break;
 						case "datetime":
-							cloneBhv = $("#modify_c_ex_id").clone();
+							cloneBhv = $("#modify_c_ex_datetime").clone();
 							break;
 						case "time":
 							cloneBhv = $("#modify_c_ex_t").clone();
@@ -620,11 +630,18 @@
 						case "textarea":
 							cloneBdv = $("#modify_c_ex_tt").clone();
 							break;
+						case "textareajson":
+							cloneBdv = $("#modify_c_ex_tt").clone();
+							cloneBdv.find("textarea").addClass('textareajson');
+							break;
 						case "number":
 							cloneBdv = $("#modify_c_ex_in").clone();
 							break;
+						case "date":
+							cloneBdv = $("#modify_c_ex_date").clone();
+							break;
 						case "datetime":
-							cloneBdv = $("#modify_c_ex_id").clone();
+							cloneBdv = $("#modify_c_ex_datetime").clone();
 							break;
 						case "time":
 							cloneBdv = $("#modify_c_ex_t").clone();
@@ -639,8 +656,8 @@
 							cloneBdv = $("#modify_c_ex_ip").clone();
 							break;
 						case "image":
-							cloneBhv = $("#modify_c_ex_ip").clone();
-							cloneBhv.find("input").attr("accept", ".jpg,.jpeg,.gif,.png");
+							cloneBdv = $("#modify_c_ex_ip").clone();
+							cloneBdv.find("input").attr("accept", ".jpg,.jpeg,.gif,.png");
 							break;
 						case "select":
 							cloneBdv = $("#modify_c_ex_st").clone();
@@ -1231,6 +1248,10 @@
 										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
 										modifyThvEx.find("." + k).val(value);
+									} else if(modifyThvEx.find("." + k).hasClass('textareajson')){
+										// 排版：在逗號後加上換行
+									    let pretty = value.replace(/,/g, ",\n");
+										modifyThvEx.find("." + k).val(pretty);
 									} else {
 										//非特殊
 										modifyThvEx.find("." + k).val(value);
@@ -1300,6 +1321,10 @@
 										value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
 										value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
 										modifyTdvEx.find("." + k).val(value);
+									} else if(modifyTdvEx.find("." + k).hasClass('textareajson')){
+										// 排版：在逗號後加上換行
+									    let pretty = value.replace(/,/g, ",\n");
+										modifyThvEx.find("." + k).val(pretty);
 									} else {
 										//沒有特殊
 										modifyTdvEx.find("." + k).val(value);
@@ -1407,6 +1432,12 @@
 							}
 							val = binary;
 						}
+						//可能是JSON格式
+						if($(this).hasClass('textareajson')){
+							// 排版：在逗號後加上換行->要去除
+							val = val.replace(/\r?\n/g, "");
+						}
+						
 						entityFormatJson[$(this).attr("title")] = val;
 					});
 					entityJsons.push(entityFormatJson);
@@ -1425,6 +1456,11 @@
 						//="checkbox"?
 						if ($(this).attr("type") == 'checkbox') {
 							val = $(this).is(':checked');
+						}
+						//可能是JSON格式
+						if($(this).hasClass('textareajson')){
+							// 排版：在逗號後加上換行->要去除
+							val = val.replace(/\r?\n/g, "");
 						}
 						entityFormatJson[$(this).attr("title")] = val;
 					});
@@ -1452,9 +1488,22 @@
 				$("#btn_send").trigger('click');
 			},
 			datetimepickerDate() {
-				//日期時間格式
+				//日期格式
 				$('.datetimepicker').remove();
-				$('#modify_c tbody .datetimepicker_date').datetimepicker({
+				$('#search_c_item .datetimepicker_date').datetimepicker({
+					format: 'yyyy-mm-dd',
+					pickerPosition: 'bottom-right',
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
+					//......可以同上項目代碼自定義設置
+				});
+				//日期時間格式
+				$('#modify_c tbody .datetimepicker_datetime').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -1467,6 +1516,7 @@
 					bootcssVer: 5,
 					//......可以同上項目代碼自定義設置
 				});
+				
 				//時間格式
 				$('#modify_c tbody .datetimepicker_time').datetimepicker({
 					format: 'hh:ii',

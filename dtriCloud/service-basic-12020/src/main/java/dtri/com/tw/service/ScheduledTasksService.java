@@ -110,6 +110,8 @@ public class ScheduledTasksService {
 			// synchronizeScheduledService.scheduleInDftNotification();
 			// 廠內生管排程 新單據 寄信通知(測試用)
 			// synchronizeScheduledService.scheduleInDftNewNotification();
+			// BOM規格更正(測試用)
+			// synchronizeBomService.bomRevisedSpecifications();
 			// ==================產品BOM==================
 			// BOM機種別
 			synchronizeBomService.erpSynchronizeProductModel();
@@ -148,6 +150,19 @@ public class ScheduledTasksService {
 			synchronizeScheduledService.scheduleInDftNewNotification();
 			// BIOS檢查版本
 			synchronizeBiosService.versionCheckBios();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+		}
+	}
+
+	// 每日(30)23:30分執行一次
+	// 自動同步(ERP產品抓取for BIOS)
+	@Scheduled(cron = "0 30 23 * * ? ")
+	public void updateEverydayNight() {
+		try {
+			// BOM規格更正(測試用)
+			synchronizeBomService.bomRevisedSpecifications();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));

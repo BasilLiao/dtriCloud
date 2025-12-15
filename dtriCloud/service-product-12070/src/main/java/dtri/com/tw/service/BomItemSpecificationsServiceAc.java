@@ -3,11 +3,14 @@ package dtri.com.tw.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +30,12 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import dtri.com.tw.bean.BasicLine;
+import dtri.com.tw.pgsql.dao.BasicBomIngredientsDao;
 import dtri.com.tw.pgsql.dao.BomItemSpecificationsDao;
 import dtri.com.tw.pgsql.dao.BomProductManagementDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.BasicBomIngredients;
 import dtri.com.tw.pgsql.entity.BomItemSpecifications;
 import dtri.com.tw.pgsql.entity.BomItemSpecificationsDetailFront;
 import dtri.com.tw.pgsql.entity.BomProductManagement;
@@ -60,6 +66,9 @@ public class BomItemSpecificationsServiceAc {
 
 	@Autowired
 	private BomProductManagementDao managementDao;
+
+	@Autowired
+	private BasicBomIngredientsDao bomIngredientsDao;
 
 	@Autowired
 	private EntityManager em;
@@ -1039,10 +1048,11 @@ public class BomItemSpecificationsServiceAc {
 		}
 
 		// Step3-2.資料區分(一般/細節)
-		ArrayList<BomProductManagement> entityBoms = managementDao.findAllBySearch(null, null, null, null, null, null);
+		ArrayList<BomProductManagement> entityBoms = managementDao.findAllBySearch("90-", null, null, null, null, null);
 
 		// 收集「真的有變更」的資料列，最後批次 saveAll
 		List<BomProductManagement> dirty = new ArrayList<>();
+		List<BomProductManagement> bomSynErp = new ArrayList<>();
 
 		// Gson：若 JSON 內含 HTML 內容，建議用 disableHtmlEscaping 避免被轉義
 		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -1133,6 +1143,397 @@ public class BomItemSpecificationsServiceAc {
 			managementDao.saveAll(dirty);
 			// 視需求：若後續馬上要讀一致資料，可立刻 flush
 			// managementDao.flush();
+		}
+		List<Order> orders = new ArrayList<>();
+		orders.add(new Order(Direction.ASC, "bbisnnb"));// BOM+序號
+		// 一般模式
+		PageRequest pageable = PageRequest.of(0, 1000, Sort.by(orders));
+		// 同步BOM 與 規格BOM一致性
+		for (BomProductManagement b : entityBoms) {
+			// 取得產品-物料
+			ArrayList<BasicBomIngredients> bomIngredients = bomIngredientsDao.findAllBySearch(b.getBpmnb(), null, null,
+					null, 1, null, pageable);
+
+			// ===== 新 BOM：ERP 抓回的 BOM，格式 mat_qty_process_level =====
+			JsonArray bomNewArray = new JsonArray();
+			bomIngredients.forEach(e -> {
+				// 組成物料_數量_製成_階層(預設都是1)
+				bomNewArray.add(e.getBbiisn() + "_" + e.getBbiiqty() + "_" + e.getBbiiprocess() + "_1");
+			});
+
+			// ===== 讀取 Cloud JSON 欄位(避免各種異常) =====
+			String raw = b.getBpmbisitem();
+			if (raw == null || raw.isBlank()) {
+				continue;
+			}
+
+			JsonObject root;
+			try {
+				root = JsonParser.parseString(raw).getAsJsonObject();
+			} catch (Exception ex) {
+				continue;
+			}
+
+			if (!root.has("items") || !root.get("items").isJsonArray() || !root.has("basic")
+					|| !root.get("basic").isJsonArray()) {
+				continue;
+			}
+
+			// 格式化內容
+			JsonArray items = root.getAsJsonArray("items");// Cloud 規格:KeyPart
+			JsonArray basic = root.getAsJsonArray("basic");// Cloud 規格:物料
+			// ===== 基本 BOM 舊結構（Cloud basic + Cloud items 中的 Key Parts）=====
+			JsonArray basicItems = basic.deepCopy(); // 舊的BOM
+			// ===== groupChange：蒐集 Key Part 的料號 -> spec =====
+			// key: (GID)
+			// val: Map<物料號, BomItemSpecifications>
+			Map<Long, Map<String, BomItemSpecifications>> groupChange = new HashMap<>();
+			// 為了快速判斷某料號是否曾是 Key Part（用在 basic 重建時排除）
+			// key: 料號
+			Set<String> keyPartMaterials = new HashSet<>();
+			// ===== 掃描 items，找 Key Part（舊 Cloud 結構）=====
+			for (JsonElement el : items) {
+
+				if (!el.isJsonObject())
+					continue;
+
+				JsonObject ii = el.getAsJsonObject();
+				String bisgidStr = getAsString(ii, "bisgid");
+				String bisnb = getAsString(ii, "bisnb");
+				String qty = getAsString(ii, "bisqty");
+				String process = getAsString(ii, "bisprocess");
+				String level = getAsString(ii, "bislevel");
+
+				if (bisgidStr == null)
+					continue;
+				if (bisnb == null || "customize".equals(bisnb))
+					continue;
+				if (!"1".equals(level))
+					continue; // 不是第一階層的略過-> Key Part 條件
+
+				// 找到此群組的規格表 (假設 itemsMap 的 key 是 String 型別的 bisgid)
+				Map<String, BomItemSpecifications> group = itemsMap.get(bisgidStr);
+				if (group == null || group.isEmpty())
+					continue;
+
+				// 轉成 Long 型別 GID
+				Long gid = null;
+				try {
+					gid = Long.valueOf(bisgidStr);
+				} catch (NumberFormatException ex) {
+					// 若資料有問題，這一筆略過
+					continue;
+				}
+
+				// 取得或建立此群組底下的「料號 -> spec」map
+				Map<String, BomItemSpecifications> byMaterialMap = groupChange.computeIfAbsent(gid,
+						k -> new HashMap<>());
+
+				// 將此群組底下的所有 Key Part 規格都掃描一次，建立完整索引
+				for (BomItemSpecifications spec : group.values()) {
+					String m = spec.getBisnb();
+					if (m == null)
+						continue;
+
+					byMaterialMap.put(m, spec); // 建立 (gid -> {mat -> spec})
+					keyPartMaterials.add(m); // 記錄：此料號是 Key Part 候選
+				}
+
+				// 加入舊 basic 額外資訊（舊 items 也視為 basic）
+				basicItems.add(bisnb + "_" + qty + "_" + process + "_" + level + "_" + bisgidStr);
+			}
+
+			// ============================
+			// oldMap / newMap 建構->為了更好比對 BOM物料差異<組成物料:組成物料_數量_製成_階層_使用的KeyPart項目群組GID>
+			// ============================
+
+			Map<String, BasicLine> oldMap = new HashMap<>();
+			for (JsonElement e : basicItems) {
+				if (e == null || e.isJsonNull())
+					continue;
+				BasicLine line = BasicLine.parseOld(e.getAsString());
+				if (line.getMaterial() != null && !line.getMaterial().isBlank()) {
+					oldMap.put(line.getMaterial(), line);
+				}
+			}
+
+			Map<String, BasicLine> newMap = new HashMap<>();
+			for (JsonElement e : bomNewArray) {
+				if (e == null || e.isJsonNull())
+					continue;
+				BasicLine line = BasicLine.parseNew(e.getAsString());
+				if (line.getMaterial() != null && !line.getMaterial().isBlank()) {
+					newMap.put(line.getMaterial(), line);
+				}
+			}
+			System.out.println(basicItems.toString());
+			System.out.println(bomNewArray.toString());
+			// ============================
+			// 3. 計算差異（新增／移除／修改）
+			// ============================
+			// removedMaterials：舊有有、但新 BOM 沒有 → 視為「移除」
+			Set<String> removedMaterials = new HashSet<>();
+			// addedMaterials：新 BOM 有、但舊有沒有 → 視為「新增」
+			Set<String> addedMaterials = new HashSet<>();
+			// modifiedMaterials：舊、新都有同料號，但 qty / process / level 任一不同 → 視為「修改」
+			Set<String> modifiedMaterials = new HashSet<>();
+
+			// 舊有 -> 新沒有
+			for (String mat : oldMap.keySet()) {
+				if (!newMap.containsKey(mat))
+					removedMaterials.add(mat);
+			}
+
+			// 新有 -> 舊沒有 或 修改數量/製程/階層
+			for (String mat : newMap.keySet()) {
+				BasicLine n = newMap.get(mat);
+				BasicLine o = oldMap.get(mat);
+
+				if (o == null) {// 舊沒有 → 純新增
+					addedMaterials.add(mat);
+					continue;
+				}
+				// 比較 qty / process / level 任一欄位是否不同
+				boolean changed = !o.getQty().equals(n.getQty()) || !o.getProcess().equals(n.getProcess())
+						|| !o.getLevel().equals(n.getLevel());
+
+				if (changed)
+					modifiedMaterials.add(mat);
+			}
+
+			// ============================
+			// 4. 以群組 bisgid 為單位進行 Items 操作
+			// 說明：
+			// - 此設計是「group 為單位」而非「單一料號為單位」
+			// - 一旦某料號 (Key Part) 移除或修改，就以其群組 bisgid 決定整組 items 的刪除或替換
+			// ============================
+			// groupsToRemove：需整組刪除的群組 ID 集合
+			Set<Long> groupsToRemove = new HashSet<>();
+			// groupsToAdd：需新增的群組 ID 集合
+			Map<Long, BomItemSpecifications> groupsToAdd = new HashMap<>();
+			// groupsToReplace：需整組更新的群組 (bisgid → 新的 BomItemSpecifications)
+			Map<Long, BomItemSpecifications> groupsToReplace = new HashMap<>();
+
+			// 移除：舊有有但新 BOM 沒有的料號 -> 此料號出現在哪些群組，這些群組就要移除
+			for (String mat : removedMaterials) {
+				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+					Long gid = entry.getKey();
+					Map<String, BomItemSpecifications> byMat = entry.getValue();
+
+					if (byMat.containsKey(mat)) {
+						groupsToRemove.add(gid);
+					}
+				}
+			}
+			// 新增：新有有但舊 BOM 沒有的料號 -> 此料號出現在哪些群組，這些群組就要新增
+			for (String mat : addedMaterials) {
+				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+					Long gid = entry.getKey();
+					Map<String, BomItemSpecifications> byMat = entry.getValue();
+
+					if (byMat.containsKey(mat)) {
+						BomItemSpecifications spec = byMat.get(mat);
+						groupsToAdd.put(gid, spec);
+					}
+				}
+			}
+
+			// 修改：舊/新都有此料號，但 qty/process/level 有變化 -> 出現此料號的群組都要更新
+			for (String mat : modifiedMaterials) {
+				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+					Long gid = entry.getKey();
+					Map<String, BomItemSpecifications> byMat = entry.getValue();
+
+					if (byMat.containsKey(mat)) {
+						BomItemSpecifications spec = byMat.get(mat);
+						groupsToReplace.put(gid, spec);
+					}
+				}
+			}
+
+			// ===== 生成新的 items =====
+			JsonArray newItems = new JsonArray();
+
+			for (JsonElement el : items) {
+				if (!el.isJsonObject()) {// 異常項目直接略過
+					continue;
+				}
+
+				JsonObject obj = el.getAsJsonObject();
+				Long bisgid = obj.has("bisgid") ? obj.get("bisgid").getAsLong() : null;
+
+				if (bisgid != null) {
+
+					// 整組移除:若此群組在 groupsToRemove 中 & 不在 groupsToAdd 中 → 整組移除，不再加入 newItems
+					if (groupsToRemove.contains(bisgid) && !groupsToAdd.containsKey(bisgid)) {
+						continue;
+					}
+
+					// 新增 : groupsToAdd 中
+					if (groupsToAdd.containsKey(bisgid)) {
+						BomItemSpecifications spec = groupsToAdd.get(bisgid);
+						BasicLine n = newMap.get(spec.getBisnb());
+						if (n == null) {
+							// 理論上不應發生，若發生代表 spec 與新 BOM 不一致，略過這筆群組更新
+							continue;
+						}
+						JsonObject newItem = new JsonObject();
+						newItem.addProperty("bisid", spec.getBisid() + "");
+						newItem.addProperty("bisgid", spec.getBisgid() + "");
+						newItem.addProperty("bisnb", spec.getBisnb());
+						newItem.addProperty("bisname", spec.getBisname());
+						newItem.addProperty("bisqty", n.getQty());
+						newItem.addProperty("bisgname", spec.getBisgname());
+						newItem.addProperty("bisgfname", spec.getBisgfname());
+						newItem.addProperty("bisfname", spec.getBisfname());
+						newItem.addProperty("bissdescripion", spec.getBissdescripion());
+						newItem.addProperty("bisprocess", n.getProcess());
+						newItem.addProperty("bislevel", n.getLevel());
+						// 將更新後的項目加入 newItems
+						newItems.add(newItem);
+						// 注意：這裡是「整組替換」，所以舊的同群組項目全部略過
+						continue;
+					}
+
+					// 整組更新:若此群組在 groupsToReplace 中 → 整組改為最新 spec
+					if (groupsToReplace.containsKey(bisgid)) {
+						BomItemSpecifications spec = groupsToReplace.get(bisgid);
+						BasicLine n = newMap.get(spec.getBisnb());
+						if (n == null) {
+							// 理論上不應發生，若發生代表 spec 與新 BOM 不一致，略過這筆群組更新
+							continue;
+						}
+						JsonObject newItem = new JsonObject();
+						newItem.addProperty("bisid", spec.getBisid() + "");
+						newItem.addProperty("bisgid", spec.getBisgid() + "");
+						newItem.addProperty("bisnb", spec.getBisnb());
+						newItem.addProperty("bisname", spec.getBisname());
+						newItem.addProperty("bisqty", n.getQty());
+						newItem.addProperty("bisgname", spec.getBisgname());
+						newItem.addProperty("bisgfname", spec.getBisgfname());
+						newItem.addProperty("bisfname", spec.getBisfname());
+						newItem.addProperty("bissdescripion", spec.getBissdescripion());
+						newItem.addProperty("bisprocess", n.getProcess());
+						newItem.addProperty("bislevel", n.getLevel());
+						// 將更新後的項目加入 newItems
+						newItems.add(newItem);
+						// 注意：這裡是「整組替換」，所以舊的同群組項目全部略過
+						continue;
+					}
+				}
+
+				// 沒被處理的保留:不在移除或更新清單的項目 → 原封不動加入 newItems
+				newItems.add(obj);
+			}
+			// 新增
+			// ============================
+			// 4-1. 針對「新增的 Key Part」補上對應的 items
+			// ============================
+
+			for (String mat : addedMaterials) {
+
+				// 若此料號沒有出現在任何 Key Part 群組 → 不需建立 items，由 basic 管即可
+				if (!keyPartMaterials.contains(mat)) {
+					continue;
+				}
+
+				// 在所有群組裡找出哪些群組有這個料號
+				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+					Long gid = entry.getKey();
+					Map<String, BomItemSpecifications> byMat = entry.getValue();
+
+					if (!byMat.containsKey(mat)) {
+						continue;
+					}
+
+					// 若該群組已被標記為整組移除，就不用再為這個群組新增
+					if (groupsToRemove.contains(gid)) {
+						continue;
+					}
+
+					BomItemSpecifications spec = byMat.get(mat);
+					BasicLine n = newMap.get(mat);
+					if (n == null) {
+						// 理論上不會發生，防護一下
+						continue;
+					}
+
+					JsonObject newItem = new JsonObject();
+					newItem.addProperty("bisid", String.valueOf(spec.getBisid()));
+					newItem.addProperty("bisgid", String.valueOf(spec.getBisgid()));
+					newItem.addProperty("bisnb", spec.getBisnb());
+					newItem.addProperty("bisname", spec.getBisname());
+					newItem.addProperty("bisqty", n.getQty());
+					newItem.addProperty("bisgname", spec.getBisgname());
+					newItem.addProperty("bisgfname", spec.getBisgfname());
+					newItem.addProperty("bisfname", spec.getBisfname());
+					newItem.addProperty("bissdescripion", spec.getBissdescripion());
+					newItem.addProperty("bisprocess", n.getProcess());
+					newItem.addProperty("bislevel", n.getLevel());
+
+					newItems.add(newItem);
+				}
+			}
+
+			// 替換原本 items
+			items = newItems;
+
+			// ============================
+			// 5. 重建 basic（非 Key Part 才會放 basic）
+			// 原則：
+			// - 在 newMap 中的所有料號逐一檢查：
+			// * 若料號出現在 groupChange (代表是 Key Part) → 由 items 管，不放 basic
+			// * 其它料號 → 寫入 basicNewFin
+			// ============================
+
+			JsonArray basicNewFin = new JsonArray();
+			for (String mat : newMap.keySet()) {
+				BasicLine n = newMap.get(mat);
+				// 若料號曾出現在任何 Key Part 群組，代表由 items 管，不放 basic
+				boolean isKeyPart = keyPartMaterials.contains(mat);
+
+				if (!isKeyPart) {
+					basicNewFin.add(n.toBasicString());
+				}
+			}
+
+			// ============================
+			// 6. 寫回 JSON
+			// ============================
+
+			boolean changed = !removedMaterials.isEmpty() || !addedMaterials.isEmpty() || !modifiedMaterials.isEmpty();
+
+			if (changed) {
+				// 排序(basicNewFin)
+				// basicNewFin 排序
+				List<String> list = new ArrayList<>();
+				for (JsonElement el : basicNewFin) {
+					if (!el.isJsonNull()) {
+						list.add(el.getAsString());
+					}
+				}
+				// 字串排序：從小排到大
+				Collections.sort(list);
+				JsonArray sortedBasic = new JsonArray();
+				list.forEach(sortedBasic::add);
+				basicNewFin = sortedBasic;
+				root.add("basic", basicNewFin);
+				root.add("items", items);
+				//
+				String updatedJson = gson.toJson(root);
+				b.setBpmbisitem(updatedJson);
+				bomSynErp.add(b);
+			}
+		}
+		if (!bomSynErp.isEmpty()) {
+			String reBom = new String();
+			for (BomProductManagement o : bomSynErp) {
+				reBom += o.getBpmnb() + "_";
+			}
+			System.out.println("update:" + reBom);
+			managementDao.saveAll(bomSynErp);
+			// 視需求：若後續馬上要讀一致資料，可立刻 flush
+			managementDao.flush();
 		}
 
 		return check;

@@ -562,8 +562,12 @@
 							searchTextEx.find('input').addClass('datetimepicker_time');
 							searchTextEx.appendTo('#searchItem');
 							break;
-						case "datetime":
+						case "date":
 							searchTextEx.find('input').addClass('datetimepicker_date');
+							searchTextEx.appendTo('#searchItem');
+							break;
+						case "datetime":
+							searchTextEx.find('input').addClass('datetimepicker_datetime');
 							searchTextEx.appendTo('#searchItem');
 							break;
 					}
@@ -879,6 +883,18 @@
 				//日期時間格式
 				//$('.datetimepicker').remove();
 				$('#search_c_item .datetimepicker_date').datetimepicker({
+					format: 'yyyy-mm-dd',
+					pickerPosition: 'bottom-right',
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
+					//......可以同上項目代碼自定義設置
+				});
+				$('#search_c_item .datetimepicker_datetime').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -900,6 +916,7 @@
 					autoclose: true,
 					timeFormat: 'hh:mm',
 				});
+				
 			},
 			//==========================修改資料==========================
 			searchToModify(order) {
@@ -1032,7 +1049,7 @@
 				//查詢
 				$("#searchItem .searchVal").each(function (index) {
 					console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
-					if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
+					if (($(this).hasClass('datetimepicker_date') ||$(this).hasClass('datetimepicker_datetime')) && $(this).val() != "") {
 						entityJson[$(this).attr("id")] = new Date($(this).val()).getTime();
 					} else {
 						entityJson[$(this).attr("id")] = $(this).val() == "" ? null : $(this).val();

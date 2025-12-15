@@ -160,7 +160,7 @@ public class BomProductManagementServiceAc {
 			// ERP_料BOM
 			PageRequest pageableBBI = PageRequest.of(0, 5000, Sort.by(ordersBBI));
 			ArrayList<BasicBomIngredients> entityBBI = ingredientsDao.findAllBySearch("90-504", null, null, null, null,
-					pageableBBI);
+					null, pageableBBI);
 			// 參數BOM
 			PageRequest pageableBPS = PageRequest.of(0, 200, Sort.by(ordersBPS));
 			ArrayList<BomParameterSettings> entityBPS = settingsDao.findAllBySearch(null, null, null, pageableBPS);
@@ -446,7 +446,7 @@ public class BomProductManagementServiceAc {
 				PageRequest pageableBBI = PageRequest.of(0, 50000, Sort.by(ordersBBI));
 				// 先查詢有哪些BOM->每一個查詢展BOM(因為JPA 與 原生SQL 有技術上的匹配不到)
 				ArrayList<BasicBomIngredients> bbisnList = ingredientsDao.findAllBySearch(bbisn, bbiname, null, null,
-						null, pageableBBI);
+						null, null, pageableBBI);
 				Map<String, BasicBomIngredients> bbisnMap = new TreeMap<String, BasicBomIngredients>();
 				for (BasicBomIngredients bbis : bbisnList) {
 					// 沒有?最多50筆

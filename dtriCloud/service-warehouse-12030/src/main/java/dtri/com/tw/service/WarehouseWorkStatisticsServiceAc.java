@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.dao.SystemUserDao;
 import dtri.com.tw.pgsql.dao.WarehouseHistoryDao;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseHistory;
@@ -44,6 +45,9 @@ public class WarehouseWorkStatisticsServiceAc {
 
 	@Autowired
 	private WarehouseHistoryDao historyDao;
+
+	@Autowired
+	private SystemUserDao userDao;
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
@@ -161,36 +165,47 @@ public class WarehouseWorkStatisticsServiceAc {
 			// Step4-1. 取得資料(一般/細節)
 			WarehouseWorkStatisticsFront searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					WarehouseWorkStatisticsFront.class);
+			// 帳號與人名對應
+			Map<String, String> userMap = new HashMap<String, String>();
+			userDao.findAll().forEach(u -> {
+				userMap.put(u.getSuaccount(), u.getSuname());
 
-			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWwsnames(), null, null, "(User)",
-					searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
+			});
+
+			ArrayList<WarehouseHistory> entitys = historyDao.findAllBySearch(searchData.getWwsnames(), null, null,
+					"(User)", searchData.getSsyscdate(), searchData.getEsyscdate(), pageable);
 			ArrayList<WarehouseWorkStatisticsFront> wwsfEntitys = new ArrayList<WarehouseWorkStatisticsFront>();
 			TreeMap<String, JsonObject> entityMap = new TreeMap<String, JsonObject>();// 時間||{人名:次數}
 			JsonObject whfusers = new JsonObject();
 			entitys.forEach(w -> {
 				String dateyMd = Fm_T.to_y_M_d(w.getSyscdate());
+				//配對帳號->人
+				String whfuser = w.getWhfuser();
+				if (userMap.containsKey(w.getWhfuser())) {
+					whfuser += "_(" + userMap.get(w.getWhfuser())+")";
+				}
 				if (!w.getWhfuser().equals("")) {
+					// 有同一天?
 					if (entityMap.containsKey(dateyMd)) {
-						// 有同一天?
 						JsonObject wwsf = entityMap.get(dateyMd);
-						if (wwsf.has(w.getWhfuser())) {
+						if (wwsf.has(whfuser)) {
 							// 同一人?
-							int times = wwsf.get(w.getWhfuser()).getAsInt() + 1;
-							wwsf.addProperty(w.getWhfuser(), times);
+							int times = wwsf.get(whfuser).getAsInt() + 1;
+							wwsf.addProperty(whfuser, times);
 							entityMap.put(dateyMd, wwsf);
 						} else {
 							// 全新人?
-							wwsf.addProperty(w.getWhfuser(), 1);
+							wwsf.addProperty(whfuser, 1);
 							entityMap.put(dateyMd, wwsf);
 						}
 					} else {
 						// 全新的一天?
 						JsonObject wwsf = new JsonObject();
-						wwsf.addProperty(w.getWhfuser(), 1);
+						wwsf.addProperty(whfuser, 1);
 						entityMap.put(dateyMd, wwsf);
 					}
-					if (!whfusers.has(w.getWhfuser())) {
-						whfusers.addProperty(w.getWhfuser(), true);
+					if (!whfusers.has(whfuser)) {
+						whfusers.addProperty(whfuser, true);
 					}
 				}
 			});

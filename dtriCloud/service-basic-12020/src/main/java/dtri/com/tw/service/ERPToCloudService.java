@@ -991,7 +991,7 @@ public class ERPToCloudService {
 			Map<String, WarehouseArea> wAs) {
 		// 是否結單?
 		int sysstatus = 0;
-		if (m.getTg047().equals("Y")) {
+		if (m.getTh020().equals("Y")) {
 			sysstatus = 1;
 		}
 		// 資料匹配

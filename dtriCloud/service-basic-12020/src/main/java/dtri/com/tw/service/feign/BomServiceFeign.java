@@ -20,4 +20,8 @@ public interface BomServiceFeign {
 	@RequestMapping(value = { "/bomItemSpecifications/getAutoSearchTestAndUpdate" }, method = RequestMethod.POST)
 	String autoSearchTestAndUpdate(@RequestBody String json);
 
+	// 觸發
+	@RequestMapping(value = { "/bomItemSpecifications/getSynBomAll" }, method = RequestMethod.POST)
+	String autogetSynBomAll(@RequestBody String json);
+
 }

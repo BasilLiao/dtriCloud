@@ -21,7 +21,7 @@ public class PackageService {
 
 	// 查詢欄位-格式
 	public enum SearchType {
-		text, select, time, datetime
+		text, select, time, date, datetime
 	};
 
 	// 寬度
