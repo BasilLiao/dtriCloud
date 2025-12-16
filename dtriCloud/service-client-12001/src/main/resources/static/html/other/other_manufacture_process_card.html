@@ -1477,9 +1477,37 @@
 							let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
 							let bisqty = Number(items[i]['bisqty']);
 							let del = items[i]['del'];
+							//=========長度計算=========
+							let bisfnameMAX = bisfname;
+							// 先組合
+							let mergedText = bisgname + bisfname;
+							const MAX_LEN = 47;  // 最終總長度上限
+							// 如果沒超過，不需處理
+							if (other.methods.realLength(mergedText) > MAX_LEN) {
+							    // bisfname 可使用的寬度
+							    let remain = MAX_LEN - other.methods.realLength(bisgname);
+							    if (remain <= 0) {
+							        // bisgname 已經太長，直接清空 bisfname
+							        bisfnameMAX = "";
+							    } else {
+							        // 預留 … 三個字元寬度
+							        const suffix = "...";
+							        const suffixLen = other.methods.realLength(suffix);
+							        if (other.methods.realLength(bisfname) > remain) {
+							            let cutLen = remain - suffixLen;
+							            if (cutLen < 0) {
+							                // 避免負值，直接不放 suffix
+							                bisfnameMAX = other.methods.safeCut(bisfname, remain);
+							            } else {
+							                // UTF-8 安全裁切 + 接 ...
+							                bisfnameMAX = other.methods.safeCut(bisfname, cutLen) + suffix;
+							            }
+							        }
+							    }
+							}
 							//每個項目(有?沒有?)
 							if (bisqty > 0) {
-								let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
+								let htmlc = '<b>' + bisgname + ' </b>' + bisfnameMAX + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 								if (del) {
 									htmlc = "<del  style='color: #ccc; '>" + htmlc + "</del>";
 								}
@@ -1539,8 +1567,36 @@
 						let bisfname = bom_items.split("<_>")[1];
 						let bisnb = bom_items.split("<_>")[2];
 						let bisqty = $('#bom_items_qty').val();
+						//=========長度計算=========
+						let bisfnameMAX = bisfname;
+						// 先組合
+						let mergedText = bisgname + bisfname;
+						const MAX_LEN = 47;  // 最終總長度上限
+						// 如果沒超過，不需處理
+						if (other.methods.realLength(mergedText) > MAX_LEN) {
+						    // bisfname 可使用的寬度
+						    let remain = MAX_LEN - other.methods.realLength(bisgname);
+						    if (remain <= 0) {
+						        // bisgname 已經太長，直接清空 bisfname
+						        bisfnameMAX = "";
+						    } else {
+						        // 預留 … 三個字元寬度
+						        const suffix = "...";
+						        const suffixLen = other.methods.realLength(suffix);
+						        if (other.methods.realLength(bisfname) > remain) {
+						            let cutLen = remain - suffixLen;
+						            if (cutLen < 0) {
+						                // 避免負值，直接不放 suffix
+						                bisfnameMAX = other.methods.safeCut(bisfname, remain);
+						            } else {
+						                // UTF-8 安全裁切 + 接 ...
+						                bisfnameMAX = other.methods.safeCut(bisfname, cutLen) + suffix;
+						            }
+						        }
+						    }
+						}
 						//
-						let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
+						let htmlc = '<b>' + bisgname + ' </b>' + bisfnameMAX + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 						let sphbisitemEx = $('#sphbisitemEx_val').clone();
 						sphbisitemEx.removeAttr("id");
 						sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
@@ -2243,9 +2299,37 @@
 									let bisnb = items[i]['bisnb'];
 									let bisfname = JSON.parse(items[i]['bisfname']).join(', ');
 									let bisqty = Number(items[i]['bisqty']);
+									//=========長度計算=========
+									let bisfnameMAX = bisfname;
+									// 先組合
+									let mergedText = bisgname + bisfname;
+									const MAX_LEN = 47;  // 最終總長度上限
+									// 如果沒超過，不需處理
+									if (other.methods.realLength(mergedText) > MAX_LEN) {
+									    // bisfname 可使用的寬度
+									    let remain = MAX_LEN - other.methods.realLength(bisgname);
+									    if (remain <= 0) {
+									        // bisgname 已經太長，直接清空 bisfname
+									        bisfnameMAX = "";
+									    } else {
+									        // 預留 … 三個字元寬度
+									        const suffix = "...";
+									        const suffixLen = other.methods.realLength(suffix);
+									        if (other.methods.realLength(bisfname) > remain) {
+									            let cutLen = remain - suffixLen;
+									            if (cutLen < 0) {
+									                // 避免負值，直接不放 suffix
+									                bisfnameMAX = other.methods.safeCut(bisfname, remain);
+									            } else {
+									                // UTF-8 安全裁切 + 接 ...
+									                bisfnameMAX = other.methods.safeCut(bisfname, cutLen) + suffix;
+									            }
+									        }
+									    }
+									}
 									//每個項目(有?沒有?)
 									if (bisqty > 0) {
-										let htmlc = '<b>' + bisgname + ' </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
+										let htmlc = '<b>' + bisgname + ' </b>' + bisfnameMAX + ' ' + (bisqty > 1 ? '<b style="font-size: 18px;">(x' + bisqty + ")</b>" : "");
 										let sphbisitemEx = $('#sphbisitemEx_val').clone();
 										sphbisitemEx.removeAttr("id");
 										sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
@@ -2333,6 +2417,17 @@
 				$("#btn_send").trigger('click');
 				$('#btn_allClear').trigger('click');
 
+			},
+			//==========================對字串做 UTF-8 安全裁切==========================
+			safeCut(str, maxLen) {
+			    const arr = Array.from(str);
+			    if (arr.length <= maxLen) return str;
+			    return arr.slice(0, maxLen).join('');
+			},
+			// 計算真正字元數（避免中文、emoji 被切錯）
+			// Array.from 可以正確解析 Unicode code points
+			realLength(str) {
+			    return Array.from(str).length;
 			},
 			//==========================初始化==========================
 			destroy() {
