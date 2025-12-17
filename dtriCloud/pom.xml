@@ -76,5 +76,6 @@
 		<module>service-product-12070</module>
 		<module>service-material-12080</module>
 		<module>service-ai-12090</module>
+		<module>system-entity-module</module>
 	</modules>
 </project>

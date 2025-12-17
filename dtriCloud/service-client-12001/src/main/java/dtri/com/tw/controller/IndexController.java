@@ -3,6 +3,7 @@ package dtri.com.tw.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,12 +29,22 @@ public class IndexController extends AbstractController {
 	/**
 	 * 登入 and 登出-畫面
 	 */
-	@RequestMapping(value = { "/", "/login.basil", "/index.basil", "/logout.basil" }, method = { RequestMethod.GET })
+	@RequestMapping(value = { "/", "/login.basil", "/index.basil", "/logout.basil", "/cert-install.basil" }, method = {
+			RequestMethod.GET })
 	public String loginCheck(HttpServletRequest request, Model model) {
 		// 顯示方法
 		String funName = new Object() {
 		}.getClass().getEnclosingMethod().getName();
 		sysFunction(funName);
+
+		// 憑證取得
+		String uri = request.getRequestURI(); // 例如 /DTRcloud/cert/install
+		String ctx = request.getContextPath(); // 例如 /DTRcloud
+		String path = uri.substring(ctx.length()); // 例如 /cert/install
+
+		if ("/cert-install.basil".equals(path)) {
+			return "./html/cert-install.html";
+		}
 
 		// 可能有錯誤碼
 		loggerInf(funName + "[Start]", "");

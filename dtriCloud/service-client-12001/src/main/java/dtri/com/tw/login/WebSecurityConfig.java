@@ -116,7 +116,7 @@ public class WebSecurityConfig {
 
 		// thirdparty && img 資料夾靜態資料可 直接 存取 (預設皆有 訪問權限 資料可[匿名]存取)
 		http.authorizeHttpRequests()
-				.requestMatchers(HttpMethod.GET, "/thirdparty/**", "/files/**", "/img/**", "/login.basil",
+				.requestMatchers(HttpMethod.GET, "/cert-install.basil","/thirdparty/**", "/files/**", "/img/**", "/login.basil",
 						"/login.html")
 				.permitAll()
 				// ----請求-index-(訪問)----

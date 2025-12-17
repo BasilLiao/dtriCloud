@@ -45,6 +45,12 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<!--system-entity-module-->
+		<dependency>
+		  <groupId>dtri.com.tw</groupId>
+		  <artifactId>system-entity-module</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!--資料庫運用-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

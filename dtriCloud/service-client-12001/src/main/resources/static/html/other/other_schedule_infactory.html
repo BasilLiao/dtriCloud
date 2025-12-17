@@ -1276,7 +1276,7 @@
 			//==========================Websocket傳送動作==========================
 			//WebsocketAction(objstring)objstring:如果有異常連線重新請求
 			websocketInit(objstring) {
-				let ws = "ws://";
+				let ws = "wss://";
 				ws += location.host;
 				ws += "/DTRcloud/websocket/schedule_infactory_client/echo?userAcc=";
 				ws += $("#menu_login_name").attr("alt");

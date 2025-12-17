@@ -1,7 +1,6 @@
 package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -101,7 +100,8 @@ public class SystemLanguageCellServiceAc {
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
 			// 一般翻譯
-			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySysLCell("SystemLanguageCell", null, 0, null);
+			ArrayList<SystemLanguageCell> languages = languageDao.findAllBySysLCell("SystemLanguageCell", null, 0,
+					null);
 			languages.forEach(x -> {
 				mapLanguages.put(x.getSltarget(), x);
 			});
@@ -142,9 +142,10 @@ public class SystemLanguageCellServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
-			SystemLanguageCell searchData = packageService.jsonToBean(packageBean.getEntityJson(), SystemLanguageCell.class);
-			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySysLCell(searchData.getSlspcontrol(), searchData.getSltarget(),
-					searchData.getSlclass(), pageable);
+			SystemLanguageCell searchData = packageService.jsonToBean(packageBean.getEntityJson(),
+					SystemLanguageCell.class);
+			ArrayList<SystemLanguageCell> entitys = languageDao.findAllBySysLCell(searchData.getSlspcontrol(),
+					searchData.getSltarget(), searchData.getSlclass(), pageable);
 			entitys.forEach(x -> {
 				if (!x.getSllanguage().equals("")) {
 					// {"zh-TW":"建立時間","zh-CN":"建立时间","en-US":"Creation time","vi-VN":"xây dựng thời
@@ -186,14 +187,15 @@ public class SystemLanguageCellServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemLanguageCell>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemLanguageCell>>() {
+					});
 
 			// Step2.資料檢查
 			for (SystemLanguageCell entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllByLanguageCellSame(entityData.getSlspcontrol(),
-						entityData.getSltarget(), null);
+				ArrayList<SystemLanguageCell> checkDatas = languageDao
+						.findAllByLanguageCellSame(entityData.getSlspcontrol(), entityData.getSltarget(), null);
 				for (SystemLanguageCell checkData : checkDatas) {
 					if (checkData.getSlid().compareTo(entityData.getSlid()) != 0) {
 						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
@@ -253,16 +255,18 @@ public class SystemLanguageCellServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemLanguageCell>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemLanguageCell>>() {
+					});
 
 			// Step2.資料檢查
 			for (SystemLanguageCell entityData : entityDatas) {
 				// 檢查-名稱重複(有資料 && 不是同一筆資料)
-				ArrayList<SystemLanguageCell> checkDatas = languageDao.findAllByLanguageCellSame(entityData.getSlspcontrol(),
-						entityData.getSltarget(), null);
+				ArrayList<SystemLanguageCell> checkDatas = languageDao
+						.findAllByLanguageCellSame(entityData.getSlspcontrol(), entityData.getSltarget(), null);
 				if (checkDatas.size() > 0) {
-					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW, new String[] { entityData.getSltarget() });
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1001, Lan.zh_TW,
+							new String[] { entityData.getSltarget() });
 				}
 			}
 		}
@@ -298,8 +302,9 @@ public class SystemLanguageCellServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemLanguageCell>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemLanguageCell>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -329,8 +334,9 @@ public class SystemLanguageCellServiceAc {
 		// =======================資料檢查=======================
 		if (packageBean.getEntityJson() != null && !packageBean.getEntityJson().equals("")) {
 			// Step1.資料轉譯(一般)
-			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(), new TypeReference<ArrayList<SystemLanguageCell>>() {
-			});
+			entityDatas = packageService.jsonToBean(packageBean.getEntityJson(),
+					new TypeReference<ArrayList<SystemLanguageCell>>() {
+					});
 			// Step2.資料檢查
 		}
 		// =======================資料整理=======================
@@ -446,9 +452,9 @@ public class SystemLanguageCellServiceAc {
 	private void languageCellCheckAll() throws ClassNotFoundException {
 		// Prepare.
 		// 只能取得SRC內
-		String packageName = "dtri.com.tw.pgsql.entity";
-		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
-		System.out.println(root);
+//		String packageName = "dtri.com.tw.pgsql.entity";
+//		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
+//		System.out.println(root);
 		// 取得實際物件
 		EntityManager entityManager = em;
 		Set<EntityType<?>> entitySet = entityManager.getMetamodel().getEntities();
@@ -468,16 +474,17 @@ public class SystemLanguageCellServiceAc {
 		sysstatusArr.add("onlyAdmin(特權)_3");
 		// Find classes implementing ICommand.
 		ArrayList<SystemLanguageCell> languageCells = new ArrayList<>();
-		for (EntityType<?> file : entitySet) {
-			String className = file.getName().replaceAll(".class", "");
-			// String className = file.getName();
-			Class<?> cls = Class.forName(packageName + "." + className);
+		for (EntityType<?> entityType : entitySet) {
+			Class<?> cls = entityType.getJavaType(); // ✅ 直接拿到 Entity 的 Class
+			String className = cls.getSimpleName(); // 例如 SystemUser / WarehouseArea
+			String fullName = cls.getName(); // 例如 dtri.com.tw.system.entity.SystemUser
+
 			Field[] fields = cls.getDeclaredFields();
-			System.out.println(className);
+			System.out.println(fullName);
 			// 每個欄位
 			for (Field fieldOne : fields) {
-				if("WarehouseSynchronize".equals(className)) {
-					System.out.println(className);					
+				if ("WarehouseSynchronize".equals(className)) {
+					System.out.println(className);
 				}
 				if (languageDao.findAllByLanguageCellSame(className, fieldOne.getName(), 0).size() == 0) {
 					// 查詢比對後->自動建置->預設值
