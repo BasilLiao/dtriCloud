@@ -263,7 +263,7 @@
 			markDetails: {},//有選取的IKeyGKey
 			marksLock: {},//有選取的IKeyGKey(鎖定)
 			entityFormatJson: {},//查詢格式
-			btn_send_auto: "",//自動傳送
+			btn_send_auto: null,//自動傳送
 			//換頁設置
 			searchPageSet: {
 				total: 100,//批次數量(1-1000)
@@ -427,13 +427,25 @@
 				$(document).on("click", "#search_c #btn_send", function (event) {
 					console.log("btn_send");
 					other.methods.searchSend(0);
-					clearTimeout(other.data.btn_send_auto);
-					if ($("#btn_send_auto").prop("checked")) {
-						other.data.btn_send_auto = setTimeout(function () {
+					// 是否啟用自動查詢
+					if ($("#search_c #btn_send_auto").prop("checked")) {
+						console.log("start auto send (30s)");
+						// ✅ 這一輪 timeout 已執行，先釋放，才能排下一輪
+						clearTimeout(other.data.btn_send_auto);
+						other.data.btn_send_auto = null;
+						other.data.btn_send_auto = setTimeout(function autoSend() {
+							// 若 auto 已被取消，就不再觸發
+							if (!$("#search_c #btn_send_auto").prop("checked")) return;
+							// 觸發下一輪（會再安排下一個 30s）
 							$("#search_c #btn_send").trigger("click");
 						}, 30000);
 					} else {
-						clearTimeout(other.data.btn_send_auto);
+						// ❌ 取消自動查詢
+						if (other.data.btn_send_auto !== null) {
+							console.log("stop auto send");
+							clearTimeout(other.data.btn_send_auto);
+							other.data.btn_send_auto = null;
+						}
 					}
 				});
 				//監聽-查詢(促發)
@@ -494,8 +506,20 @@
 			},
 			datetimepickerDate() {
 				//日期時間格式
-				$(".datetimepicker").remove();
-				$('#search_c .datetimepicker_date').datetimepicker({
+				$('#search_c .datetimepicker').remove();
+				$('#search_c .datetimepicker_date:not(:disabled)').datetimepicker({
+					format: 'yyyy-mm-dd',
+					pickerPosition: 'bottom-right',
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
+					//......可以同上項目代碼自定義設置
+				});
+				$('#search_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -509,7 +533,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c .datetimepicker_time').datetimepicker({
+				$('#search_c .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,
@@ -727,6 +751,7 @@
 			destroy() {
 				//銷毀
 				clearTimeout(other.data.btn_send_auto);
+				$(".datetimepicker").remove();
 				$(document).off("click", "#search_p_model button");
 				$(document).off("keyup", "#searchItem input");
 				$(document).off("click", "#search_c #btn_send");

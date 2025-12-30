@@ -35,6 +35,7 @@ import dtri.com.tw.pgsql.entity.WarehouseArea;
 import dtri.com.tw.pgsql.entity.WarehouseKeeper;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.pgsql.entity.WarehouseTypeFilter;
+import dtri.com.tw.shared.Fm_Char;
 import dtri.com.tw.shared.Fm_T;
 
 @Service
@@ -124,7 +125,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTh007());// 需入庫量
 		o.setBiledate(new Date());// 預計入料日(今天)
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		// 而外匹配 [單別]
@@ -186,7 +187,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTb004());// 數量
 		o.setBilpnerpqty(m.getTe005());// 數量(領退料數量ERP)
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysnote(m.getTe014());// 備註
 		o.setSysmdate(new Date());
 		o.setSysnote(m.getTe014());
@@ -327,7 +328,7 @@ public class ERPToCloudService {
 		o.setBilpname(m.getMb002());// 品名
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTg011());// 需入庫量
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setSysnote(m.getTg020());// 備註
 		o.setBilerpcuser(m.getCreator());// 開單人
@@ -391,7 +392,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTi007());// 需入庫量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		// 測試用
@@ -456,7 +457,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTg009());// 數量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		if (wTFs.containsKey(o.getBilclass())) {
@@ -574,7 +575,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTi009());// 數量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 
@@ -697,7 +698,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTb007());// 數量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setSyshnote(m.getTa005());// 單頭備註
 		o.setBilerpcuser(m.getCreator());// 開單人
@@ -766,7 +767,7 @@ public class ERPToCloudService {
 		o.setBslpname(m.getMb002());// 品名
 		o.setBslpspecification(m.getMb003());// 規格
 		o.setBslpnqty(m.getTb007());// 數量
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setSyshnote(m.getTa005());// 單頭備註
 		o.setBslerpcuser(m.getCreator());// 開單人
@@ -831,7 +832,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTd007());// 數量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		if (wTFs.containsKey(o.getBilclass())) {
@@ -949,7 +950,7 @@ public class ERPToCloudService {
 		o.setBilpspecification(m.getMb003());// 規格
 		o.setBilpnqty(m.getTg008());// 數量
 		o.setBiledate(new Date());// 預計入料日
-		o.setSysstatus(0);// 未完成
+		o.setSysstatus(sysstatus);// 未完成
 		o.setSysmdate(new Date());
 		o.setBilerpcuser(m.getCreator());// 開單人
 		if (wTFs.containsKey(o.getBilclass())) {
@@ -1302,7 +1303,7 @@ public class ERPToCloudService {
 		o.setBbinb(bommd.getMd002());
 		o.setBbisnnb(bommd.getMd001() + "-" + bommd.getMd002());
 		o.setBbiname(bommd.getMb002());
-		o.setBbispecification(bommd.getMb003());
+		o.setBbispecification(Fm_Char.sanitizeText(bommd.getMb003()));// 規格
 		o.setBbidescription(bommd.getMb009());
 		// 子
 		o.setBbiiqty(bommd.getMd006());// 數量

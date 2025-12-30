@@ -49,6 +49,7 @@ import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.Fm_Char;
 import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
@@ -99,30 +100,48 @@ public class ManufactureProcessCardServiceAc {
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
-			// 更新週期
-			String year = String.format("%02d", Fm_T.getYear(new Date()) % 100);
-			String week = String.format("%02d", Fm_T.getWeek(new Date()));
+			// 1. 取得當前標準的 YYWW (例如 "2601")
+			// 使用修正後的工具類，確保取到的是 "週年份"
+			String currentYYWW = Fm_T.getYYWW(new Date());
 			List<ManufactureRuleNumber> mrn = ruleNumberDao.findAll();
-			mrn.forEach(rn -> {
-				// 須更新->週期->位數
-				if (rn.getMrnyywwc() && !rn.getMrnyyww().equals(year + week)) {
-					rn.setMrnyyww(year + week);
-					if (rn.getMrn0000c()) {
-						rn.setMrn0000("0001");
-						// 查詢紀錄資料是否有 同周期資料?
-						ArrayList<ManufactureSerialNumber> serialNumbers = serialNumberDao
-								.findAllBySn(rn.getMrnval() + rn.getMrnyyww());
-						if (serialNumbers.size() > 0) {
-							String msnesn = serialNumbers.get(0).getMsnesn();
-							String last4 = msnesn.length() >= 4 ? msnesn.substring(msnesn.length() - 4) : msnesn;
-							int last4Int = Integer.parseInt(last4); // 轉為整數
-							last4Int += 1; // 加一
-							// 補滿四位數（不足補0）
-							String newLast4 = String.format("%04d", last4Int);
-							rn.setMrn0000(newLast4);
-						}
 
+			mrn.forEach(rn -> {
+				// 檢查：若規則設定為 "依週期重置" (Mrnyywwc) 且 "週期不一致"
+				if (rn.getMrnyywwc() && !rn.getMrnyyww().equals(currentYYWW)) {
+					// 更新週期為新的 YYWW
+					rn.setMrnyyww(currentYYWW);
+					// 檢查：是否需要重置流水號 (Mrn0000c)
+					if (rn.getMrn0000c()) {
+						// 先預設重置為 0001
+						String nextSerial = "0001";
+
+						// 查詢資料庫是否已有該週期 (2601) 的流水號紀錄
+						// 邏輯：前綴(Mrnval) + 週期(2601)
+						List<ManufactureSerialNumber> serialNumbers = serialNumberDao
+								.findAllBySn(rn.getMrnval() + rn.getMrnyyww());
+
+						// 若資料庫已有資料，則抓出最後一筆並 +1
+						// 注意：這裡建議確保 serialNumbers 有依照 ID 或 SN 排序，取第一筆或最後一筆才準確
+						if (!serialNumbers.isEmpty()) {
+							// 假設 get(0) 是最新的一筆
+							String msnesn = serialNumbers.get(0).getMsnesn();
+
+							// 防呆：確保長度足夠截取後四碼
+							if (msnesn != null && msnesn.length() >= 4) {
+								String last4 = msnesn.substring(msnesn.length() - 4);
+								try {
+									int last4Int = Integer.parseInt(last4);
+									nextSerial = String.format("%04d", last4Int + 1);
+								} catch (NumberFormatException e) {
+									// 若轉換失敗(非數字)，維持 "0001" 或記錄錯誤 log
+									System.err.println("流水號解析失敗: " + msnesn);
+								}
+							}
+						}
+						// 設定新的流水號
+						rn.setMrn0000(nextSerial);
 					}
+					// 儲存更新
 					ruleNumberDao.save(rn);
 				}
 			});
@@ -567,7 +586,8 @@ public class ManufactureProcessCardServiceAc {
 						jsonCreate.addProperty("pr_e_sn", entityDataOld.getSphesn());// 結束SN
 						//
 						jsonCreate.addProperty("sys_sort", "0");// 固定
-						jsonCreate.addProperty("pr_specification", entityDataOld.getSphspecification());// 產品規格
+						jsonCreate.addProperty("pr_specification",
+								Fm_Char.sanitizeText(entityDataOld.getSphspecification()));// 產品規格
 						jsonCreate.addProperty("pr_p_v", "");// 固定
 						jsonCreate.addProperty("sys_c_date", "");// 固定
 						jsonCreate.addProperty("ph_w_years", entityDataOld.getSphwarranty());// 保固
@@ -592,8 +612,8 @@ public class ManufactureProcessCardServiceAc {
 								.build();
 
 						// 5. 建立 POST 請求
-						 //HttpPost request = new
-						 //HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
+						// HttpPost request = new
+						// HttpPost("https://127.0.0.1:8088/dtrimes/ajax/api.basil");
 						HttpPost request = new HttpPost("https://10.1.90.53:8088/dtrimes/ajax/api.basil");
 						request.setHeader("Content-Type", "application/json;charset=UTF-8");
 						request.setEntity(new StringEntity(jsonString.toString(), StandardCharsets.UTF_8));

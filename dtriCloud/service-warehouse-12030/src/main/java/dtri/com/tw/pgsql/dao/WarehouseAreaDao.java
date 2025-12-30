@@ -21,6 +21,11 @@ public interface WarehouseAreaDao extends JpaRepository<WarehouseArea, Long> {
 	@Query("SELECT c FROM WarehouseArea c WHERE "//
 			+ "(COALESCE(:waaliasawmpnb) is null or c.waaliasawmpnb IN :waaliasawmpnb) ")//
 	ArrayList<WarehouseArea> findAllByWaaliasawmpnb(List<String> waaliasawmpnb);
+	
+	// 倉儲+物料號(清單)
+	@Query("SELECT c FROM WarehouseArea c WHERE "//
+			+ "(:waaliasawmpnb is null or c.waaliasawmpnb LIKE :waaliasawmpnb) ")//
+	ArrayList<WarehouseArea> findAllByWaaliasawmpnbOnlyOne(String waaliasawmpnb);
 
 	// 物料號+物料不為0
 	ArrayList<WarehouseArea> findAllByWawmpnbAndWaerptqtyNot(String wawmpnb, Integer waerptqty);

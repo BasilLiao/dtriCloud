@@ -1398,38 +1398,34 @@
 			//==========================時間格式載入==========================
 			datetimepickerDate() {
 				//日期時間格式
-				$('#search_c .datetimepicker_onlydate').datetimepicker({
+				$('#search_c .datetimepicker').remove();
+				$('#search_c .datetimepicker_date:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd',
 					pickerPosition: 'bottom-right',
-					startView: 2,// 點擊時會出現的view。0為分、1為時、2為日、3為月、4為年。
-					minView: 2,//選取時最小的顯示view。0為分、1為時、2為日、3為月、4為年
-					//startView差異在於如果startView:3,minView:0 ，選完月份之後得要一路選到分才能停。
-					// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
-					//minuteStep: 30,
-					autoclose: true,
-					//endDate: '+1d',
-					//datesDisabled: '+1d',
-					timepicker: false,
-					todayBtn: true,
-					bootcssVer: 5,
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
 					//......可以同上項目代碼自定義設置
 				});
-				//日期時間格式
-				$('#search_c .datetimepicker_date').datetimepicker({
+				$('#search_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
 					// hoursDisabled: [00, 1, 2, 3, 4, 5, 6],
 					minuteStep: 30,
 					autoclose: true,
-					//endDate: '+1d',
-					//datesDisabled: '+1d',
+					endDate: '+1d',
+					datesDisabled: '+1d',
 					todayBtn: true,
 					bootcssVer: 5,
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c .datetimepicker_time').datetimepicker({
+				$('#search_c .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,

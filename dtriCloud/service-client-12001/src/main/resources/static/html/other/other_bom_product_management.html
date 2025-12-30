@@ -3755,8 +3755,21 @@
 			},
 			//==========================日期時間格式==========================
 			datetimepickerDate() {
-				$(".datetimepicker").remove();
-				$('#other_c .datetimepicker_date').datetimepicker({
+				//日期時間格式
+				$('#search_c .datetimepicker').remove();
+				$('#search_c .datetimepicker_date:not(:disabled)').datetimepicker({
+					format: 'yyyy-mm-dd',
+					pickerPosition: 'bottom-right',
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
+					//......可以同上項目代碼自定義設置
+				});
+				$('#search_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -3770,7 +3783,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#other_c .datetimepicker_time').datetimepicker({
+				$('#search_c .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,

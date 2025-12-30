@@ -1,138 +1,139 @@
 <style>
-	/*Table 寬度滾動*/
-	#search_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-	}
+/*Table 寬度滾動*/
+#search_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
 
-	/*Table 自動隱藏*/
-	#search_c .table-responsive th,
-	#search_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#search_c .table-responsive th, #search_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#search_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#search_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	#search_c .fixedCt {
-		position: sticky;
-		top: 0px;
-		z-index: 5;
-	}
+#search_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 
-	/*Table 每隔表格內_框線*/
-	#search_c .table-bordered td,
-	#search_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#search_c .table-bordered td, #search_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#search_c #search_cr table {
-		max-height: 600px;
-		min-height: 600px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#search_c #search_cr table {
+	max-height: 600px;
+	min-height: 600px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格外框線*/
-	#search_c #search_dcr table {
-		max-height: 600px;
-		min-height: 600px;
-		border-collapse: separate;
-		border-spacing: 0px;
-		font-size: 28px;
-		line-height: 35px;
-	}
+/*Table 表格外框線*/
+#search_c #search_dcr table {
+	max-height: 600px;
+	min-height: 600px;
+	border-collapse: separate;
+	border-spacing: 0px;
+	font-size: 28px;
+	line-height: 35px;
+}
 
-	/*Table 表格內 背景色*/
-	#search_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#search_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*覆寫換色*/
-	.table-hover>tbody>tr:hover>* {
-		--bs-table-accent-bg: #0d6efd40;
-		color: var(--bs-table-hover-color);
-	}
+/*覆寫換色*/
+.table-hover>tbody>tr:hover>* {
+	--bs-table-accent-bg: #0d6efd40;
+	color: var(--bs-table-hover-color);
+}
 
-	/*標題色彩*/
-	#search_c .title_color {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#search_c .title_color {
+	background-color: #cfe2ff;
+}
 
-	/*直立式呈現邊字*/
-	#search_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#search_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_66*/
-	#search_c .checkbox_66 {
-		width: 66px;
-		height: 66px;
-	}
+/*checkbox_66*/
+#search_c .checkbox_66 {
+	width: 66px;
+	height: 66px;
+}
 
-	/*checkbox_36*/
-	#search_c .checkbox_36 {
-		width: 36px;
-		height: 36px;
-	}
+/*checkbox_36*/
+#search_c .checkbox_36 {
+	width: 36px;
+	height: 36px;
+}
 
-	/*checkbox_24*/
-	#search_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#search_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
 
-	/*checkbox_24_60*/
-	#search_c .checkbox_24_60 {
-		width: 60px;
-		height: 24px;
-	}
+/*checkbox_24_60*/
+#search_c .checkbox_24_60 {
+	width: 60px;
+	height: 24px;
+}
 
-	#search_c .checkbox_20 {
-		width: 20px;
-		height: 20px;
-	}
+#search_c .checkbox_20 {
+	width: 20px;
+	height: 20px;
+}
 
-	#search_c .checkbox_16 {
-		width: 16px;
-		height: 16px;
-	}
+#search_c .checkbox_16 {
+	width: 16px;
+	height: 16px;
+}
 
-	#controller_command input:focus {
-		background: #ffc107;
-	}
+#controller_command input:focus {
+	background: #ffc107;
+}
 
-	/*高量顯示*/
-	.bg-show {
-		background: #ffc1073b;
-	}
+/*高量顯示*/
+.bg-show {
+	background: #ffc1073b;
+}
 
-	.bg-show-note {
-		background: #dc3545;
-	}
+.bg-show-note {
+	background: #dc3545;
+}
 
-	.bg-warning-30 {
-		background: #4dcf938f;
-	}
+.bg-warning-30 {
+	background: #4dcf938f;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
 	<!-- 查詢-細節結果 -->
 	<div id="search_dcr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-secondary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_dcr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_dcr_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_dcr_open" class="row m-0 collapse">
-			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result detail </b>
+			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result
+				detail </b>
 			<table
 				class="col m-0 p-0 border border-primary  table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
 				<thead class="table-primary fixedCt">
@@ -152,7 +153,8 @@
 					<tr class="exDetailTbodyTr" style="height: 146px;">
 						<th class="fixedC1 exTbodyTh" style="max-width: 50px;">
 							<div>
-								<input disabled="disabled" type="checkbox" alt="row_x" title="IKey_GKey"
+								<input disabled="disabled" type="checkbox" alt="row_x"
+									title="IKey_GKey"
 									class="m-0 form-check-input checkbox_36 border border-dark">
 							</div>
 						</th>
@@ -165,19 +167,22 @@
 	</div>
 	<!-- 查詢面板 -->
 	<div id="search_c_item" class="col-12 p-1">
-		<div class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-success text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_item_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-success text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_c_item_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="search_c_item_open">
 			<b class="p-0 m-0 lh-1 wlr bg-success text-white"> Search </b>
-			<div id="searchItem" class="col border border-primary  row m-0 p-0 shadow-sm">
+			<div id="searchItem"
+				class="col border border-primary  row m-0 p-0 shadow-sm">
 				<div class="col-4 searchTextEx col-md-1 p-1 d-none">
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search1</div>
 						<div class="p-1">
-							<input class="col-12 m-0 p-1 border border-dark form-control" type=text id="ex_id"
-								name="ex_name" placeholder="Ex:123">
+							<input class="col-12 m-0 p-1 border border-dark form-control"
+								type=text id="ex_id" name="ex_name" placeholder="Ex:123">
 						</div>
 					</div>
 				</div>
@@ -185,7 +190,8 @@
 					<div class=" border border-secondary rounded">
 						<div class="searchTitle title_color fw-bolder rounded-top">Search2</div>
 						<div class="p-1">
-							<select class="col-12 m-0 p-1 border border-dark form-select" id="ex_id2" name="ex_name2">
+							<select class="col-12 m-0 p-1 border border-dark form-select"
+								id="ex_id2" name="ex_name2">
 								<option class="selectEx" value="" selected="selected">select(請選擇)</option>
 							</select>
 						</div>
@@ -196,19 +202,24 @@
 	</div>
 	<!-- 控制面板 -->
 	<div id="search_c_controller" class="col-12 p-1 ">
-		<div class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_c_controller_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<div class="col-12 col-lg-4 p-1">
-					<div id="controller_command" class="border border-secondary rounded">
+					<div id="controller_command"
+						class="border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Command</div>
 						<div class="row m-0" style="height: 56px;">
 							<div class="col-4 p-1">
-								<select id="command_sel" class="lh-1 p-1 m-0 border border-primary rounded"
+								<select id="command_sel"
+									class="lh-1 p-1 m-0 border border-primary rounded"
 									style="width: 100%; height: 100%" disabled="disabled">
 									<option value="Normal">Normal(正常)</option>
 									<!--<option value="Abnormal_in">Abnormal(進貨料短少)</option>
@@ -218,17 +229,19 @@
 								</select>
 							</div>
 							<div class="col-8 p-1" id="command_send">
-								<input class="lh-1 p-1 m-0 border border-dark rounded" type="text" value=""
-									placeholder="儲位 or 料號" style="width: 100%; height: 100%" readonly="readonly"
-									autofocus>
+								<input class="lh-1 p-1 m-0 border border-dark rounded"
+									type="text" value="" placeholder="儲位 or 料號"
+									style="width: 100%; height: 100%" readonly="readonly" autofocus>
 							</div>
 							<div class="col-4 p-1 d-none" id="command_qty">
-								<input class="lh-1 p-1 m-0 border border-dark rounded" type="number" value=""
-									placeholder="異常:數量" style="width: 100%; height: 100%" disabled="disabled" value="0">
+								<input class="lh-1 p-1 m-0 border border-dark rounded"
+									type="number" value="" placeholder="異常:數量"
+									style="width: 100%; height: 100%" disabled="disabled" value="0">
 							</div>
 							<div class="col-4 p-1 d-none" id="command_sub">
-								<input class="lh-1 p-1 m-0 border border-dark rounded" type="text" value=""
-									placeholder="登記:副儲位" style="width: 100%; height: 100%" value="">
+								<input class="lh-1 p-1 m-0 border border-dark rounded"
+									type="text" value="" placeholder="登記:副儲位"
+									style="width: 100%; height: 100%" value="">
 							</div>
 						</div>
 					</div>
@@ -272,9 +285,10 @@
 						<div class="title_color fw-bolder rounded-top">Search</div>
 						<div class="row m-0">
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
-								<input checked="checked" id="btn_send_auto" alt="" title="" type="checkbox"
-									class="m-0 form-check-input checkbox_24_60 border border-dark"> <br> <b
-									style="font-size: 12px;">Auto(30s)</b>
+								<input checked="checked" id="btn_send_auto" alt="" title=""
+									type="checkbox"
+									class="m-0 form-check-input checkbox_24_60 border border-dark">
+								<br> <b style="font-size: 12px;">Auto(30s)</b>
 							</div>
 							<button id="btn_send" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
@@ -289,9 +303,11 @@
 	</div>
 	<!-- 查詢結果 -->
 	<div id="search_cr" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#search_cr_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 pb-1 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#search_cr_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="search_cr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
@@ -301,7 +317,8 @@
 					<tr>
 						<th class="fixedC1" style="min-width: 80px;">
 							<div>
-								<button id="exthAll" type="button" class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
+								<button id="exthAll" type="button"
+									class="lh-1 col p-1 m-0 btn btn-sm btn-outline-dark">
 									<b>M</b>
 								</button>
 							</div>
@@ -313,7 +330,8 @@
 					<tr class="exTbodyTr">
 						<th class="fixedC1 exTbodyTh" style="max-width: 80px;">
 							<div>
-								<input disabled="disabled" alt="row_x" title="IKey_GKey" type="checkbox"
+								<input disabled="disabled" alt="row_x" title="IKey_GKey"
+									type="checkbox"
 									class="m-0 form-check-input checkbox_66 border border-dark">
 							</div>
 						</th>
@@ -335,7 +353,7 @@
 			markDetails: {},//有選取的IKeyGKey
 			marksLock: {},//有選取的IKeyGKey(鎖定)
 			entityFormatJson: {},//查詢格式
-			btn_send_auto: "",//自動傳送
+			btn_send_auto: null,//自動傳送
 			//換頁設置
 			searchPageSet: {
 				total: 100,//批次數量(1-1000)
@@ -815,26 +833,35 @@
 					//Step2.清空(選取)
 					other.data.marks = {};
 					$("#search_cr_open input").prop("checked", false);
-
-					//Step3.自動查詢機制(清單)?
-					clearTimeout(other.data.btn_send_auto);
-					if ($("#search_dcr_open .valTbodyTrD").length == 0) {
-						if ($("#btn_send_auto").prop("checked")) {
-							other.data.btn_send_auto = setTimeout(function () {
-								$("#search_c #btn_send").trigger("click");
-							}, 30000);
-							$("#search_c #btn_send").trigger("click");
-						} else {
-							clearTimeout(other.data.btn_send_auto);
-						}
-					}
-					//Step4.觸發?
+					
+					//Step3.觸發?
 					$("#command_send input").focus();
 					$('#search_dcr i').trigger('click');
 					$('#search_c_item i').trigger('click');//查詢介面
 					$('#search_cr i').trigger('click');
+					
+					//Step4.自動查詢機制(細節 or 清單)?				
+					// 是否啟用自動查詢
+					if ($("#search_c #btn_send_auto").prop("checked")) {
+						console.log("start auto send (30s)");
+						// ✅ 這一輪 timeout 已執行，先釋放，才能排下一輪
+						clearTimeout(other.data.btn_send_auto);
+						other.data.btn_send_auto = null;
+						other.data.btn_send_auto = setTimeout(function autoSend() {
+							// 若 auto 已被取消，就不再觸發
+							if (!$("#search_c #btn_send_auto").prop("checked")) return;
+							// 觸發下一輪（會再安排下一個 30s）
+							$("#search_c #btn_send").trigger("click");
+						}, 30000);
+					} else {
+						// ❌ 取消自動查詢
+						if (other.data.btn_send_auto !== null) {
+							console.log("stop auto send");
+							clearTimeout(other.data.btn_send_auto);
+							other.data.btn_send_auto = null;
+						}
+					}
 				});
-
 
 				//監聽-標記移除
 				$(document).off("click", "#search_c #btn_markCancel");
@@ -876,13 +903,25 @@
 				$(document).on("click", "#search_c #btn_send", function (event) {
 					console.log("btn_send");
 					other.methods.searchSend(0);
-					clearTimeout(other.data.btn_send_auto);
-					if ($("#btn_send_auto").prop("checked")) {
-						other.data.btn_send_auto = setTimeout(function () {
+				   // 是否啟用自動查詢
+					if ($("#search_c #btn_send_auto").prop("checked")) {
+						console.log("start auto send (30s)");
+						// ✅ 這一輪 timeout 已執行，先釋放，才能排下一輪
+						clearTimeout(other.data.btn_send_auto);
+						other.data.btn_send_auto = null;
+						other.data.btn_send_auto = setTimeout(function autoSend() {
+							// 若 auto 已被取消，就不再觸發
+							if (!$("#search_c #btn_send_auto").prop("checked")) return;
+							// 觸發下一輪（會再安排下一個 30s）
 							$("#search_c #btn_send").trigger("click");
 						}, 30000);
 					} else {
-						clearTimeout(other.data.btn_send_auto);
+						// ❌ 取消自動查詢
+						if (other.data.btn_send_auto !== null) {
+							console.log("stop auto send");
+							clearTimeout(other.data.btn_send_auto);
+							other.data.btn_send_auto = null;
+						}
 					}
 				});
 				//監聽-查詢(促發)
@@ -1051,14 +1090,28 @@
 				$("#command_send input").focus();
 				//自動查詢
 				clearTimeout(other.data.btn_send_auto);
+				other.data.btn_send_auto = null;
 				other.data.btn_send_auto = setTimeout(function () {
 					$("#search_c #btn_send").trigger("click");
 				}, 30000);
 			},
 			datetimepickerDate() {
 				//日期時間格式
-				$(".datetimepicker").remove();
-				$('#search_c .datetimepicker_date').datetimepicker({
+				//日期時間格式
+				$('#search_c .datetimepicker').remove();
+				$('#search_c .datetimepicker_date:not(:disabled)').datetimepicker({
+					format: 'yyyy-mm-dd',
+					pickerPosition: 'bottom-right',
+					startView: 2,    // 2 = month view（年/月/日）
+				    minView: 2,      // 2 = 最小停在「日」
+				    autoclose: true,
+				    endDate: '+1d',
+				    datesDisabled: '+1d',
+				    todayBtn: true,
+				    bootcssVer: 5
+					//......可以同上項目代碼自定義設置
+				});
+				$('#search_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -1072,7 +1125,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c .datetimepicker_time').datetimepicker({
+				$('#search_c .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,

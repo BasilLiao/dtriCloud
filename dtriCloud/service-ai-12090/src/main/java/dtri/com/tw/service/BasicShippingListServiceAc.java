@@ -47,6 +47,9 @@ public class BasicShippingListServiceAc {
 	private SystemLanguageCellDao languageDao;
 
 	@Autowired
+	private BasicShippingListDao shippingListDao;
+
+	@Autowired
 	private EntityManager em;
 
 	/** 取得資料 */
@@ -128,7 +131,7 @@ public class BasicShippingListServiceAc {
 					BasicShippingList.class);
 
 			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(searchData.getBslclass(),
-					searchData.getBslsn(), searchData.getBslpnumber(),searchData.getBslfuser(), pageable);
+					searchData.getBslsn(), searchData.getBslpnumber(), searchData.getBslfuser(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

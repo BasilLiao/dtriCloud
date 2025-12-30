@@ -108,13 +108,13 @@ body_index={
 			//$("#body_warehouse_inventory #search_title").addClass("disabled");
 			//$("#body_warehouse_inventory #modify_title").addClass("disabled");
 			//$("#body_warehouse_inventory #report_title").addClass("disabled");
-			$("#body_warehouse_inventory #print_title").addClass("disabled");
-			$("#body_warehouse_inventory #compare_title").addClass("disabled");
-			$("#body_warehouse_inventory #other_title").addClass("disabled");
+			$("#body_warehouse_inventory #print_title").addClass("d-none");
+			$("#body_warehouse_inventory #compare_title").addClass("d-none");
+			//$("#body_warehouse_inventory #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_warehouse_inventory #search_title").addClass("active");
-            $("#body_warehouse_inventory #search_tab").addClass("show");
-            $("#body_warehouse_inventory #search_tab").addClass("active");
+            $("#body_warehouse_inventory #other_title").addClass("active");
+            $("#body_warehouse_inventory #other_tab").addClass("show");
+            $("#body_warehouse_inventory #other_tab").addClass("active");
             
           	//Step2.模板
             $("#body_warehouse_inventory #home_tab").load("./html/model/home.html", function(){});
@@ -136,13 +136,13 @@ body_index={
             	report.methods.create();
             });
             //比對-模板
-            $("#body_warehouse_inventory #compare_tab").load("./html/model/compare.html", function(){
-            	compare.methods.create();
-            });
-            //其他-模板
-            //$("#body_warehouse_inventory #other_tab").load("./html/other/other_warehouse_inventory.html", function(){
-            //	other.methods.create();
+            //$("#body_warehouse_inventory #compare_tab").load("./html/model/compare.html", function(){
+            //	compare.methods.create();
             //});
+            //其他-模板
+            $("#body_warehouse_inventory #other_tab").load("./html/other/other_warehouse_inventory.html", function(){
+            	other.methods.create();
+            });
 		},
 		
 		destroy() {

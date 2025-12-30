@@ -2,9 +2,11 @@ package dtri.com.tw.shared;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.IsoFields;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Fm_T {
@@ -93,31 +95,43 @@ public class Fm_T {
 		return null;
 	}
 
-	/** get Date to week **/
-	public static int getWeek(Date date) {
-		if (date == null) {
+	/**
+	 * 取得 "週年份" (Week-Based Year) 用途：解決跨年週數問題 (例如 2025/12/29 應該屬於 2026 年)
+	 */
+	public static int getWeekBasedYear(Date date) {
+		if (date == null)
 			return 0;
-		}
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		// 關鍵：使用 ISO 週日曆的年份，而非普通日曆年
+		return localDate.get(IsoFields.WEEK_BASED_YEAR);
+	}
 
-		Calendar cal = Calendar.getInstance(Locale.TAIWAN);
-		cal.setFirstDayOfWeek(Calendar.MONDAY); // 設定每週從星期一開始
-		cal.setMinimalDaysInFirstWeek(4); // 至少 4 天才算完整第一週
-		cal.setTime(date);
+	/**
+	 * 取得 ISO 週數
+	 */
+	public static int getWeek(Date date) {
+		if (date == null)
+			return 0;
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		return localDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+	}
 
-		int year = cal.get(Calendar.YEAR);
-		int week = cal.get(Calendar.WEEK_OF_YEAR);
+	/**
+	 * [推薦] 直接取得 YYWW 格式字串 例如：2025/12/29 -> 回傳 "2601"
+	 */
+	public static String getYYWW(Date date) {
+		if (date == null)
+			return "";
 
-		// 修正跨年問題（避免 12 月最後幾天變成下一年的第 1 週）
-		if (week == 1 && cal.get(Calendar.MONTH) == Calendar.DECEMBER) {
-			week = 53; // 設定為上一年的最後一週
-		}
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-		// 修正 1 月第一週仍屬於上一年的問題（確保從 1 開始）
-		if (cal.get(Calendar.MONTH) == Calendar.JANUARY && week >= 52) {
-			week = 1; // 設為 1 而不是 0
-		}
+		// 取得 週年份 (例如 2026)
+		int year = localDate.get(IsoFields.WEEK_BASED_YEAR);
+		// 取得 週數 (例如 1)
+		int week = localDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
 
-		return week;
+		// 格式化：取年份後兩位 + 兩位週數
+		return String.format("%02d%02d", year % 100, week);
 	}
 
 	/** get Date to Year **/

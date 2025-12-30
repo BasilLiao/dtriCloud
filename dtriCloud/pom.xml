@@ -56,15 +56,17 @@
 	</dependencyManagement>
 	<!-- build -->
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-		<defaultGoal>compile</defaultGoal>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<modules>
+		<module>system-entity-module</module>
 		<module>framework-center-eureka-12000</module>
 		<module>service-client-12001</module>
 		<module>service-system-12010</module>
@@ -76,6 +78,5 @@
 		<module>service-product-12070</module>
 		<module>service-material-12080</module>
 		<module>service-ai-12090</module>
-		<module>system-entity-module</module>
 	</modules>
 </project>

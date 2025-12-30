@@ -116,10 +116,10 @@ public class WarehouseHistoryServiceAc {
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "ssyscdate", "Ex:(起)", true, //
-					PackageService.SearchType.date, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 			// Step3-5. 建立查詢項目
 			searchJsons = packageService.searchSet(searchJsons, null, "esyscdate", "Ex:(終)", true, //
-					PackageService.SearchType.date, PackageService.SearchWidth.col_lg_2);
+					PackageService.SearchType.datetime, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);

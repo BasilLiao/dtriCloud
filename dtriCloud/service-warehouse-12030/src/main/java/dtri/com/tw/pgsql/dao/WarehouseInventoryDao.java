@@ -19,9 +19,11 @@ public interface WarehouseInventoryDao extends JpaRepository<WarehouseInventory,
 			+ "(cast(:ssyscdate as date) is null or c.widate >= :ssyscdate) and " // 盤點時間
 			+ "(cast(:esyscdate as date) is null or c.widate <= :esyscdate) and " // 盤點時間
 			+ "(:wicuser is null or c.wicuser Like %:wicuser% ) and "// 盤點人
+			+ "(:wignowqty = null or :wignowqty = 0 or c.wignowqty !=0 ) and "// 盤點差距
 			+ "(:wicheck is null or c.wicheck=:wicheck) ") // 確認勾選
 	ArrayList<WarehouseInventory> findAllBySearch(String wiwmpnb, String wiwaslocation, String wiwaalias,
-			String wiwaaliasnb, Date ssyscdate, Date esyscdate, String wicuser, Boolean wicheck, Pageable pageable);
+			String wiwaaliasnb, Date ssyscdate, Date esyscdate, String wicuser, Boolean wicheck, Integer wignowqty,
+			Pageable pageable);
 
 	@Query("SELECT c FROM WarehouseInventory c WHERE "//
 			+ "(:wiwmpnb is null or c.wiwmpnb=:wiwmpnb) and "// 物料號

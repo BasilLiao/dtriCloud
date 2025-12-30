@@ -327,7 +327,7 @@
 			marks: {},//有選取的IKeyGKey
 			markDetails: {},//有選取的IKeyGKey
 			entityFormatJson: {},//查詢格式
-			btn_send_auto: "",//自動傳送
+			btn_send_auto: null,//自動傳送
 			//換頁設置
 			searchPageSet: {
 				total: 1000,//批次數量(1-1000)
@@ -496,7 +496,7 @@
 					}
 					if (searchSet['type'] != 'select') {
 						//一般文字
-						searchTextEx = $('#search_c_item .searchTextEx').clone();
+						searchTextEx = $('#search_c #search_c_item .searchTextEx').clone();
 						searchTextEx.removeClass("searchTextEx");
 						searchTextEx.removeClass("col-md-1");
 						searchTextEx.removeClass("d-none");
@@ -519,7 +519,7 @@
 						});
 					} else {
 						//選擇選單
-						searchSelectEx = $('.searchSelectEx').clone();
+						searchSelectEx = $('#search_c .searchSelectEx').clone();
 						searchSelectEx.removeClass("searchSelectEx");
 						searchSelectEx.removeClass("col-md-1");
 						searchSelectEx.removeClass("d-none");
@@ -553,22 +553,22 @@
 					}
 					switch (searchSet['type']) {
 						case "select":
-							searchSelectEx.appendTo('#searchItem');
+							searchSelectEx.appendTo('#search_c #searchItem');
 							break;
 						case "text":
-							searchTextEx.appendTo('#searchItem');
+							searchTextEx.appendTo('#search_c #searchItem');
 							break;
 						case "time":
 							searchTextEx.find('input').addClass('datetimepicker_time');
-							searchTextEx.appendTo('#searchItem');
+							searchTextEx.appendTo('#search_c #searchItem');
 							break;
 						case "date":
 							searchTextEx.find('input').addClass('datetimepicker_date');
-							searchTextEx.appendTo('#searchItem');
+							searchTextEx.appendTo('#search_c #searchItem');
 							break;
 						case "datetime":
 							searchTextEx.find('input').addClass('datetimepicker_datetime');
-							searchTextEx.appendTo('#searchItem');
+							searchTextEx.appendTo('#search_c #searchItem');
 							break;
 					}
 				}
@@ -806,17 +806,30 @@
 					console.log("btn_send");
 					search.methods.searchSend(0);
 
-					if ($("#btn_send_auto").prop("checked")) {
-						search.data.btn_send_auto = setTimeout(function () {
+					// 是否啟用自動查詢
+					if ($("#search_c #btn_send_auto").prop("checked")) {
+						console.log("start auto send (30s)");
+						// ✅ 這一輪 timeout 已執行，先釋放，才能排下一輪
+						clearTimeout(search.data.btn_send_auto);
+						search.data.btn_send_auto = null;
+						search.data.btn_send_auto = setTimeout(function autoSend() {
+							// 若 auto 已被取消，就不再觸發
+							if (!$("#search_c #btn_send_auto").prop("checked")) return;
+							// 觸發下一輪（會再安排下一個 30s）
 							$("#search_c #btn_send").trigger("click");
 						}, 30000);
 					} else {
-						clearTimeout(search.data.btn_send_auto);
+						// ❌ 取消自動查詢
+						if (search.data.btn_send_auto !== null) {
+							console.log("stop auto send");
+							clearTimeout(search.data.btn_send_auto);
+							search.data.btn_send_auto = null;
+						}
 					}
 				});
 				//監聽-查詢(促發)
-				$(document).off("keyup", "#searchItem input");
-				$(document).on("keyup", "#searchItem input", function (e) {
+				$(document).off("keyup", "#search_c #searchItem input");
+				$(document).on("keyup", "#search_c #searchItem input", function (e) {
 					if (e.key === 'Enter' || e.keyCode === 13) {
 						$(e.currentTarget).select();
 						$("#search_c #btn_send").trigger("click");
@@ -826,15 +839,15 @@
 				$(document).off("click", "#search_c #btn_clearAll");
 				$(document).on("click", "#search_c #btn_clearAll", function (event) {
 					console.log("btn_clearAll");
-					$("#searchItem input").val("");
-					$("#searchItem select").val("");
+					$("#search_c #searchItem input").val("");
+					$("#search_c #searchItem select").val("");
 
 				});
 				//監聽-上一頁
 				$(document).off("click", "#search_c #btn_pageU");
 				$(document).on("click", "#search_c #btn_pageU", function (event) {
 					console.log("btn_pageU");
-					$('#btn_pageU').addClass("disabled");
+					$('#search_c #btn_pageU').addClass("disabled");
 					let pageNew = search.data.searchPageSet.pageNew;
 					let batch = search.data.searchPageSet.batch;//第幾批次 
 					//目前資料可以換上一頁
@@ -842,9 +855,9 @@
 						pageNew = pageNew - 1;
 						search.data.searchPageSet.pageNew = pageNew;
 						search.methods.searchReLoad();
-						$("#numberPage").val(pageNew);
-						$('#btn_pageU').removeClass("disabled");
-						$('#btn_pageD').removeClass("disabled");
+						$("#search_c #numberPage").val(pageNew);
+						$('#search_c #btn_pageU').removeClass("disabled");
+						$('#search_c #btn_pageD').removeClass("disabled");
 					} else if (batch > 0) {
 						//沒資料可以換上一頁&&資料 與 批次數量相同
 						search.methods.searchSend(batch - 1);
@@ -854,7 +867,7 @@
 				$(document).off("click", "#search_c #btn_pageD");
 				$(document).on("click", "#search_c #btn_pageD", function (event) {
 					console.log("btn_pageD");
-					$('#btn_pageD').addClass("disabled");
+					$('#search_c #btn_pageD').addClass("disabled");
 					//存入-頁面設定
 					//search.data.searchPageSet.total=1000;//批次數量
 					let total = search.data.searchPageSet.total;//批次數量
@@ -867,9 +880,9 @@
 						pageNew = pageNew + 1;
 						search.data.searchPageSet.pageNew = pageNew;
 						search.methods.searchReLoad();
-						$("#numberPage").val(pageNew);
-						$('#btn_pageU').removeClass("disabled");
-						$('#btn_pageD').removeClass("disabled");
+						$("#search_c #numberPage").val(pageNew);
+						$('#search_c #btn_pageU').removeClass("disabled");
+						$('#search_c #btn_pageD').removeClass("disabled");
 					} else if (entityJsons.length == total) {
 						//沒資料可以換下一頁&&資料 與 批次數量相同
 						search.methods.searchSend(batch + 1);
@@ -881,8 +894,8 @@
 			},
 			datetimepickerDate() {
 				//日期時間格式
-				//$('.datetimepicker').remove();
-				$('#search_c_item .datetimepicker_date').datetimepicker({
+				$('#search_c_item .datetimepicker').remove();
+				$('#search_c_item .datetimepicker_date:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd',
 					pickerPosition: 'bottom-right',
 					startView: 2,    // 2 = month view（年/月/日）
@@ -894,7 +907,7 @@
 				    bootcssVer: 5
 					//......可以同上項目代碼自定義設置
 				});
-				$('#search_c_item .datetimepicker_datetime').datetimepicker({
+				$('#search_c_item .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -908,7 +921,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c_item .datetimepicker_time').datetimepicker({
+				$('#search_c_item .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,
@@ -1047,7 +1060,7 @@
 				let req_data = {};
 				let searchPageSet = {};
 				//查詢
-				$("#searchItem .searchVal").each(function (index) {
+				$("#search_c #searchItem .searchVal").each(function (index) {
 					console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
 					if (($(this).hasClass('datetimepicker_date') ||$(this).hasClass('datetimepicker_datetime')) && $(this).val() != "") {
 						entityJson[$(this).attr("id")] = new Date($(this).val()).getTime();
@@ -1165,11 +1178,12 @@
 			//==========================初始化==========================
 			destroy() {
 				//銷毀
+				clearTimeout(search.data.btn_send_auto);
 				$(".datetimepicker").remove();
 				$(document).off("click", "#search_c #btn_pageD");
 				$(document).off("click", "#search_c #btn_pageU");
 				$(document).off("click", "#search_c #btn_clearAll");
-				$(document).off("keyup", "#searchItem input");
+				$(document).off("keyup", "#search_c #searchItem input");
 				$(document).off("click", "#search_c #btn_send");
 				$(document).off("click", "#search_c #btn_compare");
 				$(document).off("click", "#search_c #btn_printerForm");

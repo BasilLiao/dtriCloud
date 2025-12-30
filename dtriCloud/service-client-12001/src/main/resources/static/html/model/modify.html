@@ -154,13 +154,13 @@
 									<td style="max-width: 200px" id="modify_c_ex_in"><input
 										class="col-12 m-0 p-1 border border-dark form-control"
 										type="number" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_date"><input
+									<td style="max-width: 200px" id="modify_c_ex_date"><input disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
 										type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_datetime"><input
+									<td style="max-width: 200px" id="modify_c_ex_datetime"><input disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_datetime"
 										type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_t"><input
+									<td style="max-width: 200px" id="modify_c_ex_t"><input disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
 										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_icb"><input
@@ -1489,8 +1489,8 @@
 			},
 			datetimepickerDate() {
 				//日期格式
-				$('.datetimepicker').remove();
-				$('#search_c_item .datetimepicker_date').datetimepicker({
+				$('#modify_c tbody .datetimepicker').remove();
+				$('#modify_c tbody .datetimepicker_date:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd',
 					pickerPosition: 'bottom-right',
 					startView: 2,    // 2 = month view（年/月/日）
@@ -1503,7 +1503,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//日期時間格式
-				$('#modify_c tbody .datetimepicker_datetime').datetimepicker({
+				$('#modify_c tbody .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -1518,7 +1518,7 @@
 				});
 				
 				//時間格式
-				$('#modify_c tbody .datetimepicker_time').datetimepicker({
+				$('#modify_c tbody .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,
