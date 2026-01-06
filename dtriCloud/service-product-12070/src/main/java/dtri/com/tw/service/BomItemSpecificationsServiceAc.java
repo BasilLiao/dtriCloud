@@ -665,6 +665,14 @@ public class BomItemSpecificationsServiceAc {
 						}
 					}
 				}
+				// 定義 Regex：包含這些字眼其中之一就匹配
+				String regex = "(?i).*(是|否|YES|NO|有|無|不|要|OK|NG|對|錯|同意|不同意|可以|不行|正確|錯誤).*";
+				if (entityData.getBisnb().contains("customize") && entityData.getBisfname().matches(regex)) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+							new String[] {
+									"This value is not allowed for custom item names : " + entityData.getBisfname() });
+				}
+
 			}
 			// 自動狀態 須關閉才能修改
 			ArrayList<BomItemSpecifications> oldDatasCheck = specificationsDao
@@ -822,6 +830,13 @@ public class BomItemSpecificationsServiceAc {
 						&& entityDatas.get(0).getBisiauto()) {
 					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1006, Lan.zh_TW,
 							new String[] { "Please turn off Auto : " + entityDatas.get(0).getBisiauto() });
+				}
+				// 定義 Regex：包含這些字眼其中之一就匹配
+				String regex = "(?i).*(是|否|YES|NO|有|無|不|要|OK|NG|對|錯|同意|不同意|可以|不行|正確|錯誤).*";
+				if (entityData.getBisnb().contains("customize") && entityData.getBisfname().matches(regex)) {
+					throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+							new String[] {
+									"This value is not allowed for custom item names : " + entityData.getBisfname() });
 				}
 			}
 		}
