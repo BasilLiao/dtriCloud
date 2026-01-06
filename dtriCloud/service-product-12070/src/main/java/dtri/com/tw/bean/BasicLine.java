@@ -27,18 +27,18 @@ public class BasicLine {
 
 	// 新資料格式：mat_qty_process_level
 	public static BasicLine parseNew(String raw) {
-		String[] parts = raw.split("_", 4);
+		String[] parts = raw.split("_", 5);
 		// 新建
 		BasicLine line = new BasicLine();
 		line.material = parts.length > 0 ? parts[0] : "";
 		line.qty = parts.length > 1 ? parts[1] : "1";
 		line.process = parts.length > 2 ? parts[2] : "ASM";
 		line.level = parts.length > 3 ? parts[3] : "1";
-
+		line.bisgid = parts.length > 4 ? parts[4] : null;
 		return line;
 	}
 
-// basic 寫回用（不帶 bisgid）
+	// basic 寫回用（不帶 bisgid）
 	public String toBasicString() {
 		return material + "_" + qty + "_" + process + "_" + level;
 	}

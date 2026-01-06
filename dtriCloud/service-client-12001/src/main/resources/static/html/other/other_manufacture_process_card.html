@@ -1708,7 +1708,8 @@
 					}
 					
 					let sphpontype = $('#c_sphpontype select').find("option:selected").val();
-					let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn');// 判斷是否略過SN打印
+					let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||
+							sphpontype === 'A511_no_and_has_sn' ||	sphpontype === 'A521_no_and_has_sn');// 判斷是否略過SN打印
 					 
 					// 取得 HTML 模板
 					const content = $("#printNotes").clone();
@@ -1956,7 +1957,8 @@
 				//預覽內容
 				console.log("btn_intoForm");
 				let sphpontype = $('#c_sphpontype select').find("option:selected").val();
-				let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn');// 判斷是否略過SN打印
+				let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||
+						sphpontype === 'A511_no_and_has_sn' ||	sphpontype === 'A521_no_and_has_sn');// 判斷是否略過SN打印
 				
 				//防呆帶回資料
 				if($("#search_cr_open tbody input:checked").length==0){

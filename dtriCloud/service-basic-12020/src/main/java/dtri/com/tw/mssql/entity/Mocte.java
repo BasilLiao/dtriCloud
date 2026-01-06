@@ -49,6 +49,8 @@ public class Mocte {
 	private String ta035;// 成品規格
 	@Column(name = "TC007")
 	private String tc007;// 領單頭備註
+	@Column(name = "TC009")
+	private String tc009;// --簽核確認碼 Y/N/V
 
 	@Column(name = "TE005")
 	private Integer te005;// 領退料數量(ERP)
@@ -408,5 +410,19 @@ public class Mocte {
 
 	public void setTa050(String ta050) {
 		this.ta050 = ta050;
+	}
+
+	/**
+	 * @return the tc009
+	 */
+	public String getTc009() {
+		return tc009;
+	}
+
+	/**
+	 * @param tc009 the tc009 to set
+	 */
+	public void setTc009(String tc009) {
+		this.tc009 = tc009;
 	}
 }

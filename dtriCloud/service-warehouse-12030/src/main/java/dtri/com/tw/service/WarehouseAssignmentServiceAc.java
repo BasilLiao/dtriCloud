@@ -487,7 +487,7 @@ public class WarehouseAssignmentServiceAc {
 			} else {
 				wasclass = searchData.getWasclasssn();
 				if (wasclass == null) {
-					wasclass = "A";
+					wasclass = "A541";
 				}
 			}
 			// 核准人?

@@ -7,8 +7,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -1153,15 +1155,13 @@ public class BomItemSpecificationsServiceAc {
 			// 取得產品-物料
 			ArrayList<BasicBomIngredients> bomIngredients = bomIngredientsDao.findAllBySearch(b.getBpmnb(), null, null,
 					null, 1, null, pageable);
-
-			// ===== 新 BOM：ERP 抓回的 BOM，格式 mat_qty_process_level =====
-			JsonArray bomNewArray = new JsonArray();
-			bomIngredients.forEach(e -> {
-				// 組成物料_數量_製成_階層(預設都是1)
-				bomNewArray.add(e.getBbiisn() + "_" + e.getBbiiqty() + "_" + e.getBbiiprocess() + "_1");
-			});
-
+			// 測試用
+			if ("90-330-L13DU37".equals(b.getBpmnb())) {
+				System.out.println(b.getBpmnb());
+			}
+			// ============================
 			// ===== 讀取 Cloud JSON 欄位(避免各種異常) =====
+			// ============================
 			String raw = b.getBpmbisitem();
 			if (raw == null || raw.isBlank()) {
 				continue;
@@ -1178,20 +1178,26 @@ public class BomItemSpecificationsServiceAc {
 					|| !root.get("basic").isJsonArray()) {
 				continue;
 			}
-
-			// 格式化內容
+			// ============================
+			// ===== 格式化內容
+			// ============================
 			JsonArray items = root.getAsJsonArray("items");// Cloud 規格:KeyPart
 			JsonArray basic = root.getAsJsonArray("basic");// Cloud 規格:物料
 			// ===== 基本 BOM 舊結構（Cloud basic + Cloud items 中的 Key Parts）=====
+
 			JsonArray basicItems = basic.deepCopy(); // 舊的BOM
 			// ===== groupChange：蒐集 Key Part 的料號 -> spec =====
 			// key: (GID)
 			// val: Map<物料號, BomItemSpecifications>
+			// ->為了快速對應 GID -> 物料號
 			Map<Long, Map<String, BomItemSpecifications>> groupChange = new HashMap<>();
 			// 為了快速判斷某料號是否曾是 Key Part（用在 basic 重建時排除）
 			// key: 料號
 			Set<String> keyPartMaterials = new HashSet<>();
+
+			// ============================
 			// ===== 掃描 items，找 Key Part（舊 Cloud 結構）=====
+			// ============================
 			for (JsonElement el : items) {
 
 				if (!el.isJsonObject())
@@ -1225,16 +1231,15 @@ public class BomItemSpecificationsServiceAc {
 					continue;
 				}
 
-				// 取得或建立此群組底下的「料號 -> spec」map
+				// 取得或建立此群組底下的「料號 -> spec」map->建立 (gid -> {mat -> spec})
 				Map<String, BomItemSpecifications> byMaterialMap = groupChange.computeIfAbsent(gid,
 						k -> new HashMap<>());
-
 				// 將此群組底下的所有 Key Part 規格都掃描一次，建立完整索引
 				for (BomItemSpecifications spec : group.values()) {
 					String m = spec.getBisnb();
-					if (m == null)
+					if (m == null) {
 						continue;
-
+					}
 					byMaterialMap.put(m, spec); // 建立 (gid -> {mat -> spec})
 					keyPartMaterials.add(m); // 記錄：此料號是 Key Part 候選
 				}
@@ -1243,8 +1248,48 @@ public class BomItemSpecificationsServiceAc {
 				basicItems.add(bisnb + "_" + qty + "_" + process + "_" + level + "_" + bisgidStr);
 			}
 
+			// 過濾重複 1. 先複製並放入 Set (直接去重)
+			Set<JsonElement> uniqueSet = new LinkedHashSet<>();
+			basicItems.forEach(item -> uniqueSet.add(item.deepCopy()));
+
+			// 2. 直接轉回 JsonArray
+			basicItems = new JsonArray();
+			uniqueSet.forEach(basicItems::add);
+
 			// ============================
-			// oldMap / newMap 建構->為了更好比對 BOM物料差異<組成物料:組成物料_數量_製成_階層_使用的KeyPart項目群組GID>
+			// ===== 新 BOM：ERP 抓回的 BOM，格式 mat_qty_process_level =====
+			// ============================
+			JsonArray bomNewArray = new JsonArray();
+			HashMap<Long, Boolean> strGidSame = new HashMap<Long, Boolean>();// 有對應過的GID 不可重複對應
+			bomIngredients.forEach(e -> {
+				Long hasGid = 0L;
+				String strGid = "";
+				for (Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+					Long mat = entry.getKey();
+					Map<String, BomItemSpecifications> value = entry.getValue(); //
+					// 有對應過不可再用
+					if (strGidSame.containsKey(mat)) {
+						continue;
+					}
+					// 加入以使用
+					if (value.containsKey(e.getBbiisn())) {
+						hasGid = value.get(e.getBbiisn()).getBisgid();
+						strGidSame.put(hasGid, true);
+						break;
+					}
+				}
+				if (hasGid != 0L) {
+					strGid = "_" + hasGid;
+				}
+
+				// 組成物料_數量_製成_階層(預設都是1)
+				bomNewArray.add(e.getBbiisn() + "_" + e.getBbiiqty() + "_" + e.getBbiiprocess() + "_1" + strGid);
+
+			});
+
+			// ============================
+			// ===== oldMap / newMap 建構->為了更好比對
+			// BOM物料差異<組成物料:組成物料_數量_製成_階層_使用的KeyPart項目群組GID>
 			// ============================
 
 			Map<String, BasicLine> oldMap = new HashMap<>();
@@ -1269,36 +1314,49 @@ public class BomItemSpecificationsServiceAc {
 			System.out.println(basicItems.toString());
 			System.out.println(bomNewArray.toString());
 			// ============================
-			// 3. 計算差異（新增／移除／修改）
+			// 3. 計算差異（新增／移除／修改）<物料號 , Item 選項群組>
 			// ============================
 			// removedMaterials：舊有有、但新 BOM 沒有 → 視為「移除」
-			Set<String> removedMaterials = new HashSet<>();
+			HashMap<String, Long> removedMaterials = new HashMap<>();
 			// addedMaterials：新 BOM 有、但舊有沒有 → 視為「新增」
-			Set<String> addedMaterials = new HashSet<>();
+			HashMap<String, Long> addedMaterials = new HashMap<>();
 			// modifiedMaterials：舊、新都有同料號，但 qty / process / level 任一不同 → 視為「修改」
-			Set<String> modifiedMaterials = new HashSet<>();
+			HashMap<String, Long> modifiedMaterials = new HashMap<>();
+			// checkGidSame：有多餘重複的選項 任一不同 → 視為「修改」
+			HashMap<Long, Boolean> checkGidSame = new HashMap<>();
 
 			// 舊有 -> 新沒有
-			for (String mat : oldMap.keySet()) {
-				if (!newMap.containsKey(mat))
-					removedMaterials.add(mat);
+			for (Entry<String, BasicLine> entry : oldMap.entrySet()) {
+				String mat = entry.getKey();
+				BasicLine value = entry.getValue(); // 這裡的型別依據您的 Map 定義
+				// 如果沒匹配到
+				if (!newMap.containsKey(mat)) {
+					removedMaterials.put(mat, Long.parseLong(value.getBisgid()));
+				}
 			}
 
 			// 新有 -> 舊沒有 或 修改數量/製程/階層
-			for (String mat : newMap.keySet()) {
+			for (Entry<String, BasicLine> entry : newMap.entrySet()) {
+				String mat = entry.getKey();
+				BasicLine value = entry.getValue(); // 這裡的型別依據您的 Map 定義
 				BasicLine n = newMap.get(mat);
 				BasicLine o = oldMap.get(mat);
 
-				if (o == null) {// 舊沒有 → 純新增
-					addedMaterials.add(mat);
+				// 新的部分
+				if (o == null && value.getBisgid() != null) {// 舊沒有 → 純新增
+					// 測試用
+					if (value.getBisgid() == null) {
+						System.out.println("" + value.getBisgid());
+					}
+					addedMaterials.put(mat, Long.parseLong(value.getBisgid()));
 					continue;
+				} else if (o != null && value.getBisgid() != null) {
+					// 修改部分 比較 qty / process / level 任一欄位是否不同
+					boolean changed = !o.getQty().equals(n.getQty()) || !o.getProcess().equals(n.getProcess())
+							|| !o.getLevel().equals(n.getLevel());
+					if (changed)
+						modifiedMaterials.put(mat, Long.parseLong(value.getBisgid()));
 				}
-				// 比較 qty / process / level 任一欄位是否不同
-				boolean changed = !o.getQty().equals(n.getQty()) || !o.getProcess().equals(n.getProcess())
-						|| !o.getLevel().equals(n.getLevel());
-
-				if (changed)
-					modifiedMaterials.add(mat);
 			}
 
 			// ============================
@@ -1315,55 +1373,50 @@ public class BomItemSpecificationsServiceAc {
 			Map<Long, BomItemSpecifications> groupsToReplace = new HashMap<>();
 
 			// 移除：舊有有但新 BOM 沒有的料號 -> 此料號出現在哪些群組，這些群組就要移除
-			for (String mat : removedMaterials) {
-				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
-					Long gid = entry.getKey();
-					Map<String, BomItemSpecifications> byMat = entry.getValue();
-
-					if (byMat.containsKey(mat)) {
-						groupsToRemove.add(gid);
-					}
-				}
+			for (Entry<String, Long> entryMat : removedMaterials.entrySet()) {
+				String mat = entryMat.getKey();
+				Long valueGID = entryMat.getValue(); // GID
+				groupsToRemove.add(valueGID);
 			}
-			// 新增：新有有但舊 BOM 沒有的料號 -> 此料號出現在哪些群組，這些群組就要新增
-			for (String mat : addedMaterials) {
-				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
-					Long gid = entry.getKey();
-					Map<String, BomItemSpecifications> byMat = entry.getValue();
 
-					if (byMat.containsKey(mat)) {
-						BomItemSpecifications spec = byMat.get(mat);
-						groupsToAdd.put(gid, spec);
-					}
+			// 新增：新有有但舊 BOM 沒有的料號 -> 此料號出現在哪些群組，這些群組就要新增
+			for (Entry<String, Long> entryMat : addedMaterials.entrySet()) {
+				String mat = entryMat.getKey();
+				Long valueGID = entryMat.getValue(); // GID
+				// 有匹配?
+				if (groupChange.containsKey(valueGID) && groupChange.get(valueGID).containsKey(mat)) {
+					BomItemSpecifications spec = groupChange.get(valueGID).get(mat);
+					groupsToAdd.put(valueGID, spec);
 				}
 			}
 
 			// 修改：舊/新都有此料號，但 qty/process/level 有變化 -> 出現此料號的群組都要更新
-			for (String mat : modifiedMaterials) {
-				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
-					Long gid = entry.getKey();
-					Map<String, BomItemSpecifications> byMat = entry.getValue();
-
-					if (byMat.containsKey(mat)) {
-						BomItemSpecifications spec = byMat.get(mat);
-						groupsToReplace.put(gid, spec);
-					}
+			for (Entry<String, Long> entryMat : modifiedMaterials.entrySet()) {
+				String mat = entryMat.getKey();
+				Long valueGID = entryMat.getValue(); // GID
+				// 有匹配?
+				if (groupChange.containsKey(valueGID) && groupChange.get(valueGID).containsKey(mat)) {
+					BomItemSpecifications spec = groupChange.get(valueGID).get(mat);
+					groupsToReplace.put(valueGID, spec);
 				}
 			}
 
 			// ===== 生成新的 items =====
 			JsonArray newItems = new JsonArray();
-
 			for (JsonElement el : items) {
 				if (!el.isJsonObject()) {// 異常項目直接略過
 					continue;
 				}
-
 				JsonObject obj = el.getAsJsonObject();
 				Long bisgid = obj.has("bisgid") ? obj.get("bisgid").getAsLong() : null;
 
-				if (bisgid != null) {
+				// 重複不放入
+				if (checkGidSame.containsKey(bisgid)) {
+					continue;
+				}
+				checkGidSame.put(bisgid, true);
 
+				if (bisgid != null) {
 					// 整組移除:若此群組在 groupsToRemove 中 & 不在 groupsToAdd 中 → 整組移除，不再加入 newItems
 					if (groupsToRemove.contains(bisgid) && !groupsToAdd.containsKey(bisgid)) {
 						continue;
@@ -1425,55 +1478,56 @@ public class BomItemSpecificationsServiceAc {
 				// 沒被處理的保留:不在移除或更新清單的項目 → 原封不動加入 newItems
 				newItems.add(obj);
 			}
-			// 新增
-			// ============================
-			// 4-1. 針對「新增的 Key Part」補上對應的 items
-			// ============================
-
-			for (String mat : addedMaterials) {
-
-				// 若此料號沒有出現在任何 Key Part 群組 → 不需建立 items，由 basic 管即可
-				if (!keyPartMaterials.contains(mat)) {
-					continue;
-				}
-
-				// 在所有群組裡找出哪些群組有這個料號
-				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
-					Long gid = entry.getKey();
-					Map<String, BomItemSpecifications> byMat = entry.getValue();
-
-					if (!byMat.containsKey(mat)) {
-						continue;
-					}
-
-					// 若該群組已被標記為整組移除，就不用再為這個群組新增
-					if (groupsToRemove.contains(gid)) {
-						continue;
-					}
-
-					BomItemSpecifications spec = byMat.get(mat);
-					BasicLine n = newMap.get(mat);
-					if (n == null) {
-						// 理論上不會發生，防護一下
-						continue;
-					}
-
-					JsonObject newItem = new JsonObject();
-					newItem.addProperty("bisid", String.valueOf(spec.getBisid()));
-					newItem.addProperty("bisgid", String.valueOf(spec.getBisgid()));
-					newItem.addProperty("bisnb", spec.getBisnb());
-					newItem.addProperty("bisname", spec.getBisname());
-					newItem.addProperty("bisqty", n.getQty());
-					newItem.addProperty("bisgname", spec.getBisgname());
-					newItem.addProperty("bisgfname", spec.getBisgfname());
-					newItem.addProperty("bisfname", spec.getBisfname());
-					newItem.addProperty("bissdescripion", spec.getBissdescripion());
-					newItem.addProperty("bisprocess", n.getProcess());
-					newItem.addProperty("bislevel", n.getLevel());
-
-					newItems.add(newItem);
-				}
-			}
+//			// 新增
+//			// ============================
+//			// 4-1. 針對「新增的 Key Part」補上對應的 items
+//			// ============================
+//			for (Entry<String, Long> entryMat : addedMaterials.entrySet()) {
+//				String mat = entryMat.getKey();
+//				Long valueGID = entryMat.getValue(); // GID
+//
+//				// 若此料號沒有出現在任何 Key Part 群組 → 不需建立 items，由 basic 管即可
+//				if (!keyPartMaterials.contains(mat)) {
+//					continue;
+//				}
+//
+//				// 在所有群組裡找出哪些群組有這個料號
+//				for (Map.Entry<Long, Map<String, BomItemSpecifications>> entry : groupChange.entrySet()) {
+//					Long gid = entry.getKey();
+//					Map<String, BomItemSpecifications> byMat = entry.getValue();
+//
+//					if (!byMat.containsKey(mat)) {
+//						continue;
+//					}
+//
+//					// 若該群組已被標記為整組移除，就不用再為這個群組新增
+//					if (groupsToRemove.contains(gid)) {
+//						continue;
+//					}
+//
+//					BomItemSpecifications spec = byMat.get(mat);
+//					BasicLine n = newMap.get(mat);
+//					if (n == null) {
+//						// 理論上不會發生，防護一下
+//						continue;
+//					}
+//
+//					JsonObject newItem = new JsonObject();
+//					newItem.addProperty("bisid", String.valueOf(spec.getBisid()));
+//					newItem.addProperty("bisgid", String.valueOf(spec.getBisgid()));
+//					newItem.addProperty("bisnb", spec.getBisnb());
+//					newItem.addProperty("bisname", spec.getBisname());
+//					newItem.addProperty("bisqty", n.getQty());
+//					newItem.addProperty("bisgname", spec.getBisgname());
+//					newItem.addProperty("bisgfname", spec.getBisgfname());
+//					newItem.addProperty("bisfname", spec.getBisfname());
+//					newItem.addProperty("bissdescripion", spec.getBissdescripion());
+//					newItem.addProperty("bisprocess", n.getProcess());
+//					newItem.addProperty("bislevel", n.getLevel());
+//
+//					newItems.add(newItem);
+//				}
+//			}
 
 			// 替換原本 items
 			items = newItems;
@@ -1501,7 +1555,8 @@ public class BomItemSpecificationsServiceAc {
 			// 6. 寫回 JSON
 			// ============================
 
-			boolean changed = !removedMaterials.isEmpty() || !addedMaterials.isEmpty() || !modifiedMaterials.isEmpty();
+			boolean changed = !removedMaterials.isEmpty() || !addedMaterials.isEmpty() || !modifiedMaterials.isEmpty()
+					|| !checkGidSame.isEmpty();
 
 			if (changed) {
 				// 排序(basicNewFin)

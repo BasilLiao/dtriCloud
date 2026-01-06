@@ -26,6 +26,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
+			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用
@@ -104,6 +105,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
+			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用
@@ -173,6 +175,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
+			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用

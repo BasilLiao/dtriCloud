@@ -2444,7 +2444,8 @@
 									bpmbisitem.basic = [];
 									let bpmbisitemOne = {};
 									let nbs = 1;
-									let bisgnameChecks = new Set();//避免重複
+									let bisgnameChecks = new Set();//(項目)避免重複
+									let bisnbChecks = new Set();//(物料)避免重複
 									entityJsons.forEach(s => {
 										console.log("==="+s['bbisn']+"===");
 										//取得該成品BOM下的 物料匹配
@@ -2454,9 +2455,10 @@
 											//items:取得該物料 匹配項目
 											let checkIsbasic = true;
 											bisname.forEach(bs => {//所有可能的項目
-												if (s['bbiisn'] === bs['bisnb'] && !bisgnameChecks.has(bs['bisgname'])) {
+												if (s['bbiisn'] === bs['bisnb'] && !bisgnameChecks.has(bs['bisgname'])&& !bisnbChecks.has(bs['bisnb'])) {
 													console.log(bs['bisfname']);
 													bisgnameChecks.add(bs['bisgname']);
+													bisnbChecks.add(bs['bisnb']);
 													//
 													bpmbisitemOne = {};
 													bpmbisitemOne.bisid = bs['bisid'];

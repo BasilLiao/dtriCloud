@@ -504,10 +504,12 @@ public class ManufactureProcessCardServiceAc {
 
 						// 規格內容
 						JsonObject pr_b_item = new JsonObject();
+						JsonObject pr_material = new JsonObject();
 						JsonArray sphbisitem = JsonParser.parseString(entityDataOld.getSphbisitem()).getAsJsonObject()
 								.get("items").getAsJsonArray();
 						for (JsonElement element : sphbisitem) {
 							JsonObject pr_b_one = new JsonObject();
+							JsonObject pr_m_one = new JsonObject();
 							// 項目組名
 							String bisgname = element.getAsJsonObject().getAsJsonPrimitive("bisgname").getAsString();
 							// 項目內容
@@ -526,10 +528,22 @@ public class ManufactureProcessCardServiceAc {
 							pr_b_one.addProperty("Is", bisfnameJoined.trim());
 							pr_b_one.addProperty("Qty", bisqty);
 							pr_b_item.add(bisgname, pr_b_one);
+							// Key Part 物料號
+							String bisnb = element.getAsJsonObject().get("bisnb").getAsString();
+							String bisname = element.getAsJsonObject().get("bisname").getAsString();
+							if (!bisnb.contains("customize")) {
+								pr_m_one.addProperty("Is", bisnb);
+								pr_m_one.addProperty("Name", bisname);
+								pr_material.add(bisgname, pr_m_one);
+							}
 						}
 						jsonCreate.add("pr_b_item", pr_b_item);
+						// 產品Key Part物料號
+						jsonCreate.add("pr_material", pr_material);
+
 						// 軟硬體
 						String sphbsh = entityDataOld.getSphbsh();
+
 						JsonObject sphbshJson = JsonParser.parseString(sphbsh).getAsJsonObject().get("pr_s_item")
 								.getAsJsonObject();
 						JsonObject sphbshJsonSend = new JsonObject();

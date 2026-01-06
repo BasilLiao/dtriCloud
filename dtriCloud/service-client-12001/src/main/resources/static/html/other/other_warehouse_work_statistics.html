@@ -514,8 +514,12 @@
 							otherTextEx.find('input').addClass('datetimepicker_time');
 							otherTextEx.appendTo('#otherItem');
 							break;
-						case "datetime":
+						case "date":
 							otherTextEx.find('input').addClass('datetimepicker_date');
+							otherTextEx.appendTo('#otherItem');
+							break;
+						case "datetime":
+							otherTextEx.find('input').addClass('datetimepicker_datetime');
 							otherTextEx.appendTo('#otherItem');
 							break;
 					}
@@ -739,8 +743,8 @@
 			},
 			datetimepickerDate() {
 				//日期時間格式
-				$('#search_c .datetimepicker').remove();
-				$('#search_c .datetimepicker_date:not(:disabled)').datetimepicker({
+				$('#other_c .datetimepicker').remove();
+				$('#other_c .datetimepicker_date:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd',
 					pickerPosition: 'bottom-right',
 					startView: 2,    // 2 = month view（年/月/日）
@@ -752,7 +756,7 @@
 				    bootcssVer: 5
 					//......可以同上項目代碼自定義設置
 				});
-				$('#search_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
+				$('#other_c .datetimepicker_datetime:not(:disabled)').datetimepicker({
 					format: 'yyyy-mm-dd hh:ii:00',
 					pickerPosition: 'bottom-right',
 					//minView:1,
@@ -766,7 +770,7 @@
 					//......可以同上項目代碼自定義設置
 				});
 				//時間格式
-				$('#search_c .datetimepicker_time:not(:disabled)').datetimepicker({
+				$('#other_c .datetimepicker_time:not(:disabled)').datetimepicker({
 					format: 'hh:ii',
 					startView: 1,
 					minuteStep: 30,
@@ -898,7 +902,7 @@
 				//查詢
 				$("#otherItem .otherVal").each(function (index) {
 					console.log(index + " : " + $(this).attr("id") + " : " + $(this).val());
-					if ($(this).hasClass('datetimepicker_date') && $(this).val() != "") {
+					if ($(this).hasClass('datetimepicker_datetime') && $(this).val() != "") {
 						entityJson[$(this).attr("id")] = new Date($(this).val()).getTime();
 					} else {
 						entityJson[$(this).attr("id")] = $(this).val() == "" ? null : $(this).val();

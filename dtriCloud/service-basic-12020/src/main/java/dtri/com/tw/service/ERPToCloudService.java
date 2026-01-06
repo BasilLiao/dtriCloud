@@ -170,7 +170,7 @@ public class ERPToCloudService {
 		// 是否結單?
 		int sysstatus = 0;
 		// if (m.getTc016().equals("N")|| m.getTc016().equals("3")) {
-		if ("Y".equals(m.getTe019())) {
+		if ("Y".equals(m.getTc009())) {
 			sysstatus = 1;
 		}
 		// 資料匹配
@@ -241,7 +241,7 @@ public class ERPToCloudService {
 		// 是否結單?
 		int sysstatus = 0;
 		// if (m.getTc016().equals("3") || m.getTc016().equals("N")) {
-		if (m.getTe019().equals("Y")) {
+		if (m.getTc009().equals("Y")) {
 			sysstatus = 1;
 		}
 		// 資料匹配

@@ -221,7 +221,7 @@ public class BomNotificationServiceAc {
 				entityDataOld.setBnprimary(x.getBnprimary());
 				SystemUser user = userDao.findById(x.getBnsuid()).get();
 				entityDataOld.setBnsuid(user.getSuid());
-				entityDataOld.setBnsuname(user.getSuname());
+				entityDataOld.setBnsuname(user.getSuname() + "(" + user.getSuename() + ")");
 				entityDataOld.setBnsumail(user.getSuemail());
 				entityDataOld.setBnmnotice(x.getBnmnotice());// 修改通知
 				entityDataOld.setBnanotice(x.getBnanotice());// 新增通知
@@ -276,7 +276,7 @@ public class BomNotificationServiceAc {
 			x.setBnid(null);
 
 			SystemUser user = userDao.findById(x.getBnsuid()).get();
-			x.setBnsuname(user.getSuname());
+			x.setBnsuname(user.getSuname() + "(" + user.getSuename() + ")");
 			x.setBnsumail(user.getSuemail());
 
 			saveDatas.add(x);
