@@ -221,7 +221,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ " WHERE "//
-			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-30, 112) "//
+			+ "	(MOCTE.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "//
 			+ "	OR MOCTE.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ "	AND (MOCTB.TB004-MOCTB.TB005 >= 0 "//
 			// + " AND MOCTE.TE019 ='N' "//

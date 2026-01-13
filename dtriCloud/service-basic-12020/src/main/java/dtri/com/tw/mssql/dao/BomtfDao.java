@@ -105,11 +105,11 @@ public interface BomtfDao extends JpaRepository<Bomtf, Long> {
 			+ "	AND BOMTG.TG008 > 0 "//
 			+ "	AND BOMTG.TG010 != 'V' "//
 			+ " AND BOMTG.TG001 = 'A431' "//
-			+ "	AND (BOMTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
+			+ "	AND (BOMTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "//
 			+ "	OR BOMTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112))"//
 			+ " AND (CONCAT(BOMTG.TG001, '-', TRIM(BOMTG.TG002), '-', BOMTG.TG003) IN (:TG001TG002TG003)) "// 比對製令單+序號?
 			+ " ORDER BY"//
 			+ "	(BOMTG.TG001+'-'+TRIM(BOMTG.TG002)+'-'+BOMTG.TG003)  ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Bomtf> findAllByBomtf(List<String> TG001TG002TG003);
+	ArrayList<Bomtf> findAllByBomtf60(List<String> TG001TG002TG003);
 }

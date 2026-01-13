@@ -85,7 +85,7 @@ body_index={
 			$("#body_warehouse_assignment #modify_title").addClass("disabled");
 			$("#body_warehouse_assignment #report_title").addClass("disabled");
 			//$("#body_warehouse_assignment #print_title").addClass("disabled");
-			$("#body_warehouse_assignment #compare_title").addClass("disabled");
+			//$("#body_warehouse_assignment #compare_title").addClass("disabled");
 			//$("#body_warehouse_assignment #other_title").addClass("disabled");
             //模板-預設分頁 active
             $("#body_warehouse_assignment #other_title").addClass("active");
@@ -112,9 +112,9 @@ body_index={
             //	report.methods.create();
             //});
             //比對-模板
-            //$("#body_warehouse_assignment #compare_tab").load("./html/model/compare.html", function(){
-            //	compare.methods.create();
-            //});
+            $("#body_warehouse_assignment #compare_tab").load("./html/model/compare.html", function(){
+            	compare.methods.create();
+            });
             //其他-模板
             $("#body_warehouse_assignment #other_tab").load("./html/other/other_warehouse_assignment.html", function(){
             	other.methods.create();

@@ -464,22 +464,22 @@
 							<div class="col-6 p-1 col-lg-6">
 								<div id="c_sphxnb"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">固定(SN-fixed)</div>
+									<div class="searchTitle pink_color fw-bolder rounded-top">固定(SN-fixed)Ex:082DW2513</div>
 									<div class="p-1">
 										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="text" placeholder="Ex:082DW2513" required>
+											type="text" placeholder="無SN則填寫0" required>
 									</div>
 								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
 								<div id="c_sphfnb"
 									class="btnAutoOrder border border-secondary rounded">
-									<div class="searchTitle pink_color fw-bolder rounded-top">浮動(float)</div>
+									<div class="searchTitle pink_color fw-bolder rounded-top">浮動(float)Ex:0001</div>
 									<div class="p-1">
 										<input
 											class="col-12 m-0 p-1 border border-dark form-control searchVal"
-											type="number" placeholder="Ex:0001" required>
+											type="number" placeholder="無SN則填寫0" required>
 									</div>
 								</div>
 							</div>
@@ -1707,9 +1707,6 @@
 						return null;
 					}
 					
-					let sphpontype = $('#c_sphpontype select').find("option:selected").val();
-					let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||
-							sphpontype === 'A511_no_and_has_sn' ||	sphpontype === 'A521_no_and_has_sn');// 判斷是否略過SN打印
 					 
 					// 取得 HTML 模板
 					const content = $("#printNotes").clone();
@@ -1726,7 +1723,11 @@
 					const total = parseInt($('#printNotes .f_sphoqty').text().replace(/,/g, ''));  // 實際數量
 					const batchSize = 200;     // 每批 200 筆
 					let batchIndex = 0;
-					
+					//是否打印SN
+					let sphpontype = $('#c_sphpontype select').find("option:selected").val();
+					let c_sphlength = $("#c_sphlength input").val();//總長度
+					let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||  (c_sphlength<=4));// 判斷是否略過SN打印
+							
 					function printBatch() {
 						if (isNaN(total) ||batchIndex * batchSize >= total ){
 							if($("#btn_save_auto input:checked").length > 0){
@@ -1956,9 +1957,7 @@
 				
 				//預覽內容
 				console.log("btn_intoForm");
-				let sphpontype = $('#c_sphpontype select').find("option:selected").val();
-				let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||
-						sphpontype === 'A511_no_and_has_sn' ||	sphpontype === 'A521_no_and_has_sn');// 判斷是否略過SN打印
+				
 				
 				//防呆帶回資料
 				if($("#search_cr_open tbody input:checked").length==0){
@@ -1999,6 +1998,10 @@
 				let printNotes = $('#printNotes');//預覽物件
 				let c_sphxnbText = $("#c_sphxnb input").val();//固定
 				let c_sphfnbText = $("#c_sphfnb input").val();//浮動
+				//是否打印SN
+				let c_sphlength = $("#c_sphlength input").val();//總長度 
+				let sphpontype = $('#c_sphpontype select').find("option:selected").val();
+				let nosn = (sphpontype === 'A521_old_sn' || sphpontype === 'A511_no_sn' ||  (c_sphlength<=4));// 判斷是否略過SN打印
 				//是否選擇無SN
 				if(!nosn){
 					JsBarcode("#printNotes .f_p_sn svg",c_sphxnbText+c_sphfnbText, {//產品SN號 Code

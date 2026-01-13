@@ -148,7 +148,7 @@
 								</b>
 							</button>
 							<button id="btn_passAll" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
 								<b>Pass all<br>(S2)
 								</b>
 							</button>
@@ -165,6 +165,11 @@
 							<button id="btn_manufacturePass" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Manufacture<br>pass(S5)
+								</b>
+							</button>
+							<button id="btn_compare" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Compare<br>()
 								</b>
 							</button>
 							<button id="btn_markCancel" type="button"
@@ -829,7 +834,13 @@
 					other.methods.confirmSendReSynchronize();
 
 				});
+				//監聽-比對
+				$(document).off("click", "#search_c #btn_compare");
+				$(document).on("click", "#search_c #btn_compare", function (event) {
+					console.log("btn_compare");
+					other.methods.searchToCompare(null);
 
+				});
 
 				//監聽-查詢
 				$(document).off("click", "#search_c #btn_send");
@@ -986,6 +997,46 @@
 						}
 					}
 				});
+			},
+			searchToCompare(order) {
+				//比對資料 
+				//是否marks?markDetails?
+				let entityJsons = other.data.searchPageSet.entityJsons;
+				let entityDetailJsons = other.data.searchPageSet.entityDetailJsons;
+				let marks = other.data.marks;
+				let markDetails = other.data.markDetails;
+				let entityIKey = other.data.entityIKey;
+				let entityGKey = other.data.entityGKey;
+				let entityDateTime = other.data.entityDateTime;
+				let dataHeader = [];
+				let dataBody = [];
+				console.log(JSON.stringify(marks));
+				if (JSON.stringify(marks) == "{}" && JSON.stringify(markDetails) == "{}") {
+					return null;
+				}
+				//Data
+				Object.keys(marks).forEach(function (ik) {
+					let ikey = ik.split("_")[0];
+					let gkey = ik.split("_")[1];
+					for (let en = 0; en < entityJsons.length; en++) {
+						if (entityJsons[en][entityIKey] == ikey) {
+							entityJsons[en]['compare_gid_id'] = gkey+"_"+ikey;
+							dataHeader.push(entityJsons[en]);
+						}
+					}
+				});
+				//Details
+				Object.keys(markDetails).forEach(function (dk) {
+					let ikey = dk.split("_")[0];
+					let gkey = dk.split("_")[1];
+					for (let en = 0; en < entityDetailJsons.length; en++) {
+						if (entityDetailJsons[en][entityIKey] == ikey) {
+							entityDetailJsons[en]['compare_gid_id'] = gkey+"_"+ikey;
+							dataBody.push(entityDetailJsons[en]);
+						}
+					}
+				});
+				compare.methods.compare(dataHeader, dataBody, entityDateTime, entityIKey, entityGKey);
 			},
 			searchToPrint(order) {
 				//比對資料 

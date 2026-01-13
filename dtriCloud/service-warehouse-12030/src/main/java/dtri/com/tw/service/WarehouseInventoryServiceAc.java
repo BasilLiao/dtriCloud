@@ -121,13 +121,23 @@ public class WarehouseInventoryServiceAc {
 				String towho = i.getBiltowho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
 				// 物料號:<工單號-流水號:數量>
 				// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
-				mapBasicIncomings.computeIfAbsent(towho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+				// 特出 A431/ A581 / A561 排除->因為本身單據同步需要未核單的->此處需要已核單的
+				if ((i.getBilclass().equals("A431") || i.getBilclass().equals("A581") || i.getBilclass().equals("A561"))
+						&& i.getBilstatus() != 1) {
+					// 不可納入計算
+				} else {
+					mapBasicIncomings.computeIfAbsent(towho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+				}
 			});
 			basicShippingLists.forEach(o -> {// 領料
 				String docKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
-				Integer qty = o.getBslpnqty();
+				Integer qty = o.getBslpngqty();
 				String pnumber = o.getBslpnumber(); // 物料號
 				String fromwho = o.getBslfromwho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
+				//特別標註 
+				if(o.getBslcheckin()==1) {
+					docKey+="*>"+docKey;
+				};
 				// 物料號:<工單號-流水號:數量>
 				// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
 				mapBasicShippings.computeIfAbsent(fromwho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
@@ -333,7 +343,7 @@ public class WarehouseInventoryServiceAc {
 						.findAllByWaaliasawmpnbOnlyOne(searchData.getWiwaaliasnb());// 單一個物料
 				ArrayList<BasicIncomingList> basicIncomingLists = incomingListDao.findAllByCheckInventory(null, null,
 						null);// 未入+已入數量->不等同於->須入數量
-				ArrayList<BasicShippingList> basicShippingLists = shippingListDao.findAllByCheckBslpngqty();// 已領+未核單
+				ArrayList<BasicShippingList> basicShippingLists = shippingListDao.findAllByCheckBslpngqtyAndCheckin();// 已領+未核單
 				Map<String, WarehouseArea> mapWarehouseAreas = new TreeMap<String, WarehouseArea>();
 				Map<String, TreeMap<String, Integer>> mapBasicIncomings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
 				Map<String, TreeMap<String, Integer>> mapBasicShippings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
@@ -351,16 +361,29 @@ public class WarehouseInventoryServiceAc {
 					String towho = i.getBiltowho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
 					// 物料號:<工單號-流水號:數量>
 					// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
-					mapBasicIncomings.computeIfAbsent(towho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+					// 特出 A581/ A561 排除->因為本身單據同步需要未核單的->此處需要已核單的
+					if ((i.getBilclass().equals("A431") || i.getBilclass().equals("A581")
+							|| i.getBilclass().equals("A561")) && i.getBilstatus() != 1) {
+						// 不可納入計算
+					} else {
+						mapBasicIncomings.computeIfAbsent(towho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+					}
+
 				});
 				basicShippingLists.forEach(o -> {// 領料
 					String docKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
-					Integer qty = o.getBslpnqty();
+					Integer qty = o.getBslpngqty();
 					String pnumber = o.getBslpnumber(); // 物料號
 					String fromwho = o.getBslfromwho().replaceAll("[\\[\\]]", "").split("_")[0] + "_";// 倉別
+					//特別標註 
+					if(o.getBslcheckin()==1) {
+						docKey+="*>"+docKey;
+					};
 					// 物料號:<工單號-流水號:數量>
-					// 如果 mapBasicIncomings 裡沒有這個物料號，就新建一個 TreeMap 給它
+					// 如果 basicShippingLists 裡沒有這個物料號，就新建一個 TreeMap 給它
 					mapBasicShippings.computeIfAbsent(fromwho + pnumber, k -> new TreeMap<>()).put(docKey, qty);
+					
+					
 				});
 				// 檢查看看是否有->更新的資料?
 				entitys.forEach(e -> {

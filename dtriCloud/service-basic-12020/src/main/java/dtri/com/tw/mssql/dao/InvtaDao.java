@@ -108,11 +108,11 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ "	OR (INVTB.TB001 ='A115' AND INVTB.TB018='N') "//
 			+ "	OR (INVTB.TB001 ='A119' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A121' AND (INVTB.TB018='Y' OR INVTB.TB018='N'))) "//
-			+ "	AND(INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "// 今天
+			+ "	AND(INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "// 今天
 			+ "	OR INVTB.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "//
 			+ " AND(CONCAT(INVTB.TB001, '-', TRIM(INVTB.TB002), '-', INVTB.TB003) IN (:TB001TB002TB003)) "// 比對製令單+序號?
 			+ "ORDER BY"//
 			+ "	(INVTB.TB001+'-'+TRIM(INVTB.TB002)+'-'+INVTB.TB003)  ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Invta> findAllByInvta(List<String> TB001TB002TB003);
+	ArrayList<Invta> findAllByInvta60(List<String> TB001TB002TB003);
 }

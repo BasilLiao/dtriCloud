@@ -1168,10 +1168,11 @@ public class BomItemSpecificationsServiceAc {
 		// 同步BOM 與 規格BOM一致性
 		for (BomProductManagement b : entityBoms) {
 			// 取得產品-物料
+			Integer bbiiqty = 1;
 			ArrayList<BasicBomIngredients> bomIngredients = bomIngredientsDao.findAllBySearch(b.getBpmnb(), null, null,
-					null, 1, null, pageable);
+					null, bbiiqty, null, pageable);
 			// 測試用
-			if ("90-330-L13DU37".equals(b.getBpmnb())) {
+			if ("90-312-P12AU05".equals(b.getBpmnb())) {
 				System.out.println(b.getBpmnb());
 			}
 			// ============================
@@ -1344,8 +1345,7 @@ public class BomItemSpecificationsServiceAc {
 			for (Entry<String, BasicLine> entry : oldMap.entrySet()) {
 				String mat = entry.getKey();
 				BasicLine value = entry.getValue(); // 這裡的型別依據您的 Map 定義
-				// 如果沒匹配到
-				if (!newMap.containsKey(mat)) {
+				if (!newMap.containsKey(mat) && value.getBisgid() != null) {
 					removedMaterials.put(mat, Long.parseLong(value.getBisgid()));
 				}
 			}
@@ -1360,9 +1360,9 @@ public class BomItemSpecificationsServiceAc {
 				// 新的部分
 				if (o == null && value.getBisgid() != null) {// 舊沒有 → 純新增
 					// 測試用
-					if (value.getBisgid() == null) {
-						System.out.println("" + value.getBisgid());
-					}
+//					if (value.getBisgid() == null) {
+//						System.out.println("" + value.getBisgid());
+//					}
 					addedMaterials.put(mat, Long.parseLong(value.getBisgid()));
 					continue;
 				} else if (o != null && value.getBisgid() != null) {
@@ -1594,19 +1594,20 @@ public class BomItemSpecificationsServiceAc {
 				b.setBpmbisitem(updatedJson);
 				bomSynErp.add(b);
 			}
-		}
-		if (!bomSynErp.isEmpty()) {
-			String reBom = new String();
-			for (BomProductManagement o : bomSynErp) {
-				reBom += o.getBpmnb() + "_";
-			}
-			System.out.println("update:" + reBom);
-			managementDao.saveAll(bomSynErp);
-			// 視需求：若後續馬上要讀一致資料，可立刻 flush
-			managementDao.flush();
-		}
+		}if(!bomSynErp.isEmpty())
 
-		return check;
+	{
+		String reBom = new String();
+		for (BomProductManagement o : bomSynErp) {
+			reBom += o.getBpmnb() + "_";
+		}
+		System.out.println("update:" + reBom);
+		managementDao.saveAll(bomSynErp);
+		// 視需求：若後續馬上要讀一致資料，可立刻 flush
+		managementDao.flush();
+	}
+
+	return check;
 	}
 	/* -------------------- 輔助方法區 -------------------- */
 

@@ -111,6 +111,6 @@ public interface InvthDao extends JpaRepository<Invth, Long> {
 			+ "ORDER BY "//
 			+ "	(INVTI.TI001+'-'+TRIM(INVTI.TI002)+'-'+INVTI.TI003)  ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Invth> findAllByInvth(List<String> TI001TI002TI003);
+	ArrayList<Invth> findAllByInvth100(List<String> TI001TI002TI003);
 
 }

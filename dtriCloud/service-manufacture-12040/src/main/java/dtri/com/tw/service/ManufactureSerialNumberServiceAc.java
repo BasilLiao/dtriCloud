@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +130,12 @@ public class ManufactureSerialNumberServiceAc {
 			// Step4-2.資料區分(一般/細節)
 			ArrayList<ManufactureSerialNumber> entitys = serialNumberDao.findAllBySearch(searchData.getMsnssn(),
 					searchData.getMsnwo(), searchData.getMsnmodel(), pageable);
+
+			// 空的時候
+			if (entitys.isEmpty() && searchData.getMsnssn() != null && searchData.getMsnwo() == null
+					&& searchData.getMsnmodel() == null) {
+				entitys = serialNumberDao.findAllBySn(searchData.getMsnssn());
+			}
 
 			// 類別(一般模式)
 			String entityJson = packageService.beanToJson(entitys);

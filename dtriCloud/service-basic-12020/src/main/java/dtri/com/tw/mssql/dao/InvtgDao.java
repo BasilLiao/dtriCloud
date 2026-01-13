@@ -106,12 +106,12 @@ public interface InvtgDao extends JpaRepository<Invtg, Long> {
 			+ "	AND INVTG.TG001 is not null"//
 			+ "	AND INVTG.TG009 > 0 "// 數量大於0
 			+ " AND ((INVTG.TG001='A131' AND (INVTF.TF028='1' OR INVTF.TF028='3')) OR INVTG.TG001='A141') "//
-			+ "	AND (INVTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
+			+ "	AND (INVTG.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-80, 112) "//
 			+ "	OR INVTG.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND (CONCAT(INVTG.TG001, '-', TRIM(INVTG.TG002), '-', INVTG.TG003) IN (:TG001TG002TG003)) "// --單號+序號
 			+ "ORDER BY "//
 			+ "	(INVTG.TG001+'-'+TRIM(INVTG.TG002)+'-'+INVTG.TG003)  ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Invtg> findAllByInvtg(List<String> TG001TG002TG003);
+	ArrayList<Invtg> findAllByInvtg80(List<String> TG001TG002TG003);
 
 }

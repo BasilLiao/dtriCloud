@@ -299,7 +299,7 @@ public class ScheduleProductionNotesServiceAc {
 		String sphbpmnb = searchData.getSphbpmnb();// 特定BOM號
 		if (sphpon.length == 2) {
 			String bclclass = sphpon[0];
-			String bclsn = sphpon[1];
+			String bclsn = sphpon[1].trim();
 			ArrayList<BasicCommandList> commandLists = commandListDao.findAllByComList(bclclass, bclsn, null, null);
 			if (commandLists.size() > 0) {
 				BasicCommandList commandList = commandLists.get(0);
@@ -309,6 +309,7 @@ public class ScheduleProductionNotesServiceAc {
 				String syshnote = commandList.getSyshnote();
 				String sphname = "";
 				String sphspecification = "";
+				commandList.setBclproduct(commandList.getBclproduct().trim());// 去除空格
 				if (syshnote != null && !syshnote.trim().isEmpty()) {
 					// 去除所有空格並進行分割
 					sysnot = syshnote.replaceAll("\\s+", "").split("/");

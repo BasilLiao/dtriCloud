@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -635,6 +636,7 @@ public class WarehouseSynchronizeServiceAc {
 	public PackageBean setModify(PackageBean packageBean, String action) throws Exception {
 		// =======================資料準備 =======================
 		List<WarehouseArea> areas = areaDao.findAll();
+		List<WarehouseArea> areaUpdate = new ArrayList<WarehouseArea>();
 
 		// =======================資料檢查=======================
 
@@ -681,7 +683,7 @@ public class WarehouseSynchronizeServiceAc {
 			// 領料單
 			// B-1.列出 -倉儲負責人 "已領料" 領料單類 -領料單類的 "未核單" 狀態
 			ArrayList<BasicShippingList> basicShippingLists = shippingListDao.findAllByCheckBslpngqty();
-			Map<String, Integer> basicShMap = new HashMap<String, Integer>();// 儲位 + 物料
+			Map<String, Integer> basicShInMap = new HashMap<String, Integer>();// 儲位 + 物料
 			basicShippingLists.forEach(s -> {
 				if (s.getBslfromwho() != null && !s.getBslfromwho().equals("")
 						&& s.getBslfromwho().split("_").length == 3) {
@@ -690,48 +692,89 @@ public class WarehouseSynchronizeServiceAc {
 					String key = bslfromwho[0] + "_" + s.getBslpnumber();// 倉別+物料
 					String wo = s.getBslclass() + "-" + s.getBslsn();
 					// 測試用
-					if (key.equals("A0002_81-207-301065")) {
-						System.out.println(wo +":"+ s.getBslpngqty());
-					}
-					if (basicShMap.containsKey(key)) {
+//					if (key.equals("A0002_23-302-020010")) {
+//						System.out.println(key);
+//					}
+					if (basicShInMap.containsKey(key)) {
 						// 有?
-						Integer oneQty = basicShMap.get(key) + s.getBslpngqty();
-						basicShMap.put(key, oneQty);
+						Integer oneQty = basicShInMap.get(key) + s.getBslpngqty();
+						basicShInMap.put(key, oneQty);
 
 					} else {
 						// 無?
-						basicShMap.put(key, s.getBslpngqty());
+						basicShInMap.put(key, s.getBslpngqty());
 					}
 				}
 			});
 
 			// 入料單-進行(匹配)->將數量修正 寫入
 			// B-2.列出->(倉儲負責人 "未歸位" 入料單類) & (入料單類的 "已核單" 狀態)
-			ArrayList<BasicIncomingList> reAll = incomingListDao.findAllBySearchAction(null, null, null, null, "",
-					null);
-			reAll.forEach(bil -> {
-				bil.setBilpngqty(bil.getBilpnqty());
-			});
-			incomingListDao.saveAll(reAll);
+			ArrayList<BasicIncomingList> basicIncomingLists = incomingListDao.findAllBySearchAction(null, null, null,
+					null, "", null);
 
-			// 將ERP 數量導入 Cloud-
-			// B-3.同步-倉儲&單據 再次修正 所有物料庫存清單
+			// 將ERP 數量導入 Cloud- B-3.同步-倉儲&單據 再次修正 所有物料庫存清單
+			ArrayList<BasicIncomingList> basicIncomingUpdateLists = new ArrayList<BasicIncomingList>();
+			basicIncomingLists.forEach(s -> {
+				// 更正 之前的錯誤機制
+				if (s.getBilfuser().equals("")) {
+					s.setBilpngqty(0);
+					basicIncomingUpdateLists.add(s);
+
+				}
+				
+				// 測試用
+				if (s.getBilpnumber().equals("23-302-020010")) {
+					System.out.println("23-302-020010");
+				}
+				
+				// 已領數量為0 & 無完成人
+				if (s.getBilpngqty() == 0 && s.getBilfuser().equals("")) {
+					String bilfromwho[] = s.getBiltowho().replace("[", "").replace("]", "").split("_");
+					String key = bilfromwho[0] + "_" + s.getBilpnumber();// 倉別+物料
+
+					// 特出 A581 / A561 /A431 排除->因為本身單據同步需要未核單的->此處需要已核單的
+					if ((s.getBilclass().equals("A431") ||s.getBilclass().equals("A581") || s.getBilclass().equals("A561")) && s.getBilstatus() != 1) {
+						// 不可納入計算
+					} else {
+						// 測試用
+						if (key.equals("A0002_23-302-020010")) {
+							System.out.println(key);
+						}
+
+						if (basicShInMap.containsKey(key)) {
+							// 有?
+							Integer oneQty = basicShInMap.get(key) + s.getBilpnqty();
+							basicShInMap.put(key, oneQty);
+						} else {
+							// 無?
+							basicShInMap.put(key, s.getBilpnqty());
+						}
+					}
+				}
+			});
+			// B-3.庫存更新
 			areas.forEach(x -> {
-				if (basicShMap.containsKey(x.getWaaliasawmpnb())) {
+				if (basicShInMap.containsKey(x.getWaaliasawmpnb())) {
 					// 如果有對上 則要排除
-					if (x.getWaerptqty() - basicShMap.get(x.getWaaliasawmpnb()) <= 0) {
+					if (x.getWaerptqty() - basicShInMap.get(x.getWaaliasawmpnb()) <= 0) {
 						// 避免負數
 						x.setWatqty(0);
 					} else {
-						x.setWatqty(x.getWaerptqty() - basicShMap.get(x.getWaaliasawmpnb()));
+						x.setWatqty(x.getWaerptqty() - basicShInMap.get(x.getWaaliasawmpnb()));
 					}
-				} else {
+					x.setSysmuser(packageBean.getUserAccount());
+					x.setSysmdate(new Date());
+					areaUpdate.add(x);
+				} else if (x.getWatqty() != x.getWaerptqty()) {
+					// 數量不同在更新
 					x.setWatqty(x.getWaerptqty());
+					x.setSysmuser(packageBean.getUserAccount());
+					x.setSysmdate(new Date());
+					areaUpdate.add(x);
 				}
-				x.setSysmuser(packageBean.getUserAccount());
-				x.setSysmdate(new Date());
 			});
-			areaDao.saveAll(areas);
+			areaDao.saveAll(areaUpdate);
+			incomingListDao.saveAll(basicIncomingUpdateLists);
 
 		}
 		if (action.equals("Remove")) {

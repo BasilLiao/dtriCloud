@@ -1,90 +1,94 @@
 <style>
-	/*Table 寬度滾動*/
-	#compare_c .table-responsive {
-		display: block;
-		width: 100%;
-		overflow-x: auto;
-	}
+/*Table 寬度滾動*/
+#compare_c .table-responsive {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+}
 
-	/*Table 自動隱藏*/
-	#compare_c .table-responsive th,
-	#compare_c .table-responsive td {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
+/*Table 自動隱藏*/
+#compare_c .table-responsive th, #compare_c .table-responsive td {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
-	/*Table 表格固定*/
-	#compare_c .fixedC1 {
-		left: 0px;
-		position: sticky;
-	}
+/*Table 表格固定*/
+#compare_c .fixedC1 {
+	left: 0px;
+	position: sticky;
+}
 
-	/*Table 每隔表格內_框線*/
-	#compare_c .table-bordered td,
-	#compare_c .table-bordered th {
-		border: 1px solid #1b76fd;
-		padding: 2px;
-	}
+/*Table 每隔表格內_框線*/
+#compare_c .table-bordered td, #compare_c .table-bordered th {
+	border: 1px solid #1b76fd;
+	padding: 2px;
+}
 
-	/*Table 表格外框線*/
-	#compare_c #cCompareData table {
-		min-height: 480px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#compare_c #cCompareData table {
+	min-height: 480px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格外框線*/
-	#compare_c #cCompareDetail table {
-		min-height: 480px;
-		border-collapse: separate;
-		border-spacing: 0px;
-	}
+/*Table 表格外框線*/
+#compare_c #cCompareDetail table {
+	min-height: 480px;
+	max-height: 480px;
+	border-collapse: separate;
+	border-spacing: 0px;
+}
 
-	/*Table 表格內 背景色*/
-	#compare_c .table-white {
-		--bs-table-bg: #fff;
-	}
+/*Table 表格內 背景色*/
+#compare_c .table-white {
+	--bs-table-bg: #fff;
+}
 
-	/*標題色彩*/
-	#compare_c .title_color {
-		background-color: #cfe2ff;
-	}
+/*標題色彩*/
+#compare_c .title_color {
+	background-color: #cfe2ff;
+}
 
-	/*直立式呈現邊字*/
-	#compare_c .wlr {
-		writing-mode: vertical-lr;
-		width: 20px;
-	}
+/*直立式呈現邊字*/
+#compare_c .wlr {
+	writing-mode: vertical-lr;
+	width: 20px;
+}
 
-	/*checkbox_24*/
-	#compare_c .checkbox_24 {
-		width: 24px;
-		height: 24px;
-	}
+/*checkbox_24*/
+#compare_c .checkbox_24 {
+	width: 24px;
+	height: 24px;
+}
+
+#compare_c .fixedCt {
+	position: sticky;
+	top: 0px;
+	z-index: 5;
+}
 </style>
 <div id="compare_c">
 	<!-- 控制面板 -->
 	<div id="cCcontroller" class="col-12 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#update_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#update_c_controller_open"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="update_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div
+				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<div class="col-md-4 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Check different</div>
+						<div class="title_color fw-bolder rounded-top">Check
+							different</div>
 						<div class="row m-0">
 							<button id="compareData_btn" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-info">
 								<b>Compare<br>Data(*)
-								</b>
-							</button>
-							<button id="compareDetail_btn" type="button"
-								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-secondary">
-								<b>Compare<br>Detail(*)
 								</b>
 							</button>
 							<button id="compareClearColor_btn" type="button"
@@ -105,18 +109,20 @@
 	</div>
 	<!-- 比對結果 -->
 	<div id="cCompareData" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#cCompareDataOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#cCompareDataOpen"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="cCompareDataOpen" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Compare Data </b>
 			<table id="cCompareDataList"
 				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary">
-					<tr id="compareDataLT">
+				<thead class="table-primary fixedCt">
+					<tr id="exCDataLT">
 						<th class="fixedC1" style="min-width: 40px; left: 0px">VS</th>
-						<th class="exCompareDataT d-none" style="min-width: 100px;">First</th>
+						<th class="exCDataT d-none" style="min-width: 100px;">First</th>
 					</tr>
 				</thead>
 				<tbody class="table-white">
@@ -127,7 +133,7 @@
 									class="m-0 form-check-input checkbox_24 border border-dark">
 							</div>
 						</td>
-						<td class="exCompareDataV d-none"></td>
+						<td class="exCDataV d-none"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -135,32 +141,31 @@
 	</div>
 	<!-- 比對結果 -->
 	<div id="cCompareDetail" class="col-12 m-0 p-1">
-		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
-				data-bs-target="#cCompareDetailOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div
+			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
+				data-bs-toggle="collapse" data-bs-target="#cCompareDetailOpen"
+				aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="cCompareDetailOpen" class="row m-0 collapse show">
-			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Compare Detail </b>
-			<table id="cCompareDetailList"
-				class="col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm">
-				<thead class="table-primary">
-					<tr id="compareDetailLT">
-						<th class="" style="min-width: 40px;">VS</th>
-						<th class="exCompareDetailT d-none m-0">
-							<div class="col p-0">
-								<input type="radio" name="cCompareDetailR"
-									class="m-0 form-check-input checkbox_24 border border-dark">
-							</div>
-							<div class="col p-0 titleName">First</div>
-						</th>
-					</tr>
-				</thead>
-				<tbody class="table-white">
-					<tr id="compareDetailVL" class="">
-						<td colspan="2" class="fixedC1 exCDetailM" style="left: 0px;">M</td>
-					</tr>
-				</tbody>
-			</table>
+			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Compare
+				Detail </b>
+			<div class="p-0 m-0 row" style="width: calc(100% - 20px);">
+				<table id="cCompareDetailList"
+					class="d-none col m-0 p-0 border border-primary table table-striped table-hover table-sm table-bordered border-primary table-responsive table-style shadow-sm"
+					style="min-width: 600px; max-width: 600px">
+					<thead class="table-primary fixedCt">
+						<tr class="exCDetailLT">
+							<th class="exCDetailT d-none m-0" style="left: 0px;">First</th>
+						</tr>
+					</thead>
+					<tbody class="table-white">
+						<tr class="exCDetailVL d-none">
+							<td class="exCDetailV d-none m-0" style="left: 0px;">FirstM</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
@@ -174,7 +179,7 @@
 			entityDateTime: "",
 			datas: [],
 			details: [],
-			compareNb: 0,
+			compareDatasNb: 0,
 			entityIKey: "",//ID
 			entityGKey: "",//GID
 		},
@@ -202,71 +207,84 @@
 				Object.keys(resultThead).forEach(function (k) {
 					//如果隱藏
 					if (!resultThead[k].show == 0) {
-						let exCompareDataT = $('#cCompareDataList .exCompareDataT').clone();
-						let exCompareDataV = $('#cCompareDataList .exCompareDataV').clone();
+						let exCDataT = $('#cCompareDataList .exCDataT').clone();
+						let exCDataV = $('#cCompareDataList .exCDataV').clone();
 
 						//報表欄位
-						exCompareDataT.removeClass("exCompareDataT");
-						exCompareDataT.removeClass("d-none");
-						exCompareDataV.removeClass("exCompareDataV");
-						exCompareDataV.removeClass("d-none");
+						exCDataT.removeClass("exCDataT");
+						exCDataT.removeClass("d-none");
+						exCDataV.removeClass("exCDataV");
+						exCDataV.removeClass("d-none");
 
 						//固定第一格式
 						if (check1 && resultThead[k].show == 1) {
 							check1 = false;
-							exCompareDataT.addClass('fixedC1');
-							exCompareDataT.css('left', '40px');
-							exCompareDataV.addClass('fixedC1');
-							exCompareDataV.css('left', '40px');
+							exCDataT.addClass('fixedC1');
+							exCDataT.css('left', '40px');
+							exCDataV.addClass('fixedC1');
+							exCDataV.css('left', '40px');
 
 						}
 						//如果有翻譯
 						if (resultThead[k].cellLanguage != '') {
 							let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
-							exCompareDataT.text(cellName == "" ? resultThead[k].cellName : cellName);
-							exCompareDataT.css('minWidth', resultThead[k].width + "px");
-							exCompareDataV.css('minWidth', resultThead[k].width + "px");
+							exCDataT.text(cellName == "" ? resultThead[k].cellName : cellName);
+							exCDataT.css('minWidth', resultThead[k].width + "px");
+							exCDataV.css('minWidth', resultThead[k].width + "px");
 						} else {
-							exCompareDataT.text(resultThead[k].cellName);
-							exCompareDataT.css('minWidth', resultThead[k].width + "px");
-							exCompareDataV.css('minWidth', resultThead[k].width + "px");
+							exCDataT.text(resultThead[k].cellName);
+							exCDataT.css('minWidth', resultThead[k].width + "px");
+							exCDataV.css('minWidth', resultThead[k].width + "px");
 						}
 						//串接添加
-						exCompareDataV.addClass(resultThead[k].cellName);
-						exCompareDataV.appendTo('#cCompareDataList #exCDataVL');
-						exCompareDataT.addClass(resultThead[k].cellName);
-						exCompareDataT.appendTo('#cCompareDataList #compareDataLT');
+						exCDataV.addClass(resultThead[k].cellName);
+						exCDataV.appendTo('#cCompareDataList #exCDataVL');
+						exCDataT.addClass(resultThead[k].cellName);
+						exCDataT.appendTo('#cCompareDataList #exCDataLT');
 					}
 				});
 				//Step2.標題(細節)-資料
-				//如果沒有細節
-				if (Object.keys(resultDetailThead).length == 0) {
-					$('#cCompareDetail').addClass('d-none');
-					$('#compareDetail_btn').addClass('disabled');
-				}
+				check1 = true;
 				Object.keys(resultDetailThead).forEach(function (k) {
 					//如果隱藏
 					if (!resultDetailThead[k].show == 0) {
-						//複製格式
-						let exCompareDetailT = $('#cCompareDetailList .exCompareDetailT').clone();
+						let exCDetailT = $('#cCompareDetailList .exCDetailT').clone();
+						let exCDetailV = $('#cCompareDetailList .exCDetailV').clone();
+
 						//報表欄位
-						exCompareDetailT.removeClass("exCompareDetailT");
-						exCompareDetailT.removeClass("d-none");
+						exCDetailT.removeClass("exCDetailT");
+						exCDetailT.removeClass("d-none");
+						exCDetailV.removeClass("exCDetailV");
+						exCDetailV.removeClass("d-none");
+
+						//固定第一格式
+						if (check1 && resultDetailThead[k].show == 1) {
+							check1 = false;
+							exCDetailT.addClass('fixedC1');
+							exCDetailT.css('left', '0px');
+							exCDetailV.addClass('fixedC1');
+							exCDetailV.css('left', '0px');
+
+						}
 						//如果有翻譯
 						if (resultDetailThead[k].cellLanguage != '') {
 							let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
-
-							exCompareDetailT.find('.titleName').text(cellName == "" ? resultDetailThead[k].cellName : cellName);
-							exCompareDetailT.css('minWidth', resultDetailThead[k].width + "px");
+							exCDetailT.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
+							exCDetailT.css('minWidth', resultDetailThead[k].width + "px");
+							exCDetailV.css('minWidth', resultDetailThead[k].width + "px");
 						} else {
-							exCompareDetailT.find('.titleName').text(resultDetailThead[k].cellName);
-							exCompareDetailT.css('minWidth', resultDetailThead[k].width + "px");
+							exCDetailT.text(resultDetailThead[k].cellName);
+							exCDetailT.css('minWidth', resultDetailThead[k].width + "px");
+							exCDetailV.css('minWidth', resultDetailThead[k].width + "px");
 						}
-						//添加
-						//Detail
-						exCompareDetailT.addClass(resultDetailThead[k].cellName);
-						exCompareDetailT.find('input').attr('title', resultDetailThead[k].cellName);
-						exCompareDetailT.appendTo('#compareDetailLT');
+						//串接添加
+						exCDetailV.addClass(resultDetailThead[k].cellName);
+						exCDetailV.removeClass("exCDetailVL");
+						exCDetailV.appendTo('#cCompareDetailList .exCDetailVL');
+						//
+						exCDetailT.addClass(resultDetailThead[k].cellName);
+						exCDetailT.removeClass("exCDetailT");
+						exCDetailT.appendTo('#cCompareDetailList .exCDetailLT');
 					}
 				});
 				//==========================監聽==========================
@@ -291,115 +309,178 @@
 								//每一格欄位
 								for (let pk = 1; pk < $(this).find('td').length; pk++) {
 									console.log($(this).find('td')[pk].innerText)
-									if ($(this).find('td')[pk].innerText != $('#cCompareDataList .compareNb_' + compareM + ' td')[pk].innerText) {
+									if ($(this).find('td')[pk].innerText != $('#cCompareDataList .compareDatasNb_' + compareM + ' td')[pk].innerText) {
 										$($(this).find('td')[pk]).addClass('bg-warning');
 									}
 								}
 							}
 						});
 					}
-				});
-				//compareDetail_btn
-				$(document).off("click", "#compareDetail_btn");
-				$(document).on("click", "#compareDetail_btn", function (event) {
-					console.log("compareDetail_btn");
-					//資料準備
-					let entityIKey = compare.data.entityIKey;
-					let entityGKey = compare.data.entityGKey;
-					let dateTime = compare.data.entityDateTime;
-					let compareM = "";//主要選擇
-					let compareDM = "";//次要比對欄位
-					//Data-選取者
-					$('#cCompareDataList input').each(function () {
-						if ($(this).prop("checked") == true) {
-							compareM = $(this).attr('title');
-						}
-					});
-					//Detail-選取者
-					$('#compareDetailLT input').each(function () {
-						if ($(this).prop("checked") == true) {
-							compareDM = $(this).attr('title');
-						}
-					});
+					//Detail
+					console.log("Start Comparing by Index...");
 
-					let ikeyM = compareM.split("_")[0];
-					let gkeyM = compareM.split("_")[1];
-					//Details-主要內容
-					if (compareDM != "" && compareM != "") {
-						$('.cDetailRVL').remove();
-						Object.keys(compare.data.details).forEach(function (dk) {
-							if (compare.data.details[dk][entityGKey] == gkeyM) {
-								$('.cDetailO_' + gkeyM).addClass('d-none');
-								let compareDetailVL = $('#compareDetailVL').clone();
-								compareDetailVL.find('td').text('');
-								compareDetailVL.removeClass('d-none');
-								compareDetailVL.attr('id', '');
-								compareDetailVL.addClass('cDetailRVL');
-								//是否時間格式?
-								let value = compare.data.details[dk][compareDM];
-								if (dateTime.indexOf(compareDM) >= 0) {
-									let dF = new Date(value);
-									value = dF.getFullYear() + "-";
-									value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-									value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-									value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
-									value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
-									value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+					// 0. 定義範圍：排除樣板表
+				    let $tables = $('#cCompareDetailOpen table').not('#cCompareDetailList'); 
+				    
+				    if ($tables.length < 2) {
+				        console.log("表格數量不足，無法比對");
+				        return;
+				    }
 
-									value = dF.getFullYear() + "-" + (dF.getMonth() + 1) + "-" + dF.getDate() + " " +
-										dF.getHours() + ":" + dF.getMinutes() + ":" + dF.getSeconds();
-								}
-								//寫入資料
-								compareDetailVL.find('.exCDetailM').text(value);
-								compareDetailVL.find('.exCDetailM').removeClass('d-none');
-								compareDetailVL.insertAfter('#compareDetailVL');
-								//console.log(compare.data.details[dk]);
-							} else {
-								$('.cDetailO_' + compare.data.details[dk][entityGKey]).removeClass('d-none');
-							}
-						});
-						//Details-次要內容
-						Object.keys(compare.data.details).forEach(function (dk) {
-							if (compare.data.details[dk][entityGKey] != gkeyM) {
+				    // Step 0. 清除之前的黃色標記
+				    $tables.find('.bg-warning').removeClass('bg-warning');
 
-								let gkey = compare.data.details[dk][entityGKey];
-								let value = compare.data.details[dk][compareDM];
-								//是否時間格式?
-								if (dateTime.indexOf(compareDM) >= 0) {
-									let dF = new Date(value);
-									value = dF.getFullYear() + "-";
-									value += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-									value += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-									value += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
-									value += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
-									value += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								}
-								let textCheck = true;
-								//console.log(compare.data.details[dk]);
-								//看看是否欄位為空->空則填入
-								$('.cDetailRVL .cDetailO_' + gkey).each(function () {
-									if ($(this).text() == "" && textCheck) {
-										textCheck = false;
-										$(this).text(value);
-									}
-								});
-							}
-						});
-						//比對不同資料時
-						$('.cDetailRVL').each(function () {
-							let exCDetailM = "";
-							$(this).find('td').each(function () {
-								if ($(this).hasClass('exCDetailM')) {
-									exCDetailM = $(this).text();
-								} else if (!$(this).hasClass('d-none')) {
-									if ($(this).text() != exCDetailM) {
-										$(this).addClass('bg-warning');
-									}
-								}
+				    // ==========================================
+				    // Step 1. 先排序 (Sort)
+				    // ==========================================
+				    // 為了確保「蘋果」對「蘋果」，我們先把所有表格依據第一欄文字排序
+				    function sortTableByFirstColumn($table) {
+				        let $tbody = $table.find('tbody');
+				        let $rows = $tbody.find('tr.cDetailRVL').toArray();
 
-							});
-						});
-					}
+				        $rows.sort(function(a, b) {
+				            // 抓取第一欄可見文字作為 Key
+				            let textA = $(a).find('td:not(.d-none)').eq(0).text().trim();
+				            let textB = $(b).find('td:not(.d-none)').eq(0).text().trim();
+				            return textA.localeCompare(textB, "zh-Hant"); 
+				        });
+
+				        $.each($rows, function(index, row) {
+				            $tbody.append(row);
+				        });
+				    }
+
+				    $tables.each(function() {
+				        sortTableByFirstColumn($(this));
+				    });
+
+				    // ==========================================
+				    // Step 2. 開始比對
+				    // ==========================================
+				    let $baseTable = $tables.eq(0); // A表 (基底)
+				    let $targetTables = $tables.slice(1); // B, C, D, E... (其他表)
+
+				    // -------------------------------------------------
+				    // 邏輯 A：以 A 表為基準，檢查其他表
+				    // 1. 其他表內容不同 -> 標記其他表
+				    // 2. 其他表缺資料 -> 標記 A 表
+				    // -------------------------------------------------
+				    $baseTable.find('tbody tr.cDetailRVL').each(function() {
+				        let $baseRow = $(this);
+				        // 取得這一列的「識別名稱」 (例如: 測試項目A)
+				        let rowKey = $baseRow.find('td:not(.d-none)').eq(0).text().trim();
+				        
+				        let isMissingInSomeTarget = false; // 旗標：是否有某張表缺了這一行
+
+				        $targetTables.each(function() {
+				            let $targetTable = $(this);
+				            
+				            // 在這張對照表中，尋找有沒有名稱一樣的行
+				            // 使用 filter 精確比對，避免 "Test" 對到 "Test2"
+				            let $targetRow = $targetTable.find('tbody tr.cDetailRVL').filter(function() {
+				                return $(this).find('td:not(.d-none)').eq(0).text().trim() === rowKey;
+				            });
+
+				            if ($targetRow.length === 0) {
+				                // [狀況 2]: 對照表沒有這一行 -> 標記 "Missing"
+				                isMissingInSomeTarget = true;
+				            } else {
+				                // [狀況 1]: 對照表有這一行 -> 比對欄位內容
+				                $baseRow.find('td').each(function(colIndex) {
+				                    let $baseCell = $(this);
+				                    if ($baseCell.hasClass('d-none')) return; // 跳過隱藏欄位
+
+				                    let baseText = $baseCell.text().trim();
+				                    let $targetCell = $targetRow.find('td').eq(colIndex);
+				                    let targetText = $targetCell.text().trim();
+
+				                    if (baseText !== targetText) {
+				                        // 內容不同 -> 標記「其他表」
+				                        $targetCell.addClass('bg-warning');
+				                    }
+				                });
+				            }
+				        });
+
+				        // 如果跑完一輪發現有任何一張表缺了這行 -> 標記「A表」
+				        if (isMissingInSomeTarget) {
+				            $baseRow.find('td').addClass('bg-warning');
+				        }
+				    });
+
+				    // -------------------------------------------------
+				    // 邏輯 B：檢查其他表是否有多餘的資料
+				    // (A表沒有，但 B/C 表有 -> 標記 B/C 表)
+				    // -------------------------------------------------
+				    $targetTables.each(function() {
+				        let $targetTable = $(this);
+
+				        $targetTable.find('tbody tr.cDetailRVL').each(function() {
+				            let $targetRow = $(this);
+				            let targetKey = $targetRow.find('td:not(.d-none)').eq(0).text().trim();
+
+				            // 去 A 表找找看有沒有這個 Key
+				            let $baseRow = $baseTable.find('tbody tr.cDetailRVL').filter(function() {
+				                return $(this).find('td:not(.d-none)').eq(0).text().trim() === targetKey;
+				            });
+
+				            if ($baseRow.length === 0) {
+				                // A 表沒有這一行 -> 代表這是其他表多餘的 -> 標記「其他表」
+				                $targetRow.find('td').addClass('bg-warning');
+				            }
+				        });
+				    });
+				 // ==========================================
+				    // Step 3. 統計差異結果 (新增統計列)
+				    // ==========================================
+				    $tables.each(function() {
+				        let $table = $(this);
+				        let $thead = $table.find('thead');
+				        let $tbody = $table.find('tbody');
+
+				        // 1. 取得總筆數 (該表目前的資料行數)
+				        let totalRows = $tbody.find('tr.cDetailRVL').length;
+
+				        // 2. 建立新的一列 tr
+				        let $statsRow = $('<tr class="diff-stats-row table-secondary"></tr>'); // 灰色底區隔
+
+				        // 3. 依據表頭欄位數量，逐欄計算
+				        // 抓取第一列 header 來確認有多少欄位
+				        let $headerCells = $thead.find('tr:first th'); 
+						let fixedC1 = 0;
+				        $headerCells.each(function(colIndex) {
+				            let $th = $(this);
+				            
+				            // 判斷是否為隱藏欄位 (保持結構一致)
+				            let isHidden = $th.hasClass('d-none');
+				            
+				            if (isHidden) {
+				                $statsRow.append('<th class="d-none"></th>');
+				            } else {
+				                // 計算該欄位有多少個 bg-warning
+				                // filter 邏輯：在所有 tr 中，找出第 colIndex 個 td，並檢查是否有 bg-warning
+				                let diffCount = $tbody.find('tr.cDetailRVL').filter(function() {
+				                    return $(this).find('td').eq(colIndex).hasClass('bg-warning');
+				                }).length;
+
+				                // 設定顯示樣式 (有差異紅字，無差異綠字)
+				                let textClass = diffCount > 0 ? 'text-danger fw-bold' : 'text-success';
+				                let displayText = diffCount + ' / ' + totalRows;
+
+				                // 產生統計格
+				                if(fixedC1 ===0){
+				                	fixedC1+=1;
+				                	$statsRow.append('<th class="' + textClass + ' fixedC1 text-center">' + displayText + '</th>');
+				                }else{
+				                	$statsRow.append('<th class="' + textClass + ' text-center">' + displayText + '</th>');
+				                }
+				                
+				            }
+				        });
+
+				        // 4. 將統計列插入到 thead 的最後面
+				        $thead.append($statsRow);
+				    });
 				});
 
 				//compareClearColor_btn
@@ -417,12 +498,14 @@
 					$('.cDataVLM').remove();
 					$('.cDetailRVL').remove();
 					$('.cDetailOs').remove();
-
+					$('.cDetailRVLT').remove();
+					
+				
 					$('#cCompareDataList tbody td').removeClass('bg-warning');
 					$('#cCompareDetailList tbody td').removeClass('bg-warning');
 					compare.data.datas = [];
 					compare.data.details = [];
-					compare.data.compareNb = 0;
+					compare.data.compareDatasNb = 0;
 				});
 			},
 			//比對資料
@@ -443,6 +526,7 @@
 						let iKey = "";
 						let gKey = "";
 						compare.data.datas.push(dataOne);
+						
 						//每個欄位 >對應< 資料
 						Object.keys(dataOne).forEach(function (k) {
 							//是否IKEY?
@@ -462,34 +546,99 @@
 							}
 							exCDataVL.find("." + k).text(value);
 						});
-						let compareNb = (compare.data.compareNb++);
+						let compareDatasNb = (compare.data.compareDatasNb++);
 						exCDataVL.find('input').attr('title', iKey + "_" + gKey);
-						exCDataVL.addClass('compareNb_' + iKey + "_" + gKey);
+						exCDataVL.addClass('compareDatasNb_' + iKey + "_" + gKey);
 						exCDataVL.insertAfter("#cCompareData #exCDataVL");
-						//Detail
-						let exCDetailM = $('.exCDetailM').clone();
-						exCDetailM.removeClass('exCDetailM').removeClass('fixedC1').css('left', '');
-						exCDetailM.addClass('cDetailO_' + gKey);
-						exCDetailM.addClass('cDetailOs');
-						exCDetailM.attr('title', 'cDetailO_' + gKey);
-						exCDetailM.text("GID:" + gKey);
-						exCDetailM.insertAfter(".exCDetailM");
 					}
-
 				}
-				//Detail
+				// Detail cCompareDetailList
 				if (details.length > 0) {
-					for (let d = 0; d < details.length; d++) {
-						let detailOne = details[d];
-						compare.data.details.push(detailOne);
-					}
+
+				    // 定義容器與樣板來源，避免迴圈內重複尋找
+				    let $container = $('#cCompareDetailOpen div'); 
+				    let $templateTable = $('#cCompareDetailList'); 
+				    
+				    // 用來存放目前正在操作的那個 Table 物件
+				    let $currentTable = null; 
+				    let gKeySame = "";
+
+				    for (let d = 0; d < details.length; d++) {
+				        let detailOne = details[d];
+				        let iKey = "";
+				        let gKey = "";
+				        
+				        // 取得 gKey (依照您的邏輯)
+				        Object.keys(detailOne).forEach(function(k) {
+				             if (entityGKey == k) { gKey = detailOne[k]; }
+				        });
+
+				        // ==========================================
+				        // 邏輯修正 1: 判斷是否需要建立新表格
+				        // ==========================================
+				        if (gKeySame !== gKey) {
+				            gKeySame = gKey;
+
+				            // 複製樣板 Table
+				            $currentTable = $templateTable.clone();
+				            
+				            // 修正 2: 移除 ID 避免重複，並顯示出來
+				            $currentTable.removeAttr("id"); 
+				            $currentTable.removeClass("d-none"); // 確保表格是顯示的
+				            $currentTable.addClass("cDetailRVLT");
+
+				            // 修正 3: 將新表格「附加」到容器的最後面 (Append)
+				            // 這樣新的群組就會依序往下長
+				            $container.append($currentTable);
+				        }
+
+				        // ==========================================
+				        // 產生 Row 資料 (您的原本邏輯)
+				        // ==========================================
+				        // 注意：這裡改成從 $currentTable (新表格) 裡面去複製樣板 Row
+				        // 這樣可以確保樣式與結構跟著該表格走
+				        let exCDataVL = $currentTable.find('.exCDetailVL').clone();
+				        
+				        exCDataVL.removeClass('d-none');
+				        exCDataVL.removeClass('exCDetailVL'); // 移除樣板標記 class
+				        exCDataVL.addClass('cDetailRVL');
+				        exCDataVL.attr('id', '');
+				        
+				        compare.data.details.push(detailOne);
+
+				        // 填入資料 (保留您的原始邏輯)
+				        Object.keys(detailOne).forEach(function (k) {
+				            if (entityIKey == k) {iKey = detailOne[k];}
+				            // if (entityGKey == k) {gKey = detailOne[k];} // 上面已經取過了
+				            let value = detailOne[k];
+				            if (dateTime.indexOf(k) >= 0) {
+				                let dF = new Date(detailOne[k]);
+				                value = dF.getFullYear() + "-" +
+				                    ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-" +
+				                    (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " " +
+				                    (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":" +
+				                    (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":" +
+				                    (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+				            }
+				            exCDataVL.find("." + k).text(value);
+				        });
+
+				        exCDataVL.find('input').attr('title', iKey + "_" + gKey);
+				        exCDataVL.addClass('compareDatasNb_' + iKey + "_" + gKey);
+
+				        // ==========================================
+				        // 邏輯修正 4: 插入 Row 的位置
+				        // ==========================================
+				        // 使用 appendTo 確保資料依序排列 (1, 2, 3...)
+				        // 插入到目前表格 ($currentTable) 的 tbody 中
+				        exCDataVL.appendTo($currentTable.find('tbody'));
+				    }
 				}
 			},
 			destroy() {
 				//銷毀
 				console.log("compare.html(destroy)");
 				$(document).off("click", "#compareData_btn");
-				$(document).off("click", "#compareDetail_btn");
 				$(document).off("click", "#compareClearAll_btn");
 			},
 		},

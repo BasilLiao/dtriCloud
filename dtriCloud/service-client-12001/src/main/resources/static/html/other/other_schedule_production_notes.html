@@ -1387,21 +1387,58 @@
 					let bisfname = bom_items.split("<_>")[1];
 					let bisnb = bom_items.split("<_>")[2];
 					let bisqty = $('#bom_items_qty').val();
+					
+					
+					//選取?
+					let sel = $('#bom_items option:selected').text();
+					let selh = sel.split(")")[0].replaceAll("(","");//群組
+					let selb = sel.split(")")[1];//內容			
 					//一般模式(恢復移除)
 					$(".sphbisitemList").each(function (index) {
-						if ($(this).text().includes($("#bom_items").select().val())) {
+						let selhCheck = $(this).attr("title").includes(selh);
+						let selbCheck = $(this).attr("title").includes(selb);
+						//匹配
+						if (selhCheck && selbCheck) {
 							console.log(index + " : " + $(this).html());
 							$(this).find("del").contents().unwrap();
 							//.contents()：選取 <del> 標籤的內容，包括文字或其他子節點。
 							//.unwrap()：移除目標標籤，但保留內容。
 						}
 					});
-					//自定義才能使用
-					if ($("#bomDefinition select").val() === "definition" && $('#bom_items_qty').val() > 0) {
+					//自定義才能使用+數量不能低於1
+					if ($("#bomDefinition select").val() === "definition" && bisqty > 0) {
 						$("#bomDefinition select").attr("disabled", "disabled");
+						//=========長度計算=========
+						let bisfnameMAX = bisfname;
+						// 先組合
+						let mergedText = bisgname + bisfname;
+						const MAX_LEN = 47;  // 最終總長度上限
+						// 如果沒超過，不需處理
+						if (other.methods.realLength(mergedText) > MAX_LEN) {
+						    // bisfname 可使用的寬度
+						    let remain = MAX_LEN - other.methods.realLength(bisgname);
+						    if (remain <= 0) {
+						        // bisgname 已經太長，直接清空 bisfname
+						        bisfnameMAX = "";
+						    } else {
+						        // 預留 … 三個字元寬度
+						        const suffix = "...";
+						        const suffixLen = other.methods.realLength(suffix);
+						        if (other.methods.realLength(bisfname) > remain) {
+						            let cutLen = remain - suffixLen;
+						            if (cutLen < 0) {
+						                // 避免負值，直接不放 suffix
+						                bisfnameMAX = other.methods.safeCut(bisfname, remain);
+						            } else {
+						                // UTF-8 安全裁切 + 接 ...
+						                bisfnameMAX = other.methods.safeCut(bisfname, cutLen) + suffix;
+						            }
+						        }
+						    }
+						}
 						//每個項目
 						//
-						let htmlc = '<b>*' + bisgname + ' : </b>' + bisfname + ' ' + (bisqty > 1 ? '<b style="font-size: 14px;">(x' + bisqty + ")</b>" : "");
+						let htmlc = '<b>*' + bisgname + ' : </b>' + bisfnameMAX + ' ' + (bisqty > 1 ? '<b style="font-size: 14px;">(x' + bisqty + ")</b>" : "");
 						let sphbisitemEx = $('#sphbisitemEx_val').clone();
 						sphbisitemEx.removeAttr("id");
 						sphbisitemEx.removeClass("d-none").addClass("sphbisitemList");
@@ -1422,7 +1459,10 @@
 					let selb = sel.split(")")[1];//內容					
 					//一般模式(標記移除)
 					$(".sphbisitemList").each(function (index) {
-						if ($(this).text().includes(selb) &&$(this).text().includes(selh)) {
+						let selhCheck = $(this).attr("title").includes(selh);
+						let selbCheck = $(this).attr("title").includes(selb);
+						//匹配
+						if (selbCheck && selhCheck) {
 							console.log(index + " : " + $(this).html());
 							$(this).html("<del  style='color: #ccc; '>" + $(this).html() + "</del>");
 						}
@@ -1432,7 +1472,9 @@
 						$("#bomDefinition select").attr("disabled", "disabled");
 						//移除項目
 						$(".sphbisitemList").each(function (index) {
-							if ($(this).text().includes(selb) && $(this).text().includes(selh)) {
+							let selhCheck = $(this).attr("title").includes(selh);
+							let selbCheck = $(this).attr("title").includes(selb);
+							if (selhCheck && selbCheck) {
 								$(this).remove();
 								$("#bom_items_qty").val(0);
 							}

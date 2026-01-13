@@ -131,7 +131,7 @@ public class BasicShippingListServiceAc {
 					BasicShippingList.class);
 
 			ArrayList<BasicShippingList> entitys = shippingListDao.findAllBySearch(searchData.getBslclass(),
-					searchData.getBslsn(), searchData.getBslpnumber(),searchData.getBslfuser(), pageable);
+					searchData.getBslsn(), searchData.getBslpnumber(), searchData.getBslfuser(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)
@@ -195,7 +195,7 @@ public class BasicShippingListServiceAc {
 				entityDataOld.setSysstatus(x.getSysstatus());
 				entityDataOld.setSyssort(x.getSyssort());
 				entityDataOld.setSysheader(false);
-				entityDataOld.setBslstatus(x.getBslstatus());//緊急?
+				entityDataOld.setBslstatus(x.getBslstatus());// 緊急?
 				entityDataOld.setBslcheckin(x.getBslcheckin());
 				// 修改
 				entityDataOld.setBslpnqty(x.getBslpnqty());

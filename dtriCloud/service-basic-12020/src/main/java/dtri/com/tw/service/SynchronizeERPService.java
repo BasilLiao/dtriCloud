@@ -299,7 +299,7 @@ public class SynchronizeERPService {
 		int totalSize = removeCommandMapList.size();
 		// 批次檢查
 		for (int i = 0; i < totalSize; i += batchSize) {
-			//System.out.println("S:" + i + ":" + Fm_T.to_yMd_Hm(new Date()));
+			// System.out.println("S:" + i + ":" + Fm_T.to_yMd_Hm(new Date()));
 			// 取得當前批次
 			List<String> batchList = removeCommandMapList.subList(i, Math.min(i + batchSize, totalSize));
 			// 執行 JPA 查詢
@@ -426,7 +426,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Purth> removeInCheck = purthDao.findAllByPurth(batchList);
+			List<Purth> removeInCheck = purthDao.findAllByPurth60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -573,6 +573,10 @@ public class SynchronizeERPService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
+			//測試用
+			if ("A541-251121014-0164".equals(oKey)) {
+				System.out.println("A541-251121014-0164");
+			}
 			// 比對同一筆資料?->修正
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");// ERP檢查碼
@@ -669,6 +673,10 @@ public class SynchronizeERPService {
 			removeShCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
+				//測試用
+				if ("A541-251121014-0164".equals(nKey)) {
+					System.out.println("A541-251121014-0164");
+				}
 				// 已經完成->標記更新
 				if ("Y".equals(r.getTc009()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
@@ -1268,7 +1276,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Moctf> removeInCheck = moctfDao.findAllByMoctf(batchList);
+			List<Moctf> removeInCheck = moctfDao.findAllByMoctf60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1386,7 +1394,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Moctf> removeInCheck = moctfDao.findAllByMoctf(batchList);
+			List<Moctf> removeInCheck = moctfDao.findAllByMoctf60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1428,7 +1436,7 @@ public class SynchronizeERPService {
 		List<String> bilclass = new ArrayList<String>();
 		bilclass.add("A591");
 
-		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(0, bilclass);// 取得[Cloud]
+		ArrayList<BasicIncomingList> entityOlds = incomingListDao.findAllByStatus(null, bilclass);// 取得[Cloud]
 		ArrayList<BasicIncomingList> saveLists = new ArrayList<BasicIncomingList>();// [Cloud]儲存
 		Map<String, BasicIncomingList> removeInMap = new TreeMap<String, BasicIncomingList>();// [Cloud]儲存(移除)
 		// Step1.資料整理
@@ -1500,7 +1508,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Mocth> removeInCheck = mocthDao.findAllByMocth(batchList);
+			List<Mocth> removeInCheck = mocthDao.findAllByMocth80(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1684,7 +1692,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Invtg> removeInCheck = invtgDao.findAllByInvtg(batchList);
+			List<Invtg> removeInCheck = invtgDao.findAllByInvtg80(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1706,7 +1714,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Invtg> removeShCheck = invtgDao.findAllByInvtg(batchList);
+			List<Invtg> removeShCheck = invtgDao.findAllByInvtg80(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 移除標記
@@ -1906,7 +1914,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Invth> removeInCheck = invthDao.findAllByInvth(batchList);
+			List<Invth> removeInCheck = invthDao.findAllByInvth100(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -1928,7 +1936,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Invth> removeShCheck = invthDao.findAllByInvth(batchList);
+			List<Invth> removeShCheck = invthDao.findAllByInvth100(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 移除標記
@@ -2179,7 +2187,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Invta> removeInCheck = invtaDao.findAllByInvta(batchList);
+			List<Invta> removeInCheck = invtaDao.findAllByInvta60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -2201,7 +2209,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Invta> removeShCheck = invtaDao.findAllByInvta(batchList);
+			List<Invta> removeShCheck = invtaDao.findAllByInvta60(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 移除標記
@@ -2410,7 +2418,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Bomtd> removeInCheck = bomtdDao.findAllByBomtd(batchList);
+			List<Bomtd> removeInCheck = bomtdDao.findAllByBomtd60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -2431,7 +2439,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Bomtd> removeShCheck = bomtdDao.findAllByBomtd(batchList);
+			List<Bomtd> removeShCheck = bomtdDao.findAllByBomtd60(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 移除標記
@@ -2645,7 +2653,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeInMapList.subList(i, Math.min(i + batchSize, totalInSize));
 			// 執行 JPA 查詢
-			List<Bomtf> removeInCheck = bomtfDao.findAllByBomtf(batchList);
+			List<Bomtf> removeInCheck = bomtfDao.findAllByBomtf60(batchList);
 			// 處理結果
 			removeInCheck.forEach(r -> {
 				// 移除標記
@@ -2666,7 +2674,7 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 執行 JPA 查詢
-			List<Bomtf> removeShCheck = bomtfDao.findAllByBomtf(batchList);
+			List<Bomtf> removeShCheck = bomtfDao.findAllByBomtf60(batchList);
 			// 處理結果
 			removeShCheck.forEach(r -> {
 				// 移除標記

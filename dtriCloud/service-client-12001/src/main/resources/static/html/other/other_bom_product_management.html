@@ -1072,28 +1072,101 @@
 											bisnbList.css('maxHeight', '165px');
 											bisnbList.css('overflowX', 'hidden');
 											exTbodytd.find("input").after(bisnbList);
-										}
-										if (resultThead[k].cellName === "bisname") {
+										}else if (resultThead[k].cellName === "bisname") {
 											$("#od_bis_bisnb .otherTitle").text(cellName == "" ? resultThead[k].cellName : cellName);
 											//快選
 											let bisnameList = $('<ul class="list-group bisnameList d-none"></ul>');
 											bisnameList.css('maxHeight', '165px');
 											bisnameList.css('overflowX', 'hidden');
 											exTbodytd.find("input").after(bisnameList);
-										}
-										if (resultThead[k].cellName === "bisqty") {
+										}else if (resultThead[k].cellName === "bisqty") {
 											exTbodytd.find("input").attr("type", "number");
-										}
-										if (resultThead[k].cellName === "bislevel") {
-											exTbodytd.find("input").attr("type", "number");
+										}else if(resultThead[k].cellName === "bislevel"){
+											// 1. 取得並解析資料 (將 JSON 字串轉為陣列)
+											// "[\"0_(無)階層\",\"1_90階層\",\"2_(二)階層\",\"3_(三)階層\",\"4_(四)階層\",\"5_(五)階層\"]"
+											let m_select_json = resultThead[k].m_select; // "[\"0_(無)階層\"...]"
+											let options = [];
+											try {
+											    options = JSON.parse(m_select_json);
+												// 2. 建立 Select 物件
+												let $newSelect = $('<select class="form-select form-select-sm p-1"></select>');
+
+												// 3. 迴圈產生 Option
+												if (Array.isArray(options)) {
+												    options.forEach(function(item) {
+												        // 格式處理： "1_90階層" -> val="1", text="90階層"
+												        let separatorIndex = item.indexOf('_'); // 找到第一個底線的位置 
+												        let val = item;
+												        let text = item;
+												        if (separatorIndex !== -1) {
+												            val = item.substring(0, separatorIndex); // 取底線前面
+												            text = item.substring(separatorIndex + 1); // 取底線後面
+												        }
+												        // 加入 option
+												        $newSelect.append($('<option></option>').val(val).text(text));
+												    });
+												}
+
+												// 4. 處理舊值 (如果 Input 原本有值，Select 要預設選中該值)
+												let $oldInput = exTbodytd.find("input");
+												let oldValue = $oldInput.val(); // 取得資料庫原本的值
+												if (oldValue) {
+												    $newSelect.val(oldValue);
+												}
+												// 5. 正式替換 (移除 input，換上 select)
+												$oldInput.replaceWith($newSelect);
+											} catch (e) {
+												//有錯則換成一般
+												exTbodytd.find("input").attr("type", "number");
+												exTbodytd.find("input").removeAttr("disabled");
+											}
 										}
 									}
-									//特殊處理(可點擊BPM/BPR)
+									//特殊處理(可點擊Detail_BPM/Detail_BPR)
 									if (toWho === "Detail_BPM" || toWho === "Detail_BPR") {
 										if (resultThead[k].cellName === "bisnb") {
 											exTbodytd.find("input").attr("type", "button");
 											exTbodytd.find("input").removeAttr("disabled");
 											exTbodytd.find("input").addClass("btn").addClass("btn-outline-primary");
+										}else if(resultThead[k].cellName === "bislevel"){
+											// 1. 取得並解析資料 (將 JSON 字串轉為陣列)
+											// "[\"0_(無)階層\",\"1_90階層\",\"2_(二)階層\",\"3_(三)階層\",\"4_(四)階層\",\"5_(五)階層\"]"
+											let m_select_json = resultThead[k].m_select; // "[\"0_(無)階層\"...]"
+											let options = [];
+											try {
+											    options = JSON.parse(m_select_json);
+												// 2. 建立 Select 物件
+												let $newSelect = $('<select class="form-select form-select-sm p-1"></select>');
+
+												// 3. 迴圈產生 Option
+												if (Array.isArray(options)) {
+												    options.forEach(function(item) {
+												        // 格式處理： "1_90階層" -> val="1", text="90階層"
+												        let separatorIndex = item.indexOf('_'); // 找到第一個底線的位置 
+												        let val = item;
+												        let text = item;
+												        if (separatorIndex !== -1) {
+												            val = item.substring(0, separatorIndex); // 取底線前面
+												            text = item.substring(separatorIndex + 1); // 取底線後面
+												        }
+												        // 加入 option
+												        $newSelect.append($('<option></option>').val(val).text(text));
+												    });
+												}
+
+												// 4. 處理舊值 (如果 Input 原本有值，Select 要預設選中該值)
+												let $oldInput = exTbodytd.find("input");
+												let oldValue = $oldInput.val(); // 取得資料庫原本的值
+												if (oldValue) {
+												    $newSelect.val(oldValue);
+												}
+												// 5. 正式替換 (移除 input，換上 select)
+												$oldInput.replaceWith($newSelect);
+											} catch (e) {
+												//有錯則換成一般
+												exTbodytd.find("input").attr("type", "number");
+												exTbodytd.find("input").removeAttr("disabled");
+											}
 										}
 									}
 								} else {
@@ -1358,15 +1431,23 @@
 									$('#other_Detail_BPM .bisfname').html(bisselect);
 									$('#other_Detail_BPR .bisfname').html(bisselect.clone());
 									//3.開放數量
+									
+									//BPM
 									$('#other_Detail_BPM .bisqty input').removeAttr('disabled');
 									$('#other_Detail_BPM .bisqty input').attr('type', 'number').val(0);
 									$('#other_Detail_BPM .bislevel input').removeAttr('disabled');
 									$('#other_Detail_BPM .bislevel input').attr('type', 'number').val(0);
-									
+									$('#other_Detail_BPM .bislevel select').removeAttr('disabled');
+									$('#other_Detail_BPM .bislevel select').attr('type', 'number').val(0);
+		
+									//BPR
 									$('#other_Detail_BPR .bisqty input').removeAttr('disabled');
-									$('#other_Detail_BPR .bisqty input').attr('type', 'number').val(0);
+									$('#other_Detail_BPR .bisqty input').attr('type', 'number').val(0);							
 									$('#other_Detail_BPR .bislevel input').removeAttr('disabled');
 									$('#other_Detail_BPR .bislevel input').attr('type', 'number').val(0);
+									$('#other_Detail_BPR .bislevel select').removeAttr('disabled');
+									$('#other_Detail_BPR .bislevel select').attr('type', 'number').val(0);
+									
 									resolve("OK:" + toWho);
 								} catch (error) {
 									reject("操作失敗:" + error + ":" + toWho);
@@ -1824,7 +1905,9 @@
 											detailTbodyTr.find(".bisfname select").val("" + itemOne.bisid).focus().trigger('change');
 											detailTbodyTr.find(".bisqty  input").val(itemOne.bisqty);
 											detailTbodyTr.find(".bisprocess input").val(itemOne.bisprocess == null ? "ASM" : itemOne.bisprocess);
+											//可能有兩種?
 											detailTbodyTr.find(".bislevel input").val(itemOne.bislevel == null ? "0" : itemOne.bislevel)
+											detailTbodyTr.find(".bislevel select").val(itemOne.bislevel == null ? "0" : itemOne.bislevel)
 										}
 									}
 								});
@@ -1840,6 +1923,7 @@
 								detailTbodyTr.find(".bisfname select").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bisqty input").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bislevel input").prop("disabled", true); // 顯示但無法選擇
+								detailTbodyTr.find(".bislevel select").prop("disabled", true); // 顯示但無法選擇
 
 								//配色(BPM/BPR)
 								if (whois === "BPM") {
@@ -2112,7 +2196,11 @@
 								let bissdescripion = detail.find(".bissdescripion input").val();
 								let bisqty = detail.find(".bisqty input").val();
 								let bisprocess = detail.find(".bisprocess input").val();
-								let bislevel = detail.find(".bislevel input").val()==""?"0":detail.find(".bislevel input").val();
+								//let bislevel = detail.find(".bislevel input, .bislevel select").val()==""?"0":detail.find(".bislevel input, .bislevel select").val();
+								// 同時找 input 或 select (因為同一時間只會有一個存在)
+								let $target = detail.find(".bislevel input, .bislevel select");
+								// 取值：如果 val() 是空字串、undefined 或 null，就自動回傳 "0"
+								let bislevel = $target.val() || "0";
 								//一般選項資料
 								if (bisgid !== "0" && bisgid !== "" && bisid !== "" && bisqty !== "") {
 									bpmbisitemOne = {};
@@ -3018,7 +3106,9 @@
 						selectPePe.find(".bisqty input").removeAttr("disabled");
 						selectPePe.find(".bisfname select").removeAttr("disabled");
 						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
+						//
 						selectPePe.find(".bislevel input").removeAttr("disabled");
+						selectPePe.find(".bislevel select").removeAttr("disabled");
 						//限定BPM
 						if(checkBPM){
 						//產品類型->選擇顏色->必填
@@ -3166,9 +3256,15 @@
 										let bisnb = valTbodyTr.find('.bisnb input').val();
 										let bisqty = valTbodyTr.find('.bisqty input').val();
 										let bisprocess = valTbodyTr.find('.bisprocess input').val();
-										//Basic 內階層預設1
-										let bislevel = valTbodyTr.find('.bislevel input').val()==""?"1":valTbodyTr.find('.bislevel input').val();
 										bisprocess = bisprocess == "" ? "ASM" : bisprocess;//預設ASM
+										//Basic 內階層預設1
+										//let bislevel = valTbodyTr.find(".bislevel input, .bislevel select").val()==""?"1":valTbodyTr.find(".bislevel input, .bislevel select").val();
+										
+										// 同時找 input 或 select (因為同一時間只會有一個存在)
+										let $target = valTbodyTr.find(".bislevel input, .bislevel select");
+										// 取值：如果 val() 是空字串、undefined 或 null，就自動回傳 "0"
+										let bislevel = $target.val() || "1";
+										
 										//避免回存資料是錯誤的+指存入1階層資料
 										if(bisqty!="" && bisnb!="" && bislevel==1){
 											basics.push(bisnb + "_" + bisqty + "_" + bisprocess+"_"+bislevel);
@@ -3211,7 +3307,7 @@
 									detailTbodyTr.find('.bisnb li').first().trigger("click");
 									detailTbodyTr.find('.bisqty input').val(bs.split("_")[1]);
 									detailTbodyTr.find('.bisprocess input').val(bs.split("_")[2]);
-									detailTbodyTr.find('.bislevel input').val(bs.split("_")[3]);
+									detailTbodyTr.find(".bislevel input, .bislevel select").val(bs.split("_")[3]);
 								});
 							}
 						}
@@ -3404,7 +3500,7 @@
 						exTbodyTr.find('.bisnb input').val("");
 						exTbodyTr.find('.bisqty input').val("1");
 						exTbodyTr.find('.bisprocess input').val("");
-						exTbodyTr.find('.bislevel input').val("1");
+						exTbodyTr.find(".bislevel input, .bislevel select").val("1");
 						exTbodyTr.appendTo(tbody.find('tbody'));
 					}	
 					

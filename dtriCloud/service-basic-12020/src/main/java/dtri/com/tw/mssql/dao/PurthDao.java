@@ -48,7 +48,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
-			+ "	PURTH.TH028 != '3' "// 除了 不合格
+			+ "	(PURTH.TH028 != '1' AND PURTH.TH028 != '3') "// 除了 不合格/待驗
 			+ "	AND (PURTH.TH030 LIKE 'N' OR PURTH.TH030 LIKE 'Y' ) "// 已結項目 與 未結項目
 			+ "	AND PURTH.TH007 > 0 "// 數量大於0
 			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
@@ -99,11 +99,11 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	[DTR_TW].[dbo].PURMA AS PURMA "// --廠商
 			+ "	ON PURMA.MA001 = INVMB.MB032 "//
 			+ "WHERE "//
-			+ "	PURTH.TH028 != '3' "// 除了 不合格
+			+ "	(PURTH.TH028 != '1' AND PURTH.TH028 != '3') "// 除了 不合格/待驗
 			+ "	AND (PURTH.TH030 != 'V' ) "// 已結項目 與 未結項目
 			+ "	AND (PURTH.TH007 > 0 ) "// 數量大於0
 			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
-			+ "	AND (PURTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-100, 112) "//
+			+ "	AND (PURTH.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "//
 			+ "	OR PURTH.MODI_DATE = CONVERT(VARCHAR(8), GETDATE(), 112)) "// 今天
 			+ " AND (CONCAT(PURTH.TH001, '-', TRIM(PURTH.TH002), '-', PURTH.TH003) IN (:TH001TH002TH003)) "// 比對製令單+序號?
 			+ "ORDER BY "//
@@ -111,6 +111,6 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	INVMB.MB001 ASC,"// --物料
 			+ "	PURTH.TH014 ASC "// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值
-	ArrayList<Purth> findAllByPurth(List<String> TH001TH002TH003);
+	ArrayList<Purth> findAllByPurth60(List<String> TH001TH002TH003);
 
 }

@@ -996,7 +996,7 @@ public class WarehouseAssignmentServiceAc {
 									history.setWhfuser(packageBean.getUserAccount());
 									history.setWheqty(area.getWaerptqty());
 									history.setWhcqty(area.getWatqty());
-									history.setWhpomqty("+" + t.getBilpnqty());
+									history.setWhpomqty("-" + t.getBilpnqty());
 									history.setWhcheckin(t.getBilcheckin() == 0 ? "未核單" : "已核單");
 									entityHistories.add(history);
 									//

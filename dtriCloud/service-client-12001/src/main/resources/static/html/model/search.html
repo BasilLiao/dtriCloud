@@ -1037,6 +1037,7 @@
 					let gkey = ik.split("_")[1];
 					for (let en = 0; en < entityJsons.length; en++) {
 						if (entityJsons[en][entityIKey] == ikey) {
+							entityJsons[en]['compare_gid_id'] = gkey+"_"+ikey;
 							dataHeader.push(entityJsons[en]);
 						}
 					}
@@ -1047,6 +1048,7 @@
 					let gkey = dk.split("_")[1];
 					for (let en = 0; en < entityDetailJsons.length; en++) {
 						if (entityDetailJsons[en][entityIKey] == ikey) {
+							entityDetailJsons[en]['compare_gid_id'] = gkey+"_"+ikey;
 							dataBody.push(entityDetailJsons[en]);
 						}
 					}
