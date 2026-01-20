@@ -154,6 +154,13 @@ public class BomProductManagementServiceAc {
 			PageRequest pageableBIS = PageRequest.of(0, 20000, Sort.by(ordersBIS));
 			ArrayList<BomItemSpecifications> entityBIS = specificationsDao.findAllBySearch(null, null, null,
 					pageableBIS);
+			// 測試用
+			entityBIS.forEach(x -> {
+				if (x.getBisnb().equals("50-117-270001")) {
+					System.out.println(x.getBisfname());
+				}
+			});
+
 			// 規則BOM
 			PageRequest pageableBPR = PageRequest.of(0, 200, Sort.by(ordersBPR));
 			ArrayList<BomProductRule> entityBPR = productRuleDao.findAllBySearch(null, null, null, pageableBPR);
@@ -767,7 +774,6 @@ public class BomProductManagementServiceAc {
 					checkGorupItems.put(key, true);
 				}
 				// Step2-5.檢查 項目是否缺少
-				// Step2-5.檢查 項目是否缺少
 				if (entityData.getBpmtypename().equals("產品BOM")) {
 					// 成品類 ?
 					JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
@@ -784,6 +790,19 @@ public class BomProductManagementServiceAc {
 									new String[] { "Some BOM items are missing. Please check again. !!" });
 						}
 					}
+					// 檢查階層是否正確
+					for (JsonElement itemCheck : items) {
+						String bisgname = itemCheck.getAsJsonObject().get("bisgname").getAsString();
+						String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();// 物料號
+						Integer bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsInt();// 物料階層
+						// 不包含customize
+						if (!bisnb.contains("customize") && bislevel == 0) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+									new String[] { "Please select a BOM item 'level' : " + bisgname
+											+ ". Please check again. !!" });
+						}
+					}
+
 				} else if (entityData.getBpmtypename().equals("配件BOM")) {
 					// 配件類 ?
 					JsonObject entityV = JsonParser.parseString(entityData.getBpmbisitem()).getAsJsonObject();
@@ -798,6 +817,18 @@ public class BomProductManagementServiceAc {
 						if (entry.getValue()) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 									new String[] { "Some BOM items are missing. Please check again. !!" });
+						}
+					}
+					// 檢查階層是否正確
+					for (JsonElement itemCheck : items) {
+						String bisgfname = itemCheck.getAsJsonObject().get("bisgfname").getAsString();
+						String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();// 物料號
+						Integer bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsInt();// 物料階層
+						// 不包含customize
+						if (!bisnb.contains("customize") && bislevel == 0) {
+							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+									new String[] { "Please select a BOM item 'level' : " + bisgfname
+											+ ". Please check again. !!" });
 						}
 					}
 				}

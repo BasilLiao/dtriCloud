@@ -21,6 +21,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass% ) and "//
 			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
+			+ "(:bslpmerge is null or  c.bslpmerge LIKE %:bslpmerge%) and "//
 			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
 			+ "(c.bslfuser != 'ERP_Remove(Auto)') and "//
 			+ "(:bslfuser is null or (:bslfuser ='true' and  c.bslfuser != '') or (:bslfuser ='false' and  c.bslfuser = '')) and "// 已領料_
@@ -32,7 +33,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 			+ "(:bslfromcommand is null or c.bslfromcommand LIKE %:bslfromcommand%) ")
 	ArrayList<BasicShippingList> findAllBySearchStatus(String bslclass, String bslsn, String bslfromcommand,
 			String bsltype, String bslcuser, String bslfuser, String bslsmuser, Integer sysstatus, String syshnote,
-			Pageable pageable);
+			String bslpmerge, Pageable pageable);
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//

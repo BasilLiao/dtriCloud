@@ -1020,6 +1020,7 @@
 								exTbodytd.addClass('valTbodytd');
 								exTbodytd.attr("title", resultThead[k].cellName);
 								exTbodytd.addClass(resultThead[k].cellName);
+								
 								if(resultThead[k].cellName==="sysnote"){
 									exTbodytd.addClass('text-start');
 								}
@@ -1344,6 +1345,10 @@
 									let bisgoption = $('<option></option>').text("請選擇").val("");
 									bisgselect.append(bisgoption);
 									bisgname.forEach(function (v) {
+										//測試用
+										//if(v['bisnb'] ==='50-117-270001'){
+										//	console.log(v['bisnb']);											
+										//}
 										// 檢查 <select> 裡面是否已經有相同的 bisgid 
 										if (bisgselect.find('option[value="' + v['bisgid'] + '"]').length === 0) {
 											let bisgoption = $("<option>")
@@ -1419,6 +1424,7 @@
 										let array = JSON.parse(v['bisfname']);
 										let val = array.join(' , ');
 										if(!val.includes("customize")){//customize除外
+											
 											bisoption = $('<option></option>').text(val).val(v['bisid']);
 											bisoption.addClass('bisgid_' + v['bisgid'] + ' d-none');
 											bisoption.attr('title', v['bisnb'] + "<_>" + v['bisname'] + "<_>" + v['bisspecifications'] + "<_>" + v['bissdescripion'] + "<_>" + v['bisgfname']);
@@ -1435,6 +1441,7 @@
 									//BPM
 									$('#other_Detail_BPM .bisqty input').removeAttr('disabled');
 									$('#other_Detail_BPM .bisqty input').attr('type', 'number').val(0);
+									$('#other_Detail_BPM .bislevel input').removeAttr('disabled');
 									$('#other_Detail_BPM .bislevel input').removeAttr('disabled');
 									$('#other_Detail_BPM .bislevel input').attr('type', 'number').val(0);
 									$('#other_Detail_BPM .bislevel select').removeAttr('disabled');
@@ -1924,6 +1931,8 @@
 								detailTbodyTr.find(".bisqty input").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bislevel input").prop("disabled", true); // 顯示但無法選擇
 								detailTbodyTr.find(".bislevel select").prop("disabled", true); // 顯示但無法選擇
+								detailTbodyTr.find(".bisprocess input").prop("disabled", true); // 顯示但無法選擇
+								
 
 								//配色(BPM/BPR)
 								if (whois === "BPM") {
@@ -2022,28 +2031,56 @@
 							    };
 							    let mappedKey = valueMap[selectedValue]; // 對應到屬性名稱
 								let optionsMap = {};
+								let bislevelsMap = {};//階層檢查
+							 
 								$("#other_Detail_BPM_od .exDetailTbodyTr select.form-select option").each(function() {
 									let val = $(this).val();
 									let defselect = $(this).attr(mappedKey);//預設必選
-								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目
+								    if (val && val.trim() !== "" && defselect==="true") { // 過濾掉沒有 value 的項目 
 								        let key = $(this).text().trim(); // 用 text 當 key
 								        optionsMap[key] = {
 								            mustBe: $(this).attr(mappedKey)|| ""
 								        };
 								    }
 								});
+								
+								
+							    
 								//取得資料-提醒
 								$("#other_Detail_" + b_w + " .detailTbodyTr").each(s => {
 									let detail = $($("#other_Detail_" + b_w + " .detailTbodyTr")[s]);
+									//必填
 									let checkbisgname = detail.find(".bisgname select option:selected").text();
 									console.log(checkbisgname);
 									delete optionsMap[checkbisgname];//把已經配對到的移除
+									
+									//階層檢查
+									let bisnb =  detail.find(".bisnb input").val();
+									let bislevel = detail.find(".bislevel select option:selected").val();
+									// 3. 檢查文字是否「不包含」"customize"->bislevel 必須顯則階層(Basic 不算)
+									if (bisnb && !bisnb.includes("customize") && bislevel==="0" && checkbisgname!=="Basic") {
+										//提醒
+										bislevelsMap[checkbisgname] = {
+								            mustBe: checkbisgname || ""
+								        };
+									}
+									
 								});
 								
 								
 								//檢查是否缺少資料
-								if (Object.keys(optionsMap).length > 0) {
-									let result_ms = "Required option is missing : "+Object.keys(optionsMap).join(" / ");
+								if (Object.keys(optionsMap).length > 0 || Object.keys(bislevelsMap).length > 0) {
+									let result_ms = "";
+									if(Object.keys(optionsMap).length > 0){
+										result_ms += "Required field is missing : "+Object.keys(optionsMap).join(" / ");
+									}
+									if(Object.keys(optionsMap).length > 0 && Object.keys(bislevelsMap).length > 0){
+										result_ms+="<br>";										
+									}
+									if(Object.keys(bislevelsMap).length > 0){
+										result_ms += "Please select a BOM item 'level' : "+Object.keys(bislevelsMap).join(" / ");
+									}
+									result_ms+="<br>before updating";
 									let ok = await nav_alert.methods.showConfirmModal(result_ms, "確定此筆 BOM 資料正確？");
 									if (ok) {
 								        console.log("✅ 使用者按下確定");
@@ -3105,7 +3142,7 @@
 						selectPePe.find(".bissdescripion input").val("");
 						selectPePe.find(".bisqty input").removeAttr("disabled");
 						selectPePe.find(".bisfname select").removeAttr("disabled");
-						selectPePe.find(".bisprocess input").removeAttr("disabled").val("ASM");
+						selectPePe.find(".bisprocess input").val("ASM");
 						//
 						selectPePe.find(".bislevel input").removeAttr("disabled");
 						selectPePe.find(".bislevel select").removeAttr("disabled");
@@ -3159,7 +3196,7 @@
 							selectPePe.find(".bisqty input").val(1);
 							selectPePe.find(".bisqty input").attr("disabled", "disabled");
 							selectPePe.find(".bisfname select").attr("disabled", "disabled");
-							selectPePe.find(".bisprocess input").attr("disabled", "disabled").val("");
+							selectPePe.find(".bisprocess input").attr("disabled", "disabled").val("ASM");
 						}
 					}
 					//選擇了-子項目
@@ -3306,7 +3343,7 @@
 									detailTbodyTr.find('.bisnb input').val(bs.split("_")[0]).trigger('input');
 									detailTbodyTr.find('.bisnb li').first().trigger("click");
 									detailTbodyTr.find('.bisqty input').val(bs.split("_")[1]);
-									detailTbodyTr.find('.bisprocess input').val(bs.split("_")[2]);
+									detailTbodyTr.find('.bisprocess input').prop("disabled", true).val(bs.split("_")[2]);
 									detailTbodyTr.find(".bislevel input, .bislevel select").val(bs.split("_")[3]);
 								});
 							}
@@ -3496,10 +3533,11 @@
 						let exTbodyTr = tbody.find('.exTbodyTr').clone();
 						exTbodyTr.removeClass('exTbodyTr');
 						exTbodyTr.removeClass('d-none');
-						exTbodyTr.addClass('valTbodyTr');
+						exTbodyTr.addClass('valTbodyTr');	
 						exTbodyTr.find('.bisnb input').val("");
 						exTbodyTr.find('.bisqty input').val("1");
-						exTbodyTr.find('.bisprocess input').val("");
+						exTbodyTr.find('.bisprocess input').val("ASM").prop("disabled", true);
+						//exTbodyTr.find('.bisname input').prop("disabled", true);
 						exTbodyTr.find(".bislevel input, .bislevel select").val("1");
 						exTbodyTr.appendTo(tbody.find('tbody'));
 					}	

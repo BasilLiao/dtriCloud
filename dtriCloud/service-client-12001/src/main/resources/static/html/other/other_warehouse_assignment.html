@@ -133,7 +133,7 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-12 col-lg-6 p-1">
+				<div class="col-12 col-lg-7 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Execution</div>
 						<div class="row m-0">
@@ -162,13 +162,18 @@
 								<b>Urgency<br>(S4)
 								</b>
 							</button>
+							<button id="btn_merge" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Merge<br>(S4)
+								</b>
+							</button>
 							<button id="btn_manufacturePass" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Manufacture<br>pass(S5)
 								</b>
 							</button>
 							<button id="btn_compare" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
 								<b>Compare<br>()
 								</b>
 							</button>
@@ -180,7 +185,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-4 p-1">
+				<div class="col-6 col-lg-3 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
@@ -188,7 +193,7 @@
 								<input id="btn_only_have_qty" alt="" title="" type="checkbox"
 									checked="checked"
 									class="m-0 form-check-input checkbox_16 border border-dark">
-								<br> <b style="font-size: 12px;">Only have qty</b>
+								<br> <b style="font-size: 12px;">Have qty</b>
 							</div>
 							<button id="btn_printerForm" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
@@ -785,6 +790,12 @@
 					console.log("btn_urgency");
 					other.methods.searchToModify("btn_urgency");
 				});
+				//監聽-合併
+				$(document).off("click", "#search_c #btn_merge");
+				$(document).on("click", "#search_c #btn_merge", function (event) {
+					console.log("btn_merge");
+					other.methods.searchToModify("btn_merge");
+				});
 				//監聽-產險配料清點PASS
 				$(document).off("click", "#search_c #btn_manufacturePass");
 				$(document).on("click", "#search_c #btn_manufacturePass", function (event) {
@@ -937,6 +948,7 @@
 					return null;
 				}
 				//Data
+				let timeBasedCode = other.methods.generateTimeBasedCode();
 				$('#search_cr_open tbody tr').each(function () {
 					if ($('.' + this.className + ' input').prop("checked")) {
 						//console.log(this.className+" "+ $('.'+this.className+' input').prop("checked"));
@@ -973,6 +985,14 @@
 								//標記顏色
 								$('.' + this.className + ' .wasclasssn').addClass('text-warning');
 								break;
+							case "btn_merge":
+								//異動資料
+								$('.' + this.className + ' .waspmerge').text(timeBasedCode);
+								$('.' + this.className + ' .wasumerge').text($('#menu_login_name').text());
+								//標記顏色
+								$('.' + this.className + ' .wasclasssn').addClass('text-success');
+								break;	
+								
 							case "btn_manufacturePass":
 								//異動資料
 								$('.' + this.className + ' .wassmuser').text($('#menu_login_name').text());
@@ -1096,8 +1116,10 @@
 				let dataHeaderAgree = [];
 				let dataHeaderPassAll = [];
 				let dataHeaderUrgency = [];
+				let dataHeaderMerge = [];
 				let dataHeaderReturnAll = [];
 				let dataHeaderManufacturePass = [];
+				
 
 				//確認選取
 				$('#search_cr_open tbody tr').each(function () {
@@ -1144,6 +1166,20 @@
 						dataHeaderUrgency.push(entityJosn);
 
 					}
+					//登記:配料Merge
+					if ($('.' + this.className + ' .wasclasssn').hasClass('text-success')) {
+						let entityJosn = {};
+						$(this).find('.valTbodytd').each(function (index) {
+							let val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
+							let name = $(this).attr('class').split(' ')[1];
+							//可能是時間格式
+							if (entityDateTime.indexOf(name) >= 0) {
+								val = new Date(val).getTime();
+							}
+							entityJosn[name] = val;
+						});
+						dataHeaderMerge.push(entityJosn);
+					}
 					//登記:配料清點人Pass
 					if ($('.' + this.className + ' .wasclasssn').hasClass('text-info')) {
 						let entityJosn = {};
@@ -1158,6 +1194,7 @@
 						});
 						dataHeaderManufacturePass.push(entityJosn);
 					}
+					
 				});
 				$('#search_dcr_open tbody tr').each(function (index) {
 					//登記:返回
@@ -1236,6 +1273,12 @@
 					//傳送....
 					data = {};
 					data['entityJson'] = JSON.stringify(dataHeaderUrgency);
+					data['entityDetailJson'] = JSON.stringify('{}');
+				}else if (dataHeaderMerge.length > 0) {
+					action = "SS4";
+					//傳送....
+					data = {};
+					data['entityJson'] = JSON.stringify(dataHeaderMerge);
 					data['entityDetailJson'] = JSON.stringify('{}');
 				} else if (dataHeaderManufacturePass.length > 0) {
 					action = "S5";
@@ -1406,6 +1449,32 @@
 					}
 				}
 			},
+			/**
+			 * 取得 年月日時分秒 轉換 36進制 (對應後端 Java timeTo36Encoder)
+			 * 範例結果：A09Z21
+			 * @returns {string} 6碼大寫字串
+			 */
+			generateTimeBasedCode() {
+			    const now = new Date();
+
+			    // 1. 取得時間部分並格式化為 MMddHHmmss (與 Java 邏輯一致)
+			    // paddingStart 確保月份、日期等不足兩位時補 0
+			    const month = String(now.getMonth() + 1).padStart(2, '0');
+			    const day = String(now.getDate()).padStart(2, '0');
+			    const hours = String(now.getHours()).padStart(2, '0');
+			    const minutes = String(now.getMinutes()).padStart(2, '0');
+			    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+			    // 組合數字字串，例如 "0119164010"
+			    const timeString = month + day + hours + minutes + seconds;
+			    
+			    // 2. 轉換為 10 進制數字後，再轉為 36 進制
+			    // parseInt 將字串轉為數字，toString(36) 執行進制轉換
+			    let base36Code = parseInt(timeString, 10).toString(36).toUpperCase();
+
+			    // 3. 確保補足 6 碼（不足前面補 0）
+			    return base36Code.padStart(6, '0');
+			},
 			//==========================回傳接收==========================
 			otherReturn() {
 				//查詢回傳
@@ -1439,6 +1508,8 @@
 				$(document).off("click", "#search_c #btn_markCancel");
 				$(document).off("click", "#search_c #btn_re_synchronize");
 
+				
+				$(document).off("click", "#search_c #btn_merge");
 				$(document).off("click", "#search_c #btn_urgency");
 				$(document).off("click", "#search_c #btn_returnAll");
 				$(document).off("click", "#search_c #btn_passAll");

@@ -312,6 +312,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S2").hasAuthority(actionRole(warehouse_ass, "S2"))// (修改S2)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S3").hasAuthority(actionRole(warehouse_ass, "S3"))// (修改S3)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S4").hasAuthority(actionRole(warehouse_ass, "S4"))// (修改S4)
+				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".SS4").hasAuthority(actionRole(warehouse_ass, "S4"))// (修改S4->標記合併)
 				.requestMatchers(HttpMethod.PUT, warehouse_ass + ".S5").hasAuthority(actionRole(warehouse_ass, "S5"))// (修改S5)
 
 				// -客製化

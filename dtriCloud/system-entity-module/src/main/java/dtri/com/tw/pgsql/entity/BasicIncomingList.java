@@ -42,6 +42,7 @@ import jakarta.persistence.Table;
  *      
  *      bil_p_already:打印過?0=尚未1=已經<br>
  *      bil_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
+ *      bil_p_a_number:成品品號<br>
  *      bil_p_number:物料號 Ex:50-117-238132<br>
  *      bil_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bil_p_specification:物料規格<br>
@@ -92,6 +93,7 @@ public class BasicIncomingList {
 		this.bilfuser = "";
 		this.bilsuser = "";
 		this.bilacceptance = 0;
+		this.bilpanumber = "";
 		this.bilpnumber = "";
 		this.bilpname = "";
 		this.bilpspecification = "";
@@ -100,7 +102,7 @@ public class BasicIncomingList {
 		this.bilpnaqty = 0;
 		this.bilpnoqty = 0;
 		this.bilpnerpqty = 0;
-		
+
 		this.biltocommand = "[]";
 		this.bilfromcommand = "[]";
 		this.biltowho = "[]";
@@ -112,6 +114,8 @@ public class BasicIncomingList {
 		this.bilpalready = 0;
 		this.checkrm = false;
 		this.bilerpcuser = "";
+		this.bilpmerge = "";
+		this.setBilumerge("");
 	}
 
 	// 共用型
@@ -169,8 +173,16 @@ public class BasicIncomingList {
 
 	@Column(name = "bil_p_already", nullable = false, columnDefinition = "int default 0")
 	private Integer bilpalready;
+	@Column(name = "bil_p_merge", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bilpmerge;
+	@Column(name = "bil_u_merge", nullable = false, columnDefinition = "varchar(50) default ''")
+	private String bilumerge;
+
 	@Column(name = "bil_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bilacceptance;
+
+	@Column(name = "bil_p_a_number", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bilpanumber;
 
 	@Column(name = "bil_p_number", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bilpnumber;
@@ -456,9 +468,10 @@ public class BasicIncomingList {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(bilacceptance, bilcheckin, bilclass, bilcuser, biledate, bilfdate, bilfromcommand, bilfromwho, bilfuser, bilid, bilnb,
-				bilpname, bilpnqty, bilpnumber, bilpspecification, bilsn, bilstatus, biltocommand, biltowho, biltype, syscdate, syscuser, sysheader,
-				sysmdate, sysmuser, sysnote, sysodate, sysouser, syssort, sysstatus);
+		return Objects.hash(bilacceptance, bilcheckin, bilclass, bilcuser, biledate, bilfdate, bilfromcommand,
+				bilfromwho, bilfuser, bilid, bilnb, bilpname, bilpnqty, bilpnumber, bilpspecification, bilsn, bilstatus,
+				biltocommand, biltowho, biltype, syscdate, syscuser, sysheader, sysmdate, sysmuser, sysnote, sysodate,
+				sysouser, syssort, sysstatus);
 	}
 
 	@Override
@@ -471,16 +484,19 @@ public class BasicIncomingList {
 			return false;
 		BasicIncomingList other = (BasicIncomingList) obj;
 		return Objects.equals(bilacceptance, other.bilacceptance) && Objects.equals(bilcheckin, other.bilcheckin)
-				&& Objects.equals(bilclass, other.bilclass) && Objects.equals(bilcuser, other.bilcuser) && Objects.equals(biledate, other.biledate)
-				&& Objects.equals(bilfdate, other.bilfdate) && Objects.equals(bilfromcommand, other.bilfromcommand)
-				&& Objects.equals(bilfromwho, other.bilfromwho) && Objects.equals(bilfuser, other.bilfuser) && Objects.equals(bilid, other.bilid)
-				&& Objects.equals(bilnb, other.bilnb) && Objects.equals(bilpname, other.bilpname) && Objects.equals(bilpnqty, other.bilpnqty)
-				&& Objects.equals(bilpnumber, other.bilpnumber) && Objects.equals(bilpspecification, other.bilpspecification)
-				&& Objects.equals(bilsn, other.bilsn) && Objects.equals(bilstatus, other.bilstatus)
-				&& Objects.equals(biltocommand, other.biltocommand) && Objects.equals(biltowho, other.biltowho)
-				&& Objects.equals(biltype, other.biltype) && Objects.equals(syscdate, other.syscdate) && Objects.equals(syscuser, other.syscuser)
-				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate) && Objects.equals(sysmuser, other.sysmuser)
-				&& Objects.equals(sysnote, other.sysnote) && Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
+				&& Objects.equals(bilclass, other.bilclass) && Objects.equals(bilcuser, other.bilcuser)
+				&& Objects.equals(biledate, other.biledate) && Objects.equals(bilfdate, other.bilfdate)
+				&& Objects.equals(bilfromcommand, other.bilfromcommand) && Objects.equals(bilfromwho, other.bilfromwho)
+				&& Objects.equals(bilfuser, other.bilfuser) && Objects.equals(bilid, other.bilid)
+				&& Objects.equals(bilnb, other.bilnb) && Objects.equals(bilpname, other.bilpname)
+				&& Objects.equals(bilpnqty, other.bilpnqty) && Objects.equals(bilpnumber, other.bilpnumber)
+				&& Objects.equals(bilpspecification, other.bilpspecification) && Objects.equals(bilsn, other.bilsn)
+				&& Objects.equals(bilstatus, other.bilstatus) && Objects.equals(biltocommand, other.biltocommand)
+				&& Objects.equals(biltowho, other.biltowho) && Objects.equals(biltype, other.biltype)
+				&& Objects.equals(syscdate, other.syscdate) && Objects.equals(syscuser, other.syscuser)
+				&& Objects.equals(sysheader, other.sysheader) && Objects.equals(sysmdate, other.sysmdate)
+				&& Objects.equals(sysmuser, other.sysmuser) && Objects.equals(sysnote, other.sysnote)
+				&& Objects.equals(sysodate, other.sysodate) && Objects.equals(sysouser, other.sysouser)
 				&& Objects.equals(syssort, other.syssort) && Objects.equals(sysstatus, other.sysstatus);
 	}
 
@@ -578,6 +594,42 @@ public class BasicIncomingList {
 
 	public void setBilpnerpqty(Integer bilpnerpqty) {
 		this.bilpnerpqty = bilpnerpqty;
+	}
+
+	public String getBilpanumber() {
+		return bilpanumber;
+	}
+
+	public void setBilpanumber(String bilpanumber) {
+		this.bilpanumber = bilpanumber;
+	}
+
+	/**
+	 * @return the bilpmerge
+	 */
+	public String getBilpmerge() {
+		return bilpmerge;
+	}
+
+	/**
+	 * @param bilpmerge the bilpmerge to set
+	 */
+	public void setBilpmerge(String bilpmerge) {
+		this.bilpmerge = bilpmerge;
+	}
+
+	/**
+	 * @return the bilumerge
+	 */
+	public String getBilumerge() {
+		return bilumerge;
+	}
+
+	/**
+	 * @param bilumerge the bilumerge to set
+	 */
+	public void setBilumerge(String bilumerge) {
+		this.bilumerge = bilumerge;
 	}
 
 }

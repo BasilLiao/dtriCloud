@@ -43,6 +43,7 @@ import jakarta.persistence.Table;
  *      
  *      bsl_p_already: 使否已打印<br>
  *      bsl_acceptance:檢驗項目: 0=未檢驗 1=已檢驗 2=異常<br>
+ *      bsl_p_a_number:成品品號<br>
  *      bsl_p_number:物料號 Ex:50-117-238132<br>
  *      bsl_p_name:物料品名 Ex:DT504T Mix Color ...<br>
  *      bsl_p_specification:物料規格<br>
@@ -117,6 +118,9 @@ public class BasicShippingList {
 		this.bslerpcuser = "";
 		this.setBslsmuser("");
 		this.bslfromcustomer = "";
+		this.bslpanumber = "";
+		this.setBslpmerge("");
+		this.bslumerge = "";
 	}
 
 	// 共用型
@@ -176,10 +180,16 @@ public class BasicShippingList {
 
 	@Column(name = "bsl_p_already", nullable = false, columnDefinition = "int default 0")
 	private Integer bslpalready;
+	@Column(name = "bsl_p_merge", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bslpmerge;
+	@Column(name = "bsl_u_merge", nullable = false, columnDefinition = "varchar(10) default ''")
+	private String bslumerge;
 
 	@Column(name = "bsl_acceptance", nullable = false, columnDefinition = "int default 0")
 	private Integer bslacceptance;
 
+	@Column(name = "bsl_p_a_number", nullable = false, columnDefinition = "varchar(150) default ''")
+	private String bslpanumber;
 	@Column(name = "bsl_p_number", nullable = false, columnDefinition = "varchar(150) default ''")
 	private String bslpnumber;
 	@Column(name = "bsl_p_name", nullable = false, columnDefinition = "varchar(150) default ''")
@@ -636,6 +646,48 @@ public class BasicShippingList {
 	 */
 	public void setBslfromcustomer(String bslfromcustomer) {
 		this.bslfromcustomer = bslfromcustomer;
+	}
+
+	/**
+	 * @return the bslpanumber
+	 */
+	public String getBslpanumber() {
+		return bslpanumber;
+	}
+
+	/**
+	 * @param bslpanumber the bslpanumber to set
+	 */
+	public void setBslpanumber(String bslpanumber) {
+		this.bslpanumber = bslpanumber;
+	}
+
+	/**
+	 * @return the bslumerge
+	 */
+	public String getBslumerge() {
+		return bslumerge;
+	}
+
+	/**
+	 * @param bslumerge the bslumerge to set
+	 */
+	public void setBslumerge(String bslumerge) {
+		this.bslumerge = bslumerge;
+	}
+
+	/**
+	 * @return the bslpmerge
+	 */
+	public String getBslpmerge() {
+		return bslpmerge;
+	}
+
+	/**
+	 * @param bslpmerge the bslpmerge to set
+	 */
+	public void setBslpmerge(String bslpmerge) {
+		this.bslpmerge = bslpmerge;
 	}
 
 }

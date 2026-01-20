@@ -40,6 +40,7 @@ import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
 import dtri.com.tw.shared.CloudExceptionService.ErColor;
 import dtri.com.tw.shared.CloudExceptionService.Lan;
+import dtri.com.tw.shared.Fm_T;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
@@ -113,7 +114,7 @@ public class WarehouseAssignmentServiceAc {
 			 * 0, null, inPageable);
 			 */
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus("A541", null, null, null,
-					"true", null, null, null, null, shPageable);
+					"true", null, null, null, null, null, shPageable);
 			LinkedHashSet<String> areaListShIn = new LinkedHashSet<String>();
 			// 進料
 			for (BasicIncomingList in : incomingLists) {
@@ -131,14 +132,17 @@ public class WarehouseAssignmentServiceAc {
 				ed.setWasfuser(in.getBilfuser());// 完成人
 				ed.setWascuser(in.getBilcuser());// 核准人
 				ed.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+				ed.setWaspanumber(in.getBilpanumber());// : 成品物料號<br>
 				ed.setWaspnumber(in.getBilpnumber());// : 物料號<br>
 				ed.setWaspname(in.getBilpname());// : 品名<br>
 				ed.setWaspnqty(in.getBilpnqty());// : 數量<br>
 				ed.setWaspngqty(in.getBilpngqty());// : (已)數量<br>
 				ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 				ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
-				ed.setWasfromcustomer("");//客戶
+				ed.setWasfromcustomer("");// 客戶
 				ed.setWasfucheckin(false);// 集結
+				ed.setWasumerge(in.getBilumerge());// 合併備料人
+				ed.setWaspmerge(in.getBilpmerge());// 合併備料序號
 
 				switch (in.getBilstatus()) {
 				case 0:
@@ -197,13 +201,14 @@ public class WarehouseAssignmentServiceAc {
 					e.setWasfuser(in.getBilfuser());// 完成人
 					e.setWascuser(in.getBilcuser());// 核准人
 					e.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+					e.setWaspanumber(in.getBilpanumber());// : 成品物料號<br>
 					e.setWaspnumber(in.getBilpnumber());// : 物料號<br>
 					e.setWaspname(in.getBilpname());// : 品名<br>
 					e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					//
 					e.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
 					e.setWasstatusname(ed.getWasstatusname());
-					e.setWasedate(in.getBiledate());// 預計領料/預計入料
+					e.setWasedate(Fm_T.to_y_M_d(in.getBiledate()));// 預計領料/預計入料
 					e.setWastocommand(in.getBiltocommand());// 指令(對象)
 					e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
 					e.setWastowho(in.getBiltowho());// 物件(對象)
@@ -218,6 +223,8 @@ public class WarehouseAssignmentServiceAc {
 					e.setSyshnote(in.getSyshnote());// 表單頭 備註
 					e.setWaserpcuser(in.getBilerpcuser());// 開單人
 					e.setSysstatus(in.getSysstatus());
+					e.setWasumerge(in.getBilumerge());// 合併備料人
+					e.setWaspmerge(in.getBilpmerge());// 合併備料序號
 
 					entitys.add(e);
 				}
@@ -250,6 +257,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasfuser(sh.getBslfuser());// 完成人
 					ed.setWascuser(sh.getBslcuser());// 核准人
 					ed.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+					ed.setWaspanumber(sh.getBslpanumber());// : 成品物料號<br>
 					ed.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 					ed.setWaspname(sh.getBslpname());// : 品名<br>
 					ed.setWaspnqty(sh.getBslpnqty());// : 數量<br>
@@ -257,7 +265,9 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(sh.getBslfucheckin());// 集結
-					ed.setWasfromcustomer(sh.getBslfromcustomer());//客戶
+					ed.setWasfromcustomer(sh.getBslfromcustomer());// 客戶
+					ed.setWasumerge(sh.getBslumerge());// 合併備料人
+					ed.setWaspmerge(sh.getBslpmerge());// 合併備料序號
 					switch (sh.getBslstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -317,19 +327,20 @@ public class WarehouseAssignmentServiceAc {
 						e.setWascuser(sh.getBslcuser());// 核准人
 						e.setWassmuser(sh.getBslsmuser());// 產線配置清點人員
 						e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+						e.setWaspanumber(sh.getBslpanumber());// : 成品物料號<br>
 						e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 						e.setWaspname(sh.getBslpname());// : 品名<br>
 						e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 						//
 						e.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 						e.setWasstatusname(ed.getWasstatusname());
-						e.setWasedate(sh.getBsledate());// 預計領料/預計入料
-						e.setWassdate(sh.getBslsdate());// 預計出貨
+						e.setWasedate(Fm_T.to_y_M_d(sh.getBsledate()));// 預計領料/預計入料
+						e.setWassdate(Fm_T.to_y_M_d(sh.getBslsdate()));// 預計出貨
 						e.setWastocommand(sh.getBsltocommand());// 指令(對象)
 						e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 						e.setWastowho(sh.getBsltowho());// 物件(對象)
 						e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
-						e.setWasfromcustomer(sh.getBslfromcustomer());//客戶
+						e.setWasfromcustomer(sh.getBslfromcustomer());// 客戶
 						//
 						e.setSyscdate(sh.getSyscdate());
 						e.setSyscuser(sh.getSyscuser());
@@ -339,6 +350,8 @@ public class WarehouseAssignmentServiceAc {
 						e.setSyshnote(sh.getSyshnote());// 表單頭 備註
 						e.setWaserpcuser(sh.getBslerpcuser());// 開單人
 						e.setSysstatus(sh.getSysstatus());
+						e.setWasumerge(sh.getBslumerge());// 合併備料人
+						e.setWaspmerge(sh.getBslpmerge());// 合併備料序號
 						entitys.add(e);
 					}
 					// body
@@ -469,6 +482,15 @@ public class WarehouseAssignmentServiceAc {
 			searchJsons = packageService.searchSet(searchJsons, selectStatusArr, "sysstatus", "Ex:狀態?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
 
+			// Step3-5. 建立查詢項目
+			JsonArray selecWaspanumbertArr = new JsonArray();
+			selecWaspanumbertArr.add("產品排序_0");
+			selecWaspanumbertArr.add("產品+出貨時間排序_1");
+			searchJsons = packageService.searchSet(searchJsons, selecWaspanumbertArr, "waspanumber", "Ex:排序?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_1);
+			// Step3-5. 建立查詢項目
+			searchJsons = packageService.searchSet(searchJsons, null, "waspmerge", "Ex:合備碼?", true, //
+					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_1);
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
@@ -494,14 +516,57 @@ public class WarehouseAssignmentServiceAc {
 			if (searchData.getWascuser() == null) {
 				searchData.setWascuser("true");
 			}
+			// 排序?
+			// Step2.排序
+			if (searchData.getWaspanumber() != null) {
+				inOrders = new ArrayList<>();
+				shOrders = new ArrayList<>();
+
+				if (searchData.getWaspanumber().equals("0")) {
+					// 型號排序
+					inOrders.add(new Order(Direction.DESC, "bilpanumber"));// 產品號
+					inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
+					inOrders.add(new Order(Direction.DESC, "bilsn"));// 單號
+					inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
+					inOrders.add(new Order(Direction.ASC, "biledate"));// 預計時間
+
+					shOrders.add(new Order(Direction.DESC, "bslpanumber"));// 產品號
+					shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
+					shOrders.add(new Order(Direction.DESC, "bslsn"));// 單號
+					shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
+
+				}
+				if (searchData.getWaspanumber().equals("1")) {
+					// 型號+出貨時間排序
+
+					inOrders.add(new Order(Direction.DESC, "bilpanumber"));// 產品號
+					inOrders.add(new Order(Direction.ASC, "biledate"));// 預計時間
+					inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
+					inOrders.add(new Order(Direction.DESC, "bilsn"));// 單號
+					inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
+
+					shOrders.add(new Order(Direction.DESC, "bslpanumber"));// 產品號
+					shOrders.add(new Order(Direction.ASC, "bsledate"));// 預計時間
+					shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
+					shOrders.add(new Order(Direction.DESC, "bslsn"));// 單號
+					shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號
+					shOrders.add(new Order(Direction.ASC, "bsledate"));// 預計時間
+				}
+
+				// 一般模式
+				inPageable = PageRequest.of(batch, total, Sort.by(inOrders));
+				shPageable = PageRequest.of(batch, total, Sort.by(shOrders));
+			}
 
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
-					searchData.getWasfuser(), searchData.getSysstatus(), searchData.getSyshnote(), inPageable);
+					searchData.getWasfuser(), searchData.getSysstatus(), searchData.getSyshnote(),
+					searchData.getWaspmerge(), inPageable);
+			//
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchStatus(wasclass, wassn,
 					searchData.getWasfromcommand(), searchData.getWastype(), searchData.getWascuser(),
 					searchData.getWasfuser(), searchData.getWassmuser(), searchData.getSysstatus(),
-					searchData.getSyshnote(), shPageable);
+					searchData.getSyshnote(), searchData.getWaspmerge(), shPageable);
 			// Step4-2.資料區分(一般/細節)
 			LinkedHashSet<String> areaListShIn = new LinkedHashSet<String>();
 			// 進料
@@ -522,6 +587,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasfuser(in.getBilfuser());// 完成人
 					ed.setWascuser(in.getBilcuser());// 核准人
 					ed.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+					ed.setWaspanumber(in.getBilpanumber());// : 成品物料號<br>
 					ed.setWaspnumber(in.getBilpnumber());// : 物料號<br>
 					ed.setWaspname(in.getBilpname());// : 品名<br>
 					ed.setWaspnqty(in.getBilpnqty());// : 數量<br>
@@ -529,7 +595,9 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(false);// 集結
-					ed.setWasfromcustomer("");//客戶
+					ed.setWasfromcustomer("");// 客戶
+					ed.setWasumerge(in.getBilumerge());// 合併備料人
+					ed.setWaspmerge(in.getBilpmerge());// 合併備料序號
 					switch (in.getBilstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -587,18 +655,19 @@ public class WarehouseAssignmentServiceAc {
 						e.setWasfuser(in.getBilfuser());// 完成人
 						e.setWascuser(in.getBilcuser());// 核准人
 						e.setWasacceptance(in.getBilacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+						e.setWaspanumber(in.getBilpanumber());// : 成品物料號<br>
 						e.setWaspnumber(in.getBilpnumber());// : 物料號<br>
 						e.setWaspname(in.getBilpname());// : 品名<br>
 						e.setWasstatus(in.getBilstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 						//
 						e.setWaspalready(in.getBilpalready() == 0 ? "未打印" : "已打印");
 						e.setWasstatusname(ed.getWasstatusname());
-						e.setWasedate(in.getBiledate());// 預計領料/預計入料
+						e.setWasedate(Fm_T.to_y_M_d(in.getBiledate()));// 預計領料/預計入料
 						e.setWastocommand(in.getBiltocommand());// 指令(對象)
 						e.setWasfromcommand(in.getBilfromcommand());// 指令(來源)
 						e.setWastowho(in.getBiltowho());// 物件(對象)
 						e.setWasfromwho(in.getBilfromwho());// 物件(來源)
-						e.setWasfromcustomer("");//客戶
+						e.setWasfromcustomer("");// 客戶
 						//
 						e.setSyscdate(in.getSyscdate());
 						e.setSyscuser(in.getSyscuser());
@@ -608,7 +677,8 @@ public class WarehouseAssignmentServiceAc {
 						e.setSyshnote(in.getSyshnote());// 表單頭 備註
 						e.setWaserpcuser(in.getBilerpcuser());// 開單人
 						e.setSysstatus(in.getSysstatus());
-
+						e.setWasumerge(in.getBilumerge());// 合併備料人
+						e.setWaspmerge(in.getBilpmerge());// 合併備料序號
 						entitys.add(e);
 					}
 					// body
@@ -646,6 +716,7 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWassmuser(sh.getBslsmuser());// 產線人
 
 					ed.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+					ed.setWaspanumber(sh.getBslpanumber());// : 成品物料號<br>
 					ed.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 					ed.setWaspname(sh.getBslpname());// : 品名<br>
 					ed.setWaspnqty(sh.getBslpnqty());// : 數量<br>
@@ -653,7 +724,9 @@ public class WarehouseAssignmentServiceAc {
 					ed.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 					ed.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 					ed.setWasfucheckin(sh.getBslfucheckin());// 集結
-					ed.setWasfromcustomer(sh.getBslfromcustomer());//客戶
+					ed.setWasfromcustomer(sh.getBslfromcustomer());// 客戶
+					ed.setWasumerge(sh.getBslumerge());// 合併備料人
+					ed.setWaspmerge(sh.getBslpmerge());// 合併備料序號
 					switch (sh.getBslstatus()) {
 					case 0:
 						ed.setWasstatusname("預設(3天)");
@@ -712,19 +785,20 @@ public class WarehouseAssignmentServiceAc {
 						e.setWascuser(sh.getBslcuser());// 核准人
 						e.setWassmuser(sh.getBslsmuser());// 產線配置清點人員
 						e.setWasacceptance(sh.getBslacceptance() == 0 ? "未檢驗" : "已檢驗");// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
+						e.setWaspanumber(sh.getBslpanumber());// : 成品物料號<br>
 						e.setWaspnumber(sh.getBslpnumber());// : 物料號<br>
 						e.setWaspname(sh.getBslpname());// : 品名<br>
 						e.setWasstatus(sh.getBslstatus());// 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 						//
 						e.setWaspalready(sh.getBslpalready() == 0 ? "未打印" : "已打印");
 						e.setWasstatusname(ed.getWasstatusname());
-						e.setWasedate(sh.getBsledate());// 預計領料/預計入料
-						e.setWassdate(sh.getBslsdate());// 預計出貨
+						e.setWasedate(Fm_T.to_y_M_d(sh.getBsledate()));// 預計領料/預計入料
+						e.setWassdate(Fm_T.to_y_M_d(sh.getBslsdate()));// 預計出貨
 						e.setWastocommand(sh.getBsltocommand());// 指令(對象)
 						e.setWasfromcommand(sh.getBslfromcommand());// 指令(來源)
 						e.setWastowho(sh.getBsltowho());// 物件(對象)
 						e.setWasfromwho(sh.getBslfromwho());// 物件(來源)
-						e.setWasfromcustomer(sh.getBslfromcustomer());//客戶
+						e.setWasfromcustomer(sh.getBslfromcustomer());// 客戶
 						//
 						e.setSyscdate(sh.getSyscdate());
 						e.setSyscuser(sh.getSyscuser());
@@ -734,6 +808,8 @@ public class WarehouseAssignmentServiceAc {
 						e.setSyshnote(sh.getSyshnote());// 表單頭 備註
 						e.setWaserpcuser(sh.getBslerpcuser());// 開單人
 						e.setSysstatus(sh.getSysstatus());
+						e.setWasumerge(sh.getBslumerge());// 合併備料人
+						e.setWaspmerge(sh.getBslpmerge());// 合併備料序號
 						entitys.add(e);
 					}
 					// body
@@ -800,7 +876,7 @@ public class WarehouseAssignmentServiceAc {
 		packageBean.setEntityFormatJson(entityFormatJson);
 		// KEY名稱Ikey_Gkey
 		packageBean.setEntityIKeyGKey("id_gid");
-		packageBean.setEntityDateTime(packageBean.getEntityDateTime() + "_wasedate_wassdate");
+		packageBean.setEntityDateTime(packageBean.getEntityDateTime());
 		return packageBean;
 	}
 
@@ -932,6 +1008,15 @@ public class WarehouseAssignmentServiceAc {
 
 						case "Urgency":// 急迫
 							t.setBslstatus(x.getWasstatus());
+							break;
+						case "Merge":// 合併
+							if (t.getBslumerge().equals("")) {
+								t.setBslumerge(x.getWasumerge());
+								t.setBslpmerge(x.getWaspmerge());
+							} else {
+								t.setBslumerge("");
+								t.setBslpmerge("");
+							}
 							break;
 						case "ManufacturePass"://
 							t.setBslsmuser(t.getBslsmuser().equals("") ? x.getWassmuser() : t.getBslsmuser());

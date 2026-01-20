@@ -182,6 +182,7 @@ public class ERPToCloudService {
 		o.setBiltype(m.getTk000());// 入庫單
 		o.setBilcheckin(sysstatus);// 0=未核單 1=已核單
 		o.setBilacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBilpanumber(m.getTa006());//成品品號
 		o.setBilpnumber(m.getMb001());// 物料號品號
 		o.setBilpname(m.getMb002());// 品名
 		o.setBilpspecification(m.getMb003());// 規格
@@ -253,6 +254,7 @@ public class ERPToCloudService {
 		o.setBsltype(m.getTk000());// 入庫單
 		o.setBslcheckin(sysstatus);// 0=未核單 1=已核單
 		o.setBslacceptance(1);// 0=未檢驗 1=已檢驗 2=異常
+		o.setBslpanumber(m.getTa006());//成品品號
 		o.setBslpnumber(m.getMb001());// 物料號品號
 		o.setBslpname(m.getMb002());// 品名
 		o.setBslpspecification(m.getMb003());// 規格

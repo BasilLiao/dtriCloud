@@ -3,7 +3,9 @@ package dtri.com.tw.shared;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
 import java.util.Calendar;
 import java.util.Date;
@@ -146,4 +148,23 @@ public class Fm_T {
 		}
 		return 0;
 	}
+
+	/** 取得 年月日時分秒 轉換 36進製 Ex:A09Z21 **/
+	public static String timeTo36Encoder() {
+		LocalDateTime now = LocalDateTime.now();
+
+		/*
+		 * * [設計說明] 使用 MMddHHmmss (月/日/時/分/秒) 範例：01月19日16時05分20秒 -> 0119160520 這個數值最大約為
+		 * 12 億，小於 36^6 (21 億)，完美契合 6 碼空間
+		 */
+		String timeString = now.format(DateTimeFormatter.ofPattern("MMddHHmmss"));
+		long timeValue = Long.parseLong(timeString);
+
+		// 轉換為 36 進制並轉大寫
+		String base36Code = Long.toString(timeValue, 36).toUpperCase();
+
+		// 確保補足 6 碼（不足前面補 0）
+		return String.format("%6s", base36Code).replace(' ', '0');
+	}
+
 }

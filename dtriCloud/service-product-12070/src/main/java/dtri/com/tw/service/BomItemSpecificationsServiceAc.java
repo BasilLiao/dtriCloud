@@ -421,6 +421,8 @@ public class BomItemSpecificationsServiceAc {
 			Boolean bismdevelopment = entityOne.getBismdevelopment();
 			//
 			String bisgfname = entityOne.getBisgfname();// 正規畫-群組名稱
+			String bisfname = entityOne.getBisfname();// 正規畫-項目名稱
+
 			Integer bisgfnameSize = bisgfname.split(" ").length;
 			String bisprocess = entityOne.getBisprocess();
 			String bisgname = entityOne.getBisgname();
@@ -493,6 +495,7 @@ public class BomItemSpecificationsServiceAc {
 			// 資料轉換
 			Map<String, String> sameBisfname = new HashMap<String, String>();
 			materials.forEach(m -> {
+
 				BomItemSpecifications itemSp = new BomItemSpecifications();
 				itemSp.setSyscdate(m.getSyscdate());
 				itemSp.setSysmdate(m.getSysmdate());
@@ -568,6 +571,7 @@ public class BomItemSpecificationsServiceAc {
 					itemSp = sqlQueryEntitys.get(s.getBisnb());
 					s.setBisname(itemSp.getBisname());
 					s.setBisnb(itemSp.getBisnb());
+					s.setBisfname(itemSp.getBisfname());
 					s.setBisspecifications(itemSp.getBisspecifications());
 					s.setBisdescription(itemSp.getBisdescription());
 					// 如果有標記自動?
@@ -1594,20 +1598,21 @@ public class BomItemSpecificationsServiceAc {
 				b.setBpmbisitem(updatedJson);
 				bomSynErp.add(b);
 			}
-		}if(!bomSynErp.isEmpty())
-
-	{
-		String reBom = new String();
-		for (BomProductManagement o : bomSynErp) {
-			reBom += o.getBpmnb() + "_";
 		}
-		System.out.println("update:" + reBom);
-		managementDao.saveAll(bomSynErp);
-		// 視需求：若後續馬上要讀一致資料，可立刻 flush
-		managementDao.flush();
-	}
+		if (!bomSynErp.isEmpty())
 
-	return check;
+		{
+			String reBom = new String();
+			for (BomProductManagement o : bomSynErp) {
+				reBom += o.getBpmnb() + "_";
+			}
+			System.out.println("update:" + reBom);
+			managementDao.saveAll(bomSynErp);
+			// 視需求：若後續馬上要讀一致資料，可立刻 flush
+			managementDao.flush();
+		}
+
+		return check;
 	}
 	/* -------------------- 輔助方法區 -------------------- */
 

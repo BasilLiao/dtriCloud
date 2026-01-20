@@ -19,6 +19,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and"//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
+			+ "(:bilpmerge is null or  c.bilpmerge LIKE %:bilpmerge%) and "//
 			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
 			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
@@ -29,7 +30,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 																																	// 未核准人
 			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
 	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand,
-			String biltype, String bilcuser, String bilfuser, Integer sysstatus, String syshnote, Pageable pageable);
+			String biltype, String bilcuser, String bilfuser, Integer sysstatus, String syshnote,String bilpmerge,  Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//

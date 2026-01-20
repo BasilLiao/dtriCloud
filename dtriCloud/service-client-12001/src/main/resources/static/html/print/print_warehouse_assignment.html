@@ -271,7 +271,7 @@
 					if (dataHeader.length > 1 && dataHeader.length <= 10) {
 						dataHeader.forEach(function (hds, index) {
 							//標記代號
-							print.data.cells[hds.gid] = print.data.cellNbs[index];
+							print.data.cells[hds.gid] = print.data.cellNbs[index]+dataBody[0]['waspmerge'];
 						});
 					} else if (dataHeader.length > 10) {
 						console.warn("cellNbs 中的元素不足，無法為所有 dataHeader 匹配值");
@@ -375,7 +375,7 @@
 
 							print_m_ex.find(".pr_bslfromcommand_qrcode").text("");//
 							print_m_ex.find(".pr_bslclass_bslsn_qrcode").text("");//
-							print_m_ex.css("paddingTop", "25px");
+							print_m_ex.css("paddingTop", "40px");
 							
 					        // A581
 							if (bslclass_bslsn.includes("A581")) {

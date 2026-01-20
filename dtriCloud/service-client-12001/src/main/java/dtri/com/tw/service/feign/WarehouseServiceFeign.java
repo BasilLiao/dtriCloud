@@ -41,6 +41,9 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyUrgency(@RequestBody String jsonPackageBean);
+	
+	@RequestMapping(value = { "/warehouseAssignment/setModifyMerge" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyMerge(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/warehouseAssignment/setModifyManufacturePass" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyManufacturePass(@RequestBody String jsonPackageBean);

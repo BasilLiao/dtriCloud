@@ -67,6 +67,8 @@ public class WarehouseAssignmentFront {
 		this.waserpcuser = "";
 		this.wassmuser = "";
 		this.setWasfromcustomer("");
+		this.setWasumerge("");
+		this.setWaspmerge("");
 	}
 
 	// 共用型
@@ -121,6 +123,8 @@ public class WarehouseAssignmentFront {
 	@Transient
 	private String wasacceptance;// : 物料檢驗 0=未檢驗 1=已檢驗 2=異常<br>
 	@Transient
+	private String waspanumber;// : 成品物料號<br>
+	@Transient
 	private String waspnumber;// : 物料號<br>
 	@Transient
 	private String waspname;// : 品名<br>
@@ -130,15 +134,19 @@ public class WarehouseAssignmentFront {
 	@Transient
 	private String wasstatusname;// : 單據狀態 3 = 取消 / 4=暫停 / 0=預設(3天) / 1=手動標示急迫 / 2=立即<br>
 	@Transient
-	private Date wasedate;// : 預計領/入料日
+	private String wasedate;// : 預計領/入料日
 	@Transient
-	private Date wassdate;// : 預計出貨日
+	private String wassdate;// : 預計出貨日
 	@Transient
 	private String wasschedule;// 進度(50/100)
 	@Transient
 	private String wascischedule;// 集結-進度(50/100)
 	@Transient
 	private String waspalready;// 是否已打印(已打印/未打印)
+	@Transient
+	private String waspmerge;// 合併備料code
+	@Transient
+	private String wasumerge;// 合併備料人
 	@Transient
 	private String wastocommand;// 單據指令對象 json [] A511-123456....<br>
 	@Transient
@@ -321,11 +329,11 @@ public class WarehouseAssignmentFront {
 		this.wasstatusname = wasstatusname;
 	}
 
-	public Date getWasedate() {
+	public String getWasedate() {
 		return wasedate;
 	}
 
-	public void setWasedate(Date wasedate) {
+	public void setWasedate(String wasedate) {
 		this.wasedate = wasedate;
 	}
 
@@ -441,11 +449,11 @@ public class WarehouseAssignmentFront {
 		this.wascischedule = wascischedule;
 	}
 
-	public Date getWassdate() {
+	public String getWassdate() {
 		return wassdate;
 	}
 
-	public void setWassdate(Date wassdate) {
+	public void setWassdate(String wassdate) {
 		this.wassdate = wassdate;
 	}
 
@@ -461,6 +469,48 @@ public class WarehouseAssignmentFront {
 	 */
 	public void setWasfromcustomer(String wasfromcustomer) {
 		this.wasfromcustomer = wasfromcustomer;
+	}
+
+	/**
+	 * @return the waspanumber
+	 */
+	public String getWaspanumber() {
+		return waspanumber;
+	}
+
+	/**
+	 * @param waspanumber the waspanumber to set
+	 */
+	public void setWaspanumber(String waspanumber) {
+		this.waspanumber = waspanumber;
+	}
+
+	/**
+	 * @return the bslumerge
+	 */
+	public String getWasumerge() {
+		return wasumerge;
+	}
+
+	/**
+	 * @param bslumerge the bslumerge to set
+	 */
+	public void setWasumerge(String wasumerge) {
+		this.wasumerge = wasumerge;
+	}
+
+	/**
+	 * @return the bslpmerge
+	 */
+	public String getWaspmerge() {
+		return waspmerge;
+	}
+
+	/**
+	 * @param bslpmerge the bslpmerge to set
+	 */
+	public void setWaspmerge(String waspmerge) {
+		this.waspmerge = waspmerge;
 	}
 
 }

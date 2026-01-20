@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -175,7 +176,7 @@ public class BasicChangeItemsServiceAc {
 					v.setSllanguage(sslanguage.toString());
 					v.setSlcwidth(480);
 					v.setSyssort(1);
-				} 
+				}
 			});
 
 			// Step3-4. 欄位設置
@@ -195,7 +196,8 @@ public class BasicChangeItemsServiceAc {
 			resultDetailTJsons = packageService.resultSet(fieldsWA, exceptionCell, mapLanguagesDetail);
 
 			// Step3-5. 建立查詢項目
-			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:組件號1/組件號2?請用 斜線/ 區隔", true, //
+			searchJsons = packageService.searchSet(searchJsons, null, "bclpnumber", "Ex:組件號1/組件號2?請用 斜線/ 區隔(請勿超過5組)",
+					true, //
 					PackageService.SearchType.text, PackageService.SearchWidth.col_lg_6);
 
 			// 查詢包裝/欄位名稱(一般/細節)
@@ -212,9 +214,19 @@ public class BasicChangeItemsServiceAc {
 			LinkedHashMap<String, BasicCommandList> entitysNew = new LinkedHashMap<String, BasicCommandList>();// 不重複(單據)
 
 			// 複數?避免為空
-			String bclpns[] = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
+			// 1. 先取得原始陣列
+			String[] rawBclpns = searchData.getBclpnumber() != null && !searchData.getBclpnumber().isEmpty()
 					? searchData.getBclpnumber().replaceAll("\\s", "").split("/")
 					: new String[] { "90-320" };
+			// 警告
+			if (rawBclpns.length > 5) {
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1008, Lan.zh_TW,
+						new String[] { "Too many items (Max 5). Input :" + Arrays.toString(rawBclpns) });
+			}
+
+			// 2. 如果長度超過 5，就截斷 (Copy 前 5 個)
+			String bclpns[] = rawBclpns.length > 5 ? Arrays.copyOf(rawBclpns, 5) : rawBclpns;
+
 			// 複數?
 			for (String bclpn : bclpns) {// 初始化與提示記錄
 				LinkedHashMap<String, WarehouseArea> entityDetailMaps = new LinkedHashMap<>();
