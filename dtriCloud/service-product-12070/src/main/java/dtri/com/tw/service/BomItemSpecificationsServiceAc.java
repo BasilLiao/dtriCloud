@@ -398,6 +398,7 @@ public class BomItemSpecificationsServiceAc {
 			List<WarehouseMaterial> materials = new ArrayList<>();
 			Map<String, String> sqlQuery = new HashMap<>();
 			List<BomItemSpecifications> entityNews = new ArrayList<>();
+			List<BomItemSpecifications> entityUpdates = new ArrayList<>();
 			Map<String, BomItemSpecifications> sqlQueryEntitys = new HashMap<>();
 			String nativeQuery = "SELECT e.* FROM warehouse_material e Where ";
 			List<BomItemSpecifications> entitys = vs;
@@ -569,14 +570,24 @@ public class BomItemSpecificationsServiceAc {
 				BomItemSpecifications itemSp = new BomItemSpecifications();
 				if (sqlQueryEntitys.containsKey(s.getBisnb())) {
 					itemSp = sqlQueryEntitys.get(s.getBisnb());
-					s.setBisname(itemSp.getBisname());
-					s.setBisnb(itemSp.getBisnb());
-					s.setBisfname(itemSp.getBisfname());
-					s.setBisspecifications(itemSp.getBisspecifications());
-					s.setBisdescription(itemSp.getBisdescription());
-					// 如果有標記自動?
-					if (s.getBisiauto()) {
-						entityNews.add(s);
+					// 1. 檢查是否有任何欄位不同
+					boolean hasChanged = !Objects.equals(s.getBisname(), itemSp.getBisname())
+							|| !Objects.equals(s.getBisnb(), itemSp.getBisnb())
+							|| !Objects.equals(s.getBisfname(), itemSp.getBisfname())
+							|| !Objects.equals(s.getBisspecifications(), itemSp.getBisspecifications())
+							|| !Objects.equals(s.getBisdescription(), itemSp.getBisdescription());
+					// 2. 有不同才更新欄位
+					if (hasChanged) {
+						s.setBisname(itemSp.getBisname());
+						s.setBisnb(itemSp.getBisnb());
+						s.setBisfname(itemSp.getBisfname());
+						s.setBisspecifications(itemSp.getBisspecifications());
+						s.setBisdescription(itemSp.getBisdescription());
+						// 如果有標記自動?
+						if (s.getBisiauto()) {
+							entityNews.add(s);
+							entityUpdates.add(s);
+						}
 					}
 					sqlQueryEntitys.get(s.getBisnb()).setSysstatus(2);// 無效狀態
 				} else {
@@ -606,6 +617,49 @@ public class BomItemSpecificationsServiceAc {
 				entityNews.sort((o1, o2) -> o1.getBisnb().compareTo(o2.getBisnb()));
 				specificationsDao.saveAll(entityNews);
 			}
+
+			// BOM 項目更新 bisgname / bisfname->bpmbisitem
+			ArrayList<BomProductManagement> managementUpdates = new ArrayList<BomProductManagement>();
+			for (BomItemSpecifications bISs : entityUpdates) {
+				ArrayList<BomProductManagement> managements = managementDao.findAllBySearch(null, null, null,
+						bISs.getBisnb(), null, null);
+				// 更新
+				managements.forEach(m -> {
+					// 1. 解析原始字串
+					boolean isModified = false;
+					JsonObject entityV = JsonParser.parseString(m.getBpmbisitem()).getAsJsonObject();
+					JsonArray items = entityV.getAsJsonArray("items");
+					for (JsonElement itemCheck : items) {
+						// SN號碼
+						JsonObject itemObj = itemCheck.getAsJsonObject();
+						String bisnb = itemObj.has("bisnb") ? itemObj.get("bisnb").getAsString() : "";
+						Long bisgId = itemObj.has("bisgid") ? itemObj.get("bisgid").getAsLong() : 0L;
+
+						//// 同物料號+同個群組 (不能包含customize/空值)
+						if (!bisnb.contains("customize") && !bisnb.equals("") && bisnb.equals(bISs.getBisnb())
+								&& bisgId == bISs.getBisgid()) {
+							boolean bisgnameSame = !bISs.getBisgname().equals(itemObj.get("bisgname").getAsString());
+							boolean bisfnameSame = !bISs.getBisfname().equals(itemObj.get("bisfname").getAsString());
+							if (bisgnameSame || bisfnameSame) {
+								// 2. 更新內容：確保格式一致
+								// 假設 bISs 裡面有新的 bisfname 和 bisgname 值
+								itemObj.addProperty("bisgname", bISs.getBisgname());
+								// 注意：bisfname 在 JSON 中是 String 化的 Array (例如: "[\"8G\",\"Samsung\"]")
+								// 如果 bISs.getBisfname() 已經是該格式字串，直接 addProperty 即可
+								itemObj.addProperty("bisfname", bISs.getBisfname());
+								isModified = true;
+							}
+						}
+					}
+					// 3. 只有在有變動時才存回資料庫，減少不必要的 IO
+					if (isModified) {
+						m.setBpmbisitem(entityV.toString());
+						managementUpdates.add(m);
+					}
+				});
+			}
+			managementDao.saveAll(managementUpdates); // 執行更新存回
+
 		});
 
 		return packageBean;

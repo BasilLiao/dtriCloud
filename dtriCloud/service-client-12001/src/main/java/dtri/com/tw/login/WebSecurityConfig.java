@@ -100,6 +100,9 @@ public class WebSecurityConfig {
 	private static final String bios_lif = "/ajax/bios_life_cycle.basil";
 	private static final String bios_cus = "/ajax/bios_customer_tag.basil";
 
+	// AI
+	private static final String ai_chat = "/ajax/ai_chat.basil";
+
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
 	 * authorizeHttpRequests()配置路徑攔截，表明路徑訪問所對應的權限，角色，認證信息。<br>
@@ -116,8 +119,8 @@ public class WebSecurityConfig {
 
 		// thirdparty && img 資料夾靜態資料可 直接 存取 (預設皆有 訪問權限 資料可[匿名]存取)
 		http.authorizeHttpRequests()
-				.requestMatchers(HttpMethod.GET, "/cert-install.basil","/thirdparty/**", "/files/**", "/img/**", "/login.basil",
-						"/login.html")
+				.requestMatchers(HttpMethod.GET, "/cert-install.basil", "/thirdparty/**", "/files/**", "/img/**",
+						"/login.basil", "/login.html")
 				.permitAll()
 				// ----請求-index-(訪問)----
 				.requestMatchers(HttpMethod.POST, "/ajax/index.basil").hasAuthority(actionRole("index.basil", ""))
@@ -540,6 +543,16 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, bios_cus + ".AU").hasAuthority(actionRole(bios_cus, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, bios_cus + ".AD").hasAuthority(actionRole(bios_cus, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, bios_cus + ".DD").hasAuthority(actionRole(bios_cus, "DD"))// (標記移除)
+
+				// AI模組
+				// ----請求-ai_chat-(訪問) ----
+				.requestMatchers(HttpMethod.POST, ai_chat).hasAuthority(actionRole(ai_chat, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, ai_chat + ".AR").hasAuthority(actionRole(ai_chat, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, ai_chat + ".ARR").hasAuthority(actionRole(ai_chat, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, ai_chat + ".AC").hasAuthority(actionRole(ai_chat, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, ai_chat + ".AU").hasAuthority(actionRole(ai_chat, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, ai_chat + ".AD").hasAuthority(actionRole(ai_chat, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, ai_chat + ".DD").hasAuthority(actionRole(ai_chat, "DD"))// (標記移除)
 
 				// 以上-請求需要檢驗-全部請求
 				.anyRequest().authenticated();

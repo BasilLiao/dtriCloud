@@ -573,7 +573,7 @@ public class SynchronizeERPService {
 			String oKey = o.getBslclass() + "-" + o.getBslsn() + "-" + o.getBslnb();
 			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
-			//測試用
+			// 測試用
 			if ("A541-251121014-0164".equals(oKey)) {
 				System.out.println("A541-251121014-0164");
 			}
@@ -673,7 +673,7 @@ public class SynchronizeERPService {
 			removeShCheck.forEach(r -> {
 				// 移除標記
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
-				//測試用
+				// 測試用
 				if ("A541-251121014-0164".equals(nKey)) {
 					System.out.println("A541-251121014-0164");
 				}
@@ -2521,6 +2521,10 @@ public class SynchronizeERPService {
 			m.setMb003(m.getMb003().replaceAll("\\s+$", ""));// 去除結尾空格
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
+			// 測試用
+			if (nKey.equals("A431-260130001-0001")) {
+				System.out.println(nKey);
+			}
 			// 不同一張工單?
 			if (!nKeyCheckSame.equals(nKey.split("-")[0] + "-" + nKey.split("-")[1])) {
 				nKeyCheckSame = nKey.split("-")[0] + "-" + nKey.split("-")[1];
@@ -2539,9 +2543,6 @@ public class SynchronizeERPService {
 				m.setTk000("入料類");
 				erpInMaps.put(nKey, m);
 			}
-//			if (nKey.equals("A431-250618001-0016")) {
-//				System.out.println(nKey);
-//			}
 
 		}
 		// Step2.[ERP vs Cloud]舊資料匹配
@@ -2619,27 +2620,32 @@ public class SynchronizeERPService {
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				n = erpToCloudService.incomingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
-				// 如果已經是完成(則不寫入)
-				if (!n.getSysstatus().equals(1)) {
+				// 如果已經是完成(則不寫入)->因太快核單 未核與已核
+				//if (!n.getSysstatus().equals(1)) {
 					// 自動完成
 					erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 					saveInLists.add(n);
-				}
+				//}
 			}
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
+			//測試用
+			if (key.equals("A431-260130001-0001")) {
+				System.out.println(key);
+			}
+			
 			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				erpToCloudService.shippingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
-				// 如果已經是完成(則不寫入)
-				if (!n.getSysstatus().equals(1)) {
+				// 如果已經是完成(則不寫入)->因太快核單 未核與已核
+				//if (!n.getSysstatus().equals(1)) {
 					// 自動完成
 					erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
 					saveShLists.add(n);
-				}
+				//}
 			}
 		});
 		// Step4.確認是否完結 or 被移除?

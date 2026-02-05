@@ -155,21 +155,29 @@ public class SynchronizeBomService {
 						bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
 						bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
 						bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+						bommd.setCmb009(bommd.getCmb009().trim());
+						bommd.setMb009(bommd.getMb009().trim());
 						erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
 						bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());// 成品號-序號
+						// 測試
+//						if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("81-105-30211G-0010")) {
+//							System.out.println("81-105-30211G-0010");
+//						}
 					});
 					// Cloud 取出比對
 					boms.forEach(o -> {
 						// 測試
-						// if (erpBommds.containsKey("90-340-T20AA00-0010")) {
-						// System.out.println(o.getBbisnnb());
-						// }
+//						if (o.getBbisnnb().equals("81-105-30211G-0010")) {
+//							System.out.println(o.getBbisnnb());
+//						}
 						if (erpBommds.containsKey(o.getBbisnnb())) {
 							erpBommds.get(o.getBbisnnb()).setNewone(false);// 標記舊有資料
 							String sum = erpBommds.get(o.getBbisnnb()).toString();
 							if (!sum.equals(o.getChecksum())) {
 								// 更新
 								erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+								o.setSysmdate(new Date());
+								o.setSysmuser("system");
 								bomNews.add(o);
 							}
 							o.setSysstatus(1);
@@ -216,8 +224,10 @@ public class SynchronizeBomService {
 					bommd.setMd001(bommd.getMd001().replaceAll("\\s", ""));
 					bommd.setMd002(bommd.getMd002().replaceAll("\\s", ""));
 					bommd.setMd003(bommd.getMd003().replaceAll("\\s", ""));
+					bommd.setCmb009(bommd.getCmb009().trim());
+					bommd.setMb009(bommd.getMb009().trim());
 					// 測試
-//					if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("90-340-T12RA03-0040")) {
+//					if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("81-105-30211G-0010")) {
 //						System.out.println((bommd.getMd001() + "-" + bommd.getMd002()));
 //					}
 					erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
@@ -238,6 +248,8 @@ public class SynchronizeBomService {
 						if (!sum.equals(o.getChecksum())) {
 							// 更新
 							erpToCloudService.bomIngredients(o, erpBommds.get(o.getBbisnnb()), wMs, sum);
+							o.setSysmdate(new Date());
+							o.setSysmuser("system");
 							bomNews.add(o);
 						}
 						o.setSysstatus(1);

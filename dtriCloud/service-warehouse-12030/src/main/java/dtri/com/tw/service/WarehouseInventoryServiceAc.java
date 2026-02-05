@@ -109,10 +109,10 @@ public class WarehouseInventoryServiceAc {
 			Map<String, TreeMap<String, Integer>> mapBasicShippings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
 			warehouseAreas.forEach(w -> {
 				// 帳上+實際數量 不可為0
-				if (!w.getWatqty().equals(0) || !w.getWaerptqty().equals(0)) {
+				//if (!w.getWatqty().equals(0) || !w.getWaerptqty().equals(0)) {
 					w.setSysstatus(0);
 					mapWarehouseAreas.put(w.getWaaliasawmpnb(), w);// 倉儲_物料:
-				}
+				//}
 			});
 			basicIncomingLists.forEach(i -> {// 入料
 				String docKey = i.getBilclass() + "-" + i.getBilsn() + "-" + i.getBilnb();
@@ -349,10 +349,10 @@ public class WarehouseInventoryServiceAc {
 				Map<String, TreeMap<String, Integer>> mapBasicShippings = new HashMap<>();// 倉別_物料號:<工單號-流水號:數量>
 				warehouseAreas.forEach(w -> {
 					// 帳上+實際數量 不可為0
-					if (!w.getWatqty().equals(0) || !w.getWaerptqty().equals(0)) {
+					
 						w.setSysstatus(0);
 						mapWarehouseAreas.put(w.getWaaliasawmpnb(), w);// 倉儲_物料:
-					}
+					
 				});
 				basicIncomingLists.forEach(i -> {// 入料
 					String docKey = i.getBilclass() + "-" + i.getBilsn() + "-" + i.getBilnb();

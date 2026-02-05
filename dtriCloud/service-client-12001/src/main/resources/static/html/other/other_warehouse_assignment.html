@@ -284,7 +284,8 @@
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
 				data-bs-toggle="collapse" data-bs-target="#search_dcr_open"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> Red
+			background indicates out of stock.
 		</div>
 		<div id="search_dcr_open" class="row m-0 collapse">
 			<b class="p-0 m-0 lh-1 wlr  bg-secondary text-white"> Result
@@ -705,11 +706,14 @@
 						let entityIKey = other.data.entityIKey;
 						let entityGKey = other.data.entityGKey;
 						let entityDateTime = other.data.entityDateTime;
+						//
+						let stockMap = new Map();//倉別_物料,數量
 						//console.log(entityDetailJsons);
 						//Step1.查詢細節內容-格式
 						$(".valTbodyTrD").remove();
 						$('#search_dcr_open tbody td').removeClass('bg-warning');
 						for (let k in other.data.marks) {
+							//每一筆資料
 							for (let d = 0; d < entityDetailJsons.length; d++) {
 								if (entityDetailJsons[d][entityGKey] == k.split("_")[1]) {
 									//=======格式=======
@@ -723,6 +727,31 @@
 									let entity = entityDetailJsons[d];//
 									let iKey = "", gKey = "";
 									let valTrNb = d + 1;
+									//=======登記庫存=======
+									let wasaliaswmpnb =	entity["wasaliaswmpnb"];//倉儲_物料號
+									let wastqty =  entity["wastqty"];//實際數量
+									let waspnqty = entity["waspnqty"] - entity["waspngqty"];//需領用量-已領用量 
+									let insufficientStock = false;
+									let stockQty = 0;
+									let currentQty = wastqty;
+									if (stockMap.has(wasaliaswmpnb)) {
+										//有
+										currentQty = stockMap.get(wasaliaswmpnb);
+									}
+						            // 【正常扣除/增加路徑】
+						            if(entity["wastype"]==="入料類"){
+						            	  stockQty = currentQty + waspnqty;
+						            }else{
+							            stockQty = currentQty - waspnqty;            	
+						            }
+									// 判斷式：如果扣完不會變負數
+							        if (stockQty<0) {
+							        	insufficientStock = true;
+							        } 
+						            
+						            stockMap.set(wasaliaswmpnb, stockQty);
+						            console.log(`✅ [${wasaliaswmpnb}] 扣除成功，剩餘：${stockMap.get(wasaliaswmpnb)}`);
+									//
 									Object.keys(entity).forEach(function (s) {
 										//是否IKEY?
 										if (entityIKey == s) {iKey = entity[s];}
@@ -749,6 +778,12 @@
 											//集結?
 											if (s == 'wasfucheckin' && !entity['wasfucheckin']) {
 												exTbodyTr.find('.' + s).addClass('bg-warning');
+											}
+											if(insufficientStock && s == 'waspnumber'){
+												exTbodyTr.find('.' + s).addClass('bg-danger');
+											}
+											if(insufficientStock && s == 'wastqty'){
+												exTbodyTr.find('.' + s).text(entity[s]+"("+stockQty+")");
 											}
 										}
 									});
@@ -1204,6 +1239,11 @@
 						$(this).find('.valTbodytd').each(function (index) {
 							let val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							let name = $(this).attr('class').split(' ')[1];
+							//去除括弧內容
+							if(name=='wastqty'){
+								val = val.replace(/\s*\(.*?\)/g, '');
+							}
+							
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
 								val = new Date(val).getTime();
@@ -1219,6 +1259,10 @@
 						$(this).find('.valTbodytd').each(function (index) {
 							let val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
 							let name = $(this).attr('class').split(' ')[1];
+							//去除括弧內容
+							if(name=='wastqty'){
+								val = val.replace(/\s*\(.*?\)/g, '');
+							}
 							//可能是時間格式
 							if (entityDateTime.indexOf(name) >= 0) {
 								val = new Date(val).getTime();

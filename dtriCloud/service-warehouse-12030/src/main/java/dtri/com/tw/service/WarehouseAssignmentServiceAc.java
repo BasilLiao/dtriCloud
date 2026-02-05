@@ -540,13 +540,13 @@ public class WarehouseAssignmentServiceAc {
 					// 型號+出貨時間排序
 
 					inOrders.add(new Order(Direction.DESC, "bilpanumber"));// 產品號
-					inOrders.add(new Order(Direction.ASC, "biledate"));// 預計時間
+					inOrders.add(new Order(Direction.DESC, "biledate"));// 預計時間
 					inOrders.add(new Order(Direction.ASC, "bilclass"));// 單別
 					inOrders.add(new Order(Direction.DESC, "bilsn"));// 單號
 					inOrders.add(new Order(Direction.ASC, "bilnb"));// 流水號
 
 					shOrders.add(new Order(Direction.DESC, "bslpanumber"));// 產品號
-					shOrders.add(new Order(Direction.ASC, "bsledate"));// 預計時間
+					shOrders.add(new Order(Direction.DESC, "bsledate"));// 預計時間
 					shOrders.add(new Order(Direction.ASC, "bslclass"));// 單別
 					shOrders.add(new Order(Direction.DESC, "bslsn"));// 單號
 					shOrders.add(new Order(Direction.ASC, "bslnb"));// 流水號

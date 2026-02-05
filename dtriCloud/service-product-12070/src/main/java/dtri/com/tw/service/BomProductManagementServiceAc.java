@@ -796,7 +796,7 @@ public class BomProductManagementServiceAc {
 						String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();// 物料號
 						Integer bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsInt();// 物料階層
 						// 不包含customize
-						if (!bisnb.contains("customize") && bislevel == 0) {
+						if (!bisnb.equals("") && !bisnb.contains("customize") && bislevel == 0) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 									new String[] { "Please select a BOM item 'level' : " + bisgname
 											+ ". Please check again. !!" });
@@ -825,7 +825,7 @@ public class BomProductManagementServiceAc {
 						String bisnb = itemCheck.getAsJsonObject().get("bisnb").getAsString();// 物料號
 						Integer bislevel = itemCheck.getAsJsonObject().get("bislevel").getAsInt();// 物料階層
 						// 不包含customize
-						if (!bisnb.contains("customize") && bislevel == 0) {
+						if (!bisnb.equals("") && !bisnb.contains("customize") && bislevel == 0) {
 							throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
 									new String[] { "Please select a BOM item 'level' : " + bisgfname
 											+ ". Please check again. !!" });
