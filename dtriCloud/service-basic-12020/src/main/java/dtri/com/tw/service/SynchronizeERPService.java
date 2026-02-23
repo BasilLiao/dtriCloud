@@ -504,9 +504,9 @@ public class SynchronizeERPService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			// 測試用
-//			if (nKey.contains("A541-251222002")) {
-//				System.out.println("A541-251222002");
-//			}
+			if (nKey.contains("A542-260204001")) {
+				System.out.println(nKey);
+			}
 			m.setNewone(true);
 			// 單別性質(退料類 需抓取 物料領退用量)
 			String classNb = m.getTa026_ta027_ta028().split("-")[0];
@@ -574,8 +574,8 @@ public class SynchronizeERPService {
 			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
-			if ("A541-251121014-0164".equals(oKey)) {
-				System.out.println("A541-251121014-0164");
+			if ("A542-260204001-0004".equals(oKey)) {
+				System.out.println("A542-260204001-0004");
 			}
 			// 比對同一筆資料?->修正
 			if (erpShMaps.containsKey(oKey)) {
@@ -667,6 +667,12 @@ public class SynchronizeERPService {
 		for (int i = 0; i < totalShSize; i += batchSize) {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
+			//測試用
+//			boolean exists = batchList.stream().anyMatch("A542-260204001-0004"::equals);
+//			if (exists) {
+//			    System.out.println("Stream 比對成功");
+//			}
+			
 			// 執行 JPA 查詢
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
@@ -674,9 +680,9 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
 				// 測試用
-				if ("A541-251121014-0164".equals(nKey)) {
-					System.out.println("A541-251121014-0164");
-				}
+//				if ("A542-260204001-0004".equals(nKey)) {
+//					System.out.println("A542-260204001-0004");
+//				}
 				// 已經完成->標記更新
 				if ("Y".equals(r.getTc009()) && removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
@@ -2621,31 +2627,31 @@ public class SynchronizeERPService {
 				// 資料轉換
 				n = erpToCloudService.incomingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
 				// 如果已經是完成(則不寫入)->因太快核單 未核與已核
-				//if (!n.getSysstatus().equals(1)) {
-					// 自動完成
-					erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
-					saveInLists.add(n);
-				//}
+				// if (!n.getSysstatus().equals(1)) {
+				// 自動完成
+				erpAutoCheckService.incomingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
+				saveInLists.add(n);
+				// }
 			}
 		});
 		// 領料
 		erpShMaps.forEach((key, v) -> {
-			//測試用
+			// 測試用
 			if (key.equals("A431-260130001-0001")) {
 				System.out.println(key);
 			}
-			
+
 			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
 				// 資料轉換
 				erpToCloudService.shippingOneBomtf(n, v, checkSum, wTFs, wKs, wAs);
 				// 如果已經是完成(則不寫入)->因太快核單 未核與已核
-				//if (!n.getSysstatus().equals(1)) {
-					// 自動完成
-					erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
-					saveShLists.add(n);
-				//}
+				// if (!n.getSysstatus().equals(1)) {
+				// 自動完成
+				erpAutoCheckService.shippingAuto(n, wAsSave, wTFs, wCs, wMs, wAs);
+				saveShLists.add(n);
+				// }
 			}
 		});
 		// Step4.確認是否完結 or 被移除?

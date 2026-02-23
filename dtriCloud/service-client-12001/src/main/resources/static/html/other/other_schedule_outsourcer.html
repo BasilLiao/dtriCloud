@@ -939,18 +939,18 @@
 										inExcel.find(".mfy_sofodate_val").val(t.sofodate == null ? inExcel.find(".mfy_sofodate_val").val() : t.sofodate);
 										inExcel.find(".mfy_sofokdate_val").val(t.sofokdate == null ? inExcel.find(".mfy_sofokdate_val").val() : t.sofokdate);
 										inExcel.find(".mfy_soscstatus_val").val(t.soscstatus == null ? inExcel.find(".mfy_soscstatus_val").val() : t.soscstatus);
-										inExcel.find(".mfy_soscnote_val").val(t.soscnote == null ? inExcel.find(".mfy_soscnote_val").val() : t.soscnote);
+										inExcel.find(".mfy_soscnote_val").val(t.soscnote == null ? inExcel.find(".mfy_soscnote_val").val().replace(/\t/g, "") : t.soscnote);
 										break
 									case "mc"://物控
-										inExcel.find(".mfy_somcdate_val").val(t.somcdate == null ? inExcel.find(".mfy_somcdate_val").val() : t.somcdate);
-										inExcel.find(".mfy_somcnote_val").val(t.somcnote == null ? inExcel.find(".mfy_somcnote_val").val() : t.somcnote);
+										inExcel.find(".mfy_somcdate_val").val(t.somcdate == null ? inExcel.find(".mfy_somcdate_val") : t.somcdate);
+										inExcel.find(".mfy_somcnote_val").val(t.somcnote == null ? inExcel.find(".mfy_somcnote_val").val().replace(/\t/g, "") : t.somcnote);
 										break;
 									case "wm"://倉儲
-										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote == null ? inExcel.find(".mfy_sowmnote_val").val() : t.sowmnote);
+										inExcel.find(".mfy_sowmnote_val").val(t.sowmnote == null ? inExcel.find(".mfy_sowmnote_val").val().replace(/\t/g, "") : t.sowmnote);
 
 										break;
 									case "pl"://製造
-										inExcel.find(".mfy_sompnote_val").val(t.sompnote == null ? inExcel.find(".mfy_sompnote_val").val() : t.sompnote);
+										inExcel.find(".mfy_sompnote_val").val(t.sompnote == null ? inExcel.find(".mfy_sompnote_val").val().replace(/\t/g, "") : t.sompnote);
 										break;
 								}
 							}
@@ -1529,17 +1529,17 @@
 								entityJson['sofodate'] = $(this).find(".mfy_sofodate_val").val();
 								entityJson['sofokdate'] = $(this).find(".mfy_sofokdate_val").val();
 								entityJson['soscstatus'] = $(this).find(".mfy_soscstatus_val").val();
-								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val();
+								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val().replace(/\t/g, "");;
 								break
 							case "mc"://物控
 								entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
-								entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
+								entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val().replace(/\t/g, "");;
 								break;
 							case "wm"://倉儲
-								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val();
+								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val().replace(/\t/g, "");;
 								break;
 							case "pl"://製造
-								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val();
+								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val().replace(/\t/g, "");;
 								break;
 							case "br"://置亮
 								entityJson['sysheader'] = $(this).find(".mfy_sobr_val").prop("checked");
@@ -1578,14 +1578,14 @@
 								entityJson['sofodate'] = $(this).find(".mfy_sofodate_val").val();
 								entityJson['sofokdate'] = $(this).find(".mfy_sofokdate_val").val();
 								entityJson['soscstatus'] = $(this).find(".mfy_soscstatus_val").val();
-								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val();
+								entityJson['soscnote'] = $(this).find(".mfy_soscnote_val").val().replace(/\t/g, "");;
 								action = "S1";
 								break
 							case "mc"://物控
 								let somcdate = $(this).find(".mfy_somcdate_val").val();
 								if (somcdate.match(regEx) || somcdate == '') {
 									entityJson['somcdate'] = $(this).find(".mfy_somcdate_val").val();
-									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val();
+									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val().replace(/\t/g, "");;
 									action = "S2";
 								} else {
 									entityJsons = [];//清除
@@ -1593,11 +1593,11 @@
 								}
 								break;
 							case "wm"://倉儲
-								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val();
+								entityJson['sowmnote'] = $(this).find(".mfy_sowmnote_val").val().replace(/\t/g, "");;
 								action = "S3";
 								break;
 							case "pl"://製造
-								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val();
+								entityJson['sompnote'] = $(this).find(".mfy_sompnote_val").val().replace(/\t/g, "");;
 								action = "S4";
 								break;
 							case "br"://置亮

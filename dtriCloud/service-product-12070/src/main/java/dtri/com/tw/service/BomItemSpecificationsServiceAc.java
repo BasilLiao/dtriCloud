@@ -634,10 +634,16 @@ public class BomItemSpecificationsServiceAc {
 						JsonObject itemObj = itemCheck.getAsJsonObject();
 						String bisnb = itemObj.has("bisnb") ? itemObj.get("bisnb").getAsString() : "";
 						Long bisgId = itemObj.has("bisgid") ? itemObj.get("bisgid").getAsLong() : 0L;
+						// 測試
+//						if (bisnb.equals("50-162-512020")) {
+//							System.out.println(bisnb);
+//						}
+						boolean bisnbSame = !bisnb.contains("customize") && !bisnb.equals("")
+								&& bisnb.equals(bISs.getBisnb());
+						boolean bisgIdSame = bisgId.equals(bISs.getBisgid());
 
 						//// 同物料號+同個群組 (不能包含customize/空值)
-						if (!bisnb.contains("customize") && !bisnb.equals("") && bisnb.equals(bISs.getBisnb())
-								&& bisgId == bISs.getBisgid()) {
+						if (bisnbSame && bisgIdSame) {
 							boolean bisgnameSame = !bISs.getBisgname().equals(itemObj.get("bisgname").getAsString());
 							boolean bisfnameSame = !bISs.getBisfname().equals(itemObj.get("bisfname").getAsString());
 							if (bisgnameSame || bisfnameSame) {

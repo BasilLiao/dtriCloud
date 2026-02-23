@@ -25,12 +25,6 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- 若 Entity 有用 Lombok 才需要 -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-    </dependency>
 
 	<!--Spring Data JPA 依賴-->
     <dependency>
@@ -50,16 +44,26 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-logging</artifactId>
 	</dependency>
+	
 	<!--junit 測試 -->
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
 	</dependency>
+	
 	<!--JSON -->
 	<dependency>
 		<groupId>com.google.code.gson</groupId>
 		<artifactId>gson</artifactId>
 	</dependency>
+	
+	<!-- lombok -->
+	<dependency>
+    	<groupId>org.projectlombok</groupId>
+    	<artifactId>lombok</artifactId>
+		<scope>provided</scope>
+	</dependency>
+
 	<!-- 若 Entity 有用 @JsonIgnore 等註解才需要 -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

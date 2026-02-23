@@ -80,45 +80,45 @@ body_index={
 			//Step1.初始化
 			console.log("body_ai_chat.html(created)");
 			//模板-鎖定-不需要的分頁 disabled
-			//$("#body_ai_chat #home_title").addClass("disabled");
-			//$("#body_ai_chat #search_title").addClass("disabled");
-			//$("#body_ai_chat #modify_title").addClass("disabled");
-			//$("#body_ai_chat #report_title").addClass("disabled");
+			$("#body_ai_chat #home_title").addClass("disabled");
+			$("#body_ai_chat #search_title").addClass("disabled");
+			$("#body_ai_chat #modify_title").addClass("disabled");
+			$("#body_ai_chat #report_title").addClass("disabled");
 			$("#body_ai_chat #print_title").addClass("disabled");
-			//$("#body_ai_chat #compare_title").addClass("disabled");
-			$("#body_ai_chat #other_title").addClass("disabled");
+			$("#body_ai_chat #compare_title").addClass("disabled");
+			//$("#body_ai_chat #other_title").addClass("disabled");
             //模板-預設分頁 active
-            $("#body_ai_chat #search_title").addClass("active");
-            $("#body_ai_chat #search_tab").addClass("show");
-            $("#body_ai_chat #search_tab").addClass("active");
+            $("#body_ai_chat #other_title").addClass("active");
+            $("#body_ai_chat #other_tab").addClass("show");
+            $("#body_ai_chat #other_tab").addClass("active");
             
           	//Step2.模板
-            $("#body_ai_chat #home_tab").load("./html/model/home.html", function(){});
+            //$("#body_ai_chat #home_tab").load("./html/model/home.html", function(){});
             //查詢-模板
-            $("#body_ai_chat #search_tab").load("./html/model/search.html", function(){
-            	search.methods.create();
-            	main.methods.reWindowsSize();
-            });
+            //$("#body_ai_chat #search_tab").load("./html/model/search.html", function(){
+            //	search.methods.create();
+            //	main.methods.reWindowsSize();
+            //});
             //編輯-模板
-            $("#body_ai_chat #modify_tab").load("./html/model/modify.html", function(){
-            	modify.methods.create();
-            });
+            //$("#body_ai_chat #modify_tab").load("./html/model/modify.html", function(){
+            //	modify.methods.create();
+            //});
             //列印-模板
             //$("#body_ai_chat #print_tab").load("./html/model/print.html", function(){
             //	print.methods.create();
             //});
             //報告-模板
-            $("#body_ai_chat #report_tab").load("./html/model/report.html", function(){
-            	report.methods.create();
-            });
-            //比對-模板
-            $("#body_ai_chat #compare_tab").load("./html/model/compare.html", function(){
-            	compare.methods.create();
-            });
-            //其他-模板
-            //$("#body_ai_chat #other_tab").load("./html/other/other.html", function(){
-            //	
+            //$("#body_ai_chat #report_tab").load("./html/model/report.html", function(){
+            //	report.methods.create();
             //});
+            //比對-模板
+            //$("#body_ai_chat #compare_tab").load("./html/model/compare.html", function(){
+            //	compare.methods.create();
+            //});
+            //其他-模板
+            $("#body_ai_chat #other_tab").load("./html/other/other_ai_chat.html", function(){
+            	other.methods.create();
+            });
 		},
 		
 		destroy() {

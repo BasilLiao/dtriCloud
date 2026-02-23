@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -65,7 +64,7 @@ public class WarehouseSynchronizeServiceAc {
 		// Step1.批次分頁
 		// JsonObject pageSetJson =
 		// JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
-		int total = 50000;
+		int total = 60000;
 		int batch = 0;
 
 		// Step2.排序
@@ -106,42 +105,42 @@ public class WarehouseSynchronizeServiceAc {
 		if (packageBean.getEntityJson() == "") {// 訪問
 			// 單據清單
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchDetailSynchronize(null, null,
-					null, null, inPageable);
+					null, null, null, inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchDetailSynchronize(null, null,
-					null, null, shPageable);
-			// 單據內容
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchSynchronize(null, null,
-					null, inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchSynchronize(null, null,
-					null, shPageable);
+					null, null, null, shPageable);
+//			// 單據內容
+//			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchSynchronize(null, null,
+//					null, inPageable);
+//			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchSynchronize(null, null,
+//					null, shPageable);
 
 			// header (完成清單)
 			Map<String, Integer> listTotail = new HashMap<>();
 			Map<String, Integer> listFinish = new HashMap<>();
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				// 登記進度
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				// ======Header====== 登記進度
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
-					e.setId(headerKey);
-					e.setGid(headerKey);
+					WarehouseSynchronizeFront eheader = new WarehouseSynchronizeFront();
+					eheader.setId(headerKey);
+					eheader.setGid(headerKey);
 					// 進料單
-					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+					eheader.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+					eheader.setWslclasssn(headerKey);// 單據+單據號
+					eheader.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
 
 					// System
-					e.setSyscdate(in.getSyscdate());
-					e.setSyscuser(in.getSyscuser());
-					e.setSysmdate(in.getSysmdate());
-					e.setSysmuser(in.getSysmuser());
-					e.setSysnote(in.getSysnote());
-					e.setSysstatus(in.getSysstatus());
+					eheader.setSyscdate(in.getSyscdate());
+					eheader.setSyscuser(in.getSyscuser());
+					eheader.setSysmdate(in.getSysmdate());
+					eheader.setSysmuser(in.getSysmuser());
+					eheader.setSysnote(in.getSysnote());
+					eheader.setSysstatus(in.getSysstatus());
 					// header
-					entitys.add(e);
+					entitys.add(eheader);
 					// 如果有異常或是尚未滿足
 					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
 							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
@@ -163,30 +162,69 @@ public class WarehouseSynchronizeServiceAc {
 				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
+				// ======Body======
+				WarehouseSynchronizeDetailFront ebody = new WarehouseSynchronizeDetailFront();
+				ebody.setId(Key);
+				ebody.setGid(headerKey);
+				// 進料單
+				ebody.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				ebody.setWssclasssn(headerKey);// 單據+單據號
+				ebody.setWssnb(in.getBilnb());// 序號
+				ebody.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				ebody.setWssfuser(in.getBilfuser());// 完成人
+				ebody.setWsscuser(in.getBilcuser());// 核准人
+				ebody.setWsspnumber(in.getBilpnumber());// : 物料號<br>
+				ebody.setWsspnqty(in.getBilpnqty());// : 數量<br>
+				ebody.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
+				ebody.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
+				ebody.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
+				ebody.setWsssuser(in.getBilsuser());//
+				String wsstofromwho = in.getBiltowho().replaceAll("[\\[\\]]", "");
+				if (wsstofromwho.split("_").length > 2) {
+					ebody.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
+				}
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						ebody.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						ebody.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				ebody.setSyscdate(in.getSyscdate());
+				ebody.setSyscuser(in.getSyscuser());
+				ebody.setSysmdate(in.getSysmdate());
+				ebody.setSysmuser(in.getSysmuser());
+				ebody.setSysnote(in.getSysnote());
+				ebody.setSysstatus(in.getSysstatus());
+				// Details
+				entityDetails.add(ebody);
+
 			});
 			shippingLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				// 登記進度
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				// ====Header==== 登記進度
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
-					e.setId(headerKey);
-					e.setGid(headerKey);
+					WarehouseSynchronizeFront eheader = new WarehouseSynchronizeFront();
+					eheader.setId(headerKey);
+					eheader.setGid(headerKey);
 					// 領料單
-					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+					eheader.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+					eheader.setWslclasssn(headerKey);// 單據+單據號
+					eheader.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
 					// System
-					e.setSyscdate(sh.getSyscdate());
-					e.setSyscuser(sh.getSyscuser());
-					e.setSysmdate(sh.getSysmdate());
-					e.setSysmuser(sh.getSysmuser());
-					e.setSysnote(sh.getSysnote());
-					e.setSysstatus(sh.getSysstatus());
+					eheader.setSyscdate(sh.getSyscdate());
+					eheader.setSyscuser(sh.getSyscuser());
+					eheader.setSysmdate(sh.getSysmdate());
+					eheader.setSysmuser(sh.getSysmuser());
+					eheader.setSysnote(sh.getSysnote());
+					eheader.setSysstatus(sh.getSysstatus());
 					// header
-					entitys.add(e);
+					entitys.add(eheader);
 					// 如果有異常或是尚未滿足
 					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
 							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
@@ -208,6 +246,45 @@ public class WarehouseSynchronizeServiceAc {
 				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
+				// =====Body=====
+				WarehouseSynchronizeDetailFront ebody = new WarehouseSynchronizeDetailFront();
+				ebody.setId(Key);
+				ebody.setGid(headerKey);
+				// 領
+				ebody.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				ebody.setWssclasssn(headerKey);// 單據+單據號
+				ebody.setWssnb(sh.getBslnb());// 序號
+				ebody.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				ebody.setWssfuser(sh.getBslfuser());// 完成人
+				ebody.setWsscuser(sh.getBslcuser());// 核准人
+				ebody.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
+				ebody.setWsspnqty(sh.getBslpnqty());// : 數量<br>
+				ebody.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
+				ebody.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
+				ebody.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
+				ebody.setWsssuser(sh.getBslsuser());//
+				String wsstofromwho = sh.getBslfromwho().replaceAll("[\\[\\]]", "");
+				if (wsstofromwho.split("_").length > 2) {
+					ebody.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
+				}
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						ebody.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						ebody.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				ebody.setSyscdate(sh.getSyscdate());
+				ebody.setSyscuser(sh.getSyscuser());
+				ebody.setSysmdate(sh.getSysmdate());
+				ebody.setSysmuser(sh.getSysmuser());
+				ebody.setSysnote(sh.getSysnote());
+				ebody.setSysstatus(sh.getSysstatus());
+				// detail
+				entityDetails.add(ebody);
+
 			});
 			// 進度
 			entitys.forEach(ent -> {
@@ -221,89 +298,6 @@ public class WarehouseSynchronizeServiceAc {
 				if (entityMarks.containsKey(ent.getWslclasssn())) {
 					ent.setWslclassname("✪ " + ent.getWslclassname());
 				}
-			});
-			// 進料
-			incomingDetailLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-
-				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-				e.setId(Key);
-				e.setGid(headerKey);
-				// 進料單
-				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-				e.setWssclasssn(headerKey);// 單據+單據號
-				e.setWssnb(in.getBilnb());// 序號
-				e.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
-				e.setWssfuser(in.getBilfuser());// 完成人
-				e.setWsscuser(in.getBilcuser());// 核准人
-				e.setWsspnumber(in.getBilpnumber());// : 物料號<br>
-				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
-				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
-				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
-				String wsstofromwho = in.getBiltowho().replaceAll("[\\[\\]]", "");
-				if (wsstofromwho.split("_").length > 2) {
-					e.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
-				}
-				// 倉儲(必須符合格式)
-				if (in.getBiltowho().split("_").length > 1) {
-					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
-					if (areaMaps.containsKey(areaKey)) {
-						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-					}
-				}
-				// System
-				e.setSyscdate(in.getSyscdate());
-				e.setSyscuser(in.getSyscuser());
-				e.setSysmdate(in.getSysmdate());
-				e.setSysmuser(in.getSysmuser());
-				e.setSysnote(in.getSysnote());
-				e.setSysstatus(in.getSysstatus());
-				// header
-				entityDetails.add(e);
-			});
-			// 領料
-			shippingDetailLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-
-				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-				e.setId(Key);
-				e.setGid(headerKey);
-				// 領
-				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-				e.setWssclasssn(headerKey);// 單據+單據號
-				e.setWssnb(sh.getBslnb());// 序號
-				e.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-				e.setWssfuser(sh.getBslfuser());// 完成人
-				e.setWsscuser(sh.getBslcuser());// 核准人
-				e.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
-				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
-				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
-				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
-				String wsstofromwho = sh.getBslfromwho().replaceAll("[\\[\\]]", "");
-				if (wsstofromwho.split("_").length > 2) {
-					e.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
-				}
-				// 倉儲(必須符合格式)
-				if (sh.getBslfromwho().split("_").length > 1) {
-					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
-					if (areaMaps.containsKey(areaKey)) {
-						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-					}
-				}
-				// System
-				e.setSyscdate(sh.getSyscdate());
-				e.setSyscuser(sh.getSyscuser());
-				e.setSysmdate(sh.getSysmdate());
-				e.setSysmuser(sh.getSysmuser());
-				e.setSysnote(sh.getSysnote());
-				e.setSysstatus(sh.getSysstatus());
-				entityDetails.add(e);
 			});
 
 			// 類別(一般模式)
@@ -369,6 +363,11 @@ public class WarehouseSynchronizeServiceAc {
 			selectWssfuserArr.add("已撿完單_1");
 			searchJsons = packageService.searchSet(searchJsons, selectWssfuserArr, "wslfuser", "Ex:完成人?", true, //
 					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
+			// Step3-5. 建立查詢項目
+			JsonArray selectWslsuserArr = new JsonArray();
+			selectWslsuserArr.add("不過濾標記_all");
+			searchJsons = packageService.searchSet(searchJsons, selectWslsuserArr, "wslsuser", "Ex:結單人?", true, //
+					PackageService.SearchType.select, PackageService.SearchWidth.col_lg_2);
 
 			// 查詢包裝/欄位名稱(一般/細節)
 			searchSetJsonAll.add("searchSet", searchJsons);
@@ -390,14 +389,9 @@ public class WarehouseSynchronizeServiceAc {
 			}
 			// 一般
 			ArrayList<BasicIncomingList> incomingLists = incomingListDao.findAllBySearchDetailSynchronize(wasclass,
-					wassn, searchData.getWsltype(), searchData.getSysstatus(), inPageable);
+					wassn, searchData.getWsltype(), searchData.getSysstatus(), searchData.getWslsuser(), inPageable);
 			ArrayList<BasicShippingList> shippingLists = shippingListDao.findAllBySearchDetailSynchronize(wasclass,
-					wassn, searchData.getWsltype(), searchData.getSysstatus(), shPageable);
-			// 細節(清單)
-			ArrayList<BasicIncomingList> incomingDetailLists = incomingListDao.findAllBySearchSynchronize(wasclass,
-					wassn, searchData.getWsltype(), inPageable);
-			ArrayList<BasicShippingList> shippingDetailLists = shippingListDao.findAllBySearchSynchronize(wasclass,
-					wassn, searchData.getWsltype(), shPageable);
+					wassn, searchData.getWsltype(), searchData.getSysstatus(), searchData.getWslsuser(), shPageable);
 
 			// 細節(完成清單)
 			Map<String, Integer> listTotail = new HashMap<>();
@@ -407,28 +401,28 @@ public class WarehouseSynchronizeServiceAc {
 			// 一般
 			incomingLists.forEach(in -> {
 				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				// String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-				// 登記進度
+				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
+				// ======Header====== 登記進度
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
-					e.setId(headerKey);
-					e.setGid(headerKey);
+					WarehouseSynchronizeFront eheader = new WarehouseSynchronizeFront();
+					eheader.setId(headerKey);
+					eheader.setGid(headerKey);
 					// 進料單
-					e.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+					eheader.setWslclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+					eheader.setWslclasssn(headerKey);// 單據+單據號
+					eheader.setWsltype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
 
 					// System
-					e.setSyscdate(in.getSyscdate());
-					e.setSyscuser(in.getSyscuser());
-					e.setSysmdate(in.getSysmdate());
-					e.setSysmuser(in.getSysmuser());
-					e.setSysnote(in.getSysnote());
-					e.setSysstatus(in.getSysstatus());
+					eheader.setSyscdate(in.getSyscdate());
+					eheader.setSyscuser(in.getSyscuser());
+					eheader.setSysmdate(in.getSysmdate());
+					eheader.setSysmuser(in.getSysmuser());
+					eheader.setSysnote(in.getSysnote());
+					eheader.setSysstatus(in.getSysstatus());
 					// header
-					entitys.add(e);
+					entitys.add(eheader);
 					// 如果有異常或是尚未滿足
 					if (in.getBilfuser().contains("✪") || in.getBilfuser().equals("")
 							|| !in.getBilpnqty().equals(in.getBilpngqty())) {
@@ -444,52 +438,86 @@ public class WarehouseSynchronizeServiceAc {
 							entityMarks.put(headerKey, true);
 						}
 					}
-
 					listTotail.put(headerKey, listTotail.get(headerKey) + 1);
 				}
 				// 登記完成項目?
 				if (!in.getBilfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
+				// ======Body======
+				WarehouseSynchronizeDetailFront ebody = new WarehouseSynchronizeDetailFront();
+				ebody.setId(Key);
+				ebody.setGid(headerKey);
+				// 進料單
+				ebody.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
+				ebody.setWssclasssn(headerKey);// 單據+單據號
+				ebody.setWssnb(in.getBilnb());// 序號
+				ebody.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
+				ebody.setWssfuser(in.getBilfuser());// 完成人
+				ebody.setWsscuser(in.getBilcuser());// 核准人
+				ebody.setWsspnumber(in.getBilpnumber());// : 物料號<br>
+				ebody.setWsspnqty(in.getBilpnqty());// : 數量<br>
+				ebody.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
+				ebody.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
+				ebody.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
+				ebody.setWsssuser(in.getBilsuser());//
+				String wsstofromwho = in.getBiltowho().replaceAll("[\\[\\]]", "");
+				if (wsstofromwho.split("_").length > 2) {
+					ebody.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
+				}
+				// 倉儲(必須符合格式)
+				if (in.getBiltowho().split("_").length > 1) {
+					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						ebody.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						ebody.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				ebody.setSyscdate(in.getSyscdate());
+				ebody.setSyscuser(in.getSyscuser());
+				ebody.setSysmdate(in.getSysmdate());
+				ebody.setSysmuser(in.getSysmuser());
+				ebody.setSysnote(in.getSysnote());
+				ebody.setSysstatus(in.getSysstatus());
+				// Details
+				entityDetails.add(ebody);
+
 			});
 			shippingLists.forEach(sh -> {
 				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				// String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-				// 登記進度
+				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
+				// ====Header==== 登記進度
 				if (!listTotail.containsKey(headerKey)) {
 					listTotail.put(headerKey, 1);
 					listFinish.put(headerKey, 0);
-					WarehouseSynchronizeFront e = new WarehouseSynchronizeFront();
-					e.setId(headerKey);
-					e.setGid(headerKey);
+					WarehouseSynchronizeFront eheader = new WarehouseSynchronizeFront();
+					eheader.setId(headerKey);
+					eheader.setGid(headerKey);
 					// 領料單
-					e.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-					e.setWslclasssn(headerKey);// 單據+單據號
-					e.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+					eheader.setWslclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+					eheader.setWslclasssn(headerKey);// 單據+單據號
+					eheader.setWsltype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
 					// System
-					e.setSyscdate(sh.getSyscdate());
-					e.setSyscuser(sh.getSyscuser());
-					e.setSysmdate(sh.getSysmdate());
-					e.setSysmuser(sh.getSysmuser());
-					e.setSysnote(sh.getSysnote());
-					e.setSysstatus(sh.getSysstatus());
+					eheader.setSyscdate(sh.getSyscdate());
+					eheader.setSyscuser(sh.getSyscuser());
+					eheader.setSysmdate(sh.getSysmdate());
+					eheader.setSysmuser(sh.getSysmuser());
+					eheader.setSysnote(sh.getSysnote());
+					eheader.setSysstatus(sh.getSysstatus());
 					// header
-					entitys.add(e);
-					// 如果有異常或是尚未滿足(pnerpqty / pngqty )
+					entitys.add(eheader);
+					// 如果有異常或是尚未滿足
 					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
 							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
-						System.out.println(
-								sh.getBslfuser().contains("✪") + ":" + !sh.getBslpngqty().equals(sh.getBslpnerpqty()));
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}
 					}
 				} else {
-					// 如果有異常或是尚未滿足(pnerpqty / pngqty )
+					// 如果有異常或是尚未滿足
 					if (sh.getBslfuser().contains("✪") || sh.getBslfuser().equals("")
 							|| !sh.getBslpngqty().equals(sh.getBslpnerpqty())) {
-						System.out.println(
-								sh.getBslfuser().contains("✪") + ":" + !sh.getBslpngqty().equals(sh.getBslpnerpqty()));
 						if (!entityMarks.containsKey(headerKey)) {
 							entityMarks.put(headerKey, true);
 						}
@@ -500,6 +528,45 @@ public class WarehouseSynchronizeServiceAc {
 				if (!sh.getBslfuser().equals("") && listFinish.containsKey(headerKey)) {
 					listFinish.put(headerKey, listFinish.get(headerKey) + 1);
 				}
+				// =====Body=====
+				WarehouseSynchronizeDetailFront ebody = new WarehouseSynchronizeDetailFront();
+				ebody.setId(Key);
+				ebody.setGid(headerKey);
+				// 領
+				ebody.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
+				ebody.setWssclasssn(headerKey);// 單據+單據號
+				ebody.setWssnb(sh.getBslnb());// 序號
+				ebody.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
+				ebody.setWssfuser(sh.getBslfuser());// 完成人
+				ebody.setWsscuser(sh.getBslcuser());// 核准人
+				ebody.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
+				ebody.setWsspnqty(sh.getBslpnqty());// : 數量<br>
+				ebody.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
+				ebody.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
+				ebody.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
+				ebody.setWsssuser(sh.getBslsuser());//
+				String wsstofromwho = sh.getBslfromwho().replaceAll("[\\[\\]]", "");
+				if (wsstofromwho.split("_").length > 2) {
+					ebody.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
+				}
+				// 倉儲(必須符合格式)
+				if (sh.getBslfromwho().split("_").length > 1) {
+					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
+					if (areaMaps.containsKey(areaKey)) {
+						ebody.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
+						ebody.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
+					}
+				}
+				// System
+				ebody.setSyscdate(sh.getSyscdate());
+				ebody.setSyscuser(sh.getSyscuser());
+				ebody.setSysmdate(sh.getSysmdate());
+				ebody.setSysmuser(sh.getSysmuser());
+				ebody.setSysnote(sh.getSysnote());
+				ebody.setSysstatus(sh.getSysstatus());
+				// detail
+				entityDetails.add(ebody);
+
 			});
 			// 進度
 			entitys.forEach(ent -> {
@@ -522,91 +589,6 @@ public class WarehouseSynchronizeServiceAc {
 				}
 			});
 			// 細節
-			// 進料
-			incomingDetailLists.forEach(in -> {
-				String headerKey = in.getBilclass() + "-" + in.getBilsn();
-				String Key = in.getBilclass() + "-" + in.getBilsn() + "-" + in.getBilnb();
-
-				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-				e.setId(Key);
-				e.setGid(headerKey);
-				// 進料單
-				e.setWssclassname(typeFilterMaps.get(in.getBilclass()));// 單據名稱
-				e.setWssclasssn(headerKey);// 單據+單據號
-				e.setWssnb(in.getBilnb());// 序號
-				e.setWsstype(in.getBiltype());// : 單據類型(領料類/入料類)<br>
-				e.setWssfuser(in.getBilfuser());// 完成人
-				e.setWsscuser(in.getBilcuser());// 核准人
-				e.setWsspnumber(in.getBilpnumber());// : 物料號<br>
-				e.setWsspnqty(in.getBilpnqty());// : 數量<br>
-				e.setWsspngqty(in.getBilpngqty());// 已(取入)數量<br>
-				e.setWsspnoqty(in.getBilpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(in.getBilpnerpqty());// ERP(帳務)數量
-				String wsstofromwho = in.getBiltowho().replaceAll("[\\[\\]]", "");
-				if (wsstofromwho.split("_").length > 2) {
-					e.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
-				}
-				// 倉儲(必須符合格式)
-				if (in.getBiltowho().split("_").length > 1) {
-					String areaKey = in.getBiltowho().split("_")[0].replace("[", "") + "_" + in.getBilpnumber();
-					if (areaMaps.containsKey(areaKey)) {
-						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-					}
-				}
-				// System
-				e.setSyscdate(in.getSyscdate());
-				e.setSyscuser(in.getSyscuser());
-				e.setSysmdate(in.getSysmdate());
-				e.setSysmuser(in.getSysmuser());
-				e.setSysnote(in.getSysnote());
-				e.setSysstatus(in.getSysstatus());
-				// header
-				entityDetails.add(e);
-
-			});
-			// 領料
-			shippingDetailLists.forEach(sh -> {
-				String headerKey = sh.getBslclass() + "-" + sh.getBslsn();
-				String Key = sh.getBslclass() + "-" + sh.getBslsn() + "-" + sh.getBslnb();
-
-				WarehouseSynchronizeDetailFront e = new WarehouseSynchronizeDetailFront();
-				e.setId(Key);
-				e.setGid(headerKey);
-				// 進料單
-				e.setWssclassname(typeFilterMaps.get(sh.getBslclass()));// 單據名稱
-				e.setWssclasssn(headerKey);// 單據+單據號
-				e.setWssnb(sh.getBslnb());// 序號
-				e.setWsstype(sh.getBsltype());// : 單據類型(領料類/入料類)<br>
-				e.setWssfuser(sh.getBslfuser());// 完成人
-				e.setWsscuser(sh.getBslcuser());// 核准人
-				e.setWsspnumber(sh.getBslpnumber());// : 物料號<br>
-				e.setWsspnqty(sh.getBslpnqty());// : 數量<br>
-				e.setWsspngqty(sh.getBslpngqty());// 已(取入)數量<br>
-				e.setWsspnoqty(sh.getBslpnoqty());// 超(取入)數量<br>
-				e.setWsspnerpqty(sh.getBslpnerpqty());// ERP(帳務)數量
-				String wsstofromwho = sh.getBslfromwho().replaceAll("[\\[\\]]", "");
-				if (wsstofromwho.split("_").length > 2) {
-					e.setWsstofromwho(wsstofromwho.split("_")[1]);// (倉庫)EX:A0001_原物料倉
-				}
-				// 倉儲(必須符合格式)
-				if (sh.getBslfromwho().split("_").length > 1) {
-					String areaKey = sh.getBslfromwho().split("_")[0].replace("[", "") + "_" + sh.getBslpnumber();
-					if (areaMaps.containsKey(areaKey)) {
-						e.setWsstqty(areaMaps.get(areaKey).getWatqty());// 實際數量
-						e.setWsserptqty(areaMaps.get(areaKey).getWaerptqty());// 帳務數量
-					}
-				}
-				// System
-				e.setSyscdate(sh.getSyscdate());
-				e.setSyscuser(sh.getSyscuser());
-				e.setSysmdate(sh.getSysmdate());
-				e.setSysmuser(sh.getSysmuser());
-				e.setSysnote(sh.getSysnote());
-				e.setSysstatus(sh.getSysstatus());
-				// header
-				entityDetails.add(e);
-			});
 
 			// 類別(一般模式)
 			// 資料包裝
@@ -721,19 +703,20 @@ public class WarehouseSynchronizeServiceAc {
 					basicIncomingUpdateLists.add(s);
 
 				}
-				
+
 				// 測試用
 				if (s.getBilpnumber().equals("23-302-020010")) {
 					System.out.println("23-302-020010");
 				}
-				
+
 				// 已領數量為0 & 無完成人
 				if (s.getBilpngqty() == 0 && s.getBilfuser().equals("")) {
 					String bilfromwho[] = s.getBiltowho().replace("[", "").replace("]", "").split("_");
 					String key = bilfromwho[0] + "_" + s.getBilpnumber();// 倉別+物料
 
 					// 特出 A581 / A561 /A431 排除->因為本身單據同步需要未核單的->此處需要已核單的
-					if ((s.getBilclass().equals("A431") ||s.getBilclass().equals("A581") || s.getBilclass().equals("A561")) && s.getBilstatus() != 1) {
+					if ((s.getBilclass().equals("A431") || s.getBilclass().equals("A581")
+							|| s.getBilclass().equals("A561")) && s.getBilstatus() != 1) {
 						// 不可納入計算
 					} else {
 						// 測試用
@@ -814,6 +797,7 @@ public class WarehouseSynchronizeServiceAc {
 						update_in.setBilsuser(packageBean.getUserAccount());
 						update_in.setSysmuser(packageBean.getUserAccount());
 						update_in.setSysmdate(updateDate);
+						// 完成人
 						if (update_in.getBilfuser().equals("")) {
 							update_in.setBilfuser(packageBean.getUserAccount());
 						}
@@ -828,6 +812,7 @@ public class WarehouseSynchronizeServiceAc {
 						update_sh.setBslsuser(packageBean.getUserAccount());
 						update_sh.setSysmuser(packageBean.getUserAccount());
 						update_sh.setSysmdate(updateDate);
+						// 完成人
 						if (update_sh.getBslfuser().equals("")) {
 							update_sh.setBslfuser(packageBean.getUserAccount());
 						}

@@ -159,8 +159,8 @@ body {
 		  // === 以下為原本 AJAX 傳送邏輯 ===
 		  hiddenTime = new Date().getTime();
 		  if (loading) $("#loading").removeClass("d-none");
-		  req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "").replaceAll("\\t", "");
 
+		  req_data.data = JSON.stringify(req_data.data).replaceAll("!", "").replaceAll("=", "");
 		  $.ajax({
 		    url: "ajax/" + req_data.url,
 		    type: req_data.type,

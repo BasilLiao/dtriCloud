@@ -30,7 +30,8 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 																																	// 未核准人
 			+ "(:bilfromcommand is null or c.bilfromcommand LIKE %:bilfromcommand%) ")
 	ArrayList<BasicIncomingList> findAllBySearchStatus(String bilclass, String bilsn, String bilfromcommand,
-			String biltype, String bilcuser, String bilfuser, Integer sysstatus, String syshnote,String bilpmerge,  Pageable pageable);
+			String biltype, String bilcuser, String bilfuser, Integer sysstatus, String syshnote, String bilpmerge,
+			Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
@@ -61,9 +62,13 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:biltype is null or c.biltype LIKE %:biltype%) and "//
 			+ "(c.bilfuser != 'ERP_Remove(Auto)') and "//
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus) and "//
-			+ "(c.bilcuser != '') and (c.bilsuser = '') ") // 已核准人+最後-同步人
+			+ "("//
+			+ "  (:bilsuser is null and c.bilsuser = '') " // 情況 2: 輸入 null 抓未核單
+			+ "   or (:bilsuser = 'all') " // 情況 1: 輸入 'all' 抓全部
+			+ ") and "//
+			+ "(c.bilcuser != '')") // 已核准人+最後-同步人
 	ArrayList<BasicIncomingList> findAllBySearchDetailSynchronize(String bilclass, String bilsn, String biltype,
-			Integer sysstatus, Pageable pageable);
+			Integer sysstatus, String bilsuser, Pageable pageable);
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or c.bilclass=:bilclass) and "//

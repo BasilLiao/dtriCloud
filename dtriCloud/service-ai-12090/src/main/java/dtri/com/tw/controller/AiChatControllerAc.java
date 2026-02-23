@@ -9,20 +9,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.BasicShippingListServiceAc;
+import dtri.com.tw.service.AiChatServiceAc;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
 
 @RestController
-public class BasicShippingListControllerAc extends AbstractControllerAc {
+public class AiChatControllerAc extends AbstractControllerAc {
 
 	@Autowired
 	private PackageService packageService;
 	@Autowired
-	private BasicShippingListServiceAc serviceAc;
+	private AiChatServiceAc serviceAc;
 
-	@RequestMapping(value = { "/basicShippingList/getSearch" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/getSearch" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getSearch(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -57,7 +58,8 @@ public class BasicShippingListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/basicShippingList/getReport" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/getReport" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean getReport(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -92,7 +94,8 @@ public class BasicShippingListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/basicShippingList/setModify" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/setModify" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setModify(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -127,7 +130,8 @@ public class BasicShippingListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/basicShippingList/setAdd" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/setAdd" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setAdd(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -162,7 +166,8 @@ public class BasicShippingListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/basicShippingList/setInvalid" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/setInvalid" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setInvalid(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {
@@ -197,7 +202,8 @@ public class BasicShippingListControllerAc extends AbstractControllerAc {
 		return packageBean;
 	}
 
-	@RequestMapping(value = { "/basicShippingList/setDetele" }, method = { RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = { "/aiChat/setDetele" }, method = {
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	PackageBean setDetele(@RequestBody String jsonObject) {
 		// 顯示方法
 		String funName = new Object() {

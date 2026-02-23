@@ -31,6 +31,7 @@ import jakarta.persistence.Transient;
  *      wss_c_user : 核准人<br>
  *      wss_m_user : 可分配-負責人<br>
  *      wss_f_user : 完成人<br>
+ *      wss_s_user : 結單人<br>
  *      wss_acceptance : 物料檢驗0=未檢驗 1=已檢驗 2=異常<br>
  *      wss_p_number : 物料號<br>
  *      wss_p_name : 品名<br>
@@ -106,6 +107,8 @@ public class WarehouseSynchronizeDetailFront {
 	private String wsscuser;// 核准人
 	@Transient
 	private String wssfuser;// : 完成人<br>
+	@Transient
+	private String wsssuser;// : 結單人<br>
 	@Transient
 	private String wsspnumber;// : 物料號<br>
 	@Transient
@@ -326,6 +329,20 @@ public class WarehouseSynchronizeDetailFront {
 
 	public void setWsstofromwho(String wsstofromwho) {
 		this.wsstofromwho = wsstofromwho;
+	}
+
+	/**
+	 * @return the wsssuser
+	 */
+	public String getWsssuser() {
+		return wsssuser;
+	}
+
+	/**
+	 * @param wsssuser the wsssuser to set
+	 */
+	public void setWsssuser(String wsssuser) {
+		this.wsssuser = wsssuser;
 	}
 
 }

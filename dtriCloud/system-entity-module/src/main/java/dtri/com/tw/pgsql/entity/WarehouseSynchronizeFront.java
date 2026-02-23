@@ -26,6 +26,7 @@ import jakarta.persistence.Transient;
  *      wsl_type : 單據類型(領料類/入料類)<br>
  *      wsl_schedule : 進度<br>
  *      wsl_fuser : 完成人<br>
+ *      wsl_suser : 結單人<br>
  */
 
 @Entity
@@ -83,6 +84,8 @@ public class WarehouseSynchronizeFront {
 	private String wslschedule;// 進度(已完成/總數項目)
 	@Transient
 	private String wslfuser;// 完成人?
+	@Transient
+	private String wslsuser;// 結單人?
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -218,6 +221,20 @@ public class WarehouseSynchronizeFront {
 
 	public void setGid(String gid) {
 		this.gid = gid;
+	}
+
+	/**
+	 * @return the wslsuser
+	 */
+	public String getWslsuser() {
+		return wslsuser;
+	}
+
+	/**
+	 * @param wslsuser the wslsuser to set
+	 */
+	public void setWslsuser(String wslsuser) {
+		this.wslsuser = wslsuser;
 	}
 
 }

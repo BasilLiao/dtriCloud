@@ -36,12 +36,15 @@ public interface WarehouseServiceFeign {
 	@RequestMapping(value = { "/warehouseAssignment/setModifyPassAll" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyPassAll(@RequestBody String jsonPackageBean);
 
+	@RequestMapping(value = { "/warehouseAssignment/setModifyPassAll0" }, method = RequestMethod.POST)
+	PackageBean setAssignmentModifyPassAll0(@RequestBody String jsonPackageBean);
+
 	@RequestMapping(value = { "/warehouseAssignment/setModifyReturnSelect" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyReturnSelect(@RequestBody String jsonPackageBean);
 
 	@RequestMapping(value = { "/warehouseAssignment/setModifyUrgency" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyUrgency(@RequestBody String jsonPackageBean);
-	
+
 	@RequestMapping(value = { "/warehouseAssignment/setModifyMerge" }, method = RequestMethod.POST)
 	PackageBean setAssignmentModifyMerge(@RequestBody String jsonPackageBean);
 
@@ -224,9 +227,9 @@ public interface WarehouseServiceFeign {
 
 	@RequestMapping(value = { "/warehouseInventory/setModify" }, method = RequestMethod.POST)
 	PackageBean setInventoryModify(@RequestBody String jsonPackageBean);
-	
+
 	@RequestMapping(value = { "/warehouseInventory/setModifyLimit" }, method = RequestMethod.POST)
-	PackageBean setInventoryModifyLimit(@RequestBody String jsonPackageBean);//一般人員盤點用
+	PackageBean setInventoryModifyLimit(@RequestBody String jsonPackageBean);// 一般人員盤點用
 
 	@RequestMapping(value = { "/warehouseInventory/setAdd" }, method = RequestMethod.POST)
 	PackageBean setInventoryAdd(@RequestBody String jsonPackageBean);

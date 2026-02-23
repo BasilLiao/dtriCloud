@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.JsonObject;
 
-import dtri.com.tw.service.feign.BasicServiceFeign;
+import dtri.com.tw.service.feign.AiServiceFeign;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.PackageBean;
 import dtri.com.tw.shared.PackageService;
@@ -22,7 +22,7 @@ public class AiChatController extends AbstractController {
 	private PackageService packageService;
 
 	@Resource
-	BasicServiceFeign serviceFeign;
+	AiServiceFeign serviceFeign;
 
 	@ResponseBody
 	@RequestMapping(value = { "/ajax/ai_chat.basil" }, method = {
@@ -48,7 +48,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getCommandListSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getAiChatSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -93,7 +93,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getCommandListSearch(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getAiChatSearch(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -138,7 +138,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.getCommandListReport(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.getAiChatReport(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -182,7 +182,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setCommandListAdd(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setAiChatAdd(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -226,7 +226,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setCommandListModify(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setAiChatModify(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -270,7 +270,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setCommandListInvalid(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setAiChatInvalid(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {
@@ -314,7 +314,7 @@ public class AiChatController extends AbstractController {
 			packageBean.setUserAgentAccount(loginUser().getSystemUser().getSuaaccount());// 使用者(代理)
 
 			// Step3.執行=>跨服->務執行
-			packageBean = serviceFeign.setCommandListDetele(packageService.beanToJson(packageBean));
+			packageBean = serviceFeign.setAiChatDetele(packageService.beanToJson(packageBean));
 			loggerInf(funName + "[End]", loginUser().getUsername());
 
 		} catch (Exception e) {

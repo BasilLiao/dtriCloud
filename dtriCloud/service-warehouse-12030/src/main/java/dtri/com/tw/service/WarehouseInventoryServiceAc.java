@@ -334,7 +334,7 @@ public class WarehouseInventoryServiceAc {
 
 			ArrayList<WarehouseInventory> entitys = inventoryDao.findAllBySearch(searchData.getWiwmpnb(),
 					searchData.getWiwaslocation(), searchData.getWiwaalias(), searchData.getWiwaaliasnb(),
-					searchData.getSsyscdate(), searchData.getEsyscdate(), null, null, searchData.getWignowqty(),
+					searchData.getSsyscdate(), searchData.getEsyscdate(), null, searchData.getWicheck(), searchData.getWignowqty(),
 					pageable);
 			// Step4-2.資料區分(一般/細節)
 			// 如果只有一筆資料->可進行同步->

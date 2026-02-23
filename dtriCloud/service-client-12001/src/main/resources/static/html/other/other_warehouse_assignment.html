@@ -133,9 +133,10 @@
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
 			<div
 				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
-				<div class="col-12 col-lg-7 p-1">
+				<div class="col-12 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
-						<div class="title_color fw-bolder rounded-top">Execution</div>
+						<div class="title_color fw-bolder rounded-top">Execution
+							List</div>
 						<div class="row m-0">
 							<button id="btn_detail" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-dark">
@@ -147,14 +148,9 @@
 								<b>Agree<br>(S1)
 								</b>
 							</button>
-							<button id="btn_passAll" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-secondary">
-								<b>Pass all<br>(S2)
-								</b>
-							</button>
-							<button id="btn_returnSelect" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
-								<b>Return<br>select(S3)
+							<button id="btn_merge" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Merge<br>(S4)
 								</b>
 							</button>
 							<button id="btn_urgency" type="button"
@@ -162,33 +158,49 @@
 								<b>Urgency<br>(S4)
 								</b>
 							</button>
-							<button id="btn_merge" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
-								<b>Merge<br>(S4)
-								</b>
-							</button>
 							<button id="btn_manufacturePass" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-info">
 								<b>Manufacture<br>pass(S5)
 								</b>
 							</button>
-							<button id="btn_compare" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Compare<br>()
+						</div>
+					</div>
+				</div>
+
+				<div class="col-12 col-lg-2 p-1">
+					<div class=" border border-secondary rounded">
+						<div class="title_color fw-bolder rounded-top">Execution
+							Detail</div>
+						<div class="row m-0">
+
+							<button id="btn_passAll" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-success">
+								<b>Pass all<br>(S2)
 								</b>
 							</button>
-							<button id="btn_markCancel" type="button"
-								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
-								<b>Mark<br>cancel()
+							<button id="btn_passAll_0" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
+								<b>Pass all 0<br>(S2)
+								</b>
+							</button>
+							<button id="btn_returnSelect" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Return<br>select(S3)
 								</b>
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="col-6 col-lg-3 p-1">
+
+				<div class="col-6 col-lg-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Action</div>
 						<div class="row m-0">
+							<button id="btn_compare" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-primary">
+								<b>Compare<br>()
+								</b>
+							</button>
 							<div class="lh-1 col p-1 m-1 border border-primary rounded">
 								<input id="btn_only_have_qty" alt="" title="" type="checkbox"
 									checked="checked"
@@ -208,6 +220,11 @@
 							<button id="btn_re_synchronize" type="button"
 								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-warning">
 								<b>Re doc<br>sync(AR)
+								</b>
+							</button>
+							<button id="btn_markCancel" type="button"
+								class="lh-1 col p-1 m-1  btn btn-sm btn-outline-danger">
+								<b>Mark<br>cancel()
 								</b>
 							</button>
 						</div>
@@ -244,7 +261,9 @@
 			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
 			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
 				data-bs-toggle="collapse" data-bs-target="#search_cr_open"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+				aria-expanded="false" style="width: 22px; height: 24px;"></i> New
+			documents are <b class="text-danger">only valid for 10 days</b>. Do
+			not remove them after this period.
 		</div>
 		<div id="search_cr_open" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Result </b>
@@ -375,6 +394,9 @@
 				}
 				if (ps[4] != 1) {//修改(S2)4
 					$("#btn_passAll").addClass("disabled");
+				}
+				if (ps[4] != 1) {//修改(S2)4
+					$("#btn_passAll_0").addClass("disabled");
 				}
 				if (ps[3] != 1) {//修改(S3)3
 					$("#btn_returnSelect").addClass("disabled");
@@ -813,6 +835,13 @@
 					console.log("btn_passAll");
 					other.methods.searchToModify("btn_passAll");
 				});
+				//監聽-略過0
+				$(document).off("click", "#search_c #btn_passAll_0");
+				$(document).on("click", "#search_c #btn_passAll_0", function (event) {
+					console.log("btn_passAll_0");
+					other.methods.searchToModify("btn_passAll_0");
+				});
+				
 				//監聽-歸還
 				$(document).off("click", "#search_c #btn_returnSelect");
 				$(document).on("click", "#search_c #btn_returnSelect", function (event) {
@@ -993,6 +1022,7 @@
 						$('.' + this.className + ' .wasclasssn').removeClass('text-warning');
 						$('#search_dcr_open .wasclasssn').removeClass('text-danger');
 						$('#search_dcr_open .wasclasssn').removeClass('text-success');
+						$('#search_dcr_open .wasclasssn').removeClass('text-warning');
 						switch (order) {
 							case "btn_agree":
 								//異動資料
@@ -1000,12 +1030,16 @@
 								//標記顏色
 								$('.' + this.className + ' .wasclasssn').addClass('text-primary');
 								break;
-							case "btn_passAll":
-								//異動資料
-								//$('.' + this.className + ' .wascuser').text($('#menu_login_name').text());
-								//$('.' + this.className + ' .wasfuser').text($('#menu_login_name').text());
+							case "btn_passAll_0":
 								//標記顏色
-								//$('.' + this.className + ' .wasclasssn').addClass('text-success');
+								$('#search_dcr_open tbody tr').each(function () {
+									if ($(this).find('input').prop("checked")) {
+										//console.log(this);
+										$(this).find('.wasclasssn').addClass('text-warning');
+									}
+								});
+								break;
+							case "btn_passAll":
 								//標記顏色
 								$('#search_dcr_open tbody tr').each(function () {
 									if ($(this).find('input').prop("checked")) {
@@ -1150,10 +1184,12 @@
 				let dataHeaderPrint = [];
 				let dataHeaderAgree = [];
 				let dataHeaderPassAll = [];
+				let dataHeaderPassAll0 =[];
 				let dataHeaderUrgency = [];
 				let dataHeaderMerge = [];
 				let dataHeaderReturnAll = [];
 				let dataHeaderManufacturePass = [];
+				
 				
 
 				//確認選取
@@ -1271,6 +1307,25 @@
 						});
 						dataHeaderPassAll.push(entityJosn);
 					}
+					//同意:略過此單據 0  or 單項目
+					if ($(this).find('input').prop("checked") && $(this).find('.wasclasssn').hasClass('text-warning')) {
+						//每個欄位
+						let entityJosn = {};
+						$(this).find('.valTbodytd').each(function (index) {
+							let val = $(this).text().replaceAll('\t').replaceAll('\n').replaceAll('\f').replaceAll('\r');
+							let name = $(this).attr('class').split(' ')[1];
+							//去除括弧內容
+							if(name=='wastqty'){
+								val = val.replace(/\s*\(.*?\)/g, '');
+							}
+							//可能是時間格式
+							if (entityDateTime.indexOf(name) >= 0) {
+								val = new Date(val).getTime();
+							}
+							entityJosn[name] = val;
+						});
+						dataHeaderPassAll0.push(entityJosn);
+					}
 				});
 
 				console.log(dataHeaderAgree);
@@ -1305,6 +1360,12 @@
 					//傳送....
 					data = {};
 					data['entityJson'] = JSON.stringify(dataHeaderPassAll);
+					data['entityDetailJson'] = JSON.stringify('{}');
+				} else if (dataHeaderPassAll0.length > 0) {
+					action = "SS2";
+					//傳送....
+					data = {};
+					data['entityJson'] = JSON.stringify(dataHeaderPassAll0);
 					data['entityDetailJson'] = JSON.stringify('{}');
 				} else if (dataHeaderReturnAll.length > 0) {
 					action = "S3";
@@ -1557,6 +1618,7 @@
 				$(document).off("click", "#search_c #btn_urgency");
 				$(document).off("click", "#search_c #btn_returnAll");
 				$(document).off("click", "#search_c #btn_passAll");
+				$(document).off("click", "#search_c #btn_passAll_0");
 				$(document).off("click", "#search_c #btn_agree");
 				$(document).off("click", "#search_c #btn_detail");
 				$(document).off("click", "#search_c #exthDetailAll");
