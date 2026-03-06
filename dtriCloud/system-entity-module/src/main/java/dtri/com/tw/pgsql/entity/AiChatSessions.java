@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,9 +78,11 @@ public class AiChatSessions extends BaseEntity {
 	 * 一對多關聯：一個會話包含多則訊息。 mappedBy: 指向 AiChatMessages 中的 'acmsessions' 變數。
 	 * CascadeType.ALL: 刪除 Session 時，會自動刪除底下所有的對話訊息（連動刪除）。 OrderBy("acmcat ASC"):
 	 * 確保從此 List 拿出的訊息是按時間先後順序排列，方便直接渲染 UI。
+	 * JsonManagedReference 放在父層（Session），表示這是「正向」序列化的部分。
 	 */
 	@OneToMany(mappedBy = "acmsessions", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@OrderBy("acmcat ASC")
+	@JsonManagedReference 
 	private List<AiChatMessages> aichatmessages;
 	/**
 	 * 會話業務類型 (Session Business Type) 作用：區分詢問的專業領域，例如：PMC(生管), MC(物控), PUR(採購)。

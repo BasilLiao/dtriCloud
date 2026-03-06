@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -504,7 +505,7 @@ public class SynchronizeERPService {
 			m.setTa001_ta002(m.getTa001_ta002() == null ? "" : m.getTa001_ta002().replaceAll("\\s", ""));
 			String nKey = m.getTa026_ta027_ta028();
 			// 測試用
-			if (nKey.contains("A542-260204001")) {
+			if (nKey.contains("A541-260202027")) {
 				System.out.println(nKey);
 			}
 			m.setNewone(true);
@@ -574,8 +575,8 @@ public class SynchronizeERPService {
 			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
-			if ("A542-260204001-0004".equals(oKey)) {
-				System.out.println("A542-260204001-0004");
+			if ("A541-260202027-0001".equals(oKey)) {
+				System.out.println(oKey);
 			}
 			// 比對同一筆資料?->修正
 			if (erpShMaps.containsKey(oKey)) {
@@ -667,12 +668,12 @@ public class SynchronizeERPService {
 		for (int i = 0; i < totalShSize; i += batchSize) {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
-			//測試用
+			// 測試用
 //			boolean exists = batchList.stream().anyMatch("A542-260204001-0004"::equals);
 //			if (exists) {
 //			    System.out.println("Stream 比對成功");
 //			}
-			
+
 			// 執行 JPA 查詢
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
 			// 處理結果
@@ -683,14 +684,28 @@ public class SynchronizeERPService {
 //				if ("A542-260204001-0004".equals(nKey)) {
 //					System.out.println("A542-260204001-0004");
 //				}
-				// 已經完成->標記更新
-				if ("Y".equals(r.getTc009()) && removeShMap.containsKey(nKey)) {
+				// 已經完成->標記更新 / 完工時間
+				if (removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
-					o.setSysmuser("system");
-					o.setSysstatus(1);// 完成
-					o.setBslcheckin(1);
-					saveShLists.add(o);
+					boolean checkUpdate = false;
+					if ("Y".equals(r.getTc009())) {
+						o.setSysmuser("system");
+						o.setSysstatus(1);// 完成
+						o.setBslcheckin(1);
+						checkUpdate = true;
+					}
+					// 預計完工日更新?
+					Date newDate = Fm_T.toYMDate(r.getTa010());
+					if (!Objects.equals(newDate, o.getBslsdate())) {
+						o.setBslsdate(newDate);
+						checkUpdate = true;
+					}
+					//更新資料
+					if (checkUpdate) {
+						saveShLists.add(o);
+					}
 				}
+
 				removeShMap.remove(nKey);
 			});
 		}

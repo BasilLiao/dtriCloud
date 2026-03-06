@@ -32,6 +32,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<!-- Spring Boot 響應式編程 (Reactive Programming) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<!--GOOGLE AI-->
+		<dependency>
+		    <groupId>com.google.cloud</groupId>
+		    <artifactId>google-cloud-vertexai</artifactId>
+		    <version>1.14.0</version>
+		</dependency>
+		<!--語音辨識 https://alphacephei.com/vosk/models-->
+		<dependency>
+		    <groupId>com.alphacephei</groupId>
+		    <artifactId>vosk</artifactId>
+		    <version>0.3.45</version>
+		</dependency>
 		<!--logback 日誌 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

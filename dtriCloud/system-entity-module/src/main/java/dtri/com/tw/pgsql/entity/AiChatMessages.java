@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +59,7 @@ public class AiChatMessages extends BaseEntity {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "acm_s_id", nullable = false)
+	@JsonBackReference // <--- 放在子層（Messages），表示這是「反向」關聯，序列化時會自動跳過。
 	private AiChatSessions acmsessions;
 
 	/**
