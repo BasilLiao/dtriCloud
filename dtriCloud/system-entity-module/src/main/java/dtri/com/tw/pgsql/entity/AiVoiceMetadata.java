@@ -29,7 +29,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "ai_voice_metadata")
 @EntityListeners(AuditingEntityListener.class)
-public class AiVoiceMetadata extends BaseEntity {
+public class AiVoiceMetadata extends BaseEntity { 
 
 	/**
 	 * 無參建構子：符合 JPA 反射機制，並進行安全初始化。 super() 確保父類別 BaseEntity 的系統追蹤欄位 (如創建時間) 被觸發。

@@ -52,7 +52,7 @@ public class AiChatSessions extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "acs_id", nullable = false)
-	private Long acsid;
+	private Long acsid; 
 
 	/**
 	 * 關聯系統使用者帳號 (User Account) 作用：區分這段對話是哪位生管人員。使用帳號字串(如: basil_lin)

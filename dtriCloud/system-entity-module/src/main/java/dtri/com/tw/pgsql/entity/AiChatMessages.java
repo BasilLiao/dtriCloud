@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "ai_chat_messages")
+@Table(name = "ai_chat_messages") 
 @EntityListeners(AuditingEntityListener.class)
 public class AiChatMessages extends BaseEntity {
 

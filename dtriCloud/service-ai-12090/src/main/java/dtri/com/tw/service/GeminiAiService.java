@@ -1,6 +1,5 @@
 package dtri.com.tw.service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -26,8 +25,8 @@ import jakarta.annotation.PreDestroy;
 public class GeminiAiService {
 
 	// 控制模式：免費版 "FREE" 或 企業版 "VERTEX"
-	//@Value("${google.ai.mode:FREE}")
-	 @Value("${google.ai.mode:VERTEX}")
+	// @Value("${google.ai.mode:FREE}")
+	@Value("${google.ai.mode:VERTEX}")
 	private String aiMode;
 
 	@Value("${google.ai.api.key:}") // 用於 FREE 模式
