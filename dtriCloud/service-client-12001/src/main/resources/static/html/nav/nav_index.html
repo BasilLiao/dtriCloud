@@ -261,7 +261,7 @@
 		methods: {
 			create() {
 				//初始化
-				console.log("nav_index.html(create)");
+				//console.log("nav_index.html(create)");
 				//var nav_index = nav_index;
 				var entityJson = JSON.parse(main.resq_data.entityJson);
 				var systemgroups = entityJson.systemgroups;
@@ -303,7 +303,7 @@
 				//建立監聽(開啟細項)
 				$(document).off("mouseenter", "#menu_list .menu_list_open");
 				$(document).on("mouseenter", "#menu_list .menu_list_open", function (event) {
-					//console.log(event.currentTarget.id);
+					console.log(event.currentTarget.id);
 					//清除-上次細項資料
 					$(".menu_list_item").remove();
 					for (var key in menuJson) {

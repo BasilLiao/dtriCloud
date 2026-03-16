@@ -82,6 +82,29 @@
 	width: 16px;
 	height: 16px;
 }
+
+/* 圖片放大燈箱遮罩 */
+#img_lightbox {
+	display: none; /* 預設隱藏 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.85); /* 黑色半透明背景 */
+	z-index: 9999; /* 確保在最上層 */
+	justify-content: center;
+	align-items: center;
+	cursor: zoom-out;
+}
+
+#img_lightbox img {
+	max-width: 80%; /* 寬度限制 80% */
+	max-height: 80%; /* 高度限制 80% */
+	border: 5px solid white;
+	box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+	transition: transform 0.3s;
+}
 </style>
 <div id="search_c" class="row p-0 m-0">
 	<!-- 查詢面板 -->
@@ -316,6 +339,9 @@
 				</tbody>
 			</table>
 		</div>
+	</div>
+	<div id="img_lightbox" onclick="$(this).fadeOut();">
+		<img src="" alt="Zoomed View">
 	</div>
 </div>
 <script type="text/javascript">
@@ -888,6 +914,36 @@
 						search.methods.searchSend(batch + 1);
 					}
 				});
+				// --- 圖片點擊放大 (Lightbox) ---
+				$(document).off("click", "#search_c .img-preview");
+				$(document).on("click", "#search_c .img-preview", function (event) {
+					let src = $(this).attr("src");
+					if (src) {
+						$("#img_lightbox img").attr("src", src);
+						$("#img_lightbox").css("display", "flex").hide().fadeIn(200);
+					}
+				});
+
+				// --- 檔案點擊下載 (Virtual Anchor) ---
+				$(document).off("click", "#search_c .btn-download");
+				$(document).on("click", "#search_c .btn-download", function (event) {
+					let base64Data = $(this).data("base64"); // 這是我們包裝的貨櫃字串
+					let fileName = $(this).data("name") || "download_file";
+
+					// 檢查是否有 Base64 內容
+					if (base64Data && base64Data.indexOf("base64,") !== -1) {
+						// 建立隱藏的虛擬 <a> 標籤
+						const link = document.createElement("a");
+						link.href = base64Data;
+						link.download = fileName; // 設定下載檔名
+						
+						document.body.appendChild(link);
+						link.click(); // 觸發點擊下載
+						document.body.removeChild(link); // 下載後移除
+					} else {
+						alert("檔案格式錯誤或內容為空，無法下載。");
+					}
+				});
 				//時間格式
 				search.methods.datetimepickerDate();
 
@@ -1086,71 +1142,77 @@
 			},
 			//==========================資料載入==========================
 			searchReLoad() {
-				console.log("searchReLoad_Start:" + new Date());
-				//還原
-				$('#search_c .valTbodytd').text("");
-				$('#search_c .exTbodyTh input').attr("disabled", "disabled");
-				$('#search_c .exTbodyTh input').attr("title", "IKey_GKey");
-				$('#search_c .exTbodyTh input').prop("checked", false);
-				$('#search_cr_open table,#search_dcr_open table').animate({scrollTop: 0}, 'slow');
-				//版面預設
-				if ($('#search_dcr_open').hasClass('show')) {
-					$('#search_dcr .btn-outline-white').trigger('click');
-				}
-				if (!$('#search_cr_open').hasClass('show')) {
-					$('#search_cr .btn-outline-white').trigger('click');
-				}
-
-				//Step5.帶入資料
-				let marks = search.data.marks;
-				let entityJsons = search.data.searchPageSet.entityJsons;
-				let entityIKey = search.data.entityIKey;
-				let entityGKey = search.data.entityGKey;
-				let entityDateTime = search.data.entityDateTime;
-				let pageSize = search.data.searchPageSet.pageSize;//每頁數量(1-20)
-				let pageNew = search.data.searchPageSet.pageNew - 1;//單前頁碼(1-50)
-				let pageSN = pageSize * pageNew;//目前分頁->資料戳記
-				for (let x = 0; x < pageSize; x++) {
-					//筆數還夠
-					if (pageSN + x < entityJsons.length) {
-						let entity = entityJsons[pageSN + x];//((目前頁碼-1)*每頁數量)+x
-						let iKey = "";
-						let gKey = "";
-						Object.keys(entity).forEach(function (k) {
-							//欄位計數
-							let valTrNb = x + 1;
-							$('#search_c .valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled");
-							//是否IKEY?
-							if (entityIKey == k) {iKey = entity[k];}
-							//是否GKEY?
-							if (entityGKey == k) {gKey = entity[k];}
-							//是否時間格式?
-							if (entityDateTime.indexOf(k) >= 0) {
-								let dF = new Date(entity[k]);
-								let dateF = dF.getFullYear() + "-";
-								dateF += ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-";
-								dateF += (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " ";
-								dateF += (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":";
-								dateF += (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":";
-								dateF += (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-								$('#search_c .valTbodyTr_' + valTrNb + ' .' + k).text(dateF);
-							} else {
-								$('#search_c .valTbodyTr_' + valTrNb + ' .' + k).text(entity[k]);
-							}
-
-							//marks標記?
-							$('#search_c .valTbodyTr_' + valTrNb + ' input').attr("title", iKey + "_" + gKey);
-							//帶入
-							for (let m = 0; m < marks.length; m++) {
-								if (marks[m].Ikey_Gkey == iKey + "_" + gKey) {
-									$('#search_c .valTbodyTr_' + valTrNb + ' input').prop("checked", true);
-									break;
-								}
-							}
-						});
-					}
-				}
-				console.log("searchReLoad_OK:" + new Date());
+			    console.log("searchReLoad_Start:" + new Date());
+			    // 1. 還原版面與初始化
+			    $('#search_c .valTbodytd').empty(); // 使用 empty 清除內容
+			    $('#search_c .exTbodyTh input').attr("disabled", "disabled").attr("title", "IKey_GKey").prop("checked", false);
+			    $('#search_cr_open table,#search_dcr_open table').animate({scrollTop: 0}, 'slow');
+			
+			    let marks = search.data.marks;
+			    let entityJsons = search.data.searchPageSet.entityJsons;
+			    let entityIKey = search.data.entityIKey;
+			    let entityGKey = search.data.entityGKey;
+			    let entityDateTime = search.data.entityDateTime;
+			    let pageSize = search.data.searchPageSet.pageSize;
+			    let pageNew = search.data.searchPageSet.pageNew - 1;
+			    let pageSN = pageSize * pageNew;
+			
+			    // 2. 遍歷每一列
+			    for (let x = 0; x < pageSize; x++) {
+			        let currentIndex = pageSN + x;
+			        if (currentIndex < entityJsons.length) {
+			            let entity = entityJsons[currentIndex];
+			            let valTrNb = x + 1;
+			            let iKey = entity[entityIKey];
+			            let gKey = entity[entityGKey];
+			
+			            $('#search_c .valTbodyTr_' + valTrNb + ' th input').removeAttr("disabled").attr("title", iKey + "_" + gKey);
+			            if (marks[iKey + "_" + gKey]) { $('#search_c .valTbodyTr_' + valTrNb + ' th input').prop("checked", true); }
+			
+			            // 3. 遍歷每一個欄位內容
+			            Object.keys(entity).forEach(function (k) {
+			                let targetCell = $('#search_c .valTbodyTr_' + valTrNb + ' .' + k);
+			                let value = entity[k] + ""; // 強制轉字串
+			
+			                // --- 核心偵測邏輯：直接看內容物 ---
+			                if (value.startsWith("data:")) {
+			                    // A. 偵測到是圖片格式
+			                    if (value.includes("image/")) {
+			                        targetCell.html(`<img src="${value}" class="img-preview" style="width:100px; height:auto; cursor:pointer; object-fit:contain;">`);
+			                    } 
+			                    // B. 偵測到是其他檔案格式 (PDF, ZIP, etc.)
+			                    else {
+			                        let fileName = "Download";
+			                        // 嘗試從我們自定義的標記中拆出檔名
+			                        if (value.includes(";name=")) {
+			                            fileName = decodeURIComponent(value.split(";name=")[1].split(";")[0]);
+			                        }
+			                        targetCell.html(`
+			                            <button type="button" class="btn btn-xs btn-outline-primary btn-download" 
+			                                    data-base64="${value}" data-name="${fileName}">
+			                                <i class="bi bi-cloud-download"></i> ${fileName}
+			                            </button>`);
+			                    }
+			                } 
+			                // C. 處理時間格式 (透過 entityDateTime 清單判斷)
+			                else if (entityDateTime.indexOf(k) >= 0 && entity[k]) {
+			                    let dF = new Date(entity[k]);
+			                    let dateF = dF.getFullYear() + "-" + 
+			                                (dF.getMonth() + 1).toString().padStart(2, '0') + "-" + 
+			                                dF.getDate().toString().padStart(2, '0') + " " + 
+			                                dF.getHours().toString().padStart(2, '0') + ":" + 
+			                                dF.getMinutes().toString().padStart(2, '0') + ":" + 
+			                                dF.getSeconds().toString().padStart(2, '0');
+			                    targetCell.text(dateF);
+			                } 
+			                // D. 一般文字
+			                else {
+			                    targetCell.text(entity[k] == null ? "" : entity[k]);
+			                }
+			            });
+			        }
+			    }
+			    console.log("searchReLoad_OK:" + new Date());
 			},
 			//==========================回傳接收==========================
 			searchReturn() {
@@ -1201,6 +1263,8 @@
 				$(document).off("change", "#search_c #search_dcr_open .exTbodyTh input");
 				$(document).off("change", "#search_c #search_cr_open .exTbodyTh input");
 				$(document).off("change", "#search_c #numberPage");
+				$(document).off("click", "#search_c .btn-download");
+				$(document).off("click", "#search_c .img-preview");
 				console.log("search.html(destroy)");
 			},
 		},

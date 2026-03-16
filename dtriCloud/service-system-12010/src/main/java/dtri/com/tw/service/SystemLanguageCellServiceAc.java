@@ -1,6 +1,11 @@
 package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -206,6 +211,9 @@ public class SystemLanguageCellServiceAc {
 		}
 		// =======================資料整理=======================
 		// Step3.一般資料->寫入
+		//
+		MultiLangTranslateService mts = new MultiLangTranslateService();
+
 		ArrayList<SystemLanguageCell> saveDatas = new ArrayList<>();
 		entityDatas.forEach(x -> {
 			// 排除 沒有ID
@@ -216,11 +224,33 @@ public class SystemLanguageCellServiceAc {
 				entityDataOld.setSysnote(x.getSysnote());
 				entityDataOld.setSysstatus(x.getSysstatus());
 				entityDataOld.setSyssort(x.getSyssort());
-				JsonObject language = new JsonObject();
+				// 語言
+				// 1. 取得原始資料字串 (假設來源是 x.getLanguageJson())
+				String originalJsonStr = entityDataOld.getSllanguage();
+				JsonObject language;
+				// 2. 判斷是否為有效 JSON，不是則新建
+				try {
+					language = JsonParser.parseString(originalJsonStr).getAsJsonObject();
+				} catch (Exception e) {
+					language = new JsonObject();
+				}
+				// 3. 檢查 zh-TW 是否有變動
+				String newZhTW = x.getSl_zhTW();
+				String oldZhTW = language.has("zh-TW") ? language.get("zh-TW").getAsString() : "";
+				// 預設寫入
 				language.addProperty("zh-TW", x.getSl_zhTW());
 				language.addProperty("zh-CN", x.getSl_zhCN());
 				language.addProperty("en-US", x.getSl_enUS());
 				language.addProperty("vi-VN", x.getSl_viVN());
+
+				// 如果 zh-TW 有值，且與舊值不同，才執行翻譯
+				if (newZhTW != null && !newZhTW.isEmpty() && !newZhTW.equals(oldZhTW)) {
+					language.addProperty("zh-TW", newZhTW);
+					language.addProperty("zh-CN", mts.translateTo(newZhTW, "zh-CN"));
+					language.addProperty("en-US", mts.translateTo(newZhTW, "en"));
+					language.addProperty("vi-VN", mts.translateTo(newZhTW, "vi"));
+				}
+
 				entityDataOld.setSllanguage(language.toString());
 
 				// 修改
@@ -474,15 +504,25 @@ public class SystemLanguageCellServiceAc {
 		sysstatusArr.add("onlyAdmin(特權)_3");
 		// Find classes implementing ICommand.
 		ArrayList<SystemLanguageCell> languageCells = new ArrayList<>();
+
 		for (EntityType<?> entityType : entitySet) {
 			Class<?> cls = entityType.getJavaType(); // ✅ 直接拿到 Entity 的 Class
 			String className = cls.getSimpleName(); // 例如 SystemUser / WarehouseArea
 			String fullName = cls.getName(); // 例如 dtri.com.tw.system.entity.SystemUser
 
-			Field[] fields = cls.getDeclaredFields();
 			System.out.println(fullName);
+			// ✅ 改用自定義方法，抓取包含父類別的所有私有欄位
+			List<Field> allFields = new ArrayList<>();
+			Class<?> currentCls = cls;
+			while (currentCls != null && currentCls != Object.class) {
+				Field[] declaredFields = currentCls.getDeclaredFields();
+				for (Field f : declaredFields) {
+					allFields.add(f);
+				}
+				currentCls = currentCls.getSuperclass(); // 往上一層抓 BaseEntity
+			}
 			// 每個欄位
-			for (Field fieldOne : fields) {
+			for (Field fieldOne : allFields) {
 				if ("WarehouseSynchronize".equals(className)) {
 					System.out.println(className);
 				}
@@ -647,5 +687,32 @@ public class SystemLanguageCellServiceAc {
 			}
 		});
 		languageDao.saveAll(languageCells);
+	}
+
+	public class MultiLangTranslateService {
+		private static final String GAS_URL = "https://script.google.com/macros/s/AKfycbzsP1e13YFwL11ZkED2Yrba9nyQGSha_YcjyXLpSiUhLGAoVDKdXPLlb-x72WIIPajLyQ/exec";
+
+		/**
+		 * @param text     要翻譯的文字
+		 * @param langCode 目標語言 (zh-TW, zh-CN, en, vi)
+		 */
+		public String translateTo(String text, String langCode) {
+			try {
+				String encodedText = URLEncoder.encode(text, "UTF-8");
+				String finalUrl = GAS_URL + "?text=" + encodedText + "&target=" + langCode;
+
+				HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS) // 重要：GAS 必有重定向
+						.build();
+
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(finalUrl)).GET().build();
+
+				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+				String body = response.body();
+				return body;
+			} catch (Exception e) {
+				System.out.println("Translation Error: " + e.getMessage());
+				return "";
+			}
+		}
 	}
 }

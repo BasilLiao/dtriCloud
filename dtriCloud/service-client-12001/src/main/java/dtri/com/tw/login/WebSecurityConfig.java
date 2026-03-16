@@ -93,6 +93,8 @@ public class WebSecurityConfig {
 	private static final String schedule_spn = "/ajax/schedule_production_notes.basil";
 	// 物控
 	private static final String material_rep = "/ajax/material_replacement.basil";
+	// 採購
+	private static final String pcb_cs = "/ajax/pcb_config_settings.basil";
 
 	// BIOS
 	private static final String bios_not = "/ajax/bios_notification.basil";
@@ -455,7 +457,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".DD").hasAuthority(actionRole(schedule_spn, "DD"))// (標記移除)
 
 				// 物控
-				// ----請求-schedule_production_notes-(訪問) ----
+				// ----請求-material_replacement-(訪問) ----
 				.requestMatchers(HttpMethod.POST, material_rep).hasAuthority(actionRole(material_rep, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, material_rep + ".AR").hasAuthority(actionRole(material_rep, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.POST, material_rep + ".ARR").hasAuthority(actionRole(material_rep, "AR"))// (報告查詢)
@@ -463,6 +465,18 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, material_rep + ".AU").hasAuthority(actionRole(material_rep, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".AD").hasAuthority(actionRole(material_rep, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".DD").hasAuthority(actionRole(material_rep, "DD"))// (標記移除)
+
+				// 採購
+				// ----請求-pcb_config_settings(暫時掛載在採購內)-(訪問) ----
+				.requestMatchers(HttpMethod.POST, pcb_cs).hasAuthority(actionRole(pcb_cs, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, pcb_cs + ".AR").hasAuthority(actionRole(pcb_cs, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, pcb_cs + ".ARR").hasAuthority(actionRole(pcb_cs, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, pcb_cs + ".AC").hasAuthority(actionRole(pcb_cs, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, pcb_cs + ".AU").hasAuthority(actionRole(pcb_cs, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, pcb_cs + ".AD").hasAuthority(actionRole(pcb_cs, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, pcb_cs + ".DD").hasAuthority(actionRole(pcb_cs, "DD"))// (標記移除)
+				
+				
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----

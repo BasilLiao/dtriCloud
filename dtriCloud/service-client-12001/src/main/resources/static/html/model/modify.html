@@ -1003,33 +1003,53 @@
 				//上傳檔案?
 				$(document).off("change", ".form-control-file");
 				$(document).on("change", ".form-control-file", function (event) {
-					console.log("form-control-file");
-					let target = $(event.target);
-					$(target[0].parentElement).find("img").attr("src", "");
-					//沒檔案?
-					if (!this.files || !this.files[0]) {
-						target.val("");
-						return;
-					}
-
-					//限制圖片副檔->確定是圖片?
-					if (target.attr("accept") == ".jpg,.jpeg,.gif,.png") {
-						let url = target.val();
-						let is_image = /\.(jpg|jpeg|gif|png)$/.test(url);
-						console.log("image:" + is_image);
-						if (is_image) {
-							const fileReader = new FileReader();
-							//fileReader.off("load");
-							fileReader.addEventListener("load", function (evt) {
-								console.log(evt.target.result);
-								$(target[0].parentElement).find("img").attr("src", evt.target.result);
-							});
-							//讀取上傳圖片->關閉
-							fileReader.readAsDataURL(this.files[0]);
-							removeEventListener("load", fileReader);
-						}
-					}
-				});
+				    let target = $(event.target);
+				    let file = this.files[0];
+				    let parentRow = target.closest('tr'); 
+				    let previewImg = parentRow.find("img");
+				
+				    if (!file) {
+				        target.val("");
+				        target.data("file-base64", ""); // 清空暫存
+				        previewImg.attr("src", "").hide();
+				        return;
+				    }
+				 	// --- 新增：10MB 檔案大小檢查 ---
+				    // 10MB = 10 * 1024 * 1024 bytes = 10485760 bytes
+				    let maxSize = 10 * 1024 * 1024; 
+				    if (file.size > maxSize) {
+				        alert("檔案大小超過限制 (最大 10MB)！\n當前檔案大小: " + (file.size / (1024 * 1024)).toFixed(2) + " MB");
+				        target.val(""); // 清空選擇
+				        target.data("file-base64", ""); // 清空暫存
+				        previewImg.attr("src", "").hide(); // 隱藏預覽
+				        return; // 中斷後續讀取
+				    }
+				    
+				    const fileReader = new FileReader();
+				    fileReader.onload = function (evt) {
+				        let rawBase64 = evt.target.result; // 標準格式: data:mime;base64,xxxx
+				        let parts = rawBase64.split(",");
+				        
+				        // --- 補強關鍵：將檔名與大小拼入 Header ---
+				        // 我們將 ";base64" 取代為 ";name=檔名;size=大小;base64"
+				        let customHeader = parts[0].replace(";base64", 
+				            ";name:" + encodeURIComponent(file.name) + 
+				            ";size:" + file.size + 
+				            ";base64");
+				        
+				        let finalData = customHeader + "," + parts[1];
+				
+				        // 存入 data 屬性，這步最重要，因為 file input 的 val() 拿不到這串
+				        target.data("file-base64", finalData);
+				        
+				        if (file.type.match('image.*')) {
+				            previewImg.attr("src", rawBase64).show();
+				        } else {
+				            previewImg.hide();
+				        }
+				    };
+				    fileReader.readAsDataURL(file);
+				});				
 				//上傳檔案Ex?
 				$(document).off("click", "#btn_inp_excel_ex");
 				$(document).on("click", "#btn_inp_excel_ex", function (event) {
@@ -1228,16 +1248,17 @@
 											modifyThvEx.find('.' + k).prop('checked', false);
 										}
 										modifyThvEx.find("." + k).val(value);
-									} else if (modifyThvEx.find("." + k).attr('type') == "image") {
-										//是否為	圖片
-										console.log(value);
-										$(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
-
-									} else if (modifyThvEx.find("." + k).attr('type') == "file") {
-										//是否為	檔案
-										console.log(value);
-										$(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value);
-
+									}else if (modifyThvEx.find("." + k).attr('type') == "image" || modifyThvEx.find("." + k).attr('type') == "file") {
+										    // 這裡的 value 是：data:image/png;name=test.png;size=1024;base64,iVBO...
+										    
+										    // 1. 更新預覽圖 (如果是圖片則顯示，否則可能顯示檔案圖示)
+										    if (value && value.startsWith("data:image")) {
+										        $(modifyThvEx.find("." + k)[0].parentElement).find("img").attr("src", value).show();
+										    }
+										    
+										    // 2. 重要：將讀取到的完整貨櫃字串存入暫存，防止「存檔」時遺失檔名與大小
+										    modifyThvEx.find("." + k).data("file-base64", value);
+										
 									} else if (entityDateTime.indexOf(k) >= 0) {
 										//是否為 時間
 										let dF = new Date(dataOne[k]);
@@ -1418,26 +1439,22 @@
 						if ($(this).attr("type") == 'checkbox') {
 							val = $(this).is(':checked');
 						}
-						//=file?image?
-						if ($(this).attr("type") == 'image') {
-							val = $(this.parentElement).find("img").attr("src");
-						}
-						if ($(this).attr("type") == 'file') {
-							val = $(this.parentElement).find("img").attr("src");
-							let binary = '';
-							let bytes = new Uint8Array(val);
-							let len = bytes.byteLength;
-							for (let i = 0; i < len; i++) {
-								binary += String.fromCharCode(bytes[i]);
-							}
-							val = binary;
+						// 修正：處理檔案/圖片類型
+						if ($(this).attr("type") == 'file' || $(this).attr("type") == 'image') {
+						    // 優先抓取我們在 change 事件中存入 data() 的「貨櫃字串」
+						    let fullPackage = $(this).data("file-base64");
+						    if (fullPackage) {
+						        val = fullPackage;
+						    } else {
+						        // 如果是讀取現有資料但沒更換檔案，則從 <img> 的 src 抓取
+						        val = $(this.parentElement).find("img").attr("src");
+						    }
 						}
 						//可能是JSON格式
 						if($(this).hasClass('textareajson')){
 							// 排版：在逗號後加上換行->要去除
 							val = val.replace(/\r?\n/g, "");
 						}
-						
 						entityFormatJson[$(this).attr("title")] = val;
 					});
 					entityJsons.push(entityFormatJson);
@@ -1456,6 +1473,17 @@
 						//="checkbox"?
 						if ($(this).attr("type") == 'checkbox') {
 							val = $(this).is(':checked');
+						}
+						// 修正：處理檔案/圖片類型
+						if ($(this).attr("type") == 'file' || $(this).attr("type") == 'image') {
+						    // 優先抓取我們在 change 事件中存入 data() 的「貨櫃字串」
+						    let fullPackage = $(this).data("file-base64");
+						    if (fullPackage) {
+						        val = fullPackage;
+						    } else {
+						        // 如果是讀取現有資料但沒更換檔案，則從 <img> 的 src 抓取
+						        val = $(this.parentElement).find("img").attr("src");
+						    }
 						}
 						//可能是JSON格式
 						if($(this).hasClass('textareajson')){

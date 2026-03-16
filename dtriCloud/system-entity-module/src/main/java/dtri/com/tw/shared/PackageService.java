@@ -2,6 +2,8 @@ package dtri.com.tw.shared;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -18,6 +20,24 @@ import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 
 @Service
 public class PackageService {
+
+	/**
+	 * 抓取涵蓋父類別-繼承物件Entity
+	 * 
+	 */
+	public static Field[] getEntityFields(Class<?> currentClass) {
+		List<Field> allFields = new ArrayList<>();
+
+		// 向上追溯，直到沒有父類別 (Object 的父類是 null)
+		while (currentClass != null) {
+			Field[] declaredFields = currentClass.getDeclaredFields();
+			allFields.addAll(Arrays.asList(declaredFields));
+			// 關鍵：移動到父類別
+			currentClass = currentClass.getSuperclass();
+		}
+		// 轉回陣列進行後續的 翻譯/排除/順序 處理
+		return allFields.toArray(new Field[0]);
+	}
 
 	// 查詢欄位-格式
 	public enum SearchType {
