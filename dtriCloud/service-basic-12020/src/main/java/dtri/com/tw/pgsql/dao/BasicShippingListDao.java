@@ -26,7 +26,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass%) and "//
-			+ "(:bslsn is null or c.bslsn LIKE %:bslsn%) and "//
+			+ "(:bslsn is null or c.bslsn LIKE :bslsn%) and "//
 			+ "(:bslfuser is null or c.bslfuser LIKE %:bslfuser%) and "//
 			+ "(:bslpnumber is null or c.bslpnumber LIKE %:bslpnumber%) ")
 	ArrayList<BasicShippingList> findAllBySearch(String bslclass, String bslsn, String bslpnumber, String bslfuser,

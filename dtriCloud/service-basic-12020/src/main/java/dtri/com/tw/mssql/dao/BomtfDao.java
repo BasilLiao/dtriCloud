@@ -13,7 +13,7 @@ public interface BomtfDao extends JpaRepository<Bomtf, Long> {
 	// 多筆查詢範例
 	@Query(value = "SELECT"// --OK 拆解單/A431
 			+ "	(TRIM(BOMTG.TG001)+'-'+TRIM(BOMTG.TG002)+'-'+TRIM(BOMTG.TG003)) AS BOMTF_ID,"//
-			+ "	(TRIM(BOMTG.TG001)+'-'+TRIM(BOMTG.TG002)+'-'+TRIM(BOMTG.TG003)) as TG001_TG002_TG003,"// --單號
+			+ "	(TRIM(BOMTG.TG001)+'-'+TRIM(BOMTG.TG002)+'-'+TRIM(BOMTG.TG003)) as TG001_TG002_TG003,"// --單號(單別-單號-序號)
 			+ "	BOMTF.TF004,"// --(-)成品號
 			+ "	BOMTF.TF007,"// --(-)成品數量
 			+ "	BOMTF.TF008,"// --(-)出庫

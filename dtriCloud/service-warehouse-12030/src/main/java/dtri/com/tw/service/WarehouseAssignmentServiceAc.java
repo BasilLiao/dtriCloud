@@ -931,11 +931,15 @@ public class WarehouseAssignmentServiceAc {
 					String wasClass = entityData.getWasclasssn().split("-")[0];
 					String wasSn = entityData.getWasclasssn().split("-")[1];
 					String wasnb = entityData.getWasnb();
+					String wasType = entityData.getWastype();
 					ArrayList<BasicIncomingList> inCheckDatas = new ArrayList<BasicIncomingList>();
 					ArrayList<BasicShippingList> shCheckDatas = new ArrayList<BasicShippingList>();
-					if ("A581".equals(wasClass)) {
+					//取得入料 或領料
+					if ("入料類".equals(wasType)) {
+						//入料
 						inCheckDatas = incomingListDao.findAllByCheck(wasClass, wasSn, wasnb);
 					} else {
+						//領料
 						shCheckDatas = shippingListDao.findAllByCheck(wasClass, wasSn, wasnb);
 					}
 					if (shCheckDatas.size() > 0) {

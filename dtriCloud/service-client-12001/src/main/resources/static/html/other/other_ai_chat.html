@@ -52,12 +52,6 @@
 	background-color: #dc3545 !important;
 	animation: pulse 1.5s infinite;
 }
-/*漸色*/
-@keyframes pulse { 
-0% {opacity: 1;}
-50%{opacity:0.5;}
-100%{opacity:1;}
-}
 
 /* 讓 Markdown 的列表顯示點點 */
 .markdown-body ul, .markdown-body ol {
@@ -122,6 +116,30 @@
 .markdown-body {
 	overflow-x: auto;
 }
+/* 下載 Excel 按鈕樣式 */
+.btn-outline-success {
+	--bs-btn-color: #198754;
+	--bs-btn-border-color: #198754;
+	--bs-btn-hover-bg: #198754;
+	--bs-btn-hover-border-color: #198754;
+}
+
+/* 確保表格內的表情符號 (Emoji) 也能正確顯示在下載按鈕旁 */
+.markdown-body table {
+	position: relative;
+}
+
+/* 加入 CSS 讓 AI 的思考過程看起來更專業 */
+.markdown-body think {
+	display: block;
+	color: #6c757d;
+	font-style: italic;
+	background: #f1f3f5;
+	padding: 10px;
+	border-left: 3px solid #dee2e6;
+	margin-bottom: 10px;
+	font-size: 0.9rem;
+}
 </style>
 <script src="./thirdparty/js/marked.min.js"></script>
 
@@ -145,6 +163,9 @@
 					<div class="col-3 d-flex flex-column border-end">
 						<h3 class="mb-3 mt-1">
 							<i class="bi bi-clock-history"></i> Chat History
+							<button id="btnNewChat" class="btn btn-sm btn-outline-success">
+								<i class="bi bi-plus-lg"></i> New
+							</button>
 						</h3>
 						<div id="aiChatSessionsList"
 							class="flex-grow-1 overflow-auto list-group border list-group-flush bg-light mb-3">
@@ -157,6 +178,10 @@
 					<!-- 對話內容 -->
 					<div class="col-9 d-flex flex-column">
 						<div id="aiAcsBTypeGroup" class="btn-group mb-3" role="group">
+							<!-- 產品AI管理人 -->
+							<input type="radio" class="btn-check" name="acsbtype"
+								id="typeAPDM" value="APDM"> <label
+								class="btn btn-outline-primary p-1" for="typeAPDM">APDM(產品)/AI</label>
 							<!-- 生管AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPMC" value="APMC" checked> <label
@@ -230,6 +255,15 @@
 		//方法
 		methods: {
 			create() {
+				const style = document.createElement('style');
+				style.innerHTML = `
+				    @keyframes pulse {
+				        0% { opacity: 1; }
+				        50% { opacity: 0.5; }
+				        100% { opacity: 1; }
+				    }
+				`;
+				document.head.appendChild(style);
 				//==========================第一次載入==========================
 				//Step0.初始化
 				//debugger; 
@@ -294,7 +328,10 @@
 						other.methods.sessionDelete();
 					}
 				});
-				
+				// 在 create() 的監聽器綁定區加入：
+				$("#btnNewChat").off().on("click", function() {
+				    other.methods.newChat();
+				});
 
 			},
 			datetimepickerDate() {
@@ -341,17 +378,36 @@
 			    console.log("renderMessage()");
 			    let alignment = msg.role === 'USER' ? 'ms-auto bg-primary text-white' : 'me-auto bg-white border';
 			    
-			    // --- 重點：將 Markdown 轉換成 HTML ---
-			    // 如果是 ASSISTANT 回傳的，使用 marked 解析；如果是 USER，通常是純文字
+			    // 1. 將 Markdown 轉換成 HTML
 			    let formattedContent = (msg.role === 'ASSISTANT') ? marked.parse(msg.acmcontent) : msg.acmcontent;
+			    
+			    // 🌟 新增：偵測是否有表格，如果有則加上下載按鈕
+			    let downloadBtnHtml = "";
+			    if (msg.role === 'ASSISTANT' && formattedContent.includes("<table")) {
+			        // 產生一個隨機 ID 方便定位這個表格
+			        let tableId = "table_" + Math.random().toString(36).substr(2, 9);
+			        
+			        // 在 HTML 中注入 ID (利用取代的方式)
+			        formattedContent = formattedContent.replace("<table", `<table id="${tableId}"`);
+			        
+			        // 下載按鈕的 HTML
+			        downloadBtnHtml = `
+			            <div class="mt-2 mb-2 text-end">
+			                <button class="btn btn-sm btn-outline-success" onclick="other.methods.exportTableToExcel('${tableId}', 'DTR_Schedule_${other.methods.formatDate(new Date()).split(' ')[0]}')">
+			                    <i class="bi bi-file-earmark-excel"></i> 下載 Excel 表格
+			                </button>
+			            </div>
+			        `;
+			    }
 			    
 			    let voiceHtml = (msg.voiceMetadata) ? `<small class="d-block mt-1 text-info"><i class="bi bi-play-circle"></i> ${msg.voiceMetadata.avmduration}s</small>` : '';
 			    let excelHtml = (msg.acmmtype === 'EXCEL') ? `<div class="mt-2"><a href="${msg.acmaurl}" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-excel"></i> 下載排程報表</a></div>` : '';
-			 	// --- 時間格式化 ---
-		        let formattedDate = other.methods.formatDate(msg.acmcat);
+			    let formattedDate = other.methods.formatDate(msg.acmcat);
+			
 			    return `
 			        <div class="d-flex mb-3">
-			            <div class="p-3 rounded shadow-sm ${alignment}" style="max-width: 80%; overflow-wrap: break-word;">
+			            <div class="p-3 rounded shadow-sm ${alignment}" style="max-width: 90%; overflow-wrap: break-word;">
+			                ${downloadBtnHtml} 
 			                <div class="markdown-body">${formattedContent}</div> 
 			                ${voiceHtml}
 			                ${excelHtml}
@@ -359,6 +415,30 @@
 			            </div>
 			        </div>
 			    `;
+			},
+			//新增對話
+			newChat() {
+			    console.log("newChat() - Resetting session state");
+			    
+			    // 1. 清空目前追蹤的 Session ID
+			    other.data.currentSessionId = null;
+
+			    // 2. UI 重置：移除左側清單的所有選取狀態 (active)
+			    $("#aiChatSessionsList .list-group-item").removeClass("active");
+
+			    // 3. UI 重置：清空右側對話框
+			    $("#aiChatMessagesBox").html(`
+			        <div class="text-center text-muted mt-5">
+			            <i class="bi bi-robot" style="font-size: 3rem;"></i>
+			            <p class="mt-2">已準備好發起新對話，請選擇上方 AI 模組並輸入問題。</p>
+			        </div>
+			    `);
+
+			    // 4. 重設上方的 Tag (預設跳回生管 PMC)
+			    $("#typeAPMC").prop("checked", true);
+
+			    // 5. 聚焦到輸入框
+			    $("#acmContentInput").val("").focus();
 			},
 			//==========================修改資料==========================
 			searchToModify(order) {
@@ -494,6 +574,27 @@
 			        index += 2;
 			    }
 			    return new Blob([view], { type: 'audio/wav' });
+			},
+			// 在 other.methods 裡面新增 Excel 下載
+			exportTableToExcel(tableId, fileName) {
+			    console.log("exportTableToExcel() - ID:", tableId);
+			    
+			    // 1. 取得表格元素
+			    const table = document.getElementById(tableId);
+			    if (!table) {
+			        alert("找不到表格資料！");
+			        return;
+			    }
+
+			    // 2. 使用 XLSX 將 HTML Table 轉換為 Workbook
+			    // sheetjs 會自動抓取 <th> 和 <td> 內的文字
+			    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+			    // 3. 產生 Excel 檔案並觸發下載 (使用了 xlsx 內建的 writeFile)
+			    // 也可以結合 FileSaver 的 saveAs
+			    XLSX.writeFile(wb, `${fileName}.xlsx`);
+			    
+			    console.log("Excel 下載指令已送出");
 			},
 			// ========================== 傳送音訊到後端 ==========================
 			sendAudioToBackend(blob) {
@@ -750,6 +851,12 @@
 			    let currentSession = other.data.searchPageSet.entityJsons.find(s => s.acsid == other.data.currentSessionId);
 			    
 			    if (currentSession && currentSession.aichatmessages) {
+			    	// 🌟 【新增：同步切換上方的 Tag 按鈕】
+			        if (currentSession.acsbtype) {
+			            console.log("切換業務類型至:", currentSession.acsbtype);
+			            // 尋找 name 為 acsbtype 且 value 符合的 radio，並設為 checked
+			            $(`input[name='acsbtype'][value='${currentSession.acsbtype}']`).prop("checked", true);
+			        }
 			        let html = "";
 			        // 2. 直接渲染該 Session 裡的訊息列表
 			        currentSession.aichatmessages.forEach(msg => {
@@ -783,6 +890,12 @@
 				//銷毀
 				clearTimeout(other.data.btn_send_auto);
 				$(".datetimepicker").remove();
+				$("#btnMessageSend").off();
+				$("#acmContentInput").off();
+				$("#btnVoiceStart").off();
+				$("#btnDeleteSession").off();
+				$("#btnNewChat").off();
+
 				
 				console.log("other_ai_chat.html(destroy)");
 			},

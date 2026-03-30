@@ -106,7 +106,7 @@ public class PcbConfigSettingsServiceAc {
 
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
-			exceptionCell.add("systemgroups");
+			exceptionCell.add("isFileParsed");
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);
@@ -140,8 +140,9 @@ public class PcbConfigSettingsServiceAc {
 			PcbConfigSettings searchData = packageService.jsonToBean(packageBean.getEntityJson(),
 					PcbConfigSettings.class);
 
-			ArrayList<PcbConfigSettings> entitys = configSettingsDao.findPcsBySearch(null, null, null, null, null, null,
-					pageable);
+			ArrayList<PcbConfigSettings> entitys = configSettingsDao.findPcsBySearch(searchData.getPcspnb(),
+					searchData.getPcspname(), searchData.getPcspspecification(), searchData.getPcspcbname(),
+					searchData.getPcsrduser(), searchData.getSysnote(), pageable);
 			// Step4-2.資料區分(一般/細節)
 
 			// 類別(一般模式)

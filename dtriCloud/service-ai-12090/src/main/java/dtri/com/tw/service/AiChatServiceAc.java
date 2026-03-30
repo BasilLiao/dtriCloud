@@ -1,35 +1,33 @@
 package dtri.com.tw.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.AiChatMessagesDao;
 import dtri.com.tw.pgsql.dao.AiChatSessionsDao;
 import dtri.com.tw.pgsql.dao.AiVoiceMetadataDao;
-import dtri.com.tw.pgsql.dao.ScheduleInfactoryDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.entity.AiChatMessages;
 import dtri.com.tw.pgsql.entity.AiChatMessages.MessageRole;
 import dtri.com.tw.pgsql.entity.AiChatSessions;
 import dtri.com.tw.pgsql.entity.AiVoiceMetadata;
-import dtri.com.tw.pgsql.entity.ScheduleInfactory;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.shared.CloudExceptionService;
 import dtri.com.tw.shared.CloudExceptionService.ErCode;
@@ -54,20 +52,42 @@ public class AiChatServiceAc {
 	private AiChatSessionsDao aiChatSessionsDao;
 	@Autowired
 	private AiVoiceMetadataDao aiVoiceMetadataDao;
-	@Autowired
-	private GeminiAiService geminiAiService;
 
 	@Autowired
-	private ScheduleInfactoryDao infactoryDao;
+	private QdrantSyncService qdrantSyncService;
 
+	@Autowired
+	private ScheduleInfactoryForAiChatService aboutScheduleInfactory;
+
+	@Autowired
+	private BomProductManagementForAiChatService aboutBomProduct;
+
+	@Autowired
+	ScheduleInfactoryForQdrantService scheduleInfactoryForQdrantService;
+
+	// 注入你剛才寫好的 DtrAiService (5090 伺服器呼叫端)
+	@Autowired
+	private AiDtrService dtrAiService;
 	@Autowired
 	private EntityManager em;
+
+	private static final Logger log = LoggerFactory.getLogger(AiChatServiceAc.class);
 
 	/** 取得資料 */
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
 
 		// ========================區分:訪問/查詢========================
 		if (packageBean.getEntityJson() == "") {// 訪問
+			// 測試用-建立向量資料庫(Step1.)因目前尚未有此模糊查詢需求
+//			try {
+//				//封裝 
+//				List<PointStruct> payloads = scheduleInfactoryForQdrantService.packagePayloads();
+//				// 💡 呼叫你寫好的同步方法
+//				qdrantSyncService.syncAllToQdrant(payloads);
+//				System.out.println("✅ 同步指令已送出，請查看 Console 日誌與 Qdrant Dashboard！");
+//			} catch (Exception e) {
+//				System.out.println("❌ 同步失敗：" + e.getMessage());
+//			}
 			// ========================建立:查詢欄位/對應翻譯/修改選項========================
 			// Step3-3. 取得翻譯(一般/細節)
 			Map<String, SystemLanguageCell> mapLAiChatMessages = new HashMap<>();
@@ -117,6 +137,7 @@ public class AiChatServiceAc {
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 
 		} else {
+
 			// Step4-1. 取得資料(一般/細節)
 			// 取得對話紀錄 By User
 			AiChatSessions searchHistory = new AiChatSessions();
@@ -156,153 +177,198 @@ public class AiChatServiceAc {
 	}
 
 	/** 新增資料 (包含語音辨識與 AI 分析) */
+	/** 新增資料 (核心：串接 5090 耳朵、眼睛、大腦) */
 	@Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
-		// ======================= 1. 資料準備 =======================
+		// ======================= 1. 資料解析 =======================
 		AiChatSessions inputSession = packageService.jsonToBean(packageBean.getEntityJson(), AiChatSessions.class);
 
 		if (inputSession.getAichatmessages() == null || inputSession.getAichatmessages().isEmpty()) {
 			throw new CloudExceptionService(packageBean, ErColor.danger, ErCode.W1000, Lan.zh_TW,
-					new String[] { "無有效訊息內容" });
+					new String[] { "內容不能為空" });
 		}
+
 		AiChatMessages userMsgInput = inputSession.getAichatmessages().get(0);
-		String finalContent = userMsgInput.getAcmcontent(); // 預設為文字內容
+		String finalContent = userMsgInput.getAcmcontent();
 
-		// ======================= 2. 語音辨識處理 (STT) =======================
-		// 檢查是否為語音訊息且攜帶 Base64 資料 (暫放 acmaurl)
-		if ("VOICE".equals(userMsgInput.getAcmmtype()) && userMsgInput.getAcmaurl() != null
-				&& !userMsgInput.getAcmaurl().isEmpty()) {
+		// ======== 2. 耳朵處理 (STT - 呼叫 5090 Whisper)========
+		if ("VOICE".equals(userMsgInput.getAcmmtype())) {
 			try {
-				// A. 解碼 Base64
-				byte[] audioBytes = java.util.Base64.getDecoder().decode(userMsgInput.getAcmaurl());
+				log.info("[AI整合] 收到語音訊息，準備呼叫 5090 Whisper...");
+				// A. 將 Base64 轉為臨時實體檔案，因為 DtrAiService 需要路徑
+				byte[] audioBytes = Base64.getDecoder().decode(userMsgInput.getAcmaurl());
+				File tempFile = File.createTempFile("dtr_voice_", ".mp3");
+				try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+					fos.write(audioBytes);
+				}
 
-				// B. 呼叫本地 Vosk 進行辨識
-				finalContent = executeVoskSTT(audioBytes);
+				// B. 呼叫 5090 耳朵
+				finalContent = dtrAiService.processAudio(tempFile.getAbsolutePath());
+				tempFile.delete(); // 用完即刪
 
-				// 如果辨識結果為空，給予預設值
-				if (finalContent == null || finalContent.trim().isEmpty())
-					finalContent = "[語音內容無法辨識]";
+				if (finalContent == null || finalContent.isBlank())
+					finalContent = "[語音辨識內容為空]";
 			} catch (Exception e) {
-				System.err.println("Vosk 辨識錯誤: " + e.getMessage());
-				finalContent = "[語音辨識失敗]";
+				log.error("Whisper 辨識失敗: {}", e.getMessage());
+				finalContent = "[語音服務暫時不可用]";
 			}
 		}
 
-		// ======================= 3. 會話生命週期管理 =======================
+		// ======== 3. 會話紀錄管理 (存入資料庫) ========
 		AiChatSessions currentSession;
 		if (inputSession.getAcsid() == null || inputSession.getAcsid() == 0L) {
 			currentSession = new AiChatSessions();
 			currentSession.setAcsuaccount(packageBean.getUserAccount());
 			currentSession.setAcsbtype(inputSession.getAcsbtype());
-			// 標題自動取辨識後的內容
 			currentSession
-					.setAcstitle(finalContent.length() > 20 ? finalContent.substring(0, 20) + "..." : finalContent);
+					.setAcstitle(finalContent.length() > 15 ? finalContent.substring(0, 15) + "..." : finalContent);
 			currentSession.setSyscuser(packageBean.getUserAccount());
 			currentSession = aiChatSessionsDao.save(currentSession);
 		} else {
-			currentSession = aiChatSessionsDao.findById(inputSession.getAcsid())
-					.orElseThrow(() -> new Exception("找不到指定的對話紀錄"));
+			currentSession = aiChatSessionsDao.findById(inputSession.getAcsid()).get();
 		}
 
-		// ======================= 4. 儲存使用者訊息 =======================
+		// 儲存 USER 訊息
 		AiChatMessages userMsg = new AiChatMessages();
 		userMsg.setAcmsessions(currentSession);
 		userMsg.setRole(MessageRole.USER);
-		userMsg.setAcmcontent(finalContent); // 存入辨識後的文字
+		userMsg.setAcmcontent(finalContent);
 		userMsg.setAcmmtype(userMsgInput.getAcmmtype());
 		userMsg.setSyscuser(packageBean.getUserAccount());
+		aiChatMessagesDao.save(userMsg);
 
+		// 如果是語音，額外存元數據
 		if ("VOICE".equals(userMsgInput.getAcmmtype())) {
 			AiVoiceMetadata voice = new AiVoiceMetadata();
 			voice.setAichatmessages(userMsg);
 			voice.setAvmttext(finalContent);
-			voice.setAvmduration(0.0); // 可由前端傳入或在此計算
-			voice.setAvmsrate(16000); // 配合前端 Recorder.js 設定
-			voice.setAvmvmodel("Vosk-CN-Small");
-			voice.setSyscuser(packageBean.getUserAccount());
-			userMsg.setVoiceMetadata(voice);
+			voice.setAvmvmodel("Whisper-v3-5090");
+			aiVoiceMetadataDao.save(voice);
 		}
-		aiChatMessagesDao.save(userMsg);
 
-		// ======================= 5. AI 分析 (Gemini) =======================
-		// 5.1 取得 1500 筆排程
-		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(Direction.ASC, "siodate"));
-		orders.add(new Order(Direction.ASC, "sifdate"));
-		orders.add(new Order(Direction.ASC, "sinb"));
-		PageRequest pageable = PageRequest.of(0, 1500, Sort.by(orders));
-		ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null, 0, pageable);
+		// ======== 4. 大腦分析 (DeepSeek - 結合排程數據) ========
 
-		entitys.forEach(x -> {
-			x.setSiscnote(getLatestNote(x.getSiscnote()));
-			x.setSimcnote(getLatestNote(x.getSimcnote()));
-			x.setSiwmnote(getLatestNote(x.getSiwmnote()));
-			x.setSimpnote(getLatestNote(x.getSimpnote()));
-		});
+		// 4.1 指定對話類型?生管?物控?製造?倉庫?產品
+		/**
+		 * 會話業務類型 (Session Business Type) 作用：區分詢問的專業領域，例如：PMC(生管), MC(物控), PUR(採購)。
+		 * 實務：這會決定後端串接 AI 時，要餵給 AI 什麼樣的「系統指令(System Prompt)」。<br>
+		 * <br>
+		 * 生管AI管理人 APMC 生管 (Production Management & Control) 專精於生產排程、工單優先級與產能利用率分析。<br>
+		 * 物控AI管理人 AMMC 物控 (Material Control) 專精於庫存水位、物料需求計畫 (MRP) 與缺料預警。<br>
+		 * 採購AI管理人 APUR 採購 (Purchasing) 專精於供應商交期、採購單狀態與採購成本分析。<br>
+		 * 倉儲AI管理人 AWMS 倉儲 (Warehouse Management) 專精於入庫/出庫效率、儲位優化與盤點準確性。<br>
+		 * // PMC, MC, PUR, QC...
+		 * 
+		 */
+		log.info("[AI整合] 當前業務類型: {}，正在準備對應數據...", currentSession.getAcsbtype());
 
-		String scheduleContext = convertInfactoryToContext(entitys);
+		String brainPrompt = "";
+		String bType = currentSession.getAcsbtype() == null ? "GENERAL" : currentSession.getAcsbtype();
+		Boolean checkOK = true;
+		String aiCleanAnswer = "";
+		String intentPrompt = "";
+		String jsonIntentRaw = "";
+		String cleanJson = "";
+		// 測試用-向量 資料庫->查詢->因目前尚未有此模糊查詢需求
+		// qdrantSyncService.searchInQdrant("90-302");
 
-		// 5.2 呼叫 Gemini (告知其輸入可能來自語音辨識)
-		String systemPrompt = String.format("\"你現在是專業的『%s』助理。請根據提供的 CSV/Markdown 排程數據進行分析。\n"
-				+ " 【重要輸出規則】：\n"
-				+ " 1.當需要列出多筆製令、進度或物料清單時，**務必使用 Markdown 表格格式**呈現。\n"
-				+ " 2.表格必須包含對齊行，例如：\n"
-				+ " |製令單號|狀態|品名|進度|\n"
-				+ " |:-|:-|:-|:-|\n"
-				+ " 3.請自動將輸入的語音錯字修正為正確的排程術語。\n"
-				+ " 4.回答要簡潔有力。",
-				currentSession.getAcsbtype());
-		String aiAnswer = geminiAiService.generateResponse(systemPrompt, finalContent, scheduleContext);
+		// 使用 Switch 根據業務類型 (PMC, MC, PUR...) 切換數據抓取邏輯
+		switch (bType) {
+		case "APMC": // 生管 (Production Management & Control)
+			log.info("[AI整合] 執行 PMC 生管分析邏輯...");
 
-		// ======================= 6. 儲存與回傳 =======================
+			// --- Step 1: 讓 AI 分析條件查詢 (Intent Extraction) ---
+			intentPrompt = aboutScheduleInfactory.extractSearchIntent(finalContent);
+			jsonIntentRaw = dtrAiService.processText(intentPrompt);
+
+			// 💡 關鍵：清洗 Markdown 標籤，只抓 JSON 核心
+			// 簡單提取 JSON 內容 (如果回傳是原始 JSON)
+			cleanJson = dtrAiService.cleanJson(extractContent(jsonIntentRaw));
+
+			// --- Step 2: 如果分析失敗 (格式不對或抓不到括號) ---
+			if (!cleanJson.startsWith("{") || !cleanJson.endsWith("}")) {
+				aiCleanAnswer = "抱歉，我無法精準解析您的查詢條件，請提供更具體的單號、品名或狀態（例如：請幫我查 A521 且已開工的單子）";
+				checkOK = false;
+			} else {
+				brainPrompt = aboutScheduleInfactory.getScheduleInfactoryForAi(cleanJson, currentSession, packageBean,
+						finalContent);
+			}
+			break;
+
+		case "AMMC": // 物控 (Material Control)
+			log.info("[AI整合] 執行 MC 物控分析邏輯 (預留區)...");
+			// 未來這裡呼叫 aboutMaterialControl.getMaterialForAi(...)
+			brainPrompt = "目前為物控測試模式。使用者問題: " + finalContent;
+			break;
+
+		case "APUR": // 採購 (Purchasing)
+			log.info("[AI整合] 執行 PUR 採購分析邏輯 (預留區)...");
+			brainPrompt = "目前為採購測試模式。使用者問題: " + finalContent;
+			break;
+
+		case "AWMS": // 倉儲 (Warehouse Management)
+			log.info("[AI整合] 執行 WMS 倉儲分析邏輯 (預留區)...");
+			brainPrompt = "目前為倉儲測試模式。使用者問題: " + finalContent;
+			break;
+
+		case "APDM": // 產品管理 (Product Management / BOM 規格)
+			log.info("[AI整合] 執行 PM 產品規格分析...");
+
+			// 1. 讓 8002 埠位解析使用者的搜尋意圖
+			intentPrompt = aboutBomProduct.extractProductIntent(finalContent);
+			jsonIntentRaw = dtrAiService.processText(intentPrompt);
+			cleanJson = dtrAiService.cleanJson(extractContent(jsonIntentRaw));
+
+			// --- Step 2: 如果分析失敗 (格式不對或抓不到括號) ---
+			if (!cleanJson.startsWith("{") || !cleanJson.endsWith("}")) {
+				aiCleanAnswer = "抱歉，我無法精準解析您的查詢條件。請嘗試提供更具體的品號或型號（例如：『請幫我查 90-320 的規格』或『DT135WN 配什麼 CPU？』）";
+				checkOK = false;
+			} else {
+				// 3. 呼叫 Service 抓取資料庫數據並轉為 Markdown 表格
+				String bomTableContext = aboutBomProduct.getBomProductForAi(cleanJson, finalContent);
+
+				// 💡 4. 進階優化：讓 AI 結合表格回答問題 (RAG 最終步驟)
+				// 如果查不到資料，bomTableContext 裡面已經有提示文字了
+				if (bomTableContext.contains("⚠️") || bomTableContext.contains("查無")) {
+					brainPrompt = bomTableContext;
+				} else {
+					// 有資料
+					brainPrompt = bomTableContext;
+
+				}
+			}
+
+			break;
+
+		default: // 通用模式
+			log.warn("[AI整合] 未知業務類型，使用通用 Prompt 處理");
+			brainPrompt = "你現在是 DTR 綜合助理。請回答使用者問題: " + finalContent;
+			break;
+		}
+
+		// 解析成功?
+		if (checkOK) {
+			log.info("[AI整合] 回傳...");
+			aiCleanAnswer = brainPrompt;
+		}
+
+		// ======================= 5. 儲存 AI 回覆並返回 =======================
 		AiChatMessages aiResMsg = new AiChatMessages();
 		aiResMsg.setAcmsessions(currentSession);
 		aiResMsg.setRole(MessageRole.ASSISTANT);
-		aiResMsg.setAcmcontent(aiAnswer);
+		aiResMsg.setAcmcontent(aiCleanAnswer);
 		aiResMsg.setAcmmtype("TEXT");
-		aiResMsg.setSyscuser("GEMINI_AI");
+		aiResMsg.setSyscuser("DEEPSEEK_5090");
 		aiChatMessagesDao.save(aiResMsg);
 
-		List<AiChatMessages> fullHistory = aiChatMessagesDao.findAllBySessionId(currentSession.getAcsid());
-		currentSession.setAichatmessages(fullHistory);
-		ArrayList<AiChatSessions> lAiChatSessions = new ArrayList<AiChatSessions>();
-		lAiChatSessions.add(currentSession);
+		// 回傳當前會話完整歷史
+		List<AiChatMessages> history = aiChatMessagesDao.findAllBySessionId(currentSession.getAcsid());
+		currentSession.setAichatmessages(history);
+		ArrayList<AiChatSessions> resList = new ArrayList<>();
+		resList.add(currentSession);
 
-		packageBean.setEntityJson(packageService.beanToJson(lAiChatSessions));
-		JsonObject extra = new JsonObject();
-		extra.addProperty("currentSessionId", currentSession.getAcsid());
-		packageBean.setCallBackValue(extra.toString());
-
+		packageBean.setEntityJson(packageService.beanToJson(resList));
 		return packageBean;
-	}
-
-	/**
-	 * 使用 Vosk 進行語音轉文字 必須確保 resources/models/vosk-cn 資料夾存在且包含模型檔案
-	 */
-	private String executeVoskSTT(byte[] audioBytes) throws Exception {
-		// 1. 取得模型路徑 (建議使用絕對路徑或確保 ClassLoader 讀取正確)
-		// 在 Spring 環境中，通常模型會放在外部目錄或是解壓後的 temp 目錄
-		// 簡單開發時可直接指向專案內路徑
-		String modelPath = "src/main/resources/models/vosk-cn";
-
-		try (org.vosk.Model model = new org.vosk.Model(modelPath);
-				java.io.InputStream ais = new java.io.ByteArrayInputStream(audioBytes);
-				org.vosk.Recognizer recognizer = new org.vosk.Recognizer(model, 16000.0f)) {
-
-			byte[] buffer = new byte[4096];
-			int nbytes;
-			while ((nbytes = ais.read(buffer)) >= 0) {
-				// 餵入 PCM 數據
-				recognizer.acceptWaveForm(buffer, nbytes);
-			}
-
-			// 解析結果 JSON: {"text" : "今天 排程 如何"}
-			String jsonStr = recognizer.getFinalResult();
-			JsonObject resultJson = JsonParser.parseString(jsonStr).getAsJsonObject();
-
-			return resultJson.get("text").getAsString();
-		}
 	}
 
 	/** 作廢資料 */
@@ -348,6 +414,20 @@ public class AiChatServiceAc {
 	// @Transactional
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		return packageBean;
+	}
+
+	/** 輔助：提取回傳 JSON 中的文字內容 */
+	private String extractContent(String jsonResponse) {
+		try {
+			JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
+			if (json.has("choices")) {
+				return json.getAsJsonArray("choices").get(0).getAsJsonObject().get("message").getAsJsonObject()
+						.get("content").getAsString();
+			}
+			return jsonResponse;
+		} catch (Exception e) {
+			return jsonResponse;
+		}
 	}
 
 	/**
@@ -413,73 +493,4 @@ public class AiChatServiceAc {
 		return packageBean;
 	}
 
-	/**
-	 * 將 1500 筆排程實體轉換為精簡的 Markdown 表格
-	 */
-	private String convertInfactoryToContext(List<ScheduleInfactory> entitys) {
-		StringBuilder sb = new StringBuilder();
-		// 標題行：挑選對決策最重要的欄位
-		sb.append("|製令單號|生產狀態(0=暫停中/1=未生產/2=已發料/3=生產中Yy=已完工)|產品品名|生產進度|齊料日|物料狀態(0=未確認/1未齊料/2已齊料)|物控備註|生管備註|\n");
-
-		for (ScheduleInfactory item : entitys) {
-			// 2. 清洗所有不可見字元 (Tab, Newline, Unicode Space)
-			String shortPName = (item.getSipname() == null) ? ""
-					: item.getSipname().replaceAll("[\\x00-\\x1F\\x7F-\\x9F\\s]+", "");
-			shortPName = shortPName.replaceAll("[\\r\\n\\t]+", " ").trim();
-			// if (shortPName.length() > 8) shortPName = shortPName.substring(0, 8); //
-			// 品名縮短至 8 字
-
-			// 3. 備註清洗：移除 JSON 結構，並過濾掉重複的空白
-			String siscnote = "";
-			if (siscnote != null) {// 生管
-				siscnote = cleanNote(item.getSiscnote());
-				siscnote = siscnote.replaceAll("[\\s\\r\\n\\t]+", " ").replaceAll("(\\\\r|\\\\n|\\\\t)+", " ").trim();
-			}
-			String simcnote = "";
-			if (simcnote != null) {// 物控
-				simcnote = cleanNote(item.getSimcnote());
-				simcnote = simcnote.replaceAll("[\\s\\r\\n\\t]+", " ").replaceAll("(\\\\r|\\\\n|\\\\t)+", " ").trim();
-			}
-			
-			// 4. 緊湊拼接 (CSV 格式)
-			sb.append(item.getSinb()).append("|") // ID
-					.append(item.getSistatus()).append("|") // S
-					.append(shortPName).append("|") // N
-					.append(item.getSiokqty()).append("/").append(item.getSirqty()).append("|") //// P (分子)/ P (分母)
-					.append(item.getSimcdate()).append("|") // D
-					.append(item.getSimcstatus()).append("|") // M
-					.append(simcnote).append("|") //
-					.append(siscnote).append("\n"); // R
-		}
-		return sb.toString();
-	}
-
-	// 輔助方法：清理生管備註 (因為你原始格式是 JSON 字串)
-	private String cleanNote(String noteJson) {
-		if (noteJson == null || noteJson.equals("[]") || noteJson.isEmpty())
-			return "-";
-		// 簡單移除 JSON 符號，只留文字內容，避免 AI 混淆
-		return noteJson.replaceAll("[\\[\\]{}\"]", "").replace("content:", "").replace("user:", "");
-	}
-
-	// --- 輔助方法：解析 JSON Array 並取得最新一筆 ---
-	private String getLatestNote(String jsonArrayStr) {
-		if (jsonArrayStr == null || jsonArrayStr.isEmpty() || jsonArrayStr.equals("[]")) {
-			return "[]";
-		}
-		try {
-			JsonArray array = JsonParser.parseString(jsonArrayStr).getAsJsonArray();
-			if (array.size() > 0) {
-				// 取出第 0 筆 (最新的紀錄)
-				JsonElement latest = array.get(0);
-				JsonArray newArray = new JsonArray();
-				newArray.add(latest);
-				return newArray.toString(); // 回傳只含一筆的 JSON Array
-			}
-		} catch (Exception e) {
-			// 若解析失敗則回傳原值或空，避免程式中斷
-			return "[]";
-		}
-		return "[]";
-	}
 }

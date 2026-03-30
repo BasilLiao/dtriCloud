@@ -37,9 +37,9 @@ public interface PcbConfigSettingsDao extends JpaRepository<PcbConfigSettings, L
 			+ "(:pcspspecification IS NULL OR p.pcspspecification LIKE CONCAT('%', :pcspspecification, '%')) AND "//
 			+ "(:pcspcbname IS NULL OR p.pcspcbname LIKE CONCAT('%', :pcspcbname, '%')) AND "//
 			+ "(:pcsrduser IS NULL OR p.pcsrduser LIKE CONCAT('%', :pcsrduser, '%')) AND "//
-			+ "(:pcscname IS NULL OR p.pcscname LIKE CONCAT('%', :pcscname, '%'))")
+			+ "(:sysnote IS NULL OR p.sysnote LIKE CONCAT('%', :sysnote, '%'))")
 	ArrayList<PcbConfigSettings> findPcsBySearch(String pcspnb, String pcspname, String pcspspecification,
-			String pcspcbname, String pcsrduser, String pcscname, Pageable pageable);
+			String pcspcbname, String pcsrduser, String sysnote, Pageable pageable);
 
 	/**
 	 * 6. 檢查：ID / 品號 / 品名 / 規格 / 廠商 / 負責RD / 設定檔名稱(備註) 使用 = 精準比對

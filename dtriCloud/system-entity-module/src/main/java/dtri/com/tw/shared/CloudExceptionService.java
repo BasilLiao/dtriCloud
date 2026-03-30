@@ -41,7 +41,7 @@ public class CloudExceptionService extends Exception {
 	public final static String W1001_en_US = "[W1001] Duplicate data: ${0} !!";
 	public final static String W1001_vi_VN = "[W1001] Dữ liệu trùng lặp: ${0} !!";
 	// 錯誤訊息-Detail 找不到 Data 關聯
-	public final static String W1002_zh_TW = "[W1002] Detail 找不到 Data 關聯!!";
+	public final static String W1002_zh_TW = "[W1002] Detail 找不到 Data 關聯 : ${0}!!";
 	public final static String W1002_en_US = "[W1002] Detail could not find Data association!!";
 	public final static String W1002_vi_VN = "[W1002] Không thể tìm thấy chi tiết Liên kết dữ liệu!!";
 	// 錯誤訊息-缺少 Data 資料

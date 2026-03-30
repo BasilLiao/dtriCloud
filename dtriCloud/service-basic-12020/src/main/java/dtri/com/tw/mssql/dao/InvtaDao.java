@@ -53,6 +53,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ " AND ((INVTB.TB001 ='A111' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A112' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A115' AND INVTB.TB018='N') "//
+			+ "	OR (INVTB.TB001 ='A118' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A119' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A121' AND (INVTB.TB018='Y' OR INVTB.TB018='N'))) "//
 			+ "	AND(INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-10, 112) "// 今天
@@ -106,6 +107,7 @@ public interface InvtaDao extends JpaRepository<Invta, Long> {
 			+ " AND ((INVTB.TB001 ='A111' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A112' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A115' AND INVTB.TB018='N') "//
+			+ "	OR (INVTB.TB001 ='A118' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A119' AND INVTB.TB018='Y') "//
 			+ "	OR (INVTB.TB001 ='A121' AND (INVTB.TB018='Y' OR INVTB.TB018='N'))) "//
 			+ "	AND(INVTB.CREATE_DATE >= CONVERT(VARCHAR(8), GETDATE()-60, 112) "// 今天

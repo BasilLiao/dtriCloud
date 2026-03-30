@@ -20,7 +20,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and"//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
 			+ "(:bilpmerge is null or  c.bilpmerge LIKE %:bilpmerge%) and "//
-			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
+			+ "(:bilsn is null or  c.bilsn LIKE :bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "//
 			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
 			+ "(c.bilfuser != 'ERP_Remove(Auto)') and "//
@@ -35,7 +35,7 @@ public interface BasicIncomingListDao extends JpaRepository<BasicIncomingList, L
 
 	@Query("SELECT c FROM BasicIncomingList c WHERE "//
 			+ "(:bilclass is null or  c.bilclass LIKE %:bilclass%) and "//
-			+ "(:bilsn is null or  c.bilsn LIKE %:bilsn%) and "//
+			+ "(:bilsn is null or  c.bilsn LIKE :bilsn%) and "//
 			+ "(:biltype is null or  c.biltype LIKE %:biltype%) and "// 類型
 			+ "(:bilmuser is null or (c.bilmuser LIKE %:bilmuser% or c.bilmuser='')) and "// 負責人
 			+ "(c.bilcuser !='') and " // 核准人

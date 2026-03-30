@@ -700,7 +700,7 @@ public class SynchronizeERPService {
 						o.setBslsdate(newDate);
 						checkUpdate = true;
 					}
-					//更新資料
+					// 更新資料
 					if (checkUpdate) {
 						saveShLists.add(o);
 					}
@@ -2024,6 +2024,7 @@ public class SynchronizeERPService {
 		bilclass.add("A111");
 		bilclass.add("A112");
 		bilclass.add("A115");
+		bilclass.add("A118");
 		bilclass.add("A119");
 		bilclass.add("A121");
 		ArrayList<BasicIncomingList> entityInOlds = incomingListDao.findAllByStatus(null, bilclass);
@@ -2052,6 +2053,11 @@ public class SynchronizeERPService {
 				erpShMaps.put(nKey, m);
 				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 1);
 			} else if (m.getTb001_tb002_tb003().contains("A112")) {
+				m.setTk000("入料類");
+				m.setTb013(m.getTb012());
+				erpInMaps.put(nKey, m);
+				wTFsSave.put(m.getTb001_tb002_tb003().split("-")[0], 0);
+			} else if (m.getTb001_tb002_tb003().contains("A118")) {
 				m.setTk000("入料類");
 				m.setTb013(m.getTb012());
 				erpInMaps.put(nKey, m);
@@ -2543,17 +2549,30 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 測試用
-			if (nKey.equals("A431-260130001-0001")) {
+			if (nKey.contains("A431-260302006")) {
 				System.out.println(nKey);
 			}
-			// 不同一張工單?
+			// 不同一張工單?(先取得 要領拆的單頭)
 			if (!nKeyCheckSame.equals(nKey.split("-")[0] + "-" + nKey.split("-")[1])) {
 				nKeyCheckSame = nKey.split("-")[0] + "-" + nKey.split("-")[1];
 				try {
 					Bomtf mSh = (Bomtf) m.clone();
 					mSh.setTk000("領料類");
 					mSh.setMb001(m.getTe004());
-					erpShMaps.put(nKey, mSh);
+					mSh.setTg001_tg002_tg003(nKeyCheckSame + "-0000");
+					mSh.setTg008(m.getTf007());// 拆解數量-> 放入
+					mSh.setMb002("");// 品名
+					mSh.setMb003("");// 規格
+					// 看看有沒有資料->有取代
+					if (wMs.containsKey(m.getTe004())) {
+						mSh.setMb002(wMs.get(m.getTe004()).getWmname());
+						mSh.setMb003(wMs.get(m.getTe004()).getWmspecification());// 規格
+					}
+					// 測試用
+					if (mSh.getTg001_tg002_tg003().contains("A431-260318013-0000")) {
+						System.out.println(mSh.getTg001_tg002_tg003());
+					}
+					erpShMaps.put(mSh.getTg001_tg002_tg003(), mSh);
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
@@ -2652,7 +2671,7 @@ public class SynchronizeERPService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-			if (key.equals("A431-260130001-0001")) {
+			if (key.equals("A431-260318013-0000")) {
 				System.out.println(key);
 			}
 

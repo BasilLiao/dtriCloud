@@ -1184,8 +1184,8 @@
 			                    else {
 			                        let fileName = "Download";
 			                        // 嘗試從我們自定義的標記中拆出檔名
-			                        if (value.includes(";name=")) {
-			                            fileName = decodeURIComponent(value.split(";name=")[1].split(";")[0]);
+			                        if (value.includes(";name:")) {
+			                            fileName = decodeURIComponent(value.split(";name:")[1].split(";")[0]);
 			                        }
 			                        targetCell.html(`
 			                            <button type="button" class="btn btn-xs btn-outline-primary btn-download" 

@@ -21,17 +21,18 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:sifname is null or c.sifname LIKE %:sifname%) and "// 加工廠(代號+中文)
 			+ "(:siuname is null or c.siuname LIKE %:siuname%) and "// 開單人名
 			+ "(:sifodate is null or c.sifodate LIKE %:sifodate%) and "// 加工廠上線日
-			+ "(:simcdates is null or c.simcdate >= :simcdates) and "// 預計齊料(起)
-			+ "(:simcdatee is null or c.simcdate <= :simcdatee) and "// 預計齊料(終)
+			+ "(:simcdates is null or (c.simcdate >= :simcdates and c.simcdate !='')) and "// 預計齊料(起)
+			+ "(:simcdatee is null or (c.simcdate <= :simcdatee and c.simcdate !='')) and "// 預計齊料(終)
 			+ "(:simcnote is null or c.simcnote ILIKE %:simcnote%) and "// 物控資料
 			+ "(:simcstatus is null or c.simcstatus = :simcstatus) and "// 物控狀態
+			+ "(:sicorder is null or c.sicorder LIKE %:sicorder%) and "// 訂單
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus) and"//
 			+ "(:notsipnb1 is null or c.sipnb NOT LIKE :notsipnb1%) and"
 			+ "(:notsipnb2 is null or c.sipnb NOT LIKE :notsipnb2%)")
 	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, String notsipnb1, String notsipnb2, //
 			String sipname, String sipspecifications, //
 			String sistatus, String sifname, String siuname, //
-			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,
+			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,String sicorder,
 			Pageable pageable);
 
 	// 檢查用

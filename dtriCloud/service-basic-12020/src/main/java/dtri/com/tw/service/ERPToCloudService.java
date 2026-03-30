@@ -716,9 +716,9 @@ public class ERPToCloudService {
 		// String bilfromwho = m.getTb012() + "_unfound_FF-FF-FF-FF";
 		String wAsKey = m.getTb013() + "_" + m.getMb001();
 		// 測試用
-//		if (m.getTb001_tb002_tb003().equals("A119-231130001-0002")) {
-//			System.out.println("A119-231130001-002");
-//		}
+		if (m.getTb001_tb002_tb003().equals("A118-260311002-0002")) {
+			System.out.println("A119-231130001-002");
+		}
 		// 對象
 		if (wAs.containsKey(wAsKey)) {
 			biltowho = m.getTb013() + "_" + wAs.get(wAsKey).getWaaname() + "_" + wAs.get(wAsKey).getWaslocation();

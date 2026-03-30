@@ -294,7 +294,7 @@ public class SystemPermissionServiceAc {
 					// 是否有跟隨群組?
 					checkDataGroups = permissionDao.findAllByPCheck(entityData.getSpgname(), null, null);
 					if (checkDataGroups.size() == 0) {
-						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1002, Lan.zh_TW, null);
+						throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1002, Lan.zh_TW, new String[] {"請先建立選單 Group(群組標記)"});
 					}
 				}
 				// 檢查-控制單位 重複(有資料 && 不是同一筆資料)

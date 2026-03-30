@@ -1,7 +1,11 @@
 package dtri.com.tw.pgsql.entity;
 
+import java.net.URLDecoder;
+import java.util.Base64;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -10,8 +14,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -105,29 +109,39 @@ public class PcbConfigSettings extends BaseEntity {
 	@Column(name = "pcs_b_thickness", columnDefinition = "int4 default 0", nullable = false)
 	private Integer pcsbthickness = 0; // 銅厚(oz)
 
+	@Transient
+	@JsonIgnore // 加上這行，讓 Jackson 徹底無視它(記得Service 欄位配置也要排除)
+	private boolean isFileParsed = false;
+
 	// --- 修改 Setter：接收前端字串並拆解 ---
 	public void setPcsfbinary(Object value) {
 		if (value instanceof String && ((String) value).startsWith("data:")) {
-			// 文字型態處理
 			String str = (String) value;
 			String[] parts = str.split(",");
 			String header = parts[0];
-			String content = parts[1];
+			String content = (parts.length > 1) ? parts[1] : "";
 
-			// 拆解 Header 屬性 (name, size, type)
 			String[] attributes = header.split(";");
 			for (String attr : attributes) {
 				if (attr.startsWith("data:"))
 					this.pcsftype = attr.substring(5);
-				if (attr.startsWith("name:"))
-					this.pcsfname = attr.substring(5);
+				if (attr.startsWith("name:")) {
+					String rawName = attr.substring(5);
+					try {
+						this.pcsfname = URLDecoder.decode(rawName, "UTF-8");
+					} catch (Exception e) {
+						this.pcsfname = rawName;
+					}
+				}
 				if (attr.startsWith("size:"))
 					this.pcsfsize = Long.parseLong(attr.substring(5));
 			}
-			this.pcsfbinary = java.util.Base64.getDecoder().decode(content);
+			this.pcsfbinary = Base64.getDecoder().decode(content);
+
+			// 關鍵點：標記解析成功
+			this.isFileParsed = true;
 
 		} else if (value instanceof byte[]) {
-			// 二進制處理
 			this.pcsfbinary = (byte[]) value;
 		}
 	}
@@ -136,31 +150,29 @@ public class PcbConfigSettings extends BaseEntity {
 	public String getPcsfbinaryString() {
 		// 讓 Jackson 在轉 JSON 給前端時，自動呼叫這個方法。來避免原先的getPcsfbinary(2進位)
 		if (this.pcsfbinary != null && this.pcsfbinary.length > 0) {
-			String base64Content = java.util.Base64.getEncoder().encodeToString(this.pcsfbinary);
-			return "data:" + this.pcsftype + ";name=" + this.pcsfname + ";size=" + this.pcsfsize + ";base64,"
+			String base64Content = Base64.getEncoder().encodeToString(this.pcsfbinary);
+			return "data:" + this.pcsftype + ";name:" + this.pcsfname + ";size:" + this.pcsfsize + ";base64,"
 					+ base64Content;
 		}
 		return "";
 	}
 
-	// 1. 防止 pcsftype 被空值複寫
+	// --- 3. 修改防禦 Setter：根據標記決定是否跳過 ---
 	public void setPcsftype(String pcsftype) {
-		// 只有在傳入值不為空，或者目前欄位還是空的時候才寫入
-		if (pcsftype != null && !pcsftype.trim().isEmpty()) {
+		// 如果 isFileParsed 為 true，代表新值已在 binary 解析時填入，略過 JSON 裡的舊值
+		if (!isFileParsed && pcsftype != null && !pcsftype.trim().isEmpty()) {
 			this.pcsftype = pcsftype;
 		}
 	}
 
-	// 2. 防止 pcsfname 被空值複寫
 	public void setPcsfname(String pcsfname) {
-		if (pcsfname != null && !pcsfname.trim().isEmpty()) {
+		if (!isFileParsed && pcsfname != null && !pcsfname.trim().isEmpty()) {
 			this.pcsfname = pcsfname;
 		}
 	}
 
-	// 3. 防止 pcsfsize 被 0 複寫 (選用)
 	public void setPcsfsize(Long pcsfsize) {
-		if (pcsfsize != null && pcsfsize > 0) {
+		if (!isFileParsed && pcsfsize != null && pcsfsize > 0) {
 			this.pcsfsize = pcsfsize;
 		}
 	}

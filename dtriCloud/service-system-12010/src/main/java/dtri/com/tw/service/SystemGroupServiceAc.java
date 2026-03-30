@@ -2,6 +2,7 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,6 +102,8 @@ public class SystemGroupServiceAc {
 				entityOne.setSystemusers(null);
 				entityDatas.add(entityOne);
 			}
+			// 根據 sgname 排序 (升冪)
+			entityDatas.sort(Comparator.comparing(SystemGroup::getSgname));
 			// 子類別
 			groupDao.findAllBySystemGroup(null, null, 0L, 0L, null, notsysstatus, false, null).forEach(sd -> {
 				sd.setSpname(sd.getSystemPermission().getSpname());
@@ -222,6 +225,8 @@ public class SystemGroupServiceAc {
 				entityOne.setSystemusers(null);
 				entityDatas.add(entityOne);
 			}
+			// 根據 sgname 排序 (升冪)
+			entityDatas.sort(Comparator.comparing(SystemGroup::getSgname));
 			// 子類別
 			groupDao.findAllBySystemGroup(searchData.getSgname(), searchData.getSpname(), 0L, 0L, null, notsysstatus,
 					false, null).forEach(sd -> {

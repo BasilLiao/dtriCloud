@@ -19,7 +19,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:sysstatus is null or c.sysstatus=:sysstatus) and"//
 			+ "(:bslclass is null or c.bslclass LIKE %:bslclass% ) and "//
-			+ "(:bslsn is null or c.bslsn LIKE %:bslsn% ) and "//
+			+ "(:bslsn is null or c.bslsn LIKE :bslsn% ) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "//
 			+ "(:bslpmerge is null or  c.bslpmerge LIKE %:bslpmerge%) and "//
 			+ "(:syshnote is null or  c.syshnote LIKE %:syshnote%) and "//
@@ -37,7 +37,7 @@ public interface BasicShippingListDao extends JpaRepository<BasicShippingList, L
 
 	@Query("SELECT c FROM BasicShippingList c WHERE "//
 			+ "(:bslclass is null or  c.bslclass LIKE %:bslclass%) and "//
-			+ "(:bslsn is null or  c.bslsn LIKE %:bslsn%) and "//
+			+ "(:bslsn is null or  c.bslsn LIKE :bslsn%) and "//
 			+ "(:bsltype is null or  c.bsltype LIKE %:bsltype%) and "// 類型
 			+ "(:bslmuser is null or (c.bslmuser LIKE %:bslmuser% or c.bslmuser='')) and "// 負責人
 			+ "(c.bslcuser !='') and " // 核准人
