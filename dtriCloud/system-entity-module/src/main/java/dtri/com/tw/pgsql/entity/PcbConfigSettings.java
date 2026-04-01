@@ -47,6 +47,12 @@ public class PcbConfigSettings extends BaseEntity {
 		this.pcsfname = "";
 		this.pcsfsize = 0L;
 		this.pcsftype = "";
+		
+		this.pcsfrdbinary = null;
+		this.pcsfrdname = "";
+		this.pcsfrdsize = 0L;
+		this.pcsfrdtype = "";
+		
 		this.pcslcount = 0;
 		this.pcsmtype = 0;
 		this.pcsbthickness = 0;
@@ -88,7 +94,7 @@ public class PcbConfigSettings extends BaseEntity {
 	@Column(name = "pcs_version", columnDefinition = "varchar(150) default ''", nullable = false)
 	private String pcsversion = ""; // 版本號
 
-	@Column(name = "pcs_f_binary", columnDefinition = "bytea", nullable = false)
+	@Column(name = "pcs_f_binary", columnDefinition = "bytea default ''", nullable = false)
 	private byte[] pcsfbinary; // 二進位檔案資料 (PostgreSQL 使用 bytea)
 
 	@Column(name = "pcs_f_name", columnDefinition = "varchar(150) default ''", nullable = false)
@@ -99,6 +105,18 @@ public class PcbConfigSettings extends BaseEntity {
 
 	@Column(name = "pcs_f_type", columnDefinition = "varchar(50) default ''", nullable = false)
 	private String pcsftype = ""; // MIME 類型 / 副檔名
+
+	@Column(name = "pcs_f_rd_binary", columnDefinition = "bytea default ''", nullable = false)
+	private byte[] pcsfrdbinary; // 二進位檔案資料 (PostgreSQL 使用 bytea)
+
+	@Column(name = "pcs_f_rd_name", columnDefinition = "varchar(150) default ''", nullable = false)
+	private String pcsfrdname = ""; // 原始檔名
+
+	@Column(name = "pcs_f_rd_size", columnDefinition = "int8 default 0", nullable = false)
+	private Long pcsfrdsize = 0L; // 檔案大小 (使用 int8 對應 Long)
+
+	@Column(name = "pcs_f_rd_type", columnDefinition = "varchar(50) default ''", nullable = false)
+	private String pcsfrdtype = ""; // MIME 類型 / 副檔名
 
 	@Column(name = "pcs_l_count", columnDefinition = "int4 default 0", nullable = false)
 	private Integer pcslcount = 0; // 層數
@@ -111,9 +129,12 @@ public class PcbConfigSettings extends BaseEntity {
 
 	@Transient
 	@JsonIgnore // 加上這行，讓 Jackson 徹底無視它(記得Service 欄位配置也要排除)
-	private boolean isFileParsed = false;
+	private boolean isPcsfbinary = false;
+	@Transient
+	@JsonIgnore // 加上這行，讓 Jackson 徹底無視它(記得Service 欄位配置也要排除)
+	private boolean isPcsfrdbinary = false;
 
-	// --- 修改 Setter：接收前端字串並拆解 ---
+	// --- isPcsfbinary:修改 Setter：接收前端字串並拆解 ---
 	public void setPcsfbinary(Object value) {
 		if (value instanceof String && ((String) value).startsWith("data:")) {
 			String str = (String) value;
@@ -139,7 +160,7 @@ public class PcbConfigSettings extends BaseEntity {
 			this.pcsfbinary = Base64.getDecoder().decode(content);
 
 			// 關鍵點：標記解析成功
-			this.isFileParsed = true;
+			this.isPcsfbinary = true;
 
 		} else if (value instanceof byte[]) {
 			this.pcsfbinary = (byte[]) value;
@@ -160,20 +181,84 @@ public class PcbConfigSettings extends BaseEntity {
 	// --- 3. 修改防禦 Setter：根據標記決定是否跳過 ---
 	public void setPcsftype(String pcsftype) {
 		// 如果 isFileParsed 為 true，代表新值已在 binary 解析時填入，略過 JSON 裡的舊值
-		if (!isFileParsed && pcsftype != null && !pcsftype.trim().isEmpty()) {
+		if (!isPcsfbinary && pcsftype != null && !pcsftype.trim().isEmpty()) {
 			this.pcsftype = pcsftype;
 		}
 	}
 
 	public void setPcsfname(String pcsfname) {
-		if (!isFileParsed && pcsfname != null && !pcsfname.trim().isEmpty()) {
+		if (!isPcsfbinary && pcsfname != null && !pcsfname.trim().isEmpty()) {
 			this.pcsfname = pcsfname;
 		}
 	}
 
 	public void setPcsfsize(Long pcsfsize) {
-		if (!isFileParsed && pcsfsize != null && pcsfsize > 0) {
+		if (!isPcsfbinary && pcsfsize != null && pcsfsize > 0) {
 			this.pcsfsize = pcsfsize;
+		}
+	}
+
+	// --- isPcsfrdbinary:修改 Setter：接收前端字串並拆解 ---
+	public void setPcsfrdbinary(Object value) {
+		if (value instanceof String && ((String) value).startsWith("data:")) {
+			String str = (String) value;
+			String[] parts = str.split(",");
+			String header = parts[0];
+			String content = (parts.length > 1) ? parts[1] : "";
+
+			String[] attributes = header.split(";");
+			for (String attr : attributes) {
+				if (attr.startsWith("data:"))
+					this.pcsfrdtype = attr.substring(5);
+				if (attr.startsWith("name:")) {
+					String rawName = attr.substring(5);
+					try {
+						this.pcsfrdname = URLDecoder.decode(rawName, "UTF-8");
+					} catch (Exception e) {
+						this.pcsfrdname = rawName;
+					}
+				}
+				if (attr.startsWith("size:"))
+					this.pcsfrdsize = Long.parseLong(attr.substring(5));
+			}
+			this.pcsfrdbinary = Base64.getDecoder().decode(content);
+
+			// 關鍵點：標記解析成功
+			this.isPcsfrdbinary = true;
+
+		} else if (value instanceof byte[]) {
+			this.pcsfrdbinary = (byte[]) value;
+		}
+	}
+
+	@JsonProperty("pcsfrdbinary")
+	public String getPcsfbrdinaryString() {
+		// 讓 Jackson 在轉 JSON 給前端時，自動呼叫這個方法。來避免原先的getPcsfbinary(2進位)
+		if (this.pcsfrdbinary != null && this.pcsfrdbinary.length > 0) {
+			String base64Content = Base64.getEncoder().encodeToString(this.pcsfrdbinary);
+			return "data:" + this.pcsfrdtype + ";name:" + this.pcsfrdname + ";size:" + this.pcsfrdsize + ";base64,"
+					+ base64Content;
+		}
+		return "";
+	}
+
+	// --- 3. 修改防禦 Setter：根據標記決定是否跳過 ---
+	public void setPcsfrdtype(String pcsfrdtype) {
+		// 如果 isFileParsed 為 true，代表新值已在 binary 解析時填入，略過 JSON 裡的舊值
+		if (!isPcsfrdbinary && pcsfrdtype != null && !pcsfrdtype.trim().isEmpty()) {
+			this.pcsfrdtype = pcsfrdtype;
+		}
+	}
+
+	public void setPcsfrdname(String pcsfrdname) {
+		if (!isPcsfrdbinary && pcsfrdname != null && !pcsfrdname.trim().isEmpty()) {
+			this.pcsfrdname = pcsfrdname;
+		}
+	}
+
+	public void setPcsfrdsize(Long pcsfrdsize) {
+		if (!isPcsfrdbinary && pcsfrdsize != null && pcsfrdsize > 0) {
+			this.pcsfrdsize = pcsfrdsize;
 		}
 	}
 

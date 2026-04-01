@@ -106,7 +106,8 @@ public class PcbConfigSettingsServiceAc {
 
 			// 排除欄位
 			ArrayList<String> exceptionCell = new ArrayList<>();
-			exceptionCell.add("isFileParsed");
+			exceptionCell.add("isPcsfbinary");
+			exceptionCell.add("isPcsfrdbinary");
 
 			// 欄位翻譯(一般)
 			resultDataTJsons = packageService.resultSet(fields, exceptionCell, mapLanguages);

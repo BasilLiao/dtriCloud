@@ -146,6 +146,9 @@ public class BomProductManagementForAiChatService {
 				你現在是 DTR 產品管理系統的『規格搜尋解析引擎』。
 				請從使用者的問題中提取搜尋參數，並回傳一個「純 JSON 對象」，禁止任何解釋。
 
+				# 🔴 核心指令：文字精準度 (Strict Character Preservation)
+				1. **嚴禁繁簡轉換**：使用者輸入繁體就必須保留繁體，輸入簡體就保留簡體，輸入英文就保留英文。
+
 				# 欄位定義與規範：
 				1. bpmnb (String): 產品品號。通常以 '90-' 開頭。若無則填 null。
 				2. bpmmodel (String): 整機型號。指機器的名字 (如 DT135, 313TY)。若無則填 null。
