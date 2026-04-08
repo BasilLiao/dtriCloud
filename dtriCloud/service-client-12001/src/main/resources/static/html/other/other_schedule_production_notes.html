@@ -278,6 +278,16 @@
 											type="text" placeholder="Ex:90-317-R141010" required>
 									</div>
 								</div>
+								<div id="sphbpmtypename" class="btnAutoOrder d-none">
+									<input
+										class="col-12 m-0 p-1 border border-dark form-control searchVal"
+										type="text" placeholder="Ex:產品BOM" required>
+								</div>
+								<div id="sphbpmtype" class="btnAutoOrder d-none">
+									<input
+										class="col-12 m-0 p-1 border border-dark form-control searchVal"
+										type="text" placeholder="Ex:1" required>
+								</div>
 							</div>
 							<div class="col-6 p-1 col-lg-3">
 								<div id="sphobpmnb"
@@ -546,7 +556,11 @@
 							<div class=""
 								style="height: 880px; width: 600px; min-width: 600px; border: 1px solid #000000; padding: 0px;">
 								<div class="row m-0" style="border: 1px solid #000000;">
-									<div class="col"></div>
+									<div class="col">
+										<div id="sphbpmtypename_val" style="font-size: 12px;"></div>
+										<div id="sphbpmtype_val" style="font-size: 12px;"
+											class="d-none"></div>
+									</div>
 									<div class="col">
 										<h4 style="padding: 5px; margin: 0px; text-align: center;">
 											<b>生產注意事項</b>
@@ -1177,6 +1191,8 @@
 						//選擇 欄位(編輯)
 						$("#sphbpmnb input").val(entity.find(".bpmnb").text());
 						$("#sphbpmmodel input").val(entity.find(".bpmmodel").text());
+						$("#sphbpmtype input").val(entity.find(".bpmtype").text());
+						$("#sphbpmtypename input").val(entity.find(".bpmtypename").text());
 						//產品資訊
 						let bpmbisitem = entity.find(".bpmbisitem").text();//產品資訊
 						let sphbisitemJson = JSON.parse(bpmbisitem);
@@ -1276,6 +1292,8 @@
 					$("#sphocountry input").val(entity.find(".sphocountry").text());//國家
 					$("#sphobpmnb input").val(entity.find(".sphobpmnb").text());//客戶BOM
 					//
+					$("#sphbpmtype input").val(entity.find(".sphbpmtype").text());
+					$("#sphbpmtypename input").val(entity.find(".sphbpmtypename").text());
 					$("#sphbpmnb input").val(entity.find(".sphbpmnb").text());//品號
 					$("#sphbpmmodel input").val(entity.find(".sphbpmmodel").text());//型號
 					$("#sphoqty input").val(entity.find(".sphoqty").text());//數量
@@ -1507,6 +1525,9 @@
 					$("#sphoname_val").text("");//客戶
 					$("#sphocountry_val").text("");//國家
 					//
+					
+					$("#sphbpmtype_val").text("");//產品類型
+					$("#sphbpmtypename_val").text("");//產品類型
 					$("#sphbpmnb_val").text("");//品號
 					$("#sphbpmmodel_val").text("");//型號
 					$("#sphoqty_val").text("");//數量
@@ -1695,6 +1716,9 @@
 				$("#sphoname_val").text($('#sphoname input').val());//客戶
 				$("#sphocountry_val").text($('#sphocountry input').val());//國家
 				//
+				
+				$("#sphbpmtype_val").text($('#sphbpmtype input').val());//產品類型
+				$("#sphbpmtypename_val").text($('#sphbpmtypename input').val());//產品類型
 				$("#sphbpmnb_val").text($('#sphbpmnb input').val());//品號
 				$("#sphbpmmodel_val").text($('#sphbpmmodel input').val());//型號
 				$("#sphoqty_val").text($('#sphoqty input').val());//數量
@@ -1738,6 +1762,8 @@
 				entityJson.sphoname = $("#sphoname_val").text();//客戶;
 				entityJson.sphocountry = $("#sphocountry_val").text();//國家
 				//
+				entityJson.sphbpmtype = $("#sphbpmtype_val").text();//產品類型
+				entityJson.sphbpmtypename = $("#sphbpmtypename_val").text();//產品類型名稱
 				entityJson.sphbpmnb = $("#sphbpmnb_val").text();//品號
 				entityJson.sphobpmnb = $("#sphobpmnb_val").text(); //客戶BOM號
 				entityJson.sphbpmmodel = $("#sphbpmmodel_val").text();//型號
@@ -1808,9 +1834,7 @@
 				allContent.items = items;
 				//放入->
 				entityJson.sphbisitem = JSON.stringify(allContent);
-				//產品類型
-				entityJson.sphbpmtypename = "產品BOM";
-				entityJson.sphbpmtype = "1";
+				
 
 				//找尋配對-產品規格
 				let valTbodyDetailTr = "";

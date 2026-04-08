@@ -21,9 +21,9 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:sifname is null or c.sifname LIKE %:sifname%) and "// 加工廠(代號+中文)
 			+ "(:siuname is null or c.siuname LIKE %:siuname%) and "// 開單人名
 			+ "(:sifodate is null or c.sifodate LIKE %:sifodate%) and "// 加工廠上線日
-			+ "(:simcdates is null or (c.simcdate >= :simcdates and c.simcdate !='')) and "// 預計齊料(起)
-			+ "(:simcdatee is null or (c.simcdate <= :simcdatee and c.simcdate !='')) and "// 預計齊料(終)
-			+ "(:simcnote is null or c.simcnote ILIKE %:simcnote%) and "// 物控資料
+			+ "(:simcdates is null or c.simcdate >= :simcdates) and "// 預計齊料(起)
+			+ "(:simcdatee is null or c.simcdate <= :simcdatee) and "// 預計齊料(終)
+			+ "(:simcnote is null or c.simcnote LIKE %:simcnote%) and "// 物控資料
 			+ "(:simcstatus is null or c.simcstatus = :simcstatus) and "// 物控狀態
 			+ "(:sicorder is null or c.sicorder LIKE %:sicorder%) and "// 訂單
 			+ "(:sysstatus is null or c.sysstatus = :sysstatus) and"//

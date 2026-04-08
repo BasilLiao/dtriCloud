@@ -57,13 +57,13 @@ public class ScheduleInfactoryForAiChatService {
 		}
 		// 3. 呼叫 DAO 進行精準過濾
 		// 這樣 1500 筆可能過濾到剩下 5~50 筆，回覆絕對不會再中斷！
-		PageRequest pageable = PageRequest.of(0, 2000, Sort.by(Direction.ASC, "siodate"));
+		PageRequest pageable = PageRequest.of(0, 2000, Sort.by(Direction.ASC, "sinb"));
 		ArrayList<ScheduleInfactory> entitys = infactoryDao.findAllBySearch(sinb, sipnb, null, null, sipname, null,
 				sistatus, null, null, null, simcdates, simcdatee, null, simcstatusInt, 0, sicorder, pageable);
 
 		// Step 3: 如果沒查到資料
 		if (entitys == null || entitys.isEmpty()) {
-			return "根據您的搜尋條件，目前系統內『尚未查詢到相關排程資料』，請確認條件是否輸入正確。";
+			return "根據您的搜尋條件，目前系統內『尚未查詢到相關排程資料』，請確認條件是否輸入正確。 \n\n" + intent;
 		}
 
 		// Step 4: 有資料，直接轉成 Markdown 格式回傳
@@ -73,7 +73,8 @@ public class ScheduleInfactoryForAiChatService {
 		// 判斷語系
 		boolean isZh = packageBean.getUserLanguaue().contains("zh-TW");
 		String cannedHeader = "";
-		cannedHeader += isZh ? "目前為您找到 『%d』 筆相關資料如下：" : "Found %d matching records for you:";
+		cannedHeader += isZh ? "目前為您找到 『%d』 筆相關資料如下：\n\n" : "Found %d matching records for you: \n\n";
+		cannedHeader += intent;
 
 		// 最終組合內容 (這段文字會直接顯示在前端 UI)
 		StringBuilder finalResponse = new StringBuilder();
@@ -197,15 +198,15 @@ public class ScheduleInfactoryForAiChatService {
 
 				# 輸出格式 (嚴格 JSON，禁止輸出額外文字或解釋):
 				{
-				  "status": "狀態碼或null",
-				  "sinb": "單號或null",
-				  "sipnb": "料號或null",
-				  "sipname": "品名或null",
-				  "simcnote": "備註關鍵字或null",
-				  "simcstatus": "料況碼或null",
-				  "sicorder": "訂單號或null",
-				  "simcdates": "YYYY-MM-DD HH:mm:ss或null",
-				  "simcdatee": "YYYY-MM-DD HH:mm:ss或null"
+				  "status": "狀態碼" 或是 null,
+				  "sinb": "單號" 或是 null,
+				  "sipnb": "料號" 或是 null,
+				  "sipname": "品名" 或是 null,
+				  "simcnote": "備註關鍵字" 或是 null,
+				  "simcstatus": "料況碼" 或是 null,
+				  "sicorder": "訂單號" 或是 null,
+				  "simcdates": "YYYY-MM-DD HH:mm:ss" 或是 null,
+				  "simcdatee": "YYYY-MM-DD HH:mm:ss" 或是 null
 				}
 
 				使用者問題： %s

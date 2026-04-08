@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -50,7 +54,9 @@ public class BomProductManagementForAiChatService {
 			for (int i = 0; i < ja.size(); i++) {
 				keywordArray[i] = "%" + ja.get(i).getAsString() + "%";
 			}
+
 		}
+		// 是否有排除?
 		String[] excludeKeywords = null;
 		if (intent.has("excludeKeywords") && intent.get("excludeKeywords").isJsonArray()) {
 			JsonArray ja = intent.get("excludeKeywords").getAsJsonArray();
@@ -59,14 +65,97 @@ public class BomProductManagementForAiChatService {
 				excludeKeywords[i] = "%" + ja.get(i).getAsString() + "%";
 			}
 		}
+		String[] excludeNewKeywords = excludeKeywords;
 
-		// 2. 呼叫你寫好的 DAO 進行模糊查詢 (取前 50 筆)
+		// 2. 呼叫你寫好的 DAO 進行模糊查詢 (取前 300 筆)
+		PageRequest pageable = PageRequest.of(0, 300, Sort.by(Direction.ASC, "bpm_nb"));
+		ArrayList<BomProductManagement> entitys = bomDao.findAllByAdvancedSearch(bpmnb, bpmmodel, keywordArray, null,
+				pageable);
 
-		ArrayList<BomProductManagement> entitys = bomDao.findAllByAdvancedSearch(bpmnb, bpmmodel, keywordArray,
-				excludeKeywords);
+		// --- 再次檢查：排除邏輯與數量(bisqty)檢查 ---
+		if (entitys != null && !entitys.isEmpty()) {
+			// 使用 Iterator 安全地移除元素，或使用 Stream 過濾
+			entitys.removeIf(e -> {
+				// 假設實體中有一個 getBpmbisitem() 或類似的方法取得那段長 JSON
+				String rawJson = e.getBpmbisitem();
+				if (rawJson == null || rawJson.isEmpty())
+					return true; // 沒資料就淘汰
 
-		if (entitys == null || entitys.isEmpty() ) {
-			return "⚠️ 在規格資料庫中找不到與 『" + userQuestion + "』 相關的產品資訊。";
+				try {
+					JsonObject bomData = JsonParser.parseString(rawJson).getAsJsonObject();
+					JsonArray items = bomData.getAsJsonArray("items");
+
+					// 1. 處理排除邏輯 (Exclude Keywords)
+					if (excludeNewKeywords != null && excludeNewKeywords.length > 0) {
+						for (String ex : excludeNewKeywords) {
+							String cleanEx = ex.replace("%", "").toLowerCase(); // 轉小寫進行不感性比對
+
+							for (JsonElement itemElem : items) {
+								JsonObject item = itemElem.getAsJsonObject();
+								String bisgname = item.get("bisgname").getAsString().toLowerCase();
+								String bisfname = item.get("bisfname").getAsString().toLowerCase();
+
+								// 💡 關鍵邏輯：
+								// 如果 項目組名稱 或 規格名稱 匹配到了「排除關鍵字」
+								if (bisgname.contains(cleanEx) || bisfname.contains(cleanEx)) {
+									// 檢查其數量
+									int qty = item.get("bisqty").getAsInt();
+
+									// 只有當數量 > 0 時，才符合「排除條件」(因為真的裝了)
+									if (qty > 0) {
+										log.info("[APDM] 淘汰品號 {}: 含有排除關鍵字 {} 且裝配數量為 {}", e.getBpmnb(), cleanEx, qty);
+										return true; // 符合排除條件，淘汰此機台
+									} else {
+										log.info("[APDM] 保留品號 {}: 雖含有關鍵字 {} 但裝配數量為 0", e.getBpmnb(), cleanEx);
+									}
+								}
+							}
+						}
+					}
+
+					// 2. 處理包含與數量邏輯 (Inclusion & bisqty >= 1)
+					if (intent.has("specKeywords")) {
+						JsonArray specKws = intent.getAsJsonArray("specKeywords");
+						for (JsonElement kwElem : specKws) {
+							String kw = kwElem.getAsString();
+							boolean isMatchAndActive = false;
+
+							// 檢查 items 陣列中，該關鍵字對應的項目數量是否 >= 1
+							for (JsonElement itemElem : items) {
+								JsonObject item = itemElem.getAsJsonObject();
+								String bisgname = item.get("bisgname").getAsString();
+								String bisfname = item.get("bisfname").getAsString();
+
+								// 檢查該項目是否包含關鍵字 (不論是在組名或規格名)
+								if (bisgname.contains(kw) || bisfname.contains(kw)) {
+									// 關鍵字匹配到了，檢查數量
+									int qty = item.get("bisqty").getAsInt();
+									if (qty >= 1) {
+										isMatchAndActive = true;
+										break;
+									}
+								}
+							}
+
+							// 如果其中一個關鍵字在所有 items 中都找不到 (或數量皆為 0)，則淘汰此機台
+							if (!isMatchAndActive) {
+								log.info("[APDM] 淘汰品號 {}: 關鍵字 {} 數量不足(bisqty < 1)", e.getBpmnb(), kw);
+								return true;
+							}
+						}
+					}
+
+					return false; // 通過檢查，保留
+
+				} catch (Exception ex) {
+					log.error("[APDM] 解析品號 {} JSON 失敗: {}", e.getBpmnb(), ex.getMessage());
+					return true; // 解析失敗也淘汰，確保資料正確
+				}
+			});
+		}
+
+		if (entitys == null || entitys.isEmpty()) {
+			return "⚠️ 在規格資料庫中找不到與 『" + userQuestion + "』 相關的產品資訊。\n\n" + intent;
 		}
 
 		// 3. 根據結果筆數決定回傳格式
@@ -76,7 +165,7 @@ public class BomProductManagementForAiChatService {
 			sb.append(formatSingleBomDetailed(entitys.get(0)));
 		} else {
 			// 多筆：先顯示清單供使用者選擇
-			sb.append("📋 為您找到以下相關產品，共" + entitys.size() + "台，請問您想查看哪一台的詳細規格？\n\n");
+			sb.append("📋 為您找到以下相關產品，共" + entitys.size() + "台，請問您想查看哪一台的詳細規格？\n\n" + intent + "\n\n");
 			sb.append("| 品號 (BOM NB) | 型號 (Model) | 產品描述 | 產品類型 |\n");
 			sb.append("|:---|:---|:---|:---|\n");
 			for (BomProductManagement item : entitys) {
@@ -143,47 +232,44 @@ public class BomProductManagementForAiChatService {
 	 */
 	public String extractProductIntent(String userQuestion) {
 		return """
-				你現在是 DTR 產品管理系統的『規格搜尋解析引擎』。
-				請從使用者的問題中提取搜尋參數，並回傳一個「純 JSON 對象」，禁止任何解釋。
+				你現在是 DTR 產品管理系統的『規格解析核心』。
+				      任務：將使用者的問題拆解為 JSON 搜尋參數。
+				      回傳格式：純 JSON 對象，禁止任何解釋。
 
-				# 🔴 核心指令：文字精準度 (Strict Character Preservation)
-				1. **嚴禁繁簡轉換**：使用者輸入繁體就必須保留繁體，輸入簡體就保留簡體，輸入英文就保留英文。
+				      # 📋 1. 術語對齊與互斥原則 (Strict Logic)
+				      1. 關鍵字轉換 (術語對齊)：
+				         - [核心運算]: 「處理器 / 核心」-> "CPU"; 「記憶體 / 內存」-> "RAM"; 「主機板」-> "PCBA"; 「顯卡」-> "GPU Card"
+				         - [儲存設備]: 「硬碟 / SSD / 儲存」-> "Storage"; 「第二顆硬碟」-> "Storage 2nd"; 「快拆硬碟 / 快拆SSD」-> "快拆SSD"
+				         - [顯示觸控]: 「螢幕 / 面板」-> "LCD"; 「觸控」-> "Touch"; 「觸控筆」-> "Stylus Pen"; 「防窺片」-> "防窺片"
+				         - [通訊定位]: 「網路 / WIFI」-> "WIFIBT"; 「4G / 5G / SIM卡」-> "4G/5G Module"; 「GPS / 定位」-> "GPS"
+				         - [影像掃描]: 「後相機 / 後鏡頭」-> "BackCamera"; 「前相機 / 前鏡頭」-> "FrontCamera"; 「掃描器 / 條碼」-> "Scanner"; 「RFID」-> "RFID"
+				         - [電源感測]: 「電池」-> "Battery"; 「備援電池 / 小電池」-> "BackupBattery"; 「變壓器 / 充電器」-> "Adaptor"; 「電源線」-> "Power Cord"
+				         - [環境感測]: 「重力感應」-> "G-SENSOR"; 「亮度感應」-> "Light Sensor"; 「霍爾感應」-> "HallSensor"; 「電子羅盤」-> "E-Compass"
+				         - [其他配件]: 「支架」-> "KickStand"; 「認證貼紙」-> "FCC Label"; 「網路供電」-> "POE"
+				      2. 🚫 **絕對互斥規則**：
+				         - 被歸類到 `excludeKeywords` 的詞（及其對齊後的術語），**嚴禁**出現在 `specKeywords` 中。
+				         - 若使用者說「不要 SSD」，則 "Storage" 和 "SSD" 只能出現在 `excludeKeywords`。
 
-				# 欄位定義與規範：
-				1. bpmnb (String): 產品品號。通常以 '90-' 開頭。若無則填 null。
-				2. bpmmodel (String): 整機型號。指機器的名字 (如 DT135, 313TY)。若無則填 null。
-				3. specKeywords (Array of String): 規格關鍵字陣列。
-				   - 包含：品牌(Intel/Samsung)、零件名(CPU/SSD/記憶體)、規格參數(8G/N250/黑色)。
-				   - ⚠️ 即使只有一個關鍵字，也必須放在陣列中，例如 ["Intel"]。
-				   - 若提及零件，請同時加入中英文同義詞。例如提及「記憶體」，可存入 ["RAM"]。
-				   - 若無關鍵字則填 []。
-				4. excludeKeywords: [必須排除的規格陣列]。 (關鍵字如：不要、除了、排除、無)
-				   - 若無關鍵字則填 []。
+				      # ⚙️ 2. 欄位解析準則：
+				      1. bpmnb: 產品品號 (90- 開頭)。
+				      2. bpmmodel: 產品型號 (如 MA1352-4K, DT135)。
+				      3. specKeywords: [使用者「想要」或「指定要」的關鍵字]。
+				         - 複合詞拆散，例如「8G RAM」拆為 ["8G", "RAM"]。
+				      4. excludeKeywords: [使用者明確表示「不要、排除、無、No」的關鍵字]。
+				         - 包含對應的術語。例如「不要 SSD」應填入 ["Storage", "SSD"]。
 
-				# 解析準則：
-				- CPU、RAM、SSD、品牌名稱一律放入 specKeywords 陣列中。
-				- 為了提升 SQL 搜尋成功率，請將複合詞拆散。例如「8G記憶體」拆為 ["8G", "記憶體"]。
+				      # 💎 3. 輸出範例：
+				      問題：「我要 8G 記憶體」
+				      回傳：{"bpmnb": null, "bpmmodel": null, "specKeywords": ["8G", "RAM"], "excludeKeywords": []}
 
-				# 輸出 JSON 結構樣板：
-				{
-				  "bpmnb": null,
-				  "bpmmodel": null,
-				  "specKeywords": [],
-				  "excludeKeywords": []
-				}
+				      問題：「MA1352-4K 不要 512GB SSD」
+				      回傳：{"bpmnb": null, "bpmmodel": "MA1352-4K", "specKeywords": [], "excludeKeywords": ["Storage", "SSD", "512GB"]}
 
-				# 範例測試：
-				問題：「我要 8G 記憶體且 CPU 為 N250 的產品」
-				回傳：{"bpmnb": null, "bpmmodel": null, "specKeywords": ["8G", "記憶體", "N250", "CPU"], "excludeKeywords": []}
+				      問題：「找 90-320 不要 Samsung 的產品」
+				      回傳：{"bpmnb": "90-320", "bpmmodel": null, "specKeywords": [], "excludeKeywords": ["Samsung"]}
 
-				問題：「幫我查 90-320 這台」
-				回傳：{"bpmnb": "90-320", "bpmmodel": null, "specKeywords": [], "excludeKeywords": []}
-
-	            問題："我要 8G 記憶體，但不要 Samsung 的"
-	            回傳：{"bpmnb": null, "bpmmodel": null,"specKeywords": ["8G"], "excludeKeywords": ["Samsung"]}
-
-				使用者問題： %s
-				"""
+				      使用者問題： %s
+				       """
 				.formatted(userQuestion);
 	}
 
