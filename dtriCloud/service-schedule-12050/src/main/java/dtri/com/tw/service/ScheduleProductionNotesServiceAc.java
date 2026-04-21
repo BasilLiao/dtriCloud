@@ -320,6 +320,7 @@ public class ScheduleProductionNotesServiceAc {
 				if (infactories.size() > 0) {
 					sphname = infactories.get(0).getSipname();// 產品品名<br>
 					sphspecification = infactories.get(0).getSipspecifications();// 產品規格<br>
+
 				}
 
 				entity.setSyscdate(commandList.getSyscdate());
@@ -383,6 +384,9 @@ public class ScheduleProductionNotesServiceAc {
 					entity.setSphbisitem(managements.get(0).getBpmbisitem());// 產品-物料結構
 					entity.setSphbpsnv(managements.get(0).getBpmbpsnv());// 產品-參數設置
 					entity.setSphbpsuser(managements.get(0).getSyscuser());// 最後更改人
+					entity.setSphbpmtype(managements.get(0).getBpmtype() + "");// 產品歸類:0 = 開發BOM/1 = 產品BOM/2 = 配件BOM/3 =
+																				// 半成品BOM/3 = 板階BOM
+					entity.setSphbpmtypename(managements.get(0).getBpmtypename());// 產品歸類名稱
 					// 處裡格式化
 					StringBuilder noteAll = new StringBuilder();
 					try {

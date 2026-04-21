@@ -25,16 +25,17 @@ public interface BomProductManagementDao extends JpaRepository<BomProductManagem
 			String bpmbisitem, String syscuser, Pageable pageable);
 
 	@Query(value = "SELECT * FROM bom_product_management b WHERE "
-			+ "(:bpmnb IS NULL OR b.bpm_nb LIKE '%' || :bpmnb || '%') AND "
-			+ "(:bpmmodel IS NULL OR b.bpm_model LIKE '%' || :bpmmodel || '%') AND "
-			+ "(CAST(:keywords AS text[]) IS NULL OR b.bpm_bis_item ILIKE ALL (CAST(:keywords AS text[]))) AND "
-			+ "(CAST(:excludeKeywords AS text[]) IS NULL OR NOT (b.bpm_bis_item ILIKE ANY (CAST(:excludeKeywords AS text[])))) " // 關鍵：排除邏輯
-			+ "ORDER BY b.bpm_nb ASC", nativeQuery = true)
-	ArrayList<BomProductManagement> findAllByAdvancedSearch(//
-			@Param("bpmnb") String bpmnb, //
-			@Param("bpmmodel") String bpmmodel, //
-			@Param("keywords") String[] keywords, //
-			@Param("excludeKeywords") String[] excludeKeywords, Pageable pageable); // 💡 新增排除參數
+	        + "(:bpmnb IS NULL OR b.bpm_nb ILIKE '%' || :bpmnb || '%') AND " // 💡 改為 ILIKE
+	        + "(:bpmmodel IS NULL OR b.bpm_model ILIKE '%' || :bpmmodel || '%') AND " // 💡 改為 ILIKE
+	        + "(CAST(:keywords AS text[]) IS NULL OR b.bpm_bis_item ILIKE ALL (CAST(:keywords AS text[]))) AND "
+	        + "(CAST(:excludeKeywords AS text[]) IS NULL OR NOT (b.bpm_bis_item ILIKE ANY (CAST(:excludeKeywords AS text[])))) " 
+	        + "ORDER BY b.bpm_nb ASC", nativeQuery = true)
+	ArrayList<BomProductManagement> findAllByAdvancedSearch(
+	        @Param("bpmnb") String bpmnb, 
+	        @Param("bpmmodel") String bpmmodel, 
+	        @Param("keywords") String[] keywords, 
+	        @Param("excludeKeywords") String[] excludeKeywords, 
+	        Pageable pageable);
 
 	// 檢查
 	@Query("SELECT c FROM BomProductManagement c "//

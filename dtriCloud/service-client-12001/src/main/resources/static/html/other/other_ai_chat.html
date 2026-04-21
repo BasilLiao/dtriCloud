@@ -34,7 +34,7 @@
 }
 
 #aiChatMessagesBox {
-	max-height: calc(100vh - 345px);
+	max-height: calc(100vh - 400px);
 	background-image: linear-gradient(to bottom, #f8f9fa, #e9ecef);
 }
 
@@ -140,6 +140,77 @@
 	margin-bottom: 10px;
 	font-size: 0.9rem;
 }
+/* 圖片預覽容器 */
+#imagePreviewBox {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-bottom: 10px;
+}
+
+/* 預覽縮圖樣式 */
+.preview-img-container {
+	position: relative;
+	width: 40px;
+	height: 40px;
+}
+
+.preview-img-container img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 5px;
+	border: 1px solid #dee2e6;
+}
+
+/* 刪除預覽圖的小按鈕 */
+.btn-remove-img {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	background: #dc3545;
+	color: white;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	font-size: 12px;
+	line-height: 18px;
+	text-align: center;
+	cursor: pointer;
+	border: none;
+}
+
+/* 語音播放按鈕動畫 */
+.btn-play-voice {
+	transition: transform 0.2s;
+}
+
+.btn-play-voice:active {
+	transform: scale(0.9);
+}
+/* 相機預覽容器 */
+#cameraPreviewContainer {
+	position: relative;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+	background: #000;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+#videoPreview {
+	width: 100%;
+	height: auto;
+	transform: scaleX(-1); /* 鏡像顯示，符合自拍習慣 */
+}
+
+/* 語音勾選框樣式優化 */
+.voice-check-label {
+	font-size: 0.9rem;
+	cursor: pointer;
+	user-select: none;
+}
 </style>
 <script src="./thirdparty/js/marked.min.js"></script>
 
@@ -156,7 +227,7 @@
 			class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
 			style="width: 95%;">
 			<div class="container-fluid py-3"
-				style="height: calc(100vh - 135px);">
+				style="min-height: calc(100vh - 135px);">
 				<div class="row h-100">
 
 					<!-- 對話紀錄 -->
@@ -178,14 +249,19 @@
 					<!-- 對話內容 -->
 					<div class="col-9 d-flex flex-column">
 						<div id="aiAcsBTypeGroup" class="btn-group mb-3" role="group">
+							<input type="radio" class="btn-check" name="acsbtype"
+								id="typeAMTI" value="AMTI"> <label
+								class="btn btn-outline-danger p-1" for="typeAMTI"> <i
+								class="bi bi-stars"></i> 多功能測試(Test)AI
+							</label>
 							<!-- 產品AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPDM" value="APDM"> <label
-								class="btn btn-outline-primary p-1" for="typeAPDM">APDM(產品)/AI</label>
+								class="btn btn-outline-primary p-1" for="typeAPDM">APDM(產品)AI</label>
 							<!-- 生管AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPMC" value="APMC" checked> <label
-								class="btn btn-outline-primary p-1" for="typeAPMC">PMC(生管)/AI</label>
+								class="btn btn-outline-primary p-1" for="typeAPMC">PMC(生管)AI</label>
 							<!-- 物控AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAMMC" value="AMMC"> <label
@@ -208,18 +284,85 @@
 							</div>
 						</div>
 
+
 						<div class="row g-2 align-items-end">
 							<div class="col">
-								<textarea id="acmContentInput" class="form-control" rows="3"
-									placeholder="請輸入問題..."></textarea>
+								<div id="imagePreviewBox"
+									class="p-2 mb-1 border rounded bg-white d-none"></div>
+								<div class="mt-1 mb-1 d-flex align-items-center gap-2">
+									<input class="form-check-input checkbox_16 m-0" type="checkbox"
+										id="checkExpert"> <label
+										class="form-check-label voice-check-label" for="checkExpert">
+										<i class="bi bi-patch-check-fill"></i> of Expert AI response
+										mode(專家 AI 回覆模式)
+									</label> <input class="form-check-input checkbox_16 m-0"
+										type="checkbox" id="checkAutoVoice"> <label
+										class="form-check-label voice-check-label"
+										for="checkAutoVoice"> <i class="bi bi-volume-up-fill"></i>
+										of AI-generated voice(自動播放 AI 回覆語音)
+									</label>
+								</div>
+								<div>
+									<textarea id="acmContentInput" class="form-control" rows="3"
+										placeholder="請輸入問題..."></textarea>
+								</div>
 							</div>
 							<div class="col-auto d-flex flex-column gap-2">
+								<input type="file" id="imageInput" accept="image/*" multiple
+									style="display: none;">
+								<!--  -->
+								<input type="file" id="fileInput"
+									accept=".pdf,.doc,.docx,.xls,.xlsx" multiple
+									style="display: none;">
+								<div class="col row p-0 m-0">
+									<button id="btnFileUpload"
+										class="col-6 btn btn-outline-warning px-2">
+										<i class="bi bi-file-earmark-medical-fill"></i> Doc
+									</button>
+									<button id="btnImageUpload"
+										class="col-6 btn btn-outline-info px-2">
+										<i class="bi bi-image"></i> Img
+									</button>
+								</div>
+								<button id="btnCamera" class="btn btn-outline-success px-4">
+									<i class="bi bi-camera-fill"></i> Camera
+								</button>
 								<button id="btnVoiceStart" class="btn btn-secondary px-4">
 									<i class="bi bi-mic-fill"></i> Voice
 								</button>
 								<button id="btnMessageSend" class="btn btn-primary px-4">
 									<i class="bi bi-send-fill"></i> Send(AC)
 								</button>
+							</div>
+						</div>
+
+						<div class="modal fade" id="cameraModal" data-bs-backdrop="static"
+							tabindex="-1">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+									<div class="modal-header bg-success text-white">
+										<h5 class="modal-title">
+											<i class="bi bi-camera"></i> 現場拍照辨識
+										</h5>
+										<button type="button" class="btn-close btn-close-white"
+											data-bs-dismiss="modal"></button>
+									</div>
+									<div class="modal-body text-center">
+										<div id="cameraPreviewContainer">
+											<video id="videoPreview" autoplay playsinline></video>
+											<canvas id="canvasCapture" style="display: none;"></canvas>
+										</div>
+										<p class="text-muted mt-2">請對準條碼或產品標籤</p>
+									</div>
+									<div class="modal-footer justify-content-center">
+										<button type="button" class="btn btn-secondary"
+											data-bs-dismiss="modal">取消</button>
+										<button type="button" id="btnCapture"
+											class="btn btn-primary btn-lg px-5">
+											<i class="bi bi-circle-fill"></i> 拍照
+										</button>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -239,6 +382,8 @@
 			markDetails: {},//有選取的IKeyGKey
 			entityFormatJson: {},//查詢格式
 			btn_send_auto: null,//自動傳送
+			selectedImages : [],// 在 other.data 中增加暫存圖片的陣列
+			selectedFiles: [], // 🚀 儲存 PDF/Word/Excel 資料
 			//換頁設置
 			searchPageSet: {
 				total: 1000,//批次數量(1-1000)
@@ -336,8 +481,138 @@
 				$("#btnNewChat").off().on("click", function() {
 				    other.methods.newChat();
 				});
+				
+				// 🚀 需求 2：點擊分頁時觸發 +New
+			    $("#aiAcsBTypeGroup input[name='acsbtype']").on("change", function() {
+			        console.log("切換 AI 模組，重置對話...");
+			        other.methods.newChat();
+			    });
 
+			    // 🚀 需求 1：檔案上傳處理
+			    $("#btnFileUpload").on("click", () => $("#fileInput").click());
+			    $("#fileInput").on("change", function(e) {
+			        const files = Array.from(e.target.files);
+			        files.forEach(file => {
+			            const reader = new FileReader();
+			            reader.onload = function(event) {
+			                // 將檔案存入 data (包含檔名與 Base64)
+			                other.data.selectedFiles.push({
+			                    name: file.name,
+			                    base64: event.target.result.split(',')[1],
+			                    type: file.type
+			                });
+			                other.methods.renderFilePreviews(); // 渲染檔案小圖示
+			            };
+			            reader.readAsDataURL(file);
+			        });
+			        $(this).val(""); 
+			    });
+				
+				
+
+				// 綁定圖片按鈕
+				$("#btnImageUpload").on("click", () => $("#imageInput").click());
+
+				// 處理檔案選取
+				$("#imageInput").on("change", function(e) {
+				    const files = Array.from(e.target.files);
+				    
+				    // 檢查總數是否超過 5 張
+				    if (other.data.selectedImages.length + files.length > 5) {
+				        alert("最多只能上傳 5 張圖片！");
+				        return;
+				    }
+
+				    files.forEach(file => {
+				        const reader = new FileReader();
+				        reader.onload = function(event) {
+				            const base64 = event.target.result;
+				            other.data.selectedImages.push(base64);
+				            other.methods.renderImagePreviews();
+				        };
+				        reader.readAsDataURL(file);
+				    });
+				    $(this).val(""); // 清空 input 以便重複選取
+				});
+				// [相機按鈕點擊]
+				$("#btnCamera").off().on("click", function() {
+				    other.methods.cameraOpen();
+				});
+
+				// [拍照按鈕點擊]
+				$("#btnCapture").off().on("click", function() {
+				    other.methods.cameraCapture();
+				});
+
+				// [Modal 關閉時停止攝影機]
+				$('#cameraModal').on('hidden.bs.modal', function () {
+				    other.methods.cameraStop();
+				});
+				
+				
 			},
+			// 渲染預覽圖
+			renderImagePreviews () {
+			    const $box = $("#imagePreviewBox");
+			    if (other.data.selectedImages.length > 0) {
+			        $box.removeClass("d-none");
+			        let html = "";
+			        other.data.selectedImages.forEach((img, index) => {
+			            html += `
+			                <div class="preview-img-container">
+			                    <img src="${img}">
+			                    <button class="btn-remove-img" onclick="other.methods.removeImage(${index})">×</button>
+			                </div>`;
+			        });
+			        $box.html(html);
+			    } else {
+			        $box.addClass("d-none");
+			    }
+			},
+
+			// 移除單張圖片
+			removeImage(index) {
+			    other.data.selectedImages.splice(index, 1);
+			    other.methods.renderImagePreviews();
+			},
+			renderFilePreviews() {
+			    const $box = $("#imagePreviewBox"); // 複用圖片預覽盒
+			    // 先清空再重新渲染 (包含圖片與檔案)
+			    $box.removeClass("d-none").html("");
+			    
+			    // 渲染圖片
+			    other.data.selectedImages.forEach((img, index) => {
+			        $box.append(`
+			            <div class="preview-img-container">
+			                <img src="${img}">
+			                <button class="btn-remove-img" onclick="other.methods.removeImage(${index})">×</button>
+			            </div>`);
+			    });
+
+			    // 🚀 渲染檔案圖示
+			    other.data.selectedFiles.forEach((file, index) => {
+			        let icon = "bi-file-earmark-text";
+			        if(file.name.includes("pdf")) icon = "bi-file-earmark-pdf text-danger";
+			        if(file.name.includes("xls")) icon = "bi-file-earmark-excel text-success";
+			        if(file.name.includes("doc")) icon = "bi-file-earmark-word text-primary";
+
+			        $box.append(`
+			            <div class="preview-img-container border bg-light d-flex align-items-center justify-content-center" title="${file.name}">
+			                <i class="bi ${icon}" style="font-size: 1.5rem;"></i>
+			                <button class="btn-remove-img" onclick="other.methods.removeFile(${index})">×</button>
+			            </div>`);
+			    });
+
+			    if(other.data.selectedImages.length === 0 && other.data.selectedFiles.length === 0) {
+			        $box.addClass("d-none");
+			    }
+			},
+
+			removeFile(index) {
+			    other.data.selectedFiles.splice(index, 1);
+			    other.methods.renderFilePreviews();
+			},
+			
 			datetimepickerDate() {
 				//日期時間格式
 				$('#search_c_item .datetimepicker').remove();
@@ -381,44 +656,37 @@
 			renderMessage(msg) {
 			    console.log("renderMessage()");
 			    let alignment = msg.role === 'USER' ? 'ms-auto bg-primary text-white' : 'me-auto bg-white border';
-			    
-			    // 1. 將 Markdown 轉換成 HTML
 			    let formattedContent = (msg.role === 'ASSISTANT') ? marked.parse(msg.acmcontent) : msg.acmcontent;
 			    
-			    // 🌟 新增：偵測是否有表格，如果有則加上下載按鈕
-			    let downloadBtnHtml = "";
-			    if (msg.role === 'ASSISTANT' && formattedContent.includes("<table")) {
-			        // 產生一個隨機 ID 方便定位這個表格
-			        let tableId = "table_" + Math.random().toString(36).substr(2, 9);
-			        
-			        // 在 HTML 中注入 ID (利用取代的方式)
-			        formattedContent = formattedContent.replace("<table", `<table id="${tableId}"`);
-			        
-			        // 下載按鈕的 HTML
-			        downloadBtnHtml = `
-			            <div class="mt-2 mb-2 text-end">
-			                <button class="btn btn-sm btn-outline-success" onclick="other.methods.exportTableToExcel('${tableId}', 'DTR_Schedule_${other.methods.formatDate(new Date()).split(' ')[0]}')">
-			                    <i class="bi bi-file-earmark-excel"></i> 下載 Excel 表格
-			                </button>
-			            </div>
-			        `;
+			    // 🚀 1. 處理圖片顯示 (如果 acmidata 有值)
+			    let imageHtml = "";
+			    if (msg.acmidata) {
+			        // 後端 Bytea 回傳通常是 Base64，直接顯示
+			        imageHtml = `<div class="mb-2"><img src="data:image/jpeg;base64,${msg.acmidata}" class="img-fluid rounded border" style="max-height: 200px;"></div>`;
 			    }
-			    
-			    let voiceHtml = (msg.voiceMetadata) ? `<small class="d-block mt-1 text-info"><i class="bi bi-play-circle"></i> ${msg.voiceMetadata.avmduration}s</small>` : '';
-			    let excelHtml = (msg.acmmtype === 'EXCEL') ? `<div class="mt-2"><a href="${msg.acmaurl}" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-excel"></i> 下載排程報表</a></div>` : '';
-			    let formattedDate = other.methods.formatDate(msg.acmcat);
-			
+
+			    // 🚀 2. 處理語音播放 (如果 acmvdata 有值)
+			    let voiceHtml = "";
+			    if (msg.acmvdata) {
+			        let audioId = "audio_" + msg.id;
+			        voiceHtml = `
+			            <div class="mt-2">
+			                <audio id="${audioId}" src="data:audio/wav;base64,${msg.acmvdata}"></audio>
+			                <button class="btn btn-sm btn-info text-white btn-play-voice" onclick="document.getElementById('${audioId}').play()">
+			                    <i class="bi bi-play-fill"></i> 播放 AI 語音
+			                </button>
+			            </div>`;
+			    }
+
 			    return `
 			        <div class="d-flex mb-3">
-			            <div class="p-3 rounded shadow-sm ${alignment}" style="max-width: 90%; overflow-wrap: break-word;">
-			                ${downloadBtnHtml} 
-			                <div class="markdown-body">${formattedContent}</div> 
+			            <div class="p-3 rounded shadow-sm ${alignment}" style="max-width: 90%;">
+			                ${imageHtml}
+			                <div class="markdown-body">${formattedContent}</div>
 			                ${voiceHtml}
-			                ${excelHtml}
-			                <small class="d-block text-end mt-1 opacity-75">${formattedDate}</small>
+			                <small class="d-block text-end mt-1 opacity-75">${other.methods.formatDate(msg.acmcat)}</small>
 			            </div>
-			        </div>
-			    `;
+			        </div>`;
 			},
 			//新增對話
 			newChat() {
@@ -439,10 +707,59 @@
 			    `);
 
 			    // 4. 重設上方的 Tag (預設跳回生管 PMC)
-			    $("#typeAPMC").prop("checked", true);
+			   // $("#typeAPMC").prop("checked", true);
 
 			    // 5. 聚焦到輸入框
 			    $("#acmContentInput").val("").focus();
+			},
+			// 開啟相機
+			cameraOpen() {
+			    const video = document.getElementById('videoPreview');
+			    navigator.mediaDevices.getUserMedia({ 
+			        video: { facingMode: "environment" }, // 優先使用後鏡頭
+			        audio: false 
+			    })
+			    .then(stream => {
+			        other.data.cameraStream = stream;
+			        video.srcObject = stream;
+			        $('#cameraModal').modal('show');
+			    })
+			    .catch(err => {
+			        alert("無法開啟相機，請檢查瀏覽器權限。");
+			        console.error(err);
+			    });
+			},
+
+			// 停止相機
+			cameraStop() {
+			    if (other.data.cameraStream) {
+			        other.data.cameraStream.getTracks().forEach(track => track.stop());
+			        other.data.cameraStream = null;
+			    }
+			},
+
+			// 執行拍照
+			cameraCapture() {
+			    const video = document.getElementById('videoPreview');
+			    const canvas = document.getElementById('canvasCapture');
+			    const context = canvas.getContext('2d');
+
+			    // 設定畫布大小與影片一致
+			    canvas.width = video.videoWidth;
+			    canvas.height = video.videoHeight;
+			    
+			    // 繪製影像
+			    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+			    
+			    // 轉為 Base64
+			    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+			    
+			    // 加入暫存陣列並渲染預覽
+			    other.data.selectedImages.push(base64Image);
+			    other.methods.renderImagePreviews();
+			    
+			    // 關閉 Modal
+			    $('#cameraModal').modal('hide');
 			},
 			//==========================修改資料==========================
 			searchToModify(order) {
@@ -453,48 +770,43 @@
 			},
 			//==========================傳送資料==========================
 			messageSend() {
-				console.log("messageSend()");
-				let content = $("#acmContentInput").val().trim();
-				let bType = $("input[name='acsbtype']:checked").val();
-				
-				if (content === "") {
-			        console.warn("Message content is empty.");
-			        return;
-			    }
-				// 1. 準備請求資料 (符合你後端的 AiChatRequest 物件). 深拷貝範本，避免污染原始 entityFormatJson
-			    // 這樣每次發送都是一個乾淨的、基於後端結構的新物件
-			    let chatReq = JSON.parse(JSON.stringify(other.data.entityFormatJson));
-				console.log(chatReq);
-				chatReq['acsid'] = other.data.currentSessionId  || 0; // 如果是新會話，傳 0 或 null
-				chatReq['acsbtype'] = bType;//哪個類型AI模塊-生管、物控等代號
-				chatReq['aichatmessages'][0]['acmcontent'] = content;
-				chatReq['aichatmessages'][0]['acmmtype'] = "TEXT";// 預設為文字
-				
+			    let content = $("#acmContentInput").val().trim();
+			    let bType = $("input[name='acsbtype']:checked").val();
+			    let isAutoVoice = $("#checkAutoVoice").is(":checked"); // 取得勾選狀態
+			    let isExpert = $("#checkExpert").is(":checked"); // 取得勾選狀態
 			    
-			 	// 3. 包裝成 PackageBean 格式
-			    let data = {
-			        entityJson: JSON.stringify(chatReq),
-			        callBackFunction: "other_modify" 
-			    };
-			    let req_data = {
-		            data: data,
-		            url: $('#nav_functional_unit').attr('title') + ".basil.AC", // AC 通常代表 Action - Create
-		            type: "POST",
-		            
-		        };
-
-		        // 5. UI 互動：清空並聚焦
-		        $("#acmContentInput").val("").focus();
-		        
-		        // 6. 模擬前端立即顯示 (Optional: 讓使用者感覺反應很快)
-		        // other.methods.appendUserMessage(content);
-			        
-				// 7. 送出 AJAX
-			    console.log("AJAX Sending:", chatReq);
-			    main.methods.ajaxSend(req_data, true);
-				
-				// 8. 清空輸入框並鎖定
-				$("#acmContentInput").val("");
+			
+			    if (content === "" && other.data.selectedImages.length === 0) return;
+			
+			    let chatReq = JSON.parse(JSON.stringify(other.data.entityFormatJson));
+			    chatReq['acsid'] = other.data.currentSessionId || 0;
+			    chatReq['acsbtype'] = bType;
+			    
+			
+			    let firstMsg = chatReq['aichatmessages'][0];
+			    // 🚀 使用 acmvon 暫存「是否需要語音回覆」的標籤給後端 Service 判斷
+			    firstMsg['acmvon'] = isAutoVoice ? true : false;
+			    firstMsg['acmeon'] = isExpert ? true : false;
+			    firstMsg['acmcontent'] = content;
+			
+			    if (other.data.selectedImages.length > 0) {
+			        firstMsg['acmmtype'] = "IMAGE";
+			        // 傳送第一張照片的二進位資料
+			        firstMsg['acmidata'] = other.data.selectedImages[0].split(',')[1];
+			    } else {
+			        firstMsg['acmmtype'] = "TEXT";
+			        firstMsg['acmidata'] = null;
+			    }
+			
+			    main.methods.ajaxSend({
+			        data: { entityJson: JSON.stringify(chatReq), callBackFunction: "other_modify" },
+			        url: $('#nav_functional_unit').attr('title') + ".basil.AC",
+			        type: "POST"
+			    }, true);
+			
+			    other.data.selectedImages = [];
+			    other.methods.renderImagePreviews();
+			    $("#acmContentInput").val("").focus();
 			},
 			// ========================== 語音功能處理 ==========================
 			voiceToggle() {
@@ -803,6 +1115,17 @@
 			    // 5. 自動捲動到底部
 			    let box = document.getElementById("aiChatMessagesBox");
 			    if(box) box.scrollTop = box.scrollHeight;
+			    
+
+			    // 🚀 檢查是否勾選自動播放 且 該則訊息有語音資料
+			    let lastMsg = updatedSession.aichatmessages[updatedSession.aichatmessages.length - 1];
+			    if ($("#checkAutoVoice").is(":checked") && lastMsg.acmvdata) {
+			        console.log("自動播放 AI 語音...");
+			        setTimeout(() => {
+			            let audioEl = document.getElementById("audio_" + lastMsg.id);
+			            if (audioEl) audioEl.play();
+			        }, 500); // 稍微延遲確保 DOM 已渲染
+			    }
 			},
 			sessionListReturn() {
 			    console.log("sessionListReturn()");

@@ -1193,6 +1193,7 @@
 						$("#sphbpmmodel input").val(entity.find(".bpmmodel").text());
 						$("#sphbpmtype input").val(entity.find(".bpmtype").text());
 						$("#sphbpmtypename input").val(entity.find(".bpmtypename").text());
+						$("#sphbpmtypename_val").text(entity.find('.bpmtypename').text());//產品類型 
 						//產品資訊
 						let bpmbisitem = entity.find(".bpmbisitem").text();//產品資訊
 						let sphbisitemJson = JSON.parse(bpmbisitem);
@@ -2052,6 +2053,7 @@
 
 					//例遍 欄位
 					let entity = entityJsons[0];
+					console.log(entity);
 					Object.keys(entity).forEach(function (k) {
 						//btnAutoOrder
 						//略過 sphscpackage / 
@@ -2068,6 +2070,7 @@
 						} else if (k === "sphbpsuser") {
 							//負責人
 							$("#sphbpsuser_val").text(entity[k]);
+							
 						} else if (k === "sphbisitem") {
 							//產品資訊
 							let sphbisitemJson = JSON.parse(entity[k]);
@@ -2153,7 +2156,7 @@
 			//==========================回傳接收==========================
 			otherReturn() {
 				//查詢回傳
-				//console.log("searchReturn:" + new Date());
+				console.log("searchReturn:" + new Date());
 				//Step4.分頁歸位
 				if (main.resq_data['entityJson'].length > 0) {
 					let searchPageSet = JSON.parse(main.resq_data['searchPageSet']);

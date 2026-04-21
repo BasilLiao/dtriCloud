@@ -160,14 +160,14 @@ public class SynchronizeBomService {
 						erpBommds.put(bommd.getMd001() + "-" + bommd.getMd002(), bommd);
 						bbisnnb.add(bommd.getMd001() + "-" + bommd.getMd002());// 成品號-序號
 						// 測試
-//						if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("81-105-30211G-0010")) {
-//							System.out.println("81-105-30211G-0010");
-//						}
+						if ((bommd.getMd001() + "-" + bommd.getMd002()).equals("89-300-0000000-0010")) {
+							System.out.println("81-105-30211G-0010");
+						}
 					});
 					// Cloud 取出比對
 					boms.forEach(o -> {
 						// 測試
-//						if (o.getBbisnnb().equals("81-105-30211G-0010")) {
+//						if (o.getBbisnnb().equals("89-300-0000000-0010")) {
 //							System.out.println(o.getBbisnnb());
 //						}
 						if (erpBommds.containsKey(o.getBbisnnb())) {

@@ -1588,6 +1588,9 @@
 									entityJson['somcnote'] = $(this).find(".mfy_somcnote_val").val().replace(/\t/g, "");;
 									action = "S2";
 								} else {
+									alert("日期格式錯誤 (YYYY-MM-DD)\nInvalid date format");
+									//觸發按鈕
+									$("#btn_markCancel").trigger('click');
 									entityJsons = [];//清除
 									return false;  // Invalid format
 								}

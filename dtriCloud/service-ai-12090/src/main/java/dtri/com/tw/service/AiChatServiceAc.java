@@ -3,11 +3,13 @@ package dtri.com.tw.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +59,10 @@ public class AiChatServiceAc {
 	private QdrantSyncService qdrantSyncService;
 
 	@Autowired
-	private ScheduleInfactoryForAiChatService aboutScheduleInfactory;
+	private ScheduleOutInfactoryForAiChatService aboutScheduleInfactory;
 
 	@Autowired
-	private BomProductManagementForAiChatService aboutBomProduct;
+	private BomProductForAiChatService aboutBomProduct;
 
 	@Autowired
 	ScheduleInfactoryForQdrantService scheduleInfactoryForQdrantService;
@@ -176,8 +178,9 @@ public class AiChatServiceAc {
 		return packageBean;
 	}
 
-	/** 新增資料 (包含語音辨識與 AI 分析) */
-	/** 新增資料 (核心：串接 5090 耳朵、眼睛、大腦) */
+	/**
+	 * * 新增資料 (核心：串接 5090 耳朵、眼睛、大腦、嘴巴) 支援：語音辨識(STT)、視覺辨識(Vision)、邏輯分析(LLM)、語音合成(TTS)
+	 */
 	@Transactional
 	public PackageBean setAdd(PackageBean packageBean) throws Exception {
 		// ======================= 1. 資料解析 =======================
@@ -189,28 +192,74 @@ public class AiChatServiceAc {
 		}
 
 		AiChatMessages userMsgInput = inputSession.getAichatmessages().get(0);
-		String finalContent = userMsgInput.getAcmcontent();
+		String finalContent = userMsgInput.getAcmcontent(); // 使用者輸入的文字
+		String mType = userMsgInput.getAcmmtype(); // 訊息類型 (TEXT, VOICE, IMAGE)
 
-		// ======== 2. 耳朵處理 (STT - 呼叫 5090 Whisper)========
-		if ("VOICE".equals(userMsgInput.getAcmmtype())) {
+		// ======================= 🚀 2. 語系判定 (關鍵步驟) =======================
+		// 取得使用這語系zh-TW / zh-CN / en-US / vi-VN
+		// 取得使用者語系 (例如: "zh-TW", "en-US", "vi-VN" 或 null)
+		String rawUserLg = packageBean.getUserLanguaue();
+
+		// 定義最終要給 5090 AI 使用的語系列舉
+		AiDtrService.VoiceLang targetLang;
+
+		if (rawUserLg == null || rawUserLg.isBlank()) {
+			// A. 如果沒有語系資料，預設使用英文
+			targetLang = AiDtrService.VoiceLang.EN_US;
+			log.info("[AI整合] 使用者語系為空，預設降級為: EN_US");
+		} else if (rawUserLg.contains("zh")) {
+			// B. 包含 zh (zh-TW, zh-CN) 皆判定為中文
+			targetLang = AiDtrService.VoiceLang.ZH_TW;
+		} else if (rawUserLg.contains("vi")) {
+			// C. 包含 vi (vi-VN) 判定為越南文
+			targetLang = AiDtrService.VoiceLang.VI_VN;
+		} else if (rawUserLg.contains("en")) {
+			// D. 包含 en (en-US, en-GB) 判定為英文
+			targetLang = AiDtrService.VoiceLang.EN_US;
+		} else {
+			// E. 沒對到 (例如 fr-FR)，預設使用英文
+			targetLang = AiDtrService.VoiceLang.EN_US;
+			log.info("[AI整合] 未定義語系 {}, 預設降級為: EN_US", rawUserLg);
+		}
+		log.info("[AI整合] 最終判定語系為: {} (Code: {})", targetLang, targetLang.getShortCode());
+
+		// ======== 2. 感官預處理 (耳朵 STT / 眼睛 Vision) ========
+		byte[] userVoiceBytes = userMsgInput.getAcmvdata(); // 取得語音二進位
+		byte[] userImageBytes = userMsgInput.getAcmidata(); // 取得圖片二進位
+
+		// A. 耳朵處理 (STT - 呼叫 5090 Whisper)
+		if ("VOICE".equals(mType) && userVoiceBytes != null) {
 			try {
-				log.info("[AI整合] 收到語音訊息，準備呼叫 5090 Whisper...");
-				// A. 將 Base64 轉為臨時實體檔案，因為 DtrAiService 需要路徑
-				byte[] audioBytes = Base64.getDecoder().decode(userMsgInput.getAcmaurl());
-				File tempFile = File.createTempFile("dtr_voice_", ".mp3");
+				log.info("[AI整合] 收到語音訊息 (Size: {} bytes)，準備呼叫 5090 Whisper...", userVoiceBytes.length);
+				File tempFile = File.createTempFile("dtr_voice_", ".wav");
 				try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-					fos.write(audioBytes);
+					fos.write(userVoiceBytes);
 				}
-
-				// B. 呼叫 5090 耳朵
 				finalContent = dtrAiService.processAudio(tempFile.getAbsolutePath());
-				tempFile.delete(); // 用完即刪
-
+				tempFile.delete();
 				if (finalContent == null || finalContent.isBlank())
 					finalContent = "[語音辨識內容為空]";
 			} catch (Exception e) {
 				log.error("Whisper 辨識失敗: {}", e.getMessage());
 				finalContent = "[語音服務暫時不可用]";
+			}
+		}
+		// B. 眼睛處理 (Vision - 呼叫 5090 Gemma 3 Vision)
+		else if ("IMAGE".equals(mType) && userImageBytes != null) {
+			try {
+				log.info("[AI整合] 收到圖片訊息 (Size: {} bytes)，準備視覺分析...", userImageBytes.length);
+				File tempImg = File.createTempFile("dtr_vision_", ".jpg");
+				try (FileOutputStream fos = new FileOutputStream(tempImg)) {
+					fos.write(userImageBytes);
+				}
+				List<String> paths = new ArrayList<>();
+				paths.add(tempImg.getAbsolutePath());
+				// 將圖片與使用者問題一起送給 5090 眼睛
+				finalContent = dtrAiService.processImage(paths, finalContent);
+				tempImg.delete();
+			} catch (Exception e) {
+				log.error("視覺辨識失敗: {}", e.getMessage());
+				finalContent = "[視覺辨識暫時不可用]";
 			}
 		}
 
@@ -228,76 +277,84 @@ public class AiChatServiceAc {
 			currentSession = aiChatSessionsDao.findById(inputSession.getAcsid()).get();
 		}
 
-		// 儲存 USER 訊息
+		// 儲存 USER 訊息 (包含二進位原始數據)
 		AiChatMessages userMsg = new AiChatMessages();
 		userMsg.setAcmsessions(currentSession);
 		userMsg.setRole(MessageRole.USER);
 		userMsg.setAcmcontent(finalContent);
-		userMsg.setAcmmtype(userMsgInput.getAcmmtype());
+		userMsg.setAcmmtype(mType);
+		userMsg.setAcmvdata(userVoiceBytes); // 存入語音 Bytea
+		userMsg.setAcmidata(userImageBytes); // 存入圖片 Bytea
 		userMsg.setSyscuser(packageBean.getUserAccount());
 		aiChatMessagesDao.save(userMsg);
 
-		// 如果是語音，額外存元數據
-		if ("VOICE".equals(userMsgInput.getAcmmtype())) {
-			AiVoiceMetadata voice = new AiVoiceMetadata();
-			voice.setAichatmessages(userMsg);
-			voice.setAvmttext(finalContent);
-			voice.setAvmvmodel("Whisper-v3-5090");
-			aiVoiceMetadataDao.save(voice);
-		}
-
-		// ======== 4. 大腦分析 (DeepSeek - 結合排程數據) ========
-
-		// 4.1 指定對話類型?生管?物控?製造?倉庫?產品
-		/**
-		 * 會話業務類型 (Session Business Type) 作用：區分詢問的專業領域，例如：PMC(生管), MC(物控), PUR(採購)。
-		 * 實務：這會決定後端串接 AI 時，要餵給 AI 什麼樣的「系統指令(System Prompt)」。<br>
-		 * <br>
-		 * 生管AI管理人 APMC 生管 (Production Management & Control) 專精於生產排程、工單優先級與產能利用率分析。<br>
-		 * 物控AI管理人 AMMC 物控 (Material Control) 專精於庫存水位、物料需求計畫 (MRP) 與缺料預警。<br>
-		 * 採購AI管理人 APUR 採購 (Purchasing) 專精於供應商交期、採購單狀態與採購成本分析。<br>
-		 * 倉儲AI管理人 AWMS 倉儲 (Warehouse Management) 專精於入庫/出庫效率、儲位優化與盤點準確性。<br>
-		 * // PMC, MC, PUR, QC...
-		 * 
-		 */
+		// ======== 4. 大腦分析 (Gemma - 結合業務數據) ========
 		log.info("[AI整合] 當前業務類型: {}，正在準備對應數據...", currentSession.getAcsbtype());
 
-		String brainPrompt = "";
 		String bType = currentSession.getAcsbtype() == null ? "GENERAL" : currentSession.getAcsbtype();
 		Boolean checkOK = true;
-		String aiCleanAnswer = "";
-		String intentPrompt = "";
-		String jsonIntentRaw = "";
-		String cleanJson = "";
-		// 測試用-向量 資料庫->查詢->因目前尚未有此模糊查詢需求
-		// qdrantSyncService.searchInQdrant("90-302");
+
+		String intentPrompt = "";// 語意分析(使用者)
+		String jsonIntentRaw = "";// KeyWord(大腦)
+		String brainPrompt = "";// 查詢到的資料
+
+		String intentLastPrompt = "";// 語意分析(專家)
+		String jsonIntentLastRaw = "";// 專家講解(大腦)
+		// String translation = "";// 已經翻譯好的資料
+		String aIsuggestion = "";// AI語音用
+
+		String aiCleanAnswer = "";// 回傳訊息
 
 		// 使用 Switch 根據業務類型 (PMC, MC, PUR...) 切換數據抓取邏輯
 		switch (bType) {
 		case "APMC": // 生管 (Production Management & Control)
 			log.info("[AI整合] 執行 PMC 生管分析邏輯...");
-
-			// --- Step 1: 讓 AI 分析條件查詢 (Intent Extraction) ---
+			/**
+			 * 流程: Step1.System[語意補強](extractSearchIntent) -> <br>
+			 * Step2.AI[大腦思考]取得KeyWord(processText) -> <br>
+			 * Step3.System提取[Cloud資料] & 整理資料 -> <br>
+			 * Step4.System[語意補強]取得專家腳色(getExpertAdvice) -> <br>
+			 * Step5.AI[大腦思考]取得專業建議 & 翻譯(processText)-> <br>
+			 * 
+			 **/
+			// 語意補強
 			intentPrompt = aboutScheduleInfactory.extractSearchIntent(finalContent);
+			// [大腦思考] 取得大腦回傳資料後 資料提取 & 格式
 			jsonIntentRaw = dtrAiService.processText(intentPrompt);
+			// 提取Cloud資料 & 整理資料(如果沒資料則 回傳空)
+			brainPrompt = aboutScheduleInfactory.getScheduleInfactoryForAi(jsonIntentRaw, finalContent);
+			// 專家模式
+			if (!brainPrompt.equals("") && userMsgInput.getAcmeon()) {
+				// 語意補強 專業建議
+				intentLastPrompt = aboutScheduleInfactory.getExpertAdvice(brainPrompt, finalContent, targetLang);
+				// 最終 專業建議[大腦思考]
+				jsonIntentLastRaw = dtrAiService.processText(intentLastPrompt);
 
-			// 💡 關鍵：清洗 Markdown 標籤，只抓 JSON 核心
-			// 簡單提取 JSON 內容 (如果回傳是原始 JSON)
-			cleanJson = dtrAiService.cleanJson(extractContent(jsonIntentRaw));
+				try {
+					// 嘗試從 JSON 提取建議
+					aIsuggestion = JsonParser.parseString(jsonIntentLastRaw).getAsJsonObject().get("aIsuggestion")
+							.getAsString();
+				} catch (Exception e) {
+					// 若不是 JSON 或解析失敗，將整串文字視為建議，並強行修正為 JSON 格式
+					aIsuggestion = jsonIntentLastRaw;
+					jsonIntentLastRaw = String.format("{\"aIsuggestion\":\"%s\"}",
+							aIsuggestion.replace("\"", "\\\"").replace("\n", " "));
+				}
 
-			// --- Step 2: 如果分析失敗 (格式不對或抓不到括號) ---
-			if (!cleanJson.startsWith("{") || !cleanJson.endsWith("}")) {
-				aiCleanAnswer = "抱歉，我無法精準解析您的查詢條件，請提供更具體的單號、品名或狀態（例如：請幫我查 A521 且已開工的單子）";
-				checkOK = false;
-			} else {
-				brainPrompt = aboutScheduleInfactory.getScheduleInfactoryForAi(cleanJson, currentSession, packageBean,
-						finalContent);
+				// 取得 JSON(translation 翻譯)(aIsuggestion 專家建議)
+				JsonObject intentJson = JsonParser.parseString(jsonIntentLastRaw).getAsJsonObject();
+				// AI語音用(專家說明)
+				if (!intentJson.get("aIsuggestion").isJsonNull()) {
+					aIsuggestion = intentJson.get("aIsuggestion").getAsString();
+				}
+				//
+				brainPrompt += "\n\n---\n\n";
+				brainPrompt += aIsuggestion;
 			}
 			break;
 
 		case "AMMC": // 物控 (Material Control)
 			log.info("[AI整合] 執行 MC 物控分析邏輯 (預留區)...");
-			// 未來這裡呼叫 aboutMaterialControl.getMaterialForAi(...)
 			brainPrompt = "目前為物控測試模式。使用者問題: " + finalContent;
 			break;
 
@@ -313,51 +370,100 @@ public class AiChatServiceAc {
 
 		case "APDM": // 產品管理 (Product Management / BOM 規格)
 			log.info("[AI整合] 執行 PM 產品規格分析...");
-
-			// 1. 讓 8002 埠位解析使用者的搜尋意圖
+			// 語意補強
 			intentPrompt = aboutBomProduct.extractProductIntent(finalContent);
+			// [大腦思考] 取得大腦回傳資料後 資料提取 & 格式
 			jsonIntentRaw = dtrAiService.processText(intentPrompt);
-			cleanJson = dtrAiService.cleanJson(extractContent(jsonIntentRaw));
+			// 提取Cloud資料 & 整理資料(如果沒資料則 回傳空)
+			brainPrompt = aboutBomProduct.getBomProductForAi(jsonIntentRaw, finalContent);
+			if (!brainPrompt.equals("") && userMsgInput.getAcmeon()) {
+				// 語意補強 專業建議
+				intentLastPrompt = aboutBomProduct.getProductExpertAdvice(brainPrompt, finalContent, targetLang);
+				// 最終 專業建議[大腦思考]
+				jsonIntentLastRaw = dtrAiService.processText(intentLastPrompt);
 
-			// --- Step 2: 如果分析失敗 (格式不對或抓不到括號) ---
-			if (!cleanJson.startsWith("{") || !cleanJson.endsWith("}")) {
-				aiCleanAnswer = "抱歉，我無法精準解析您的查詢條件。請嘗試提供更具體的品號或型號（例如：『請幫我查 90-320 的規格』或『DT135WN 配什麼 CPU？』）";
-				checkOK = false;
-			} else {
-				// 3. 呼叫 Service 抓取資料庫數據並轉為 Markdown 表格
-				String bomTableContext = aboutBomProduct.getBomProductForAi(cleanJson, finalContent);
-
-				// 💡 4. 進階優化：讓 AI 結合表格回答問題 (RAG 最終步驟)
-				// 如果查不到資料，bomTableContext 裡面已經有提示文字了
-				if (bomTableContext.contains("⚠️") || bomTableContext.contains("查無")) {
-					brainPrompt = bomTableContext;
-				} else {
-					// 有資料
-					brainPrompt = bomTableContext;
-
+				try {
+					// 嘗試從 JSON 提取建議
+					aIsuggestion = JsonParser.parseString(jsonIntentLastRaw).getAsJsonObject().get("aIsuggestion")
+							.getAsString();
+				} catch (Exception e) {
+					// 若不是 JSON 或解析失敗，將整串文字視為建議，並強行修正為 JSON 格式
+					aIsuggestion = jsonIntentLastRaw;
+					jsonIntentLastRaw = String.format("{\"aIsuggestion\":\"%s\"}",
+							aIsuggestion.replace("\"", "\\\"").replace("\n", " "));
 				}
+
+				// 取得 JSON(translation 翻譯)(aIsuggestion 專家建議)
+				JsonObject intentJson = JsonParser.parseString(jsonIntentLastRaw).getAsJsonObject();
+
+				// AI語音用(專家說明)
+				if (!intentJson.get("aIsuggestion").isJsonNull()) {
+					aIsuggestion = intentJson.get("aIsuggestion").getAsString();
+				}
+				//
+				brainPrompt += "\n\n---\n\n";
+				brainPrompt += aIsuggestion;
+
 			}
 
 			break;
 
 		default: // 通用模式
 			log.warn("[AI整合] 未知業務類型，使用通用 Prompt 處理");
-			brainPrompt = "你現在是 DTR 綜合助理。請回答使用者問題: " + finalContent;
+			brainPrompt = dtrAiService.processText("你現在是 DTR 綜合助理。請回答: " + finalContent);
 			break;
 		}
+		// 無資料應用
+		if (brainPrompt.equals("")) {
+			aiCleanAnswer = "⚠️ 在資料庫中找不到與 『" + finalContent + "』 相關的資訊。 \n\n";
+			aiCleanAnswer += "系統條件 : " + jsonIntentRaw + "\n\n";
+			checkOK = false;
+		}
 
-		// 解析成功?
 		if (checkOK) {
-			log.info("[AI整合] 回傳...");
 			aiCleanAnswer = brainPrompt;
 		}
 
-		// ======================= 5. 儲存 AI 回覆並返回 =======================
+		// ======== 5. 嘴巴合成 (TTS - 讓 AI 回覆自動語音播放) ========
+		byte[] aiVoiceBytes = null;
+		// 使否有藥用語音
+		if (userMsgInput.getAcmvon() && !aIsuggestion.equals("")) {
+			try {
+				// 🚀 取得目前專案根目錄
+				String projectPath = System.getProperty("user.dir");
+				String tempDir = projectPath + File.separator + "temp_voice";
+
+				// 🚀 確保暫存資料夾存在
+				File dir = new File(tempDir);
+				if (!dir.exists()) {
+					dir.mkdirs();
+					log.info("[系統] 建立語音暫存資料夾: {}", tempDir);
+				}
+
+				String voiceFileName = "DTR_TTS_" + UUID.randomUUID().toString().substring(0, 8);
+
+				// 🚀 呼叫 5090 合成音檔至專案暫存區
+				dtrAiService.downloadVoice(aIsuggestion, voiceFileName, targetLang, tempDir);
+
+				// 🚀 讀取合成好的音檔並存入資料庫 (Bytea)
+				File voiceFile = new File(tempDir + File.separator + voiceFileName + ".mp3");
+				if (voiceFile.exists()) {
+					aiVoiceBytes = Files.readAllBytes(voiceFile.toPath());
+					log.info("[嘴巴] 音檔已轉為二進位並準備入庫，大小: {} bytes", aiVoiceBytes.length);
+
+					voiceFile.delete(); // 🚀 存入 DB 後立即刪除專案內的暫存檔，保持乾淨
+				}
+			} catch (Exception e) {
+				log.warn("[嘴巴] 合成或讀取失敗，僅回傳文字: {}", e.getMessage());
+			}
+		}
+		// ======================= 6. 儲存 AI 回覆並返回 =======================
 		AiChatMessages aiResMsg = new AiChatMessages();
 		aiResMsg.setAcmsessions(currentSession);
 		aiResMsg.setRole(MessageRole.ASSISTANT);
 		aiResMsg.setAcmcontent(aiCleanAnswer);
-		aiResMsg.setAcmmtype("TEXT");
+		aiResMsg.setAcmmtype("VOICE"); // 標註為語音類型，觸發前端播放按鈕
+		aiResMsg.setAcmvdata(aiVoiceBytes); // 存入回覆語音 Bytea
 		aiResMsg.setSyscuser("DEEPSEEK_5090");
 		aiChatMessagesDao.save(aiResMsg);
 
@@ -414,20 +520,6 @@ public class AiChatServiceAc {
 	// @Transactional
 	public PackageBean getReport(PackageBean packageBean) throws Exception {
 		return packageBean;
-	}
-
-	/** 輔助：提取回傳 JSON 中的文字內容 */
-	private String extractContent(String jsonResponse) {
-		try {
-			JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
-			if (json.has("choices")) {
-				return json.getAsJsonArray("choices").get(0).getAsJsonObject().get("message").getAsJsonObject()
-						.get("content").getAsString();
-			}
-			return jsonResponse;
-		} catch (Exception e) {
-			return jsonResponse;
-		}
 	}
 
 	/**
@@ -491,6 +583,28 @@ public class AiChatServiceAc {
 		packageBean.setEntityJson(packageService.beanToJson(history));
 
 		return packageBean;
+	}
+
+	/**
+	 * 當前端傳來 Base64 字串時（例如語音或上傳圖片），你需要將其解碼為 byte[] 再存入 Entity。
+	 */
+	@Transactional
+	public void saveMessageWithBinary(AiChatSessions session, String base64Content, String type) {
+		AiChatMessages msg = new AiChatMessages();
+		msg.setAcmsessions(session);
+		msg.setRole(AiChatMessages.MessageRole.USER);
+		msg.setAcmmtype(type);
+
+		// 🚀 將前端傳來的 Base64 轉為二進位存入資料庫
+		byte[] binaryData = Base64.getDecoder().decode(base64Content);
+
+		if ("IMAGE".equals(type)) {
+			msg.setAcmidata(binaryData);
+		} else if ("VOICE".equals(type)) {
+			msg.setAcmvdata(binaryData);
+		}
+
+		aiChatMessagesDao.save(msg);
 	}
 
 }

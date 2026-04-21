@@ -26,14 +26,12 @@ public interface ScheduleInfactoryDao extends JpaRepository<ScheduleInfactory, L
 			+ "(:simcnote is null or c.simcnote LIKE %:simcnote%) and "// 物控資料
 			+ "(:simcstatus is null or c.simcstatus = :simcstatus) and "// 物控狀態
 			+ "(:sicorder is null or c.sicorder LIKE %:sicorder%) and "// 訂單
-			+ "(:sysstatus is null or c.sysstatus = :sysstatus) and"//
-			+ "(:notsipnb1 is null or c.sipnb NOT LIKE :notsipnb1%) and"
-			+ "(:notsipnb2 is null or c.sipnb NOT LIKE :notsipnb2%)")
-	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, String notsipnb1, String notsipnb2, //
+			+ "(:sysstatus is null or c.sysstatus = :sysstatus)")
+	ArrayList<ScheduleInfactory> findAllBySearch(String sinb, String sipnb, //
 			String sipname, String sipspecifications, //
 			String sistatus, String sifname, String siuname, //
-			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,String sicorder,
-			Pageable pageable);
+			String sifodate, String simcdates, String simcdatee, String simcnote, Integer simcstatus, Integer sysstatus,
+			String sicorder, Pageable pageable);
 
 	// 檢查用
 	@Query("SELECT c FROM ScheduleInfactory c WHERE "//
