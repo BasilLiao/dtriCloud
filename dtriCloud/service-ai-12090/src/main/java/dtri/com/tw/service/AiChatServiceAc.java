@@ -2,10 +2,10 @@ package dtri.com.tw.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +26,7 @@ import dtri.com.tw.pgsql.dao.AiChatMessagesDao;
 import dtri.com.tw.pgsql.dao.AiChatSessionsDao;
 import dtri.com.tw.pgsql.dao.AiVoiceMetadataDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
+import dtri.com.tw.pgsql.entity.AiChatAttachments;
 import dtri.com.tw.pgsql.entity.AiChatMessages;
 import dtri.com.tw.pgsql.entity.AiChatMessages.MessageRole;
 import dtri.com.tw.pgsql.entity.AiChatSessions;
@@ -158,7 +159,9 @@ public class AiChatServiceAc {
 		AiChatSessions formatAiChatSessions = new AiChatSessions();
 		AiChatMessages formatAiChatMessages = new AiChatMessages();
 		AiVoiceMetadata formatAiVoiceMetadata = new AiVoiceMetadata();
+		List<AiChatAttachments> formatAiChatAttachments = new ArrayList<AiChatAttachments>();
 		formatAiChatMessages.setVoiceMetadata(formatAiVoiceMetadata);
+		formatAiChatMessages.setAttachments(formatAiChatAttachments);
 		List<AiChatMessages> formatAiChatMessagess = new ArrayList<AiChatMessages>();
 		formatAiChatMessagess.add(formatAiChatMessages);
 		formatAiChatSessions.setAichatmessages(formatAiChatMessagess);
@@ -225,7 +228,6 @@ public class AiChatServiceAc {
 
 		// ======== 2. 感官預處理 (耳朵 STT / 眼睛 Vision) ========
 		byte[] userVoiceBytes = userMsgInput.getAcmvdata(); // 取得語音二進位
-		byte[] userImageBytes = userMsgInput.getAcmidata(); // 取得圖片二進位
 
 		// A. 耳朵處理 (STT - 呼叫 5090 Whisper)
 		if ("VOICE".equals(mType) && userVoiceBytes != null) {
@@ -244,22 +246,57 @@ public class AiChatServiceAc {
 				finalContent = "[語音服務暫時不可用]";
 			}
 		}
-		// B. 眼睛處理 (Vision - 呼叫 5090 Gemma 3 Vision)
-		else if ("IMAGE".equals(mType) && userImageBytes != null) {
-			try {
-				log.info("[AI整合] 收到圖片訊息 (Size: {} bytes)，準備視覺分析...", userImageBytes.length);
-				File tempImg = File.createTempFile("dtr_vision_", ".jpg");
-				try (FileOutputStream fos = new FileOutputStream(tempImg)) {
-					fos.write(userImageBytes);
+		// B. 眼睛+檔案 處理 (Vision - 呼叫 5090 Gemma 3 Vision)
+		// ======== 🚀 B. 多模態素材收集 (修正版) ========
+		List<String> imagePaths = new ArrayList<>();
+		List<String> filePaths = new ArrayList<>();
+
+		// 1. 遍歷前端傳來的所有附件
+		if (userMsgInput.getAttachments() != null && !userMsgInput.getAttachments().isEmpty()) {
+			log.info("[AI整合] 開始處理附件清單，共 {} 件...", userMsgInput.getAttachments().size());
+
+			for (AiChatAttachments item : userMsgInput.getAttachments()) {
+				byte[] data = item.getFileData();
+				if (data == null || data.length == 0)
+					continue;
+
+				String fileName = item.getFileName();
+				String type = item.getFileType(); // 這是你在 Entity 存的 IMAGE 或 FILE
+
+				try {
+					if ("IMAGE".equals(type)) {
+						// 📸 處理圖片：統一轉存為 jpg 暫存檔
+						File tempImg = File.createTempFile("dtr_vision_", ".jpg");
+						try (FileOutputStream fos = new FileOutputStream(tempImg)) {
+							fos.write(data);
+						}
+						imagePaths.add(tempImg.getAbsolutePath());
+						log.info("[眼睛] 圖片素材就緒: {}", tempImg.getName());
+
+					} else if ("FILE".equals(type)) {
+						// 📄 處理檔案：根據原始副檔名建立暫存檔 (這對 PDFBox/POI 很重要)
+						String suffix = ".tmp";
+						if (fileName.toLowerCase().endsWith(".pdf"))
+							suffix = ".pdf";
+						else if (fileName.toLowerCase().endsWith(".xlsx"))
+							suffix = ".xlsx";
+						else if (fileName.toLowerCase().endsWith(".xls"))
+							suffix = ".xls";
+						else if (fileName.toLowerCase().endsWith(".docx"))
+							suffix = ".docx";
+						else if (fileName.toLowerCase().endsWith(".doc"))
+							suffix = ".doc";
+
+						File tempDoc = File.createTempFile("dtr_doc_", suffix);
+						try (FileOutputStream fos = new FileOutputStream(tempDoc)) {
+							fos.write(data);
+						}
+						filePaths.add(tempDoc.getAbsolutePath());
+						log.info("[書本] 文件素材就緒: {}", tempDoc.getName());
+					}
+				} catch (IOException e) {
+					log.error("建立暫存檔失敗: {}", e.getMessage());
 				}
-				List<String> paths = new ArrayList<>();
-				paths.add(tempImg.getAbsolutePath());
-				// 將圖片與使用者問題一起送給 5090 眼睛
-				finalContent = dtrAiService.processImage(paths, finalContent);
-				tempImg.delete();
-			} catch (Exception e) {
-				log.error("視覺辨識失敗: {}", e.getMessage());
-				finalContent = "[視覺辨識暫時不可用]";
 			}
 		}
 
@@ -282,10 +319,23 @@ public class AiChatServiceAc {
 		userMsg.setAcmsessions(currentSession);
 		userMsg.setRole(MessageRole.USER);
 		userMsg.setAcmcontent(finalContent);
-		userMsg.setAcmmtype(mType);
-		userMsg.setAcmvdata(userVoiceBytes); // 存入語音 Bytea
-		userMsg.setAcmidata(userImageBytes); // 存入圖片 Bytea
+		// 🚀 關鍵修正 1：如果原本是語音輸入，將類型改為 TEXT
+		// 這樣前端渲染時才不會出現一個「空的播放按鈕」
+		if ("VOICE".equals(mType)) {
+			userMsg.setAcmmtype("TEXT");
+		} else {
+			userMsg.setAcmmtype(mType);
+		}
+		// userMsg.setAcmvdata(userVoiceBytes); // 存入語音 Bytea
+
 		userMsg.setSyscuser(packageBean.getUserAccount());
+		// 🚀 關鍵修正：不要直接 setAttachments，改用 loop 調用輔助方法
+		if (userMsgInput.getAttachments() != null) {
+			for (AiChatAttachments att : userMsgInput.getAttachments()) {
+				// 使用輔助方法，確保 attachment.setMessage(userMsg) 被執行
+				userMsg.addAttachment(att.getFileName(), att.getFileType(), att.getFileData());
+			}
+		}
 		aiChatMessagesDao.save(userMsg);
 
 		// ======== 4. 大腦分析 (Gemma - 結合業務數據) ========
@@ -307,6 +357,22 @@ public class AiChatServiceAc {
 
 		// 使用 Switch 根據業務類型 (PMC, MC, PUR...) 切換數據抓取邏輯
 		switch (bType) {
+
+		case "AMTI": // 共用型
+			log.info("[AI整合] 執行 AMTI 多模組...");
+			// 🧠 C. 統一交付大腦 (一次性呼叫)
+			if (!finalContent.equals("") || !imagePaths.isEmpty() || !filePaths.isEmpty()) {
+				log.info("[大腦] 啟動多模態分析：圖片 x{}, 檔案 x{}", imagePaths.size(), filePaths.size());
+
+				// 🚀 關鍵：你需要一個能同時接收圖片與檔案清單的方法
+				// 假設你在 dtrAiService 建立了一個 processMultimodal 方法
+				brainPrompt = dtrAiService.processMultimodal(imagePaths, filePaths, finalContent);
+				// 語音?
+				aIsuggestion = brainPrompt;
+
+			}
+
+			break;
 		case "APMC": // 生管 (Production Management & Control)
 			log.info("[AI整合] 執行 PMC 生管分析邏輯...");
 			/**
@@ -415,7 +481,7 @@ public class AiChatServiceAc {
 		}
 		// 無資料應用
 		if (brainPrompt.equals("")) {
-			aiCleanAnswer = "⚠️ 在資料庫中找不到與 『" + finalContent + "』 相關的資訊。 \n\n";
+			aiCleanAnswer = "⚠️ 無法執行 『" + finalContent + "』 相關的資訊。 \n\n";
 			aiCleanAnswer += "系統條件 : " + jsonIntentRaw + "\n\n";
 			checkOK = false;
 		}
@@ -466,6 +532,15 @@ public class AiChatServiceAc {
 		aiResMsg.setAcmvdata(aiVoiceBytes); // 存入回覆語音 Bytea
 		aiResMsg.setSyscuser("DEEPSEEK_5090");
 		aiChatMessagesDao.save(aiResMsg);
+		// 2. 🧠 統一交付大腦 (一次性呼叫多模態方法)
+		if (!imagePaths.isEmpty() || !filePaths.isEmpty()) {
+			// 呼叫我們之前寫好的全能處理核心
+			finalContent = dtrAiService.processMultimodal(imagePaths, filePaths, finalContent);
+
+			// 🧹 重要：處理完畢後立即刪除暫存檔，釋放硬碟空間
+			dtrAiService.cleanupTempFiles(imagePaths);
+			dtrAiService.cleanupTempFiles(filePaths);
+		}
 
 		// 回傳當前會話完整歷史
 		List<AiChatMessages> history = aiChatMessagesDao.findAllBySessionId(currentSession.getAcsid());
@@ -584,27 +659,4 @@ public class AiChatServiceAc {
 
 		return packageBean;
 	}
-
-	/**
-	 * 當前端傳來 Base64 字串時（例如語音或上傳圖片），你需要將其解碼為 byte[] 再存入 Entity。
-	 */
-	@Transactional
-	public void saveMessageWithBinary(AiChatSessions session, String base64Content, String type) {
-		AiChatMessages msg = new AiChatMessages();
-		msg.setAcmsessions(session);
-		msg.setRole(AiChatMessages.MessageRole.USER);
-		msg.setAcmmtype(type);
-
-		// 🚀 將前端傳來的 Base64 轉為二進位存入資料庫
-		byte[] binaryData = Base64.getDecoder().decode(base64Content);
-
-		if ("IMAGE".equals(type)) {
-			msg.setAcmidata(binaryData);
-		} else if ("VOICE".equals(type)) {
-			msg.setAcmvdata(binaryData);
-		}
-
-		aiChatMessagesDao.save(msg);
-	}
-
 }

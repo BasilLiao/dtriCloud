@@ -1,10 +1,14 @@
 package dtri.com.tw.pgsql.entity;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -20,6 +24,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -106,12 +111,10 @@ public class AiChatMessages extends BaseEntity {
 	@Temporal(TemporalType.TIMESTAMP) // 確保包含時分秒
 	private Date acmcat = new Date();
 
-	/**
-	 * 🚀 圖片二進位資料 (PostgreSQL: bytea) FetchType.LAZY 是必須的！否則載入訊息列表時會直接撐爆記憶體。
-	 */
-	@Basic(fetch = FetchType.LAZY)
-	@Column(name = "acm_i_data", columnDefinition = "bytea")
-	private byte[] acmidata;
+	// 檔案使用
+	@OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<AiChatAttachments> attachments = new ArrayList<>();
 
 	/**
 	 * 🚀 語音二進位資料 (PostgreSQL: bytea) 移除 @Lob 註解，改用 columnDefinition = "bytea"
@@ -135,28 +138,36 @@ public class AiChatMessages extends BaseEntity {
 		USER, ASSISTANT, SYSTEM
 	}
 
+	// 輔助方法：方便一次加入附件
+	public void addAttachment(String name, String type, byte[] data) {
+		AiChatAttachments attachment = new AiChatAttachments();
+		attachment.setFileName(name);
+		attachment.setFileType(type);
+		attachment.setFileData(data);
+		attachment.setMessage(this);
+		this.attachments.add(attachment);
+	}
 	/**
-	 * 🚀 終極修正：手動處理 JSON 轉二進位的邏輯 這樣 Jackson 在轉換時會直接呼叫這個方法，而不是死板地用預設解碼器
+	 * 🚀 修正：語音二進位自動處理
+	 * 確保 Jackson 接收到前端 Base64 字串時能自動轉為 byte[]
 	 */
-	public void setAcmidata(Object value) {
-		if (value == null || value.toString().isEmpty()) {
-			this.acmidata = null; // 🚀 如果是空字串，強制轉為 null，避免解碼失敗
-		} else if (value instanceof String) {
-			try {
-				// 如果前端傳來的是 Base64 字串，我們在這裡手動解碼
-				String base64Str = (String) value;
-				// 防止前端忘記去掉 data:image/xxx;base64, 前綴
-				if (base64Str.contains(",")) {
-					base64Str = base64Str.split(",")[1];
-				}
-				this.acmidata = java.util.Base64.getDecoder().decode(base64Str);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Base64 解碼失敗: " + e.getMessage());
-
-				this.acmidata = null;
-			}
-		} else if (value instanceof byte[]) {
-			this.acmidata = (byte[]) value;
-		}
+	public void setAcmvdata(Object value) {
+	    if (value == null || value.toString().isEmpty()) {
+	        this.acmvdata = null;
+	    } else if (value instanceof String) {
+	        try {
+	            String base64Str = (String) value;
+	            // 移除可能存在的標頭
+	            if (base64Str.contains(",")) {
+	                base64Str = base64Str.split(",")[1];
+	            }
+	            this.acmvdata = java.util.Base64.getDecoder().decode(base64Str);
+	        } catch (IllegalArgumentException e) {
+	            System.err.println("語音 Base64 解碼失敗: " + e.getMessage());
+	            this.acmvdata = null;
+	        }
+	    } else if (value instanceof byte[]) {
+	        this.acmvdata = (byte[]) value;
+	    }
 	}
 }

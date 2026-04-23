@@ -1,11 +1,13 @@
 package dtri.com.tw.service;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.awt.image.RescaleOp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -42,6 +44,8 @@ public class AiDtrService {
 	private static final String VISION_URL = "http://" + AI_SERVER_IP + ":8002/v1/chat/completions";
 	private static final String BRAIN_URL = "http://" + AI_SERVER_IP + ":8002/v1/chat/completions";
 	private static final String TTS_URL = "http://" + AI_SERVER_IP + ":10300/tts";
+	// 🚀 新增：伺服器驗證金鑰
+	private static final String AI_API_KEY = "my-super-secret-key-2026";
 
 	// 模型名稱定義
 	private static final String BRAIN_MODEL = "google/gemma-3-12b-it";
@@ -106,6 +110,78 @@ public class AiDtrService {
 		} catch (Exception e) {
 			log.error("[眼睛] 失敗: {}", e.getMessage());
 			return "[視覺辨識異常]";
+		}
+	}
+
+	// ==========================================
+	// 5. 全能：多模態處理核心 (圖片 + 文件 + 文字)
+	// ==========================================
+	/**
+	 * 5090 多模態處理核心：同時將「眼(圖)」與「書(檔)」餵給 AI * @param images 圖片路徑清單
+	 * 
+	 * @param files  文件路徑清單 (PDF/Excel/Word)
+	 * @param prompt 使用者的指令
+	 */
+	public String processMultimodal(List<String> images, List<String> files, String prompt) {
+		try {
+			List<String> contentItems = new ArrayList<>();
+
+			// 1. 原始指令
+			contentItems.add("{\"type\": \"text\", \"text\": \"%s\"}".formatted(escapeJson(prompt)));
+
+			// 2. 處理檔案：將其轉為「圖片」與「JSON文字」
+			for (String path : files) {
+				File f = new File(path);
+				String name = f.getName().toLowerCase();
+
+				if (name.endsWith(".pdf")) {
+					// A. PDF 轉成圖片 (給 AI 的眼睛看佈局)
+					List<byte[]> pdfPages = DocumentTool.pdfToImages(f);
+					for (byte[] page : pdfPages) {
+						String b64 = Base64.getEncoder().encodeToString(page);
+						contentItems.add(
+								"{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,%s\"}}"
+										.formatted(b64));
+					}
+					// B. PDF 轉成 JSON (給 AI 的大腦算數值)
+					String pdfJson = DocumentTool.pdfToJson(f);
+					contentItems
+							.add("{\"type\": \"text\", \"text\": \"[PDF數據對齊]: %s\"}".formatted(escapeJson(pdfJson)));
+
+				} else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+					// Excel 直接轉 JSON 文字效能最好
+					String excelJson = DocumentTool.excelToJson(f);
+					contentItems.add(
+							"{\"type\": \"text\", \"text\": \"[Excel報表數據]: %s\"}".formatted(escapeJson(excelJson)));
+				} else if (name.endsWith(".docx") || name.endsWith(".doc")) {
+					// 🚀 修正：呼叫 Word 專用的解析工具，並更換變數名稱
+					String wordJson = DocumentTool.wordToJson(f); 
+					contentItems
+							.add("{\"type\": \"text\", \"text\": \"[Word報告數據]: %s\"}".formatted(escapeJson(wordJson)));
+				}
+
+			}
+
+			// 3. 處理原始上傳的照片 (影像強化)
+			for (String path : images) {
+				byte[] img = enhanceForAi(path);
+				String b64 = Base64.getEncoder().encodeToString(img);
+				contentItems.add("{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,%s\"}}"
+						.formatted(b64));
+			}
+
+			// 4. 送出 JSON Payload 給 5090
+			String jsonPayload = "{\"model\":\"%s\",\"messages\":[{\"role\":\"user\",\"content\":[%s]}]}"
+					.formatted(VISION_MODEL, String.join(",", contentItems));
+			String response = postRequest(VISION_URL, jsonPayload);
+			Map<String, String> splitResult = splitAiResponse(response);
+			log.info("[大腦] 推理完成");
+			String finalResult = cleanJson(splitResult.get("answer"));
+			return finalResult;
+
+		} catch (Exception e) {
+			log.error("[全能分析] 嚴重失敗: {}", e.getMessage());
+			return "[多模態辨識異常]: " + e.getMessage();
 		}
 	}
 
@@ -190,7 +266,7 @@ public class AiDtrService {
 	}
 
 	/**
-	 * 透過 Gemma 3 模型進行語音標準化處理 針對產線 BOM 與技術規格進行「口語化」轉譯
+	 * 透過 Gemma 3 模型進行語音標準化處理 去除多餘的符號
 	 */
 	private String cleanTextNoise(String input, VoiceLang lang) {
 		if (input == null || input.isBlank()) {
@@ -246,8 +322,16 @@ public class AiDtrService {
 
 			if (aiOptimizedText != null) {
 				// 確保最後清除任何漏掉的符號
-				return aiOptimizedText.replaceAll("）", " ").replaceAll("（", " ").replaceAll("-", " ")
-						.replaceAll("*", " ").replaceAll("#", " ").trim();
+				// [ ] 內部的符號代表「只要符合其中一個就替換」
+				// \\* 代表轉義星號，使其變回普通文字
+				// \\- 代表轉義減號
+				// 🚀 同時去除：全形括號、減號、星號、井字號、底線、以及中式引號「 」
+				aiOptimizedText = aiOptimizedText.replaceAll("[（）\\-*#_「」]", " ").trim();
+
+				// 如果你還想把多個連續空格縮減為一個空格，可以再補這行：
+				aiOptimizedText = aiOptimizedText.replaceAll("\\s+", " ");
+				return aiOptimizedText;
+
 			}
 		} catch (Exception e) {
 			log.error("[語音優化] 大腦推理失敗，使用基礎清洗...");
@@ -269,12 +353,14 @@ public class AiDtrService {
 	 */
 	private String postRequest(String url, String jsonPayload) throws Exception {
 		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Content-Type", "application/json")
+				// 🚀 新增這行：帶上通行密碼
+				.header("Authorization", "Bearer " + AI_API_KEY)
 				.POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8)).build();
 		return client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).body();
 	}
 
 	/**
-	 * 拆分 AI 的思考過程 (<think>) 與最終答案 專門處理 DeepSeek 或 Gemma 等具備「思維鏈」能力的模型回傳值
+	 * 拆分 AI 的思考過程 (<think>) 與最終答案 專門處理 Gemma 等具備「思維鏈」能力的模型回傳值
 	 * 
 	 * @param rawResponse 從 OpenAI 格式中提取出的原始內容
 	 * @return 包含 "thought"(思考) 與 "answer"(結論) 的 Map
@@ -364,27 +450,90 @@ public class AiDtrService {
 	 * JSON 內容清洗器 當 AI 回傳 Markdown 格式 (如 ```json ... ```) 時，強行截取第一個 { 到最後一個 }
 	 */
 	public String cleanJson(String raw) {
-		int start = raw.indexOf("{");
-		int end = raw.lastIndexOf("}");
-		// 如果沒有陣列
-		return (start != -1 && end != -1) ? raw.substring(start, end + 1) : raw;
+		if (raw == null || raw.isEmpty())
+			return "";
+
+		// 🚀 移除開頭的 ```json (不分大小寫) 或單純的 ```
+		// 🚀 移除結尾的 ```
+		// (?i) 代表不區分大小寫，\\s* 代表處理可能存在的空格
+		String processed = raw.replaceAll("(?i)```json", "").replaceAll("(?i)```", "");
+
+		return processed.trim();
 	}
 
 	/**
-	 * 影像強化處理 (針對工業 OCR/Vision) 1. 調整亮對比度 (防止白色標籤過曝) 2. 銳利化處理 (讓條碼與文字邊緣更清晰，提高辨識準確度)
+	 * 影像強化處理：針對工業 OCR/視覺辨識優化 處理流程：格式標準化 -> 亮度對比度微調 -> 銳利化邊緣 -> 輸出 Byte Array
+	 * * @param imagePath 原始圖片的路徑
+	 * 
+	 * @return 強化後的 JPG 圖片位元組陣列 (byte[])
+	 * @throws Exception 處理過程中的 IO 或影像處理異常
 	 */
 	public static byte[] enhanceForAi(String imagePath) throws Exception {
-		BufferedImage img = ImageIO.read(new File(imagePath));
+		// 1. 讀取檔案並驗證是否存在
+		File inputFile = new File(imagePath);
+		if (!inputFile.exists()) {
+			throw new FileNotFoundException("找不到影像檔案: " + imagePath);
+		}
 
-		// 1. 亮對比度調整: 增益 1.1f (微調，避免全白過亮)
-		img = new RescaleOp(1.1f, 0f, null).filter(img, null);
+		BufferedImage sourceImg = ImageIO.read(inputFile);
+		if (sourceImg == null) {
+			throw new Exception("無法解析影像格式 (可能檔案損毀或不支援): " + imagePath);
+		}
 
-		// 2. 銳利化捲積核 (Sharpen Kernel): 強化邊緣對比
-		float[] sharpen = { 0f, -0.5f, 0f, -0.5f, 3f, -0.5f, 0f, -0.5f, 0f };
-		img = new ConvolveOp(new Kernel(3, 3, sharpen), ConvolveOp.EDGE_NO_OP, null).filter(img, null);
+		// 2. 格式標準化 (關鍵步驟)
+		// 許多 PNG 帶有透明通道 (Alpha) 或索引色 (Indexed Color)，這會導致濾鏡處理失敗。
+		// 我們建立一個新的 RGB 畫布，將原圖「畫」上去，強制轉為標準 TYPE_INT_RGB 格式。
+		BufferedImage img = new BufferedImage(sourceImg.getWidth(), sourceImg.getHeight(), BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = img.createGraphics();
+		g.drawImage(sourceImg, 0, 0, null);
+		g.dispose(); // 釋放繪圖資源
 
+		// 3. 亮度與對比度調整 (RescaleOp)
+		// 增益 (Gain) 1.1f：稍微增加對比與亮度。
+		// 偏移量 (Offset) 0f：不進行全局亮度平移。
+		// 目的：防止白色標籤在強光下過曝，同時讓文字與背景對比更明顯。
+		RescaleOp rescale = new RescaleOp(1.1f, 0f, null);
+		img = rescale.filter(img, null);
+
+		// 4. 銳利化處理 (ConvolveOp)
+		// 卷積核矩陣定義如下：
+		// [ 0, -0.5, 0 ]
+		// [ -0.5, 3, -0.5 ]
+		// [ 0, -0.5, 0 ]
+		// 目的：強化文字邊緣，減少標籤印刷模糊造成的辨識錯誤。
+		// 中心點 3f 為強化權重，負值為削弱週邊，達到銳利化效果。
+		float[] sharpenKernel = { 0f, -0.5f, 0f, -0.5f, 3f, -0.5f, 0f, -0.5f, 0f };
+		Kernel kernel = new Kernel(3, 3, sharpenKernel);
+		ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+		img = op.filter(img, null);
+
+		// 5. 輸出轉換為位元組陣列
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(img, "jpg", baos); // 轉為 JPG 格式輸出為 Byte Array
+		// 由於我們前面已轉為 TYPE_INT_RGB，這裡轉 JPG 不會出錯
+		boolean writeSuccess = ImageIO.write(img, "jpg", baos);
+
+		if (!writeSuccess) {
+			throw new Exception("影像寫入 Byte Array 失敗 (ImageIO.write 回傳 false)");
+		}
+
 		return baos.toByteArray();
 	}
+
+	/**
+	 * 垃圾回收 (Memory Leak)：
+	 */
+	public void cleanupTempFiles(List<String> paths) {
+		for (String path : paths) {
+			try {
+				File f = new File(path);
+				if (f.exists()) {
+					f.delete();
+					log.debug("[系統] 已刪除暫存檔: {}", path);
+				}
+			} catch (Exception e) {
+				log.warn("[系統] 無法刪除暫存檔: {}", e.getMessage());
+			}
+		}
+	}
+
 }

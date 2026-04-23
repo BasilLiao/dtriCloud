@@ -140,52 +140,100 @@
 	margin-bottom: 10px;
 	font-size: 0.9rem;
 }
-/* 圖片預覽容器 */
-#imagePreviewBox {
+/* 🚀 2026 5090版：雙預覽框佈局控制 */
+#aiPreviewWrapper {
 	display: flex;
-	gap: 10px;
-	flex-wrap: wrap;
-	margin-bottom: 10px;
+	gap: 12px;
+	height: 60px; /* 固定的高度，防止 UI 因為上傳檔案而跳動 */
 }
 
-/* 預覽縮圖樣式 */
-.preview-img-container {
+/* 圖片與檔案子容器 */
+.preview-sub-box {
+	flex: 1; /* 關鍵：讓兩者平分剩餘寬度 */
+	border: 1px dashed #ced4da;
+	border-radius: 8px;
+	background-color: #ffffff;
+	padding: 10px 8px 8px 8px;
+	display: flex;
+	gap: 10px;
+	overflow-x: auto; /* 超過時水平捲動 */
 	position: relative;
-	width: 40px;
-	height: 40px;
+	align-items: center;
+}
+
+/* 顯示「Images」與「Documents」標註 */
+.preview-sub-box::before {
+	content: attr(data-label);
+	position: absolute;
+	top: 2px;
+	left: 8px;
+	font-size: 0.7rem;
+	color: #6c757d;
+	font-weight: bold;
+}
+
+/* 預覽縮圖容器：稍微加大一點，讓產線人員好點選 */
+.preview-img-container {
+	position: relative; /* 這是定位基準，不能改 */
+	width: 45px;
+	height: 45px;
+	flex-shrink: 0;
+	margin-top: 5px; /* 給右上角按鈕一點空間，防止被切掉 */
+}
+/* 🚀 修正版：刪除按鈕 (X) */
+.btn-remove-img {
+	position: absolute;
+	top: -8px; /* 往上飄一點 */
+	right: -8px; /* 往右飄一點 */
+	background-color: #dc3545; /* 經典紅 */
+	color: white;
+	border-radius: 50%;
+	width: 22px;
+	height: 22px;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border: 2px solid #ffffff; /* 加上白邊會更有立體感，且不跟背景混淆 */
+	z-index: 100; /* 確保在最前面 */
+	padding: 0;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .preview-img-container img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	border-radius: 5px;
+	border-radius: 6px;
 	border: 1px solid #dee2e6;
 }
 
-/* 刪除預覽圖的小按鈕 */
-.btn-remove-img {
-	position: absolute;
-	top: -5px;
-	right: -5px;
-	background: #dc3545;
-	color: white;
-	border-radius: 50%;
-	width: 20px;
-	height: 20px;
-	font-size: 12px;
-	line-height: 18px;
-	text-align: center;
-	cursor: pointer;
-	border: none;
+/* 檔案圖示特別樣式 */
+.preview-img-container i {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background: #f8f9fa;
+	border-radius: 6px;
+}
+/* 🚀 當檔案進入該區域時的視覺效果  */
+.preview-sub-box.drag-over {
+	border: 2px solid #0d6efd !important;
+	background-color: rgba(13, 110, 253, 0.1) !important;
+	transform: scale(1.02);
+	transition: all 0.2s ease;
 }
 
-/* 語音播放按鈕動畫 */
-.btn-play-voice {
+/* 修正 CSS 選擇器，讓終止按鈕也有點擊縮放效果 */
+.btn-play-voice, .btn-stop-voice {
 	transition: transform 0.2s;
 }
 
-.btn-play-voice:active {
+.btn-play-voice:active, .btn-stop-voice:active {
 	transform: scale(0.9);
 }
 /* 相機預覽容器 */
@@ -202,7 +250,7 @@
 #videoPreview {
 	width: 100%;
 	height: auto;
-	transform: scaleX(-1); /* 鏡像顯示，符合自拍習慣 */
+	/*transform: scaleX(-1); /* 鏡像顯示，符合自拍習慣 */
 }
 
 /* 語音勾選框樣式優化 */
@@ -232,12 +280,12 @@
 
 					<!-- 對話紀錄 -->
 					<div class="col-3 d-flex flex-column border-end">
-						<h3 class="mb-3 mt-1">
+						<h4 class="mb-3 mt-1">
 							<i class="bi bi-clock-history"></i> Chat History
 							<button id="btnNewChat" class="btn btn-sm btn-outline-success">
 								<i class="bi bi-plus-lg"></i> New
 							</button>
-						</h3>
+						</h4>
 						<div id="aiChatSessionsList"
 							class="flex-grow-1 overflow-auto list-group border list-group-flush bg-light mb-3">
 						</div>
@@ -250,30 +298,36 @@
 					<div class="col-9 d-flex flex-column">
 						<div id="aiAcsBTypeGroup" class="btn-group mb-3" role="group">
 							<input type="radio" class="btn-check" name="acsbtype"
-								id="typeAMTI" value="AMTI"> <label
+								id="typeAMTI" value="AMTI" checked> <label
 								class="btn btn-outline-danger p-1" for="typeAMTI"> <i
-								class="bi bi-stars"></i> 多功能測試(Test)AI
+								class="bi bi-stars"></i> 多功能測試<br>(Test)AI
 							</label>
 							<!-- 產品AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPDM" value="APDM"> <label
-								class="btn btn-outline-primary p-1" for="typeAPDM">APDM(產品)AI</label>
+								class="btn btn-outline-primary p-1" for="typeAPDM">APDM<br>
+								(產品)AI
+							</label>
 							<!-- 生管AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
-								id="typeAPMC" value="APMC" checked> <label
-								class="btn btn-outline-primary p-1" for="typeAPMC">PMC(生管)AI</label>
+								id="typeAPMC" value="APMC"> <label
+								class="btn btn-outline-primary p-1" for="typeAPMC">PMC<br>(生管)AI
+							</label>
 							<!-- 物控AI管理人 -->
-							<input type="radio" class="btn-check" name="acsbtype"
-								id="typeAMMC" value="AMMC"> <label
-								class="btn btn-outline-primary p-1" for="typeAMMC">MC(物控)AI</label>
+							<input type="radio" class="btn-check" disabled="disabled"
+								name="acsbtype" id="typeAMMC" value="AMMC"> <label
+								class="btn btn-outline-primary p-1" for="typeAMMC">MC<br>(物控)AI
+							</label>
 							<!-- 採購AI管理人 -->
-							<input type="radio" class="btn-check" name="acsbtype"
-								id="typeAPUR" value="APUR"> <label
-								class="btn btn-outline-primary p-1" for="typeAPUR">Purchasing(採購)AI</label>
+							<input type="radio" class="btn-check" disabled="disabled"
+								name="acsbtype" id="typeAPUR" value="APUR"> <label
+								class="btn btn-outline-primary p-1" for="typeAPUR">Purchasing<br>(採購)AI
+							</label>
 							<!-- 倉儲AI管理人 -->
-							<input type="radio" class="btn-check" name="acsbtype"
-								id="typeAWMS" value="AWMS"> <label
-								class="btn btn-outline-primary p-1" for="typeAWMS">WMS(倉儲)AI</label>
+							<input type="radio" class="btn-check" disabled="disabled"
+								name="acsbtype" id="typeAWMS" value="AWMS"> <label
+								class="btn btn-outline-primary p-1" for="typeAWMS">WMS<br>(倉儲)AI
+							</label>
 						</div>
 
 						<div id="aiChatMessagesBox"
@@ -287,17 +341,28 @@
 
 						<div class="row g-2 align-items-end">
 							<div class="col">
-								<div id="imagePreviewBox"
-									class="p-2 mb-1 border rounded bg-white d-none"></div>
+								<div id="aiPreviewWrapper">
+									<div id="imagePreviewBox"
+										class="preview-sub-box p-1 border-info"
+										data-label="Images (圖片辨識)"></div>
+									<div id="filePreviewBox"
+										class="preview-sub-box p-1 border-warning"
+										data-label="Documents (文件解析)"></div>
+								</div>
+
 								<div class="mt-1 mb-1 d-flex align-items-center gap-2">
 									<input class="form-check-input checkbox_16 m-0" type="checkbox"
-										id="checkExpert"> <label
-										class="form-check-label voice-check-label" for="checkExpert">
-										<i class="bi bi-patch-check-fill"></i> of Expert AI response
-										mode(專家 AI 回覆模式)
-									</label> <input class="form-check-input checkbox_16 m-0"
-										type="checkbox" id="checkAutoVoice"> <label
-										class="form-check-label voice-check-label"
+										id="checkExpert">
+									<!--  -->
+									<label class="form-check-label voice-check-label"
+										for="checkExpert"> <i class="bi bi-patch-check-fill"></i>
+										of Expert AI response mode(專家 AI 回覆模式)
+									</label>
+									<!--  -->
+									<input class="form-check-input checkbox_16 m-0" type="checkbox"
+										id="checkAutoVoice">
+									<!--  -->
+									<label class="form-check-label voice-check-label"
 										for="checkAutoVoice"> <i class="bi bi-volume-up-fill"></i>
 										of AI-generated voice(自動播放 AI 回覆語音)
 									</label>
@@ -307,25 +372,25 @@
 										placeholder="請輸入問題..."></textarea>
 								</div>
 							</div>
-							<div class="col-auto d-flex flex-column gap-2">
+							<div class="col-12 col-lg-2 d-flex flex-column gap-2">
 								<input type="file" id="imageInput" accept="image/*" multiple
 									style="display: none;">
 								<!--  -->
 								<input type="file" id="fileInput"
 									accept=".pdf,.doc,.docx,.xls,.xlsx" multiple
 									style="display: none;">
-								<div class="col row p-0 m-0">
-									<button id="btnFileUpload"
-										class="col-6 btn btn-outline-warning px-2">
-										<i class="bi bi-file-earmark-medical-fill"></i> Doc
-									</button>
+								<div class="col row justify-content-between p-0 m-0">
 									<button id="btnImageUpload"
-										class="col-6 btn btn-outline-info px-2">
-										<i class="bi bi-image"></i> Img
+										class="col-5 btn btn-outline-info px-2">
+										<i class="bi bi-image"></i>
+									</button>
+									<button id="btnFileUpload"
+										class="col-5 btn btn-outline-warning px-2">
+										<i class="bi bi-file-earmark-medical-fill"></i>
 									</button>
 								</div>
 								<button id="btnCamera" class="btn btn-outline-success px-4">
-									<i class="bi bi-camera-fill"></i> Camera
+									<i class="bi bi-camera-fill"></i>
 								</button>
 								<button id="btnVoiceStart" class="btn btn-secondary px-4">
 									<i class="bi bi-mic-fill"></i> Voice
@@ -384,6 +449,16 @@
 			btn_send_auto: null,//自動傳送
 			selectedImages : [],// 在 other.data 中增加暫存圖片的陣列
 			selectedFiles: [], // 🚀 儲存 PDF/Word/Excel 資料
+			// 🚀 補上這幾行，解決 includes 的報錯
+	        allowedImageTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+	        allowedDocTypes: [
+	            'application/pdf',
+	            'application/msword',
+	            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	            'application/vnd.ms-excel',
+	            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+	        ],
+	        totalFileLimit: 5,
 			//換頁設置
 			searchPageSet: {
 				total: 1000,//批次數量(1-1000)
@@ -548,15 +623,87 @@
 				$('#cameraModal').on('hidden.bs.modal', function () {
 				    other.methods.cameraStop();
 				});
+				// 🚀 需求：獨立拖曳區塊處理
+			    const $imgBox = $("#imagePreviewBox");
+			    const $fileBox = $("#filePreviewBox");
+
+			    // 共通的阻止預設行為與樣式切換
+			    const handleDragEvents = ($el) => {
+			        $el.on("dragover dragenter", function(e) {
+			            e.preventDefault();
+			            e.stopPropagation();
+			            $(this).addClass("drag-over");
+			        });
+			        $el.on("dragleave dragend drop", function(e) {
+			            e.preventDefault();
+			            e.stopPropagation();
+			            $(this).removeClass("drag-over");
+			        });
+			    };
+
+			    handleDragEvents($imgBox);
+			    handleDragEvents($fileBox);
+
+			    // --- 🚀 處理丟入「圖片區」 ---
+			    $imgBox.on("drop", function(e) {
+			        const files = Array.from(e.originalEvent.dataTransfer.files);
+			        // 1. 檢查總數
+			        if (other.methods.isOverFileLimit(files.length)) return;
+
+			        files.forEach(file => {
+			            if (other.data.allowedImageTypes.includes(file.type)) {
+			                const reader = new FileReader();
+			                reader.onload = (ev) => {
+			                    other.data.selectedImages.push(ev.target.result);
+			                    other.methods.renderImagePreviews();
+			                };
+			                reader.readAsDataURL(file);
+			            } else {
+			                alert(`「${file.name}」不是圖片格式，請丟到文件區。`);
+			            }
+			        });
+			    });
+
+			    // --- 🚀 處理丟入「文件區」 ---
+			    $fileBox.on("drop", function(e) {
+			        const files = Array.from(e.originalEvent.dataTransfer.files);
+			        // 1. 檢查總數
+			        if (other.methods.isOverFileLimit(files.length)) return;
+
+			        files.forEach(file => {
+			            if (other.data.allowedDocTypes.includes(file.type)) {
+			                const reader = new FileReader();
+			                reader.onload = (ev) => {
+			                    other.data.selectedFiles.push({
+			                        name: file.name,
+			                        base64: ev.target.result.split(',')[1],
+			                        type: file.type
+			                    });
+			                    other.methods.renderFilePreviews();
+			                };
+			                reader.readAsDataURL(file);
+			            } else {
+			                alert(`「${file.name}」不是支援的文件格式（PDF/Excel/Word）。`);
+			            }
+			        });
+			    });
 				
 				
 			},
+			// 🚀 更新數量檢查方法
+		    isOverFileLimit(newCount = 0) {
+		        const currentTotal = other.data.selectedImages.length + other.data.selectedFiles.length;
+		        if (currentTotal + newCount > 5) {
+		            alert("總上傳數量（圖片+文件）不能超過 5 個！");
+		            return true;
+		        }
+		        return false;
+		    },
 			// 渲染預覽圖
 			renderImagePreviews () {
-			    const $box = $("#imagePreviewBox");
+				const $imgBox = $("#imagePreviewBox");
+			    let html = "";
 			    if (other.data.selectedImages.length > 0) {
-			        $box.removeClass("d-none");
-			        let html = "";
 			        other.data.selectedImages.forEach((img, index) => {
 			            html += `
 			                <div class="preview-img-container">
@@ -564,10 +711,8 @@
 			                    <button class="btn-remove-img" onclick="other.methods.removeImage(${index})">×</button>
 			                </div>`;
 			        });
-			        $box.html(html);
-			    } else {
-			        $box.addClass("d-none");
 			    }
+			    $imgBox.html(html);
 			},
 
 			// 移除單張圖片
@@ -576,36 +721,23 @@
 			    other.methods.renderImagePreviews();
 			},
 			renderFilePreviews() {
-			    const $box = $("#imagePreviewBox"); // 複用圖片預覽盒
-			    // 先清空再重新渲染 (包含圖片與檔案)
-			    $box.removeClass("d-none").html("");
-			    
-			    // 渲染圖片
-			    other.data.selectedImages.forEach((img, index) => {
-			        $box.append(`
-			            <div class="preview-img-container">
-			                <img src="${img}">
-			                <button class="btn-remove-img" onclick="other.methods.removeImage(${index})">×</button>
-			            </div>`);
-			    });
+				const $fileBox = $("#filePreviewBox");
+			    let html = "";
+			    if (other.data.selectedFiles.length > 0) {
+			        other.data.selectedFiles.forEach((file, index) => {
+			            let icon = "bi-file-earmark-text";
+			            if(file.name.includes("pdf")) icon = "bi-file-earmark-pdf text-danger";
+			            if(file.name.includes("xls")) icon = "bi-file-earmark-excel text-success";
+			            if(file.name.includes("doc")) icon = "bi-file-earmark-word text-primary";
 
-			    // 🚀 渲染檔案圖示
-			    other.data.selectedFiles.forEach((file, index) => {
-			        let icon = "bi-file-earmark-text";
-			        if(file.name.includes("pdf")) icon = "bi-file-earmark-pdf text-danger";
-			        if(file.name.includes("xls")) icon = "bi-file-earmark-excel text-success";
-			        if(file.name.includes("doc")) icon = "bi-file-earmark-word text-primary";
-
-			        $box.append(`
-			            <div class="preview-img-container border bg-light d-flex align-items-center justify-content-center" title="${file.name}">
-			                <i class="bi ${icon}" style="font-size: 1.5rem;"></i>
-			                <button class="btn-remove-img" onclick="other.methods.removeFile(${index})">×</button>
-			            </div>`);
-			    });
-
-			    if(other.data.selectedImages.length === 0 && other.data.selectedFiles.length === 0) {
-			        $box.addClass("d-none");
+			            html += `
+			                <div class="preview-img-container border bg-light d-flex align-items-center justify-content-center" title="${file.name}">
+			                    <i class="bi ${icon}" style="font-size: 1.8rem;"></i>
+			                    <button class="btn-remove-img" onclick="other.methods.removeFile(${index})">×</button>
+			                </div>`;
+			        });
 			    }
+			    $fileBox.html(html);
 			},
 
 			removeFile(index) {
@@ -653,37 +785,49 @@
 				
 			},
 			// 渲染訊息片段
+			// 🚀 修正版：支援多附件渲染
 			renderMessage(msg) {
-			    console.log("renderMessage()");
+			    console.log("renderMessage() - 佈局優化");
 			    let alignment = msg.role === 'USER' ? 'ms-auto bg-primary text-white' : 'me-auto bg-white border';
 			    let formattedContent = (msg.role === 'ASSISTANT') ? marked.parse(msg.acmcontent) : msg.acmcontent;
 			    
-			    // 🚀 1. 處理圖片顯示 (如果 acmidata 有值)
-			    let imageHtml = "";
-			    if (msg.acmidata) {
-			        // 後端 Bytea 回傳通常是 Base64，直接顯示
-			        imageHtml = `<div class="mb-2"><img src="data:image/jpeg;base64,${msg.acmidata}" class="img-fluid rounded border" style="max-height: 200px;"></div>`;
-			    }
-
-			    // 🚀 2. 處理語音播放 (如果 acmvdata 有值)
+			    // 1. 處理附件 (圖片/檔案)
+			    let attachmentsHtml = "";
+			    // ... (維持你原本處理 attachments 的邏輯) ...
+			
+			    // 🚀 2. 預備語音按鈕
 			    let voiceHtml = "";
 			    if (msg.acmvdata) {
 			        let audioId = "audio_" + msg.id;
 			        voiceHtml = `
-			            <div class="mt-2">
-			                <audio id="${audioId}" src="data:audio/wav;base64,${msg.acmvdata}"></audio>
-			                <button class="btn btn-sm btn-info text-white btn-play-voice" onclick="document.getElementById('${audioId}').play()">
-			                    <i class="bi bi-play-fill"></i> 播放 AI 語音
-			                </button>
-			            </div>`;
+			            <audio id="${audioId}" src="data:audio/wav;base64,${msg.acmvdata}"></audio>
+			            <button class="btn btn-sm btn-info text-white btn-play-voice" onclick="document.getElementById('${audioId}').play()">
+			                <i class="bi bi-play-fill"></i> 播放
+			            </button>
+			            <button class="btn btn-sm btn-secondary text-white btn-stop-voice" onclick="let a=document.getElementById('${audioId}'); a.pause(); a.currentTime=0;">
+			                <i class="bi bi-stop-fill"></i> 終止
+			            </button>
+			        `;
 			    }
-
+			
+			    // 🚀 3. 建立功能按鈕列 (左語音，右 Excel)
+			    // 即使目前沒語音沒表格，我們也預留這個容器
+			    let actionRowHtml = `
+			        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top action-row" style="min-height: 40px;">
+			            <div class="voice-group d-flex gap-2">
+			                ${voiceHtml}
+			            </div>
+			            <div class="excel-group">
+			                </div>
+			        </div>
+			    `;
+			
 			    return `
 			        <div class="d-flex mb-3">
-			            <div class="p-3 rounded shadow-sm ${alignment}" style="max-width: 90%;">
-			                ${imageHtml}
+			            <div class="p-3 rounded shadow-sm text-start ${alignment}" style="max-width: 90%; min-width: 250px;">
+			                ${attachmentsHtml}
 			                <div class="markdown-body">${formattedContent}</div>
-			                ${voiceHtml}
+			                ${msg.role === 'ASSISTANT' ? actionRowHtml : ''}
 			                <small class="d-block text-end mt-1 opacity-75">${other.methods.formatDate(msg.acmcat)}</small>
 			            </div>
 			        </div>`;
@@ -770,34 +914,40 @@
 			},
 			//==========================傳送資料==========================
 			messageSend() {
-			    let content = $("#acmContentInput").val().trim();
-			    let bType = $("input[name='acsbtype']:checked").val();
-			    let isAutoVoice = $("#checkAutoVoice").is(":checked"); // 取得勾選狀態
-			    let isExpert = $("#checkExpert").is(":checked"); // 取得勾選狀態
-			    
+			    let content = $("#acmContentInput").val().trim();//取得文字
+			    let bType = $("input[name='acsbtype']:checked").val();			    
 			
-			    if (content === "" && other.data.selectedImages.length === 0) return;
-			
+			 // 取得暫存資料
+			    const imgData = other.data.selectedImages.length > 0 ? other.data.selectedImages[0] : null;
+			    const fileData = other.data.selectedFiles.length > 0 ? other.data.selectedFiles[0].base64 : null;
+
+			    if (content === "" && !imgData && !fileData) return;
+
 			    let chatReq = JSON.parse(JSON.stringify(other.data.entityFormatJson));
 			    chatReq['acsid'] = other.data.currentSessionId || 0;
 			    chatReq['acsbtype'] = bType;
-			    
-			
+
 			    let firstMsg = chatReq['aichatmessages'][0];
-			    // 🚀 使用 acmvon 暫存「是否需要語音回覆」的標籤給後端 Service 判斷
-			    firstMsg['acmvon'] = isAutoVoice ? true : false;
-			    firstMsg['acmeon'] = isExpert ? true : false;
 			    firstMsg['acmcontent'] = content;
-			
-			    if (other.data.selectedImages.length > 0) {
-			        firstMsg['acmmtype'] = "IMAGE";
-			        // 傳送第一張照片的二進位資料
-			        firstMsg['acmidata'] = other.data.selectedImages[0].split(',')[1];
-			    } else {
-			        firstMsg['acmmtype'] = "TEXT";
-			        firstMsg['acmidata'] = null;
-			    }
-			
+			    firstMsg['acmvon'] = $("#checkAutoVoice").is(":checked");// [語音]取得勾選狀態
+			    firstMsg['acmeon'] = $("#checkExpert").is(":checked");// [專家]取得勾選狀態
+
+			    // 🚀 根據內容動態決定類型
+			    // 封裝所有附件
+				let allAttachments = [];
+				
+				other.data.selectedImages.forEach((img, i) => {
+				    allAttachments.push({ fileName: `img_${i}.jpg`, fileType: 'IMAGE', fileData: img });
+				});
+				
+				other.data.selectedFiles.forEach((file) => {
+				    allAttachments.push({ fileName: file.name, fileType: 'FILE', fileData: file.base64 });
+				});
+				
+				// 將這個陣列塞進你的 chatReq 物件中
+				// 注意：這需要你的 entityFormatJson 裡面有 attachments: [] 結構
+				firstMsg['attachments'] = allAttachments;
+
 			    main.methods.ajaxSend({
 			        data: { entityJson: JSON.stringify(chatReq), callBackFunction: "other_modify" },
 			        url: $('#nav_functional_unit').attr('title') + ".basil.AC",
@@ -891,26 +1041,69 @@
 			    }
 			    return new Blob([view], { type: 'audio/wav' });
 			},
+			
+			// 🚀 1. 偵測表格並動態插入按鈕 (只在有表格時顯示)
+			// 🚀 採用 Table2Excel 方式處理 AI 對話中的表格
+			injectTableButtons() {
+			    console.log("偵測表格並定位下載按鈕...");
+			    
+			    $("#aiChatMessagesBox .markdown-body table").each(function(index) {
+			        const $table = $(this);
+			        
+			        // 1. 向上找尋所屬的訊息氣泡，再向下找 excel-group 容器
+			        const $bubble = $table.closest('.p-3');
+			        const $excelGroup = $bubble.find('.excel-group');
+			
+			        // 如果找不到容器或已經有按鈕了，就跳過
+			        if ($excelGroup.length === 0 || $excelGroup.children().length > 0) return;
+			
+			        // 2. 給予表格唯一 ID
+			        const tableId = "ai_table_" + Date.now() + "_" + index;
+			        $table.attr("id", tableId);
+			
+			        // 3. 建立 Excel 下載按鈕
+			        const btnHtml = `
+			            <button class="btn btn-sm btn-outline-success shadow-sm" 
+			                    onclick="other.methods.exportAiTableToExcel('${tableId}')">
+			                <i class="bi bi-file-earmark-excel"></i> Excel 下載
+			            </button>`;
+			        
+			        // 4. 插入到右邊的群組中
+			        $excelGroup.append(btnHtml);
+			    });
+			},
 			// 在 other.methods 裡面新增 Excel 下載
-			exportTableToExcel(tableId, fileName) {
-			    console.log("exportTableToExcel() - ID:", tableId);
-			    
-			    // 1. 取得表格元素
-			    const table = document.getElementById(tableId);
-			    if (!table) {
-			        alert("找不到表格資料！");
-			        return;
+			// 🚀 核心：使用你環境中「唯一正常」的 Table2Excel 引擎
+			exportAiTableToExcel(tableId) {
+			    try {
+			        console.log("啟動 Table2Excel 引擎下載 AI 表格...");
+			        
+			        // 檔名處理 (避免特殊字元)
+			        let fileName = "AI_Report_" + new Date().getTime();
+			
+			        // 這裡完全照抄你 report.html 裡面會成功的設置
+			        let options = {
+			            workbook: {
+			                views: [{
+			                    x: 0, y: 0, width: 10000, height: 20000,
+			                    firstSheet: 0, activeTab: 1, visibility: 'visible'
+			                }]
+			            },
+			            widthRatio: .14,
+			            plugins: [
+			                Table2Excel.plugins.autoWidthPlugin
+			                // 如果 AI 表格不需要隱藏第一列，就不加那段 plugin
+			            ]
+			        };
+			
+			        const table2Excel = new Table2Excel('#' + tableId, options);
+			        table2Excel.export(fileName, 'xlsx');
+			        
+			        console.log("AI 表格透過 Table2Excel 匯出完成");
+			    } catch (e) {
+			        console.error("AI 表格匯出失敗:", e);
+			        alert("匯出失敗，請確認套件載入狀態。");
 			    }
-
-			    // 2. 使用 XLSX 將 HTML Table 轉換為 Workbook
-			    // sheetjs 會自動抓取 <th> 和 <td> 內的文字
-			    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-
-			    // 3. 產生 Excel 檔案並觸發下載 (使用了 xlsx 內建的 writeFile)
-			    // 也可以結合 FileSaver 的 saveAs
-			    XLSX.writeFile(wb, `${fileName}.xlsx`);
-			    
-			    console.log("Excel 下載指令已送出");
 			},
 			// ========================== 傳送音訊到後端 ==========================
 			sendAudioToBackend(blob) {
@@ -927,7 +1120,7 @@
 			        
 			        // 封裝語音數據
 			        chatReq['aichatmessages'][0]['acmmtype'] = "VOICE";
-			        chatReq['aichatmessages'][0]['acmaurl'] = base64Audio; 
+			        chatReq['aichatmessages'][0]['acmvdata'] = base64Audio; 
 			        
 			        let data = {
 			            entityJson: JSON.stringify(chatReq),
@@ -1111,7 +1304,10 @@
 			        html += other.methods.renderMessage(msg);
 			    });
 			    $("#aiChatMessagesBox").html(html);
-			
+			    
+			    // 🚀 渲染完訊息後，立刻掃描有沒有表格，有的話就長出按鈕
+			    other.methods.injectTableButtons();
+			 
 			    // 5. 自動捲動到底部
 			    let box = document.getElementById("aiChatMessagesBox");
 			    if(box) box.scrollTop = box.scrollHeight;
@@ -1191,6 +1387,9 @@
 			        });
 			        
 			        $("#aiChatMessagesBox").html(html);
+			        
+			        // 🚀 載入舊對話也要掃描表格，讓下載按鈕出現
+			        other.methods.injectTableButtons();
 			        
 			        // 3. 自動捲動到底部
 			        let box = document.getElementById("aiChatMessagesBox");
