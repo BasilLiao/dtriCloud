@@ -153,4 +153,12 @@ public interface BasicServiceFeign {
 
 	@RequestMapping(value = { "/basicChangeItems/setDetele" }, method = RequestMethod.POST)
 	PackageBean setChangeItemsDetele(@RequestBody String jsonPackageBean);
+
+	// ================================通用:缺料預計================================
+	@RequestMapping(value = { "/materialShortageData/getRecalculate" }, method = RequestMethod.POST)
+	PackageBean getMaterialShortageRecalculate(@RequestBody String jsonPackageBean);
+
+	// ================================測試用===============================
+	@RequestMapping(value = { "/testControlle/test" }, method = RequestMethod.POST)
+	PackageBean testApi();
 }

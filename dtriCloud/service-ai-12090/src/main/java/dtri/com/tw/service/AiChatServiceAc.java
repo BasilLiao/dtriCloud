@@ -60,6 +60,9 @@ public class AiChatServiceAc {
 	private QdrantSyncService qdrantSyncService;
 
 	@Autowired
+	private AiRecordService aiRecordService;
+
+	@Autowired
 	private ScheduleOutInfactoryForAiChatService aboutScheduleInfactory;
 
 	@Autowired
@@ -226,7 +229,7 @@ public class AiChatServiceAc {
 		}
 		log.info("[AI整合] 最終判定語系為: {} (Code: {})", targetLang, targetLang.getShortCode());
 
-		// ======== 2. 感官預處理 (耳朵 STT / 眼睛 Vision) ========
+		// ======== 3. 感官預處理 (耳朵 STT / 眼睛 Vision) ========
 		byte[] userVoiceBytes = userMsgInput.getAcmvdata(); // 取得語音二進位
 
 		// A. 耳朵處理 (STT - 呼叫 5090 Whisper)
@@ -300,7 +303,7 @@ public class AiChatServiceAc {
 			}
 		}
 
-		// ======== 3. 會話紀錄管理 (存入資料庫) ========
+		// ======== 4. 會話紀錄管理 (存入資料庫) ========
 		AiChatSessions currentSession;
 		if (inputSession.getAcsid() == null || inputSession.getAcsid() == 0L) {
 			currentSession = new AiChatSessions();
@@ -309,7 +312,24 @@ public class AiChatServiceAc {
 			currentSession
 					.setAcstitle(finalContent.length() > 15 ? finalContent.substring(0, 15) + "..." : finalContent);
 			currentSession.setSyscuser(packageBean.getUserAccount());
+
+			// 🚀 關鍵修改：存入 Record ID
+			currentSession.setAcsrid(inputSession.getAcsrid());
+			currentSession
+					.setAcstitle(finalContent.length() > 15 ? finalContent.substring(0, 15) + "..." : finalContent);
+			currentSession.setSyscuser(packageBean.getUserAccount());
+
 			currentSession = aiChatSessionsDao.save(currentSession);
+			// 🚀 關鍵：建立該會話的「靈魂」—— SYSTEM 規則
+			if ("AREC".equals(currentSession.getAcsbtype())) {
+				AiChatMessages systemMsg = new AiChatMessages();
+				systemMsg.setAcmsessions(currentSession);
+				systemMsg.setRole(MessageRole.SYSTEM); // 👈 標記為 SYSTEM
+				// 這裡存入的是「純規則模板」，不帶入動態快照，快照我們發送前再填
+				systemMsg.setAcmcontent(aiRecordService.role);
+				systemMsg.setSyscuser("SYSTEM_ARCHITECT");
+				aiChatMessagesDao.save(systemMsg);
+			}
 		} else {
 			currentSession = aiChatSessionsDao.findById(inputSession.getAcsid()).get();
 		}
@@ -338,7 +358,7 @@ public class AiChatServiceAc {
 		}
 		aiChatMessagesDao.save(userMsg);
 
-		// ======== 4. 大腦分析 (Gemma - 結合業務數據) ========
+		// ======== 5. 大腦分析 (Gemma - 結合業務數據) ========
 		log.info("[AI整合] 當前業務類型: {}，正在準備對應數據...", currentSession.getAcsbtype());
 
 		String bType = currentSession.getAcsbtype() == null ? "GENERAL" : currentSession.getAcsbtype();
@@ -358,15 +378,57 @@ public class AiChatServiceAc {
 		// 使用 Switch 根據業務類型 (PMC, MC, PUR...) 切換數據抓取邏輯
 		switch (bType) {
 
+		case "AREC": // 錄製型
+			log.info("[AI整合] 執行 AREC 錄製分析邏輯...");
+			// 🧠 C. 統一交付大腦 (一次性呼叫)
+			if (!finalContent.equals("") || !imagePaths.isEmpty() || !filePaths.isEmpty()) {
+
+				// 1. 取得目前快照 (Context)
+				String currentSnapshot = currentSession.getAcsccontext();
+				if (currentSnapshot == null || currentSnapshot.isEmpty()) {
+					currentSnapshot = "{}"; // 若是新對話，給予空 JSON
+				}
+
+				// 2. 注入指令模板 (將指令中的變數替換掉)
+				String enrichedRole = aiRecordService.role.replace("{{current_snapshot}}", currentSnapshot)
+						.replace("{{user_input}}", finalContent);
+
+				// 3. 取得歷史紀錄
+				List<AiChatMessages> history = aiChatMessagesDao.findAllBySessionId(currentSession.getAcsid());
+
+				// 4. 呼叫大腦 (注意：我們將 enrichedRole 作為 prompt 傳入，確保規則始終置頂)
+				// brainPrompt = dtrAiService.processMultimodal(history, imagePaths, filePaths,
+				// enrichedRole);
+				// 4. 🚀 修改點：直接傳 finalContent，不要傳帶有規則的 enrichedRole
+				brainPrompt = dtrAiService.processMultimodal(history, imagePaths, filePaths, finalContent);
+
+				// 5. 🚀 快照自動更新：從 AI 的回覆中擷取最新的 JSON 並存入 Session Context
+				String newSnapshot = dtrAiService.cleanJson(brainPrompt);
+				if (newSnapshot.contains("{") && newSnapshot.contains("}")) {
+					// 找到真正的 JSON 起始點 (避免 AI 前面的文字干擾)
+					int start = newSnapshot.indexOf("{");
+					int end = newSnapshot.lastIndexOf("}");
+					String extractedJson = newSnapshot.substring(start, end + 1);
+
+					log.info("[AREC] 偵測到新快照，更新 Session 上下文...");
+					currentSession.setAcsccontext(extractedJson);
+					aiChatSessionsDao.save(currentSession);
+				}
+
+				aIsuggestion = brainPrompt; // 用於語音播報
+			}
+
+			break;
 		case "AMTI": // 共用型
 			log.info("[AI整合] 執行 AMTI 多模組...");
 			// 🧠 C. 統一交付大腦 (一次性呼叫)
 			if (!finalContent.equals("") || !imagePaths.isEmpty() || !filePaths.isEmpty()) {
 				log.info("[大腦] 啟動多模態分析：圖片 x{}, 檔案 x{}", imagePaths.size(), filePaths.size());
-
+				// 取得歷史紀錄
+				List<AiChatMessages> history = aiChatMessagesDao.findAllBySessionId(currentSession.getAcsid());
 				// 🚀 關鍵：你需要一個能同時接收圖片與檔案清單的方法
 				// 假設你在 dtrAiService 建立了一個 processMultimodal 方法
-				brainPrompt = dtrAiService.processMultimodal(imagePaths, filePaths, finalContent);
+				brainPrompt = dtrAiService.processMultimodal(history, imagePaths, filePaths, finalContent);
 				// 語音?
 				aIsuggestion = brainPrompt;
 
@@ -390,7 +452,7 @@ public class AiChatServiceAc {
 			// 提取Cloud資料 & 整理資料(如果沒資料則 回傳空)
 			brainPrompt = aboutScheduleInfactory.getScheduleInfactoryForAi(jsonIntentRaw, finalContent);
 			// 專家模式
-			if (!brainPrompt.equals("") && userMsgInput.getAcmeon()) {
+			if (userMsgInput.getAcmeon()) {
 				// 語意補強 專業建議
 				intentLastPrompt = aboutScheduleInfactory.getExpertAdvice(brainPrompt, finalContent, targetLang);
 				// 最終 專業建議[大腦思考]
@@ -442,7 +504,7 @@ public class AiChatServiceAc {
 			jsonIntentRaw = dtrAiService.processText(intentPrompt);
 			// 提取Cloud資料 & 整理資料(如果沒資料則 回傳空)
 			brainPrompt = aboutBomProduct.getBomProductForAi(jsonIntentRaw, finalContent);
-			if (!brainPrompt.equals("") && userMsgInput.getAcmeon()) {
+			if (userMsgInput.getAcmeon()) {
 				// 語意補強 專業建議
 				intentLastPrompt = aboutBomProduct.getProductExpertAdvice(brainPrompt, finalContent, targetLang);
 				// 最終 專業建議[大腦思考]
@@ -490,7 +552,7 @@ public class AiChatServiceAc {
 			aiCleanAnswer = brainPrompt;
 		}
 
-		// ======== 5. 嘴巴合成 (TTS - 讓 AI 回覆自動語音播放) ========
+		// ======== 6. 嘴巴合成 (TTS - 讓 AI 回覆自動語音播放) ========
 		byte[] aiVoiceBytes = null;
 		// 使否有藥用語音
 		if (userMsgInput.getAcmvon() && !aIsuggestion.equals("")) {
@@ -530,12 +592,13 @@ public class AiChatServiceAc {
 		aiResMsg.setAcmcontent(aiCleanAnswer);
 		aiResMsg.setAcmmtype("VOICE"); // 標註為語音類型，觸發前端播放按鈕
 		aiResMsg.setAcmvdata(aiVoiceBytes); // 存入回覆語音 Bytea
-		aiResMsg.setSyscuser("DEEPSEEK_5090");
+		aiResMsg.setSyscuser("Gemma3_12B_it_5090");
 		aiChatMessagesDao.save(aiResMsg);
 		// 2. 🧠 統一交付大腦 (一次性呼叫多模態方法)
 		if (!imagePaths.isEmpty() || !filePaths.isEmpty()) {
 			// 呼叫我們之前寫好的全能處理核心
-			finalContent = dtrAiService.processMultimodal(imagePaths, filePaths, finalContent);
+			// finalContent = dtrAiService.processMultimodal(imagePaths, filePaths,
+			// finalContent);
 
 			// 🧹 重要：處理完畢後立即刪除暫存檔，釋放硬碟空間
 			dtrAiService.cleanupTempFiles(imagePaths);

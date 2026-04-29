@@ -1,0 +1,674 @@
+<!-- 專業級 Excel 匯出引擎載入區 -->
+<div id="excel_engine_load" class="d-none"></div>
+<style>
+    /* 突出顯示例: 可做套數、支撐月數 */
+    .cell-highlight-green {
+        color: #198754;
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .cell-highlight-blue {
+        color: #0d6efd;
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .cell-highlight-red {
+        color: #dc3545;
+        font-weight: bold;
+        text-align: right;
+    }
+
+    /* 來源 BOM 特殊樣式：小字、自動換行、中性色 */
+    .cell-root-boms {
+        color: #6c757d !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+        white-space: pre-wrap !important;
+        word-break: break-all !important;
+        padding: 6px !important;
+    }
+
+    .eol-form-group {
+        text-align: left;
+        margin-bottom: 15px;
+    }
+
+    .eol-form-group label {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+        display: block;
+        color: #495057;
+    }
+
+    .wh-checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 6px;
+        padding: 10px;
+        border: 1px dashed #ced4da;
+        border-radius: 6px;
+        background: #fdfdfe;
+        max-height: calc(100vh - 400px);
+        min-height: 150px;
+        overflow-y: auto;
+    }
+
+    .wh-item {
+        font-size: 13px;
+        padding: 4px 8px;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .wh-item:hover {
+        border-color: #b1dfbb;
+        background-color: #f8fff9;
+    }
+
+    .wh-item input {
+        margin-right: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    /* BOM Tags Simple Style (Top) */
+    .eol-bom-tag {
+        display: inline-block;
+        background: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 2px 8px;
+        margin: 2px;
+        font-size: 12px;
+    }
+
+    .eol-bom-tag .remove-tag {
+        cursor: pointer;
+        margin-left: 4px;
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .grid-bom-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #f0f7ff;
+        border: 1px solid #cfe2ff;
+        color: #084298;
+        border-radius: 50rem;
+        padding: 1px 10px;
+        margin: 2px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* BOM 更多按鈕 */
+    .bom-more-badge {
+        cursor: pointer;
+        background: #e9ecef;
+        border: 1px solid #ced4da;
+        color: #495057;
+        border-radius: 50rem;
+        padding: 1px 8px;
+        margin: 2px;
+        font-size: 11px;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+
+    .bom-more-badge:hover {
+        background: #dee2e6;
+        color: #212529;
+    }
+</style>
+
+<div class="container-fluid p-3 h-100" id="other_material_eol">
+    <div class="row g-3 h-100">
+        <!-- 左側：估算條件 -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white py-2 d-flex align-items-center">
+                    <i class="bi bi-funnel-fill me-2"></i> <span class="fw-bold" id="title_criteria"></span>
+                </div>
+                <div class="card-body p-3 bg-light d-flex flex-column">
+                    <div class="eol-form-group">
+                        <label id="label_bom_list"></label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="eol_bomNo" class="form-control" placeholder="Ex: 90-000-501000"
+                                autofocus autocomplete="off">
+                            <button class="btn btn-outline-primary" id="eol_btn_search_bom"
+                                onclick="materialEolPage.searchBoms(document.getElementById('eol_bomNo').value)">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary" id="eol_btn_add_bom" title="直接加入輸入的BOM"
+                                onclick="materialEolPage.addBomTag(document.getElementById('eol_bomNo').value)">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                        <div id="eol_bom_search_results" class="shadow-sm"
+                            style="display:none; max-height:200px; overflow-y:auto; border:1px solid #dee2e6; border-top:none; border-radius:0 0 4px 4px; background:#fff; position:absolute; z-index:1050; width: calc(100% - 32px);">
+                        </div>
+                        <div id="eol_bom_tags" class="mt-2"></div>
+                    </div>
+
+                    <div class="row gx-2">
+                        <div class="col-6 eol-form-group">
+                            <label id="label_max_level"></label>
+                            <input type="number" id="eol_maxLevel" class="form-control form-control-sm text-center"
+                                value="10" min="1" max="20">
+                        </div>
+                        <div class="col-6 eol-form-group">
+                            <label id="label_monthly_demand"></label>
+                            <input type="number" id="eol_monthlyDemand" class="form-control form-control-sm text-center"
+                                value="0" placeholder="0 = 不計算">
+                        </div>
+                    </div>
+
+                    <div class="eol-form-group mb-4 flex-grow-1 d-flex flex-column" style="min-height: 150px;">
+                        <label class="d-flex justify-content-between align-items-center w-100">
+                            <span id="label_warehouse"></span>
+                            <div class="form-check m-0 fw-normal" style="font-size: 12px; cursor: pointer;">
+                                <input class="form-check-input" type="checkbox" id="wh_check_all" checked
+                                    style="cursor: pointer;">
+                                <label class="form-check-label text-primary" for="wh_check_all" style="cursor: pointer;"
+                                    id="filter_all">
+                                </label>
+                            </div>
+                        </label>
+                        <div id="wh_list" class="wh-checkbox-group shadow-sm flex-grow-1">
+                            <span class="text-muted small w-100 text-center py-3"><i
+                                    class="spinner-border spinner-border-sm"></i> Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-auto">
+                        <button class="btn btn-primary fw-bold" id="btn_run_estimate"
+                            onclick="materialEolPage.runEstimate()">
+                            <i class="bi bi-play-circle-fill me-1"></i> <span id="btn_calculate"></span>
+                        </button>
+                        <button class="btn btn-success fw-bold" onclick="materialEolPage.exportExcel()">
+                            <i class="bi bi-file-earmark-excel-fill me-1"></i> <span id="btn_export"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：結果表格區 -->
+        <div class="col-lg-9">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-0 h-100">
+                    <div id="eol_grid" class="border-0 text-start h-100" style="border-radius: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    materialEolPage = {
+        lang: {},
+        gl(key) {
+            let val = this.lang[key];
+            if (!val) return key;
+            try {
+                let obj = JSON.parse(val);
+                let sysLang = $('#menu_login_language').text() || 'zh-TW';
+                let result = obj[sysLang] || obj['zh-TW'];
+                return (result && result.trim() !== "") ? result : key;
+            } catch (e) {
+                return val;
+            }
+        },
+        grid: null,
+        url: "ajax/" + $('#nav_functional_unit').attr('title') + ".basil", // 預設相對路徑
+        allBoms: [],
+        selectedBoms: [], // 儲存多選的 BOM
+        isTagsExpanded: false, // 是否展開左側標籤
+        isDataLoaded: false,
+        create() {
+            console.log("other_material_eol.html(created)");
+            // 1. 載入 Excel 匯出引擎 (中轉模板)
+            $("#excel_engine_load").load("./html/model/excel_engine.html", function () {
+                console.log("Excel Export Engine Loaded.");
+            });
+
+            // 2. 啟動資料載入 (Warehouse & Language)
+            this.loadWarehouses();
+
+            // 3. 背景下載 BOM 字典檔 (非同步)
+            this.fetchInitData();
+
+            // 4. 事件綁定維持同步
+            this.bindEvents();
+        },
+        initLabels() {
+            // 標題與標籤
+            $("#other_material_eol #title_criteria").text(this.gl("title_criteria") || "Criteria");
+            $("#other_material_eol #label_bom_list").html((this.gl("label_bom_list") || "BOM List") + ' <span class="text-danger">*</span>');
+            $("#other_material_eol #label_max_level").text(this.gl("label_max_level") || "Max Level");
+            $("#other_material_eol #label_monthly_demand").text(this.gl("label_monthly_demand") || "Monthly Demand");
+            $("#other_material_eol #label_warehouse").text(this.gl("label_warehouse") || "Warehouse");
+            $("#other_material_eol #filter_all").text(this.gl("filter_all") || "All");
+
+            // 按鈕
+            $("#other_material_eol #btn_calculate").text(this.gl("btn_calculate") || "Calculate");
+            $("#other_material_eol #btn_export").text(this.gl("btn_export") || "Export");
+        },
+        destroy() {
+            if (this.grid) {
+                this.grid.destroy();
+                this.grid = null;
+            }
+            delete window.materialEolPage;
+        },
+        // ====== 取得所有庫存料號字典 ======
+        fetchInitData() {
+            this.isDataLoaded = false;
+            $.ajax({
+                url: this.url + ".getInitSearchData",
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                data: JSON.stringify({ entityJson: "{}", searchPageSet: "{}" }),
+                success: function (res) {
+                    try {
+                        let result = typeof res === "string" ? JSON.parse(res) : res;
+                        if (result.infoColor === "success" || result.infoColor === "warning") {
+                            nav_alert.methods.alertshow(result.infoColor, result.info);
+                        } else {
+                            nav_alert.methods.alertshow("danger", "[777] The command was executed [ERROR]!!");
+                        }
+
+                        if (result.infoColor === "success") {
+                            let dicts = JSON.parse(result.entityJson || "{}");
+                            materialEolPage.allBoms = dicts.allBoms || [];
+                            materialEolPage.isDataLoaded = true;
+                            console.log("EOL Caching: Loaded " + materialEolPage.allBoms.length + " BOMs.");
+                        }
+                    } catch (e) {
+                        console.error("解析字典失敗", e);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    const mainAlertM = nav_alert.methods;
+                    if (xhr.status === 200) {
+                        mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+                        window.location.replace("login.basil");
+                    } else if (xhr.status === 404) {
+                        mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+                    } else if (xhr.status === 403) {
+                        mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+                    } else {
+                        mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+                    }
+                }
+            });
+        },
+        // 1. 取得倉別清單
+        loadWarehouses() {
+            let packageBean = { entityJson: JSON.stringify({}), searchPageSet: JSON.stringify({ total: 100, batch: 0 }) };
+            console.log(this.url);
+            $.ajax({
+                url: this.url + ".AR",
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                data: JSON.stringify(packageBean),
+                success: function (res) {
+                    try {
+                        let result = typeof res === "string" ? JSON.parse(res) : res;
+                        if (result.infoColor === "success" || result.infoColor === "warning") {
+                            nav_alert.methods.alertshow(result.infoColor, result.info);
+                        } else {
+                            nav_alert.methods.alertshow("danger", "[777] The command was executed [ERROR]!!");
+                        }
+
+                        if (result.infoColor === "success") {
+                            if (result.searchSet) {
+                                let ssObj = typeof result.searchSet === 'string' ? JSON.parse(result.searchSet) : result.searchSet;
+                                if (ssObj.uiLang) {
+                                    materialEolPage.lang = Object.assign(materialEolPage.lang, ssObj.uiLang);
+                                    materialEolPage.initGrid();
+                                    materialEolPage.initLabels();
+                                }
+                            }
+                            if (result.entityJson) {
+                                let list = JSON.parse(result.entityJson);
+                                let html = "";
+                                list.forEach(function (wh) {
+                                    html += `<div class="wh-item"><input type="checkbox" class="wh-check-item form-check-input mt-0" value="${wh.alias}" checked>
+                                        <span>${wh.alias}<br>${wh.name}</span></div>`;
+                                });
+                                $("#other_material_eol #wh_list").html(html);
+                                $("#wh_check_all").on("change", function () { $(".wh-check-item").prop("checked", $(this).is(":checked")); });
+                                $(".wh-check-item").on("change", function () { $("#wh_check_all").prop("checked", $(".wh-check-item").length === $(".wh-check-item:checked").length); });
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    const mainAlertM = nav_alert.methods;
+                    if (xhr.status === 200) {
+                        mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+                        window.location.replace("login.basil");
+                    } else if (xhr.status === 404) {
+                        mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+                    } else if (xhr.status === 403) {
+                        mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+                    } else {
+                        mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+                    }
+                }
+            });
+        },
+        // 2. 初始化表格與事件
+        initGrid() {
+            if (this.grid) {
+                // 如果已經初始化過，這裡可以視情況更新表頭或其他參數
+                return;
+            }
+            let multiWordFilter = function (headerValue, rowValue) {
+                if (!headerValue) return true;
+                let searchStrs = String(headerValue).trim().toUpperCase().split(/[,\s]+/).filter(s => s.length > 0);
+                let cellStr = String(rowValue || "").toUpperCase();
+                // 表格標題的過濾也遵照「前綴匹配優先」或者是「完全符合被包含的標籤」
+                return searchStrs.every(searchStr => {
+                    // 因為單元格可能會有多個 BOM (用逗號或空白分隔)，我們切開來檢查
+                    let bomsInCell = cellStr.split(/[,\s]+/).filter(s => s.length > 0);
+                    return bomsInCell.some(bomInCell => bomInCell.startsWith(searchStr));
+                });
+            };
+            this.grid = new Tabulator("#eol_grid", {
+                height: "100%", layout: "fitDataFill",
+                columns: [
+                    {
+                        title: this.gl("col_root_bom") || "Source BOM", field: "rootboms", minWidth: 200, maxWidth: 350,
+                        headerFilter: "input", headerFilterFunc: multiWordFilter,
+                        tooltip: true,
+                        formatter: (cell) => {
+                            let val = cell.getValue();
+                            if (!val) return "";
+                            let data = cell.getRow().getData();
+                            let isExpanded = data._isExpanded === true;
+
+                            let boms = val.split(/[,\s]+/).filter(s => s.trim().length > 0);
+
+                            // 如果沒展開且數量超過 3 組，則摺疊
+                            let displayBoms = boms;
+                            let hasMore = false;
+                            if (!isExpanded && boms.length > 3) {
+                                displayBoms = boms.slice(0, 3);
+                                hasMore = true;
+                            }
+
+                            // 包裹在 flex-wrap 容器中，強制換行並撐開高度
+                            let html = `<div style="display: flex; flex-wrap: wrap; white-space: normal; align-items: center; width: 100%;">`;
+                            html += displayBoms.map(b => `<span class="grid-bom-tag">${b}</span>`).join("");
+
+                            if (hasMore) {
+                                html += `<span class="bom-more-badge" title="Show all">...More(${boms.length})</span>`;
+                            } else if (isExpanded && boms.length > 3) {
+                                html += `<span class="bom-more-badge" title="Click to hide"><i class="bi bi-chevron-up"></i> hide</span>`;
+                            }
+
+                            html += `</div>`;
+                            return html;
+                        },
+                        cellClick: (e, cell) => {
+                            // 判斷是否點擊到更多按鈕
+                            if (!e.target.classList.contains("bom-more-badge")) return;
+
+                            let row = cell.getRow();
+                            let data = row.getData();
+                            let val = cell.getValue();
+                            if (!val) return;
+
+                            let boms = val.split(/[,\s]+/).filter(s => s.trim().length > 0);
+                            if (boms.length <= 3) return;
+
+                            // 切換展開狀態並通知 Tabulator 更新原始數據
+                            let newState = !data._isExpanded;
+                            row.update({ _isExpanded: newState });
+                            if (typeof row.reformat === "function") row.reformat();
+                        }
+                    },
+                    { title: this.gl("col_bom_level") || "Level", field: "bomlevel", minWidth: 100, hozAlign: "center" },
+                    { title: this.gl("col_part_no") || "Part No", field: "partno", minWidth: 150, headerFilter: "input" },
+                    { title: this.gl("col_part_name") || "Part Name", field: "partfull", tooltip: true, minWidth: 250, maxWidth: 500, headerFilter: "input" },
+                    { title: this.gl("col_qty_per_set") || "Qty/Set", field: "qtyperset", minWidth: 120, hozAlign: "right" },
+                    { title: this.gl("col_wh_stock") || "Stock", field: "warehousestock", minWidth: 120, hozAlign: "right" },
+                    {
+                        title: this.gl("col_available_sets") || "Available Sets", field: "availablesets", minWidth: 160, hozAlign: "right",
+                        formatter: (cell) => {
+                            let val = cell.getValue();
+                            if (val < 0) cell.getElement().classList.add("cell-highlight-red");
+                            else cell.getElement().classList.add("cell-highlight-green");
+                            return val;
+                        }
+                    },
+                    { title: this.gl("col_support_months") || "Support Months", field: "supportmonths", minWidth: 150, hozAlign: "right", cssClass: "cell-highlight-blue" }
+                ],
+                placeholder: this.gl("msg_no_data") || "No Data",
+            });
+        },
+        bindEvents() {
+            let timer = null;
+            $("#eol_bomNo").on('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    if (!$("#eol_bom_search_results").is(":visible")) this.addBomTag($("#eol_bomNo").val());
+                } else {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => { this.searchBoms($("#eol_bomNo").val()); }, 500);
+                }
+            });
+            $(document).on('click', (e) => {
+                if (!$(e.target).closest('#eol_bomNo, #eol_btn_search_bom, #eol_bom_search_results, #eol_btn_add_bom').length) {
+                    $('#eol_bom_search_results').hide();
+                }
+            });
+        },
+        // 3. BOM 搜尋與呈現
+        searchBoms(keyword) {
+            keyword = (keyword || "").trim();
+            let $container = $("#eol_bom_search_results");
+            if (!this.isDataLoaded || !keyword || keyword.length < 2) { $container.hide(); return; }
+
+            let kws = keyword.toLowerCase().split(/\s+/);
+            let results = this.allBoms.filter(bom => {
+                let snLower = (bom.bbisn || "").toLowerCase();
+                let nameSpecLower = ((bom.bbiname || "") + " " + (bom.bbispec || "")).toLowerCase();
+
+                // 每一個關鍵字片段都必須被滿足 (AND 邏輯)
+                return kws.every(k => {
+                    // 料號必須是「開頭等於」這段關鍵字，或者 品名/規格「包含」這段關鍵字
+                    return snLower.startsWith(k) || nameSpecLower.includes(k);
+                });
+            });
+
+            // 排序優化：先按料號長度排 (短的優先)，再按字母排
+            let mainKw = kws[0];
+            results.sort((a, b) => {
+                return a.bbisn.localeCompare(b.bbisn);
+            });
+
+            this.renderBomSearchResults(results.slice(0, 50));
+        },
+        renderBomSearchResults(boms) {
+            let $container = $("#eol_bom_search_results");
+            if (!boms.length) { $container.html('<div class="p-2 text-muted text-center">No Results.</div>').show(); return; }
+
+            let html = `<div class="d-flex justify-content-between align-items-center p-2 bg-light border-bottom sticky-top">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-primary py-0 px-2" onclick="materialEolPage.selectAllBoms()"><i class="bi bi-check-all"></i>All</button>
+                    <button type="button" class="btn btn-outline-secondary py-0 px-2" onclick="materialEolPage.deselectAllBoms()"><i class="bi bi-dash-circle">Clear</i></button>
+                </div>
+                <small class="text-muted"> ${boms.length} Total</small>
+            </div>
+            <div class="table-responsive"><table class="table table-sm table-hover mb-0" style="font-size:12px; table-layout: fixed;">
+                <thead class="table-light"><tr><th style="width:35px;"></th><th style="width:120px;">BOM</th><th>Description</th></tr></thead>
+                <tbody>`;
+            boms.forEach(bom => {
+                let isAdded = this.selectedBoms.includes(bom.bbisn);
+                html += `<tr class="eol-bom-row" data-sn="${bom.bbisn}" style="cursor:pointer; ${isAdded ? 'background:#e8f4fd;' : ''}">
+                    <td class="text-center align-middle"><input type="checkbox" class="eol-bom-check" ${isAdded ? 'checked' : ''}></td>
+                    <td class="fw-bold align-middle">${bom.bbisn}</td>
+                    <td class="text-muted text-break align-middle" style="font-size:11px;">${bom.bbiname || ''} ${bom.bbispec || ''}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+            $container.html(html).show().find(".eol-bom-row").on("click", (e) => {
+                if ($(e.target).hasClass('eol-bom-check')) return;
+                let sn = $(e.currentTarget).data("sn");
+                let $chk = $(e.currentTarget).find(".eol-bom-check");
+                let now = !$chk.prop("checked");
+                $chk.prop("checked", now);
+                this.toggleBom(sn, now, $(e.currentTarget));
+            });
+            $container.find(".eol-bom-check").on("click", (e) => {
+                let $row = $(e.currentTarget).closest(".eol-bom-row");
+                this.toggleBom($row.data("sn"), $(e.currentTarget).prop("checked"), $row);
+            });
+        },
+        toggleBom(sn, isAdd, $row) {
+            if (isAdd) { this.addBomTag(sn); $row.css("background", "#e8f4fd"); }
+            else { this.removeBomTag(sn); $row.css("background", ""); }
+        },
+        selectAllBoms() {
+            $("#eol_bom_search_results .eol-bom-row").each((i, el) => {
+                let $chk = $(el).find(".eol-bom-check");
+                if (!$chk.prop("checked")) { $chk.prop("checked", true); this.toggleBom($(el).data("sn"), true, $(el)); }
+            });
+        },
+        deselectAllBoms() {
+            $("#eol_bom_search_results .eol-bom-row").each((i, el) => {
+                let $chk = $(el).find(".eol-bom-check");
+                if ($chk.prop("checked")) { $chk.prop("checked", false); this.toggleBom($(el).data("sn"), false, $(el)); }
+            });
+        },
+        clearSearchResults() { $("#eol_bom_search_results").hide(); },
+
+        // ====== Multi-Tag 邏輯 ======
+        addBomTag(sn) {
+            sn = (sn || "").trim().toUpperCase();
+            if (!sn || this.selectedBoms.includes(sn)) { $("#eol_bomNo").val(''); return; }
+            this.selectedBoms.push(sn);
+            this.renderTags();
+            $("#eol_bomNo").val('');
+        },
+        removeBomTag(sn) {
+            this.selectedBoms = this.selectedBoms.filter(b => b !== sn);
+            this.renderTags();
+            // 同步更新搜尋清單中的勾選狀態
+            let $row = $(`.eol-bom-row[data-sn="${sn}"]`);
+            if ($row.length) { $row.css("background", "").find(".eol-bom-check").prop("checked", false); }
+        },
+        renderTags() {
+            let threshold = 6;
+            let boms = this.selectedBoms;
+            let displayBoms = boms;
+            let hasMore = false;
+
+            if (!this.isTagsExpanded && boms.length > threshold) {
+                displayBoms = boms.slice(0, threshold);
+                hasMore = true;
+            }
+
+            let html = displayBoms.map(sn => `<span class="eol-bom-tag"><i class="bi bi-box me-1"></i>${sn}<span class="remove-tag" onclick="materialEolPage.removeBomTag('${sn}')">&times;</span></span>`).join("");
+
+            if (hasMore) {
+                html += `<div class="form-check m-0 fw-normal mt-1" style="font-size: 12px; cursor: pointer;" onclick="materialEolPage.toggleTagsExpand(true)">
+                            <label class="form-check-label text-primary" style="cursor: pointer;">Show More... ( ${boms.length} )</label>
+                         </div>`;
+            } else if (this.isTagsExpanded && boms.length > threshold) {
+                html += `<div class="form-check m-0 fw-normal mt-1" style="font-size: 12px; cursor: pointer;" onclick="materialEolPage.toggleTagsExpand(false)">
+                            <label class="form-check-label text-primary" style="cursor: pointer;">Show Less <i class="bi bi-chevron-up"></i></label>
+                         </div>`;
+            }
+            $("#eol_bom_tags").html(html);
+        },
+        toggleTagsExpand(isExpand) {
+            this.isTagsExpanded = isExpand;
+            this.renderTags();
+        },
+
+        // 4. 執行估算
+        runEstimate() {
+            let maxLevel = $("#eol_maxLevel").val();
+            let monthlyDemand = $("#eol_monthlyDemand").val();
+            let pendingInput = $("#eol_bomNo").val().trim();
+            if (pendingInput) this.addBomTag(pendingInput);
+
+            if (!this.selectedBoms.length) { nav_alert.methods.alertshow("warning", "Please select at least one BOM ID."); return; }
+            let selectedWh = [];
+            $("#other_material_eol .wh-check-item:checked").each((i, el) => { selectedWh.push($(el).val()); });
+
+            if (!selectedWh.length) { nav_alert.methods.alertshow("warning", "Please select at least one warehouse."); return; }
+
+            let $btn = $("#btn_run_estimate");
+            let oldH = $btn.html();
+            $btn.prop("disabled", true).html('<i class="spinner-border spinner-border-sm"></i> Calculating...');
+            //開始估算
+            $.ajax({
+                url: this.url + ".ARR", type: "POST", contentType: "application/json;charset=UTF-8", dataType: "json",
+                data: JSON.stringify({ entityJson: JSON.stringify({ bomnolist: this.selectedBoms, maxlevel: parseInt(maxLevel) || 10, monthlydemand: parseInt(monthlyDemand) || 0, warehouselist: selectedWh }) }),
+                success: function (res) {
+                    try {
+                        let result = typeof res === "string" ? JSON.parse(res) : res;
+                        if (result.infoColor === "success" || result.infoColor === "warning") {
+                            nav_alert.methods.alertshow(result.infoColor, result.info);
+                        } else {
+                            nav_alert.methods.alertshow("danger", "[777] The command was executed [ERROR]!!");
+                        }
+
+                        if (result.infoColor === "success") {
+                            if (result.entityJson) {
+                                let data = JSON.parse(result.entityJson);
+                                data.forEach(d => d.partfull = (d.partname || "") + " " + (d.partspec || ""));
+                                materialEolPage.grid.setData(data);
+                            }
+                        }
+                    } catch (e) {
+                        nav_alert.methods.alertshow("danger", "Analysis failed.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    const mainAlertM = nav_alert.methods;
+                    if (xhr.status === 200) {
+                        mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+                        window.location.replace("login.basil");
+                    } else if (xhr.status === 404) {
+                        mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+                    } else if (xhr.status === 403) {
+                        mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+                    } else {
+                        mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+                    }
+                },
+                complete: () => $btn.prop("disabled", false).html(oldH)
+            });
+        },
+        exportExcel() {
+            if (!this.grid || typeof excel_engine === 'undefined') {
+                nav_alert.methods.alertshow("warning", "No Data to Export."); return;
+            }
+            let name = this.selectedBoms.length > 0 ? this.selectedBoms[0] + (this.selectedBoms.length > 1 ? "_等多個" : "") : "全部";
+            excel_engine.methods.exportFromGrid(this.grid, {
+                reportTitle: `停產物料估算_${name}.xlsx`, highlights: [
+                    { field: "availablesets", operator: "<", value: 0, color: "FFF3F3", fontColor: "CC0000" },
+                    { field: "supportmonths", operator: "<", value: 0, color: "FFF3F3", fontColor: "CC0000" }
+                ]
+            });
+        }
+    };
+</script>

@@ -37,9 +37,55 @@
 	max-height: calc(100vh - 400px);
 	background-image: linear-gradient(to bottom, #f8f9fa, #e9ecef);
 }
-
+/**AI對話紀錄框*/
 #aiChatSessionsList {
-	max-height: calc(100vh - 315px);
+	max-height: calc(50vh - 50px);
+}
+/**AI錄製紀錄框*/
+#aiRecordList {
+	max-height: calc(50vh - 50px);
+}
+
+/* --- Chat History 專用樣式 (同步 Record 特效) --- */
+#aiChatSessionsList .list-group-item {
+	transition: all 0.2s ease;
+	border-left: 4px solid transparent; /* 預設透明邊框 */
+}
+
+#aiChatSessionsList .list-group-item:hover {
+	border-left: 4px solid #0d6efd; /* 藍色邊框 */
+	background-color: #f0f7ff;
+}
+
+#aiChatSessionsList .list-group-item.active {
+	background-color: #0d6efd !important; /* 藍色背景 */
+	border-color: #0d6efd !important;
+	border-left: 4px solid #004db3 !important; /* 加深左側邊框 */
+	color: white !important;
+}
+
+#aiChatSessionsList .list-group-item.active small, #aiChatSessionsList .list-group-item.active .badge
+	{
+	color: white !important;
+	opacity: 0.9;
+}
+
+/* --- Record List 專用樣式 (維持並微調) --- */
+#aiRecordList .list-group-item {
+	transition: all 0.2s ease;
+	border-left: 4px solid transparent;
+}
+
+#aiRecordList .list-group-item:hover {
+	border-left: 4px solid #198754; /* 綠色邊框 */
+	background-color: #f8fffb;
+}
+
+#aiRecordList .list-group-item.active {
+	background-color: #198754 !important; /* 綠色背景 */
+	border-color: #198754 !important;
+	border-left: 4px solid #0e5a37 !important; /* 加深左側邊框 */
+	color: white !important;
 }
 
 #aiChatSessionsList .list-group-item.active {
@@ -274,64 +320,109 @@
 		<div
 			class="col border border-primary row m-0 p-0 shadow-sm justify-content-between"
 			style="width: 95%;">
-			<div class="container-fluid py-3"
+			<div class="container-fluid p-0"
 				style="min-height: calc(100vh - 135px);">
-				<div class="row h-100">
+				<div class="row p-0 m-0 h-100">
 
-					<!-- 對話紀錄 -->
-					<div class="col-3 d-flex flex-column border-end">
-						<h4 class="mb-3 mt-1">
-							<i class="bi bi-clock-history"></i> Chat History
-							<button id="btnNewChat" class="btn btn-sm btn-outline-success">
-								<i class="bi bi-plus-lg"></i> New
-							</button>
-						</h4>
-						<div id="aiChatSessionsList"
-							class="flex-grow-1 overflow-auto list-group border list-group-flush bg-light mb-3">
+					<div class="col-3 p-2 d-flex flex-column border-end bg-white">
+						<div class="row g-2 h-100 p-0 m-0">
+
+							<div class="col-12 d-flex flex-column p-0">
+								<div
+									class="d-flex align-items-center justify-content-between mb-2">
+									<span class="fw-bold text-primary" style="font-size: 0.9rem;">
+										<i class="bi bi-chat-dots-fill"></i> Chat
+									</span>
+									<div class="btn-group">
+										<button id="btnNewChat"
+											class="btn btn-sm btn-outline-success border-0 px-1 py-0"
+											title="New">
+											<i class="bi bi-plus-lg"></i>
+										</button>
+										<button id="btnDeleteSession"
+											class="btn btn-sm btn-outline-danger border-0 px-1 py-0"
+											title="Clear">
+											<i class="bi bi-trash3"></i>
+										</button>
+									</div>
+								</div>
+								<div id="aiChatSessionsList"
+									class="flex-grow-1 overflow-auto list-group list-group-flush border rounded bg-light"
+									style="max-height: calc(100vh - 250px);"></div>
+							</div>
+
+							<div class="col-12 d-flex flex-column p-0">
+								<div
+									class="d-flex align-items-center justify-content-between mb-2">
+									<span class="fw-bold text-success" style="font-size: 0.9rem;">
+										<i class="bi bi-file-earmark-medical-fill"></i> Record
+									</span>
+									<div class="btn-group">
+										<button id="btnNewRecord"
+											class="btn btn-sm btn-outline-success border-0 px-1 py-0"
+											title="New">
+											<i class="bi bi-plus-lg"></i>
+										</button>
+										<button id="btnDeleteRecord"
+											class="btn btn-sm btn-outline-danger border-0 px-1 py-0"
+											title="Clear">
+											<i class="bi bi-trash3"></i>
+										</button>
+									</div>
+								</div>
+								<div id="aiRecordList"
+									class="flex-grow-1 overflow-auto list-group list-group-flush border rounded bg-light"
+									style="max-height: calc(100vh - 250px);"></div>
+							</div>
+
 						</div>
-						<button id="btnDeleteSession" class="btn btn-outline-danger w-100">
-							<i class="bi bi-trash3"></i> Clear History(DD)
-						</button>
 					</div>
 
+
+
 					<!-- 對話內容 -->
-					<div class="col-9 d-flex flex-column">
-						<div id="aiAcsBTypeGroup" class="btn-group mb-3" role="group">
+					<div class="col-9 p-2 d-flex flex-column">
+						<div id="aiAcsBTypeGroup" class="btn-group mb-2" role="group">
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAMTI" value="AMTI" checked> <label
 								class="btn btn-outline-danger p-1" for="typeAMTI"> <i
 								class="bi bi-stars"></i> 多功能測試<br>(Test)AI
 							</label>
+							<!-- Record -->
+							<input type="radio" class="btn-check" name="acsbtype"
+								id="typeAREC" value="AREC"> <label
+								class="btn btn-outline-success p-1" for="typeAREC"> <i
+								class="bi bi-cpu-fill"></i> Record<br>(錄製)AI
+							</label>
 							<!-- 產品AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPDM" value="APDM"> <label
-								class="btn btn-outline-primary p-1" for="typeAPDM">APDM<br>
-								(產品)AI
-							</label>
+								class="btn btn-outline-primary p-1" for="typeAPDM"><i
+								class="bi bi-box-seam-fill"></i> APDM<br> (產品)AI </label>
 							<!-- 生管AI管理人 -->
 							<input type="radio" class="btn-check" name="acsbtype"
 								id="typeAPMC" value="APMC"> <label
-								class="btn btn-outline-primary p-1" for="typeAPMC">PMC<br>(生管)AI
-							</label>
+								class="btn btn-outline-primary p-1" for="typeAPMC"><i
+								class="bi bi-calendar-check-fill"></i> PMC<br>(生管)AI </label>
 							<!-- 物控AI管理人 -->
 							<input type="radio" class="btn-check" disabled="disabled"
 								name="acsbtype" id="typeAMMC" value="AMMC"> <label
-								class="btn btn-outline-primary p-1" for="typeAMMC">MC<br>(物控)AI
-							</label>
+								class="btn btn-outline-primary p-1" for="typeAMMC"><i
+								class="bi bi-tags-fill"></i> MC<br>(物控)AI </label>
 							<!-- 採購AI管理人 -->
 							<input type="radio" class="btn-check" disabled="disabled"
 								name="acsbtype" id="typeAPUR" value="APUR"> <label
-								class="btn btn-outline-primary p-1" for="typeAPUR">Purchasing<br>(採購)AI
-							</label>
+								class="btn btn-outline-primary p-1" for="typeAPUR"><i
+								class="bi bi-cart-check-fill"></i> Purchasing<br>(採購)AI </label>
 							<!-- 倉儲AI管理人 -->
 							<input type="radio" class="btn-check" disabled="disabled"
 								name="acsbtype" id="typeAWMS" value="AWMS"> <label
-								class="btn btn-outline-primary p-1" for="typeAWMS">WMS<br>(倉儲)AI
-							</label>
+								class="btn btn-outline-primary p-1" for="typeAWMS"><i
+								class="bi bi-archive-fill"></i> WMS<br>(倉儲)AI </label>
 						</div>
 
 						<div id="aiChatMessagesBox"
-							class="flex-grow-1 border rounded bg-light p-3 overflow-auto mb-3">
+							class="flex-grow-1 border rounded bg-light p-1 overflow-auto mb-2">
 							<div class="text-center text-muted mt-5">
 								<i class="bi bi-robot" style="font-size: 3rem;"></i>
 								<p class="mt-2">已準備好發起新對話，請選擇上方 AI 模組並輸入問題。</p>
@@ -369,7 +460,7 @@
 								</div>
 								<div>
 									<textarea id="acmContentInput" class="form-control" rows="3"
-										placeholder="請輸入問題..."></textarea>
+										placeholder="Please enter your question...(請輸入問題...)"></textarea>
 								</div>
 							</div>
 							<div class="col-12 col-lg-2 d-flex flex-column gap-2">
@@ -548,7 +639,7 @@
 
 				// [移除紀錄]
 				$("#btnDeleteSession").off().on("click", function() {
-					if(confirm("確定要移除此對話紀錄嗎？")) {
+					if(confirm("確定要移除此對話紀錄嗎？\n(Are you sure you want to remove this chat history?)")) {
 						other.methods.sessionDelete();
 					}
 				});
@@ -560,9 +651,21 @@
 				// 🚀 需求 2：點擊分頁時觸發 +New
 			    $("#aiAcsBTypeGroup input[name='acsbtype']").on("change", function() {
 			        console.log("切換 AI 模組，重置對話...");
+			        
+			        let selectedType = $(this).val();
+			        console.log("切換 AI 模組至:", selectedType);
+			        // 1. 先執行標準的新對話重置
 			        other.methods.newChat();
+			     	
+			        // 2. 如果是錄製模式，主動顯示提示框
+			        if (selectedType === 'AREC') {
+			            other.methods.newRecordChat();
+			        }
 			    });
-
+			 	// 在 create() 的監聽器綁定區修改
+			    $("#btnNewRecord").off().on("click", function() {
+			        other.methods.newRecordChat();
+			    });
 			    // 🚀 需求 1：檔案上傳處理
 			    $("#btnFileUpload").on("click", () => $("#fileInput").click());
 			    $("#fileInput").on("change", function(e) {
@@ -690,6 +793,31 @@
 				
 				
 			},
+			// 在 other.methods 裡面新增
+			newRecordChat() {
+			    console.log("newRecordChat() - 啟動錄製專案對話模式");
+			    
+			    // 1. 重置對話狀態
+			    other.methods.newChat();
+			    
+			    // 2. 切換 UI 標籤到 AREC (錄製 AI)
+			    $("#typeAREC").prop("checked", true);
+			    
+			    // 3. 設定業務類型為 AREC，並預設錄製專案的 ID (假設從列表點擊過來)
+			    // 這裡我們暫存一個狀態，代表這次對話是為了錄製
+			    other.data.currentRecordId = 1; // 實際開發時應從選取的專案取得 ID
+			    
+			    // 4. 自動帶入啟始指令 (選配)
+			    $("#acmContentInput").val("").focus();
+			    
+			    // 5. 提示使用者
+			    $("#aiChatMessagesBox").html(`
+			        <div class="alert alert-success p-1 mb-1 d-flex align-items-center" role="alert">
+			          <i class="bi bi-info-circle-fill me-2"></i>
+			          <div><strong>「Record Model/程序架構師模式」</strong>，AI assists you in completing JSON program nodes./AI 協助您完成 JSON 程序節點。</div>
+			        </div>
+			    `);
+			},
 			// 🚀 更新數量檢查方法
 		    isOverFileLimit(newCount = 0) {
 		        const currentTotal = other.data.selectedImages.length + other.data.selectedFiles.length;
@@ -787,15 +915,55 @@
 			// 渲染訊息片段
 			// 🚀 修正版：支援多附件渲染
 			renderMessage(msg) {
-			    console.log("renderMessage() - 佈局優化");
-			    let alignment = msg.role === 'USER' ? 'ms-auto bg-primary text-white' : 'me-auto bg-white border';
-			    let formattedContent = (msg.role === 'ASSISTANT') ? marked.parse(msg.acmcontent) : msg.acmcontent;
+			    console.log("renderMessage() - 執行附件渲染邏輯");
+			    let isUser = (msg.role === 'USER');
+			    let alignment = isUser ? 'ms-auto bg-primary text-white' : 'me-auto bg-white border';
 			    
-			    // 1. 處理附件 (圖片/檔案)
+			    // --- 🚀 修改重點：針對 AI 回覆進行 JSON 格式化檢查 ---
+			    let rawContent = msg.acmcontent;
+			    if (!isUser) {
+			        rawContent = other.methods.formatJsonContent(rawContent);
+			    }
+			    
+			    // 渲染 Markdown
+			    let formattedContent = (msg.role === 'ASSISTANT') ? marked.parse(rawContent) : rawContent;
+			    
+			    
+			    
+			    // 🚀 1. 處理附件 (圖片/檔案)
 			    let attachmentsHtml = "";
-			    // ... (維持你原本處理 attachments 的邏輯) ...
+			    if (msg.attachments && msg.attachments.length > 0) {
+			        attachmentsHtml += `<div class="message-attachments mb-2">`;
+			        msg.attachments.forEach(att => {
+			            if (att.fileType === 'IMAGE') {
+			                // 📸 如果是圖片，直接顯示縮圖 (加上點擊放大功能更好)
+			                // 注意：如果資料庫存的是 Base64，這裡直接帶入
+			                attachmentsHtml += `
+			                    <div class="mb-1">
+			                        <img src="data:image/jpeg;base64,${att.fileData}" 
+			                             class="img-fluid rounded border shadow-sm" 
+			                             style="max-height: 250px; cursor: pointer;" 
+			                             onclick="window.open(this.src)">
+			                    </div>`;
+			            } else if (att.fileType === 'FILE') {
+			                // 📄 如果是文件，顯示圖示與檔名
+			                let fileIcon = "bi-file-earmark-text";
+			                if(att.fileName.toLowerCase().includes("pdf")) fileIcon = "bi-file-earmark-pdf";
+			                if(att.fileName.toLowerCase().includes("xls")) fileIcon = "bi-file-earmark-excel";
+			                
+			                // User 訊息內文字是白色，所以檔案框要稍微深色一點才看得清
+			                let fileBoxClass = isUser ? 'bg-white text-primary' : 'bg-light text-dark';
+			                
+			                attachmentsHtml += `
+			                    <div class="p-2 rounded mb-1 border ${fileBoxClass}" style="font-size: 0.85rem;">
+			                        <i class="bi ${fileIcon}"></i> ${att.fileName}
+			                    </div>`;
+			            }
+			        });
+			        attachmentsHtml += `</div>`;
+			    }
 			
-			    // 🚀 2. 預備語音按鈕
+			    // 🚀 2. 預備語音按鈕 (維持原樣)
 			    let voiceHtml = "";
 			    if (msg.acmvdata) {
 			        let audioId = "audio_" + msg.id;
@@ -806,26 +974,20 @@
 			            </button>
 			            <button class="btn btn-sm btn-secondary text-white btn-stop-voice" onclick="let a=document.getElementById('${audioId}'); a.pause(); a.currentTime=0;">
 			                <i class="bi bi-stop-fill"></i> 終止
-			            </button>
-			        `;
+			            </button>`;
 			    }
 			
-			    // 🚀 3. 建立功能按鈕列 (左語音，右 Excel)
-			    // 即使目前沒語音沒表格，我們也預留這個容器
+			    // 🚀 3. 建立功能按鈕列 (維持原樣)
 			    let actionRowHtml = `
 			        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top action-row" style="min-height: 40px;">
-			            <div class="voice-group d-flex gap-2">
-			                ${voiceHtml}
-			            </div>
-			            <div class="excel-group">
-			                </div>
-			        </div>
-			    `;
+			            <div class="voice-group d-flex gap-2">${voiceHtml}</div>
+			            <div class="excel-group"></div>
+			        </div>`;
 			
 			    return `
 			        <div class="d-flex mb-3">
 			            <div class="p-3 rounded shadow-sm text-start ${alignment}" style="max-width: 90%; min-width: 250px;">
-			                ${attachmentsHtml}
+			                ${attachmentsHtml} 
 			                <div class="markdown-body">${formattedContent}</div>
 			                ${msg.role === 'ASSISTANT' ? actionRowHtml : ''}
 			                <small class="d-block text-end mt-1 opacity-75">${other.methods.formatDate(msg.acmcat)}</small>
@@ -856,6 +1018,7 @@
 			    // 5. 聚焦到輸入框
 			    $("#acmContentInput").val("").focus();
 			},
+			
 			// 開啟相機
 			cameraOpen() {
 			    const video = document.getElementById('videoPreview');
@@ -905,6 +1068,49 @@
 			    // 關閉 Modal
 			    $('#cameraModal').modal('hide');
 			},
+			//錄製功能
+			recordListRender() {
+			    console.log("recordListRender() - 渲染右側錄製清單");
+			    let sessions = other.data.searchPageSet.entityJsons;
+			    
+			    // 🚀 1. 過濾出所有 AREC 類型的會話
+			    let recordSessions = sessions.filter(s => s.acsbtype === 'AREC');
+			    
+			    let html = "";
+			    recordSessions.forEach(s => {
+			        let projectName = "未命名專案";
+			        
+			        // 🚀 2. 嘗試從快照 (Context) 擷取專案名稱
+			        if (s.acsccontext) {
+			            try {
+			                let snapshot = JSON.parse(s.acsccontext);
+			                projectName = snapshot.templatename || "規劃中專案...";
+			            } catch(e) { projectName = "格式解析中..."; }
+			        }
+
+			        let activeClass = (other.data.currentSessionId == s.acsid) ? "active" : "";
+			        let formattedDate = other.methods.formatDate(s.acscat);
+
+			        html += `
+			            <a href="javascript:void(0);" id="record_item_${s.acsid}"
+			               class="list-group-item list-group-item-action ${activeClass}" 
+			               onclick="other.methods.loadSession(${s.acsid})">
+			                <div class="d-flex w-100 justify-content-between align-items-center">
+			                    <h6 class="mb-1 text-truncate fw-bold" style="max-width: 140px;">${projectName}</h6>
+			                    <input type="checkbox" class="session-checkbox form-check-input mt-0" 
+			                           value="${s.acsid}" 
+			                           onclick="event.stopPropagation();"
+			                           style="height: 16px; width: 16px;">
+			                </div>
+			                <div class="d-flex justify-content-between align-items-center">
+		                    <small class="opacity-75">${formattedDate}</small>
+		                	</div>
+			            </a>`;
+			    });
+
+			    if (html === "") html = '<div class="text-center text-muted p-3" style="font-size: 0.8rem;">暫無錄製專案</div>';
+			    $("#aiRecordList").html(html);
+			},
 			//==========================修改資料==========================
 			searchToModify(order) {
 				
@@ -926,12 +1132,14 @@
 			    let chatReq = JSON.parse(JSON.stringify(other.data.entityFormatJson));
 			    chatReq['acsid'] = other.data.currentSessionId || 0;
 			    chatReq['acsbtype'] = bType;
+			 	// 🚀 關鍵：如果是 AREC 模式，傳送關聯的 Record ID
+			    chatReq['acsrid'] = (bType === 'AREC') ? (other.data.currentRecordId || 0) : 0;
 
 			    let firstMsg = chatReq['aichatmessages'][0];
 			    firstMsg['acmcontent'] = content;
 			    firstMsg['acmvon'] = $("#checkAutoVoice").is(":checked");// [語音]取得勾選狀態
 			    firstMsg['acmeon'] = $("#checkExpert").is(":checked");// [專家]取得勾選狀態
-
+			    
 			    // 🚀 根據內容動態決定類型
 			    // 封裝所有附件
 				let allAttachments = [];
@@ -1105,6 +1313,52 @@
 			        alert("匯出失敗，請確認套件載入狀態。");
 			    }
 			},
+			// 🚀 在 other.methods 裡面新增或更新
+			formatJsonContent(text) {
+			    // 1. 尋找整段文字中「第一個 {」與「最後一個 }」
+			    const firstBrace = text.indexOf('{');
+			    const lastBrace = text.lastIndexOf('}');
+			
+			    // 2. 如果沒找到對應的括號，直接回傳原文字
+			    if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+			        return text;
+			    }
+			
+			    // 3. 擷取這中間的所有內容 (包含嵌套的關鍵字、連線資訊等)
+			    const potentialJson = text.substring(firstBrace, lastBrace + 1);
+			
+			    try {
+			        // 4. 嘗試解析
+			        const jsonObj = JSON.parse(potentialJson);
+			
+			        // 5. 判斷這是不是我們要的「5090 錄製物件」
+			        const isOurEntity = potentialJson.includes("templatename") || 
+			                            potentialJson.includes("nodes") || 
+			                            potentialJson.includes("steporder");
+			
+			        if (isOurEntity) {
+			            // 取得 JSON 前後的說明文字 (AI 碎碎念的部分)
+			            const prefix = text.substring(0, firstBrace).trim();
+			            const suffix = text.substring(lastBrace + 1).trim();
+			
+			            // 回傳：說明文字 + 漂亮的代碼塊 + 結尾文字
+			            return (prefix ? prefix + "\n" : "") + 
+			                   "```json\n" + JSON.stringify(jsonObj, null, 2) + "\n```" + 
+			                   (suffix ? "\n" + suffix : "");
+			        }
+			    } catch (e) {
+			        // 如果最外層解析失敗（可能 AI 噴了兩段獨立 JSON），
+			        // 則退回到你之前的 Regex 邏輯作為「備援機制」，增加靈活性
+			        const jsonRegex = /({[\s\S]+?})(?=\s|$|[^{}])/g;
+			        return text.replace(jsonRegex, (match) => {
+			            try {
+			                const subObj = JSON.parse(match);
+			                return "\n```json\n" + JSON.stringify(subObj, null, 2) + "\n```\n";
+			            } catch (err) { return match; }
+			        });
+			    }
+			    return text;
+			},
 			// ========================== 傳送音訊到後端 ==========================
 			sendAudioToBackend(blob) {
 			    console.log("sendAudioToBackend() - Processing WAV to Base64");
@@ -1160,57 +1414,16 @@
 				};
 				main.methods.ajaxSend(req_data, true);//->取得資料 回傳otherReturn();
 			},
-			sessionDelete() {
-			    console.log("sessionDelete() - Batch Mode");
-			    console.log(other.data.entityFormatJson);
-			    // 1. 取得所有被勾選的勾選框 (Red Checkboxes)
-			    let $checkedItems = $(".session-checkbox:checked");
-
-			    if ($checkedItems.length === 0) {
-			        alert("請先勾選要移除的對話紀錄！");
-			        return;
-			    }
-
-			    // 2. 提取所有勾選的 acsid
-			    let selectedIds = [];
-			    $checkedItems.each(function() {
-			        selectedIds.push(parseInt($(this).val()));
-			    });
-
-			    // 3. 安全確認：防止使用者誤刪
-			    if (!confirm(`確定要移除這 ${selectedIds.length} 項紀錄嗎？移除後將無法恢復。`)) {
-			        return;
-			    }
-
-			    // 4. 準備傳送給後端的資料
-			    // 我們改傳一個陣列 acsidList，後端透過這個清單執行批次刪除
-			    let data = { 
-			        "entityJson": JSON.stringify({ 
-			            "acsid": selectedIds 
-			        }),
-			        callBackFunction: "other_other" // 刪除成功後，調用 otherOtherReturn 刷新列表
-			    };
-
-			    let req_data = {
-			        data: data,
-			        url: $('#nav_functional_unit').attr('title') + ".basil.DD",
-			        type: "DELETE",
-			    };
-
-			    // 5. 送出請求
-			    main.methods.ajaxSend(req_data, true);
-
-			    // 6. UI 優化：清空當前對話框（避免顯示已被刪除的內容）
-			    $("#aiChatMessagesBox").html("");
-			    other.data.currentSessionId = null;
-			},
+			
 			//==========================資料載入==========================
 			otherReturn() {
-				//回傳對話紀錄
-				console.log("searchReLoad_Start:" + new Date());
-				other.methods.sessionListReturn();
-				
-				console.log("searchReLoad_OK:" + new Date());
+			    console.log("otherReturn() - 初始載入全量紀錄");
+			    // 1. 將後端回傳的全量歷史紀錄存入本地快取
+			    other.data.searchPageSet.entityJsons = JSON.parse(main.resq_data['entityJson']);
+			    
+			    // 2. 執行渲染 (渲染時直接讀取本地快取)
+			    other.methods.sessionListRender();
+			    other.methods.recordListRender();
 			},
 			// ==========================回傳接收==========================
 			otherOtherReturn(){
@@ -1224,7 +1437,7 @@
 			    // 1. 取得所有勾選的 ID
 			    let $checkedItems = $(".session-checkbox:checked");
 			    if ($checkedItems.length === 0) {
-			        alert("請先勾選要移除的對話紀錄！");
+			        alert("請先勾選要移除的對話紀錄！\n(Please select the chat history you want to remove first!)");
 			        return;
 			    }
 
@@ -1234,7 +1447,7 @@
 			    });
 
 			    // 2. 安全確認
-			    if (!confirm(`確定要移除這 ${selectedIds.length} 項紀錄嗎？`)) return;
+			    if (!confirm(`確定要移除這 ${selectedIds.length} 項紀錄嗎？\n(Are you sure you want to remove This ${selectedIds.length} record?)`)) return;
 
 			    // 3. 核心邏輯：依照範例物件格式，封裝成物件陣列
 			    // 這樣後端解析時，每一筆都會是一個完整的 AiChatSessions Bean
@@ -1270,58 +1483,80 @@
 			    other.data.currentSessionId = null;
 			},
 			otherModifyReturn() {
-			    console.log("otherModifyReturn()");
-			    // 1. 取得後端回傳的完整 Session
+			    console.log("otherModifyReturn() - 更新單筆對話紀錄");
+			    // 1. 取得後端回傳的單一 Session 物件
 			    let updatedSession = JSON.parse(main.resq_data['entityJson'])[0];
 			    let sid = updatedSession.acsid;
 			    
-			    // 2. 更新全域 ID 與本地緩存數據 (entityJsons)
+			    // 2. 更新全域 ID
 			    other.data.currentSessionId = sid;
-			    let index = other.data.searchPageSet.entityJsons.findIndex(s => s.acsid == sid);
 			    
+			    // 3. 更新本地快取陣列
+			    let index = other.data.searchPageSet.entityJsons.findIndex(s => s.acsid == sid);
 			    if (index !== -1) {
+			        // 如果是舊對話更新，替換該筆資料
 			        other.data.searchPageSet.entityJsons[index] = updatedSession;
 			    } else {
+			        // 如果是 +New 產生的新對話，將它插到陣列最前面 (最新的在上面)
 			        other.data.searchPageSet.entityJsons.unshift(updatedSession);
-			        // 如果是全新會話，還是建議刷一次清單，因為要長出新的 <a> 標籤
-			        other.methods.sessionListReturn(); 
 			    }
-			
-			    // 3. 【局部更新左側清單】只改當前這項的文字與時間
-			    let $sessionItem = $(`#session_item_${sid}`);
-			    if ($sessionItem.length > 0) {
-			        // 更新標題 (acstitle)
-			        $sessionItem.find("h6").text(updatedSession.acstitle || '新對話');
-			        
-			        // 更新時間 (格式化後填入)
-			        let formattedDate = other.methods.formatDate(updatedSession.acscat);
-			        $sessionItem.find("small").text(formattedDate);
-			    }
-			
-			    // 4. 更新右側對話視窗
+
+			    // 4. 重新渲染左側列表 (這時會讀取已經更新過的 entityJsons)
+			    other.methods.sessionListRender();
+			    other.methods.recordListRender();
+
+			    // 5. 更新右側訊息視窗
 			    let html = "";
 			    updatedSession.aichatmessages.forEach(msg => {
 			        html += other.methods.renderMessage(msg);
 			    });
 			    $("#aiChatMessagesBox").html(html);
 			    
-			    // 🚀 渲染完訊息後，立刻掃描有沒有表格，有的話就長出按鈕
+			    // 6. 輔助功能：表格、捲動、自動語音
 			    other.methods.injectTableButtons();
-			 
-			    // 5. 自動捲動到底部
 			    let box = document.getElementById("aiChatMessagesBox");
 			    if(box) box.scrollTop = box.scrollHeight;
-			    
 
-			    // 🚀 檢查是否勾選自動播放 且 該則訊息有語音資料
 			    let lastMsg = updatedSession.aichatmessages[updatedSession.aichatmessages.length - 1];
 			    if ($("#checkAutoVoice").is(":checked") && lastMsg.acmvdata) {
-			        console.log("自動播放 AI 語音...");
 			        setTimeout(() => {
 			            let audioEl = document.getElementById("audio_" + lastMsg.id);
 			            if (audioEl) audioEl.play();
-			        }, 500); // 稍微延遲確保 DOM 已渲染
+			        }, 500);
 			    }
+			},
+			sessionListRender() {
+			    console.log("sessionListRender() - 依照本地快取渲染 UI");
+			    // 直接從本地快取撈資料
+			    let sessions = other.data.searchPageSet.entityJsons; 
+			    
+			    let html = "";
+			    sessions.forEach(s => {
+			        let formattedDate = other.methods.formatDate(s.acscat);
+			        // 判斷是否為當前選取的 Session，加上 active 高亮
+			        let activeClass = (other.data.currentSessionId == s.acsid) ? "active" : "";
+
+			        html += `
+			            <a href="javascript:void(0);" id="session_item_${s.acsid}"
+			               class="list-group-item list-group-item-action ${activeClass}" 
+			               onclick="other.methods.loadSession(${s.acsid})">
+			                <div class="d-flex w-100 justify-content-between">
+			                    <h6 class="mb-1 text-truncate" style="max-width: 180px;">${s.acstitle || '新對話'}</h6>
+			                    <input type="checkbox" class="session-checkbox form-check-input mt-0 mb-1" 
+			                           value="${s.acsid}" 
+			                           onclick="event.stopPropagation();"
+			                           style="height: 20px; width: 20px;">
+			                </div>
+			                <div class="d-flex justify-content-between align-items-center">
+			                    <small class="opacity-75">${formattedDate}</small>
+			                    <span class="badge rounded-pill bg-primary text-light border">${s.acsbtype || ''}</span>
+			                </div>
+			            </a>`;
+			    });
+			    $("#aiChatSessionsList").html(html);
+			    
+			    // 在方法結尾呼叫，確保兩邊高亮一致
+			    other.methods.recordListRender();
 			},
 			sessionListReturn() {
 			    console.log("sessionListReturn()");

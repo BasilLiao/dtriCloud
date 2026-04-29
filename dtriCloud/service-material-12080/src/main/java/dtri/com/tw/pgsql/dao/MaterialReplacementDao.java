@@ -10,7 +10,6 @@ import dtri.com.tw.pgsql.entity.MaterialReplacement;
 
 public interface MaterialReplacementDao extends JpaRepository<MaterialReplacement, Long> {
 
-
 	// 查詢全部
 	ArrayList<MaterialReplacement> findAll();
 
@@ -29,8 +28,9 @@ public interface MaterialReplacementDao extends JpaRepository<MaterialReplacemen
 	ArrayList<MaterialReplacement> findAllByCheck(String mrnb, String mrnote, String mrsubnote);
 
 	// 多筆查詢範例
-//	@Query(" SELECT i.suname FROM MaterialReplacement i WHERE "//
-//			+ "(coalesce(:accounts, null) is null or i.suaccount IN :accounts ) ") // coalesce 回傳非NULL值
-//	ArrayList<String> readAccounts(List<String> accounts);
+	// @Query(" SELECT i.suname FROM MaterialReplacement i WHERE "//
+	// + "(coalesce(:accounts, null) is null or i.suaccount IN :accounts ) ") //
+	// coalesce 回傳非NULL值
+	// ArrayList<String> readAccounts(List<String> accounts);
 
 }

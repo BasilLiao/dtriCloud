@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -39,6 +40,7 @@ import jakarta.persistence.Transient;
  *      was_e_date : 預計領料日 <br>
  */
 @Entity
+@Table(name = "warehouse_action_detail_front")
 public class WarehouseActionDetailFront {
 	public WarehouseActionDetailFront() {
 		// 共用型

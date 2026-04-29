@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import dtri.com.tw.mssql.dto.MaterialQtyDto;
 import dtri.com.tw.mssql.entity.Mocte;
 
 public interface MocteDao extends JpaRepository<Mocte, Long> {
@@ -26,7 +27,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
-			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
+			+ "	MOCTC.TC009,"// --領單頭-確認碼 Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用
@@ -105,7 +106,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
-			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
+			+ "	MOCTC.TC009,"// --領單頭-確認碼 Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用
@@ -175,7 +176,7 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	MOCTA.TA034,"// --產品品名
 			+ "	MOCTA.TA035,"// --產品規格
 			+ "	MOCTC.TC007,"// --領單頭備註
-			+ "	MOCTC.TC009,"// --領單頭-確認碼  Y/N/V
+			+ "	MOCTC.TC009,"// --領單頭-確認碼 Y/N/V
 			+ "	CEILING(MOCTB.TB004-MOCTB.TB005) AS TB004,"// ----(需領用 - 已領用) = 未領用)需領用
 			+ "	CEILING(MOCTE.TE005) AS TE005,"// --(退料用),--物料領退用量
 			+ "	MOCTB.TB005,"// --已領用
@@ -239,5 +240,65 @@ public interface MocteDao extends JpaRepository<Mocte, Long> {
 			+ "	(MOCTE.TE001 + MOCTE.TE002+MOCTE.TE003) asc "// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Mocte> findAllByMocte60(@Param("TE001TE002TE003") List<String> TE001TE002TE003);
+
+	/**
+	 * 查詢生產領料耗用統計 (A541, A542, A551)
+	 * <p>
+	 * 核心邏輯 (Core Logic):
+	 * 1. <b>資料來源</b>：以領料單身 (MOCTE) 為主，關聯單頭 (MOCTC) 與物料 (INVMB)。
+	 * 2. <b>單據篩選</b>：
+	 * - 鎖定單別：A541 (廠內領料), A542 (補料), A551 (退料)。
+	 * - 狀態：必須已確認 (TE019 = 'Y')。
+	 * 3. <b>時間區間</b>：過去 6 個月 (不含當月)。
+	 * 4. <b>統計方式</b>：加總領料數量 (TE005)，用於計算實際耗用量。
+	 * </p>
+	 *
+	 * @return List<MaterialQtyDto> 包含品號與領料總量(Qty)的列表
+	 * @author Allen
+	 */
+	@Query(value = """
+            SELECT
+                INVMB.MB001,                                 -- 庫存.品號
+                COALESCE(SUM(MOCTE.TE005), 0) AS Qty        -- 領料數量 (保留 DTO 對應名稱)
+
+            FROM DTR_TW.dbo.MOCTE AS MOCTE                   -- 領料單
+
+            -- 製令單身 Join
+            LEFT JOIN DTR_TW.dbo.MOCTB AS MOCTB
+                ON (TRIM(MOCTE.TE011) + '_' + TRIM(MOCTE.TE012) + '_' + TRIM(MOCTE.TE004) + '_' + TRIM(MOCTE.TE009))
+                 = (TRIM(MOCTB.TB001) + '_' + TRIM(MOCTB.TB002) + '_' + TRIM(MOCTB.TB003) + '_' + TRIM(MOCTB.TB006))
+
+            -- 製令單頭 Join
+            LEFT JOIN DTR_TW.dbo.MOCTA AS MOCTA
+                ON (MOCTB.TB001 + '-' + TRIM(MOCTB.TB002)) = (MOCTA.TA001 + '-' + MOCTA.TA002)
+
+            -- 製令單別 Join
+            LEFT JOIN DTR_TW.dbo.MOCTC AS MOCTC
+                ON (MOCTC.TC001 + '-' + TRIM(MOCTC.TC002)) = (MOCTE.TE001 + '-' + TRIM(MOCTE.TE002))
+
+            -- 倉庫別 Join
+            LEFT JOIN DTR_TW.dbo.INVMB AS INVMB
+                ON MOCTE.TE004 = INVMB.MB001
+
+            WHERE            
+                MOCTC.TC014 >= CONVERT(varchar(8), DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 6, 0), 112)
+                AND MOCTC.TC014 <= CONVERT(varchar(8), EOMONTH(GETDATE(), -1), 112)
+
+                -- 單別篩選
+                AND (MOCTE.TE001 IN ('A541', 'A542', 'A551'))
+
+                -- 確認碼篩選
+                AND MOCTE.TE019 = 'Y'
+                
+                -- 料號篩選 (優化效能：使用 CHARINDEX 並保留 INVMB 關聯)
+                AND (:materialNos IS NULL OR CHARINDEX(',' + TRIM(INVMB.MB001) + ',', :materialNos) > 0)
+
+            GROUP BY
+                INVMB.MB001
+
+            ORDER BY
+                INVMB.MB001 ASC
+            """, nativeQuery = true)
+    List<MaterialQtyDto> findMocte005Qty(@Param("materialNos") String materialNos);
 
 }

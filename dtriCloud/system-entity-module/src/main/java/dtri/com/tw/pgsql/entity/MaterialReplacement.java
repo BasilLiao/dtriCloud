@@ -10,77 +10,30 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Basil
- * 
- * @see ---共用型---<br>
- *      sys_c_date : 創建時間<br>
- *      sys_c_user : 創建人名<br>
- *      sys_m_date : 修改時間<br>
- *      sys_m_user : 修改人名<br>
- *      sys_ver : 修改版本<br>
- *      sys_note : 備註<br>
- *      sys_status : 資料狀態<br>
- *      sys_sort : 自訂排序<br>
- *      ---PM參數設置---<br>
- *      mr_id : 主key <br>
- *      mr_nb : ERP 物料號(品號)<br>
- *      mr_name : ERP 物料名稱(品名)<br>
- *      mr_specification : ERP 物料規格(規格)<br>
- *      mr_note : 物料備註<br>
- *      mr_sub_note : 物料替代料<br>
- *      mr_nn_note : N對N替料<br>
- *      mr_cl_note : 客戶替代料<br>
- *      mr_p_note : 產品替代料<br>
- *      mr_prove : 替代料證明<br>
- * 
- * @apiNote 標籤使用 @GeneratedValue<br>
- *          JPA提供的四種標準用法為TABLE，SEQUENCE，IDENTITY，AUTO。 <br>
- *          a，TABLE：使用一個特定的數據庫表格來保存主鍵。<br>
- *          b，SEQUENCE：根據底層數據庫的序列來生成主鍵，條件是數據庫支持序列。 <br>
- *          c，IDENTITY：主鍵由數據庫自動生成（主要是自動增長型）<br>
- *          d，AUTO：主鍵由程序控制。
- * 
- * @apiNote 標籤使用 @Column<br>
- *          varchar(50)<br>
- *          default ''<br>
- * 
- * @apiNote 標籤使用 @Transient<br>
- *          略過不建立實體資料欄位<br>
- * 
- * 
- * @apiNote 標籤使用2<br>
- *          cascade CascadeType.PERSIST 在儲存時一併儲存 被參考的物件。 <br>
- *          CascadeType.MERGE 在合併修改時一併 合併修改被參考的物件。<br>
- *          CascadeType.REMOVE 在移除時一併移除 被參考的物件。 <br>
- *          CascadeType.REFRESH 在更新時一併更新 被參考的物件。<br>
- *          CascadeType.ALL 無論儲存、合併、 更新或移除，一併對被參考物件作出對應動作。<br>
- * 
- *          FetchType.LAZY時，
- *          除非真正要使用到該屬性的值，否則不會真正將資料從表格中載入物件，所以EntityManager後，才要載入該屬性值，就會發生例外錯誤，解決的方式
- *          之一是在EntityManager關閉前取得資料，另一個方式則是標示為FetchType.EARGE， 表示立即從表格取得資料
- * 
- * @Basic FetchType.EARGE <br>
- * @OneToOne FetchType.EARGE<br>
- * @ManyToOne FetchType.EARGE<br>
- * @OneToMany FetchType.LAZY<br>
- * @ManyToMany FetchType.LAZY<br>
- * 
- * 
- *             joinColumns：中間表的外來鍵欄位關聯當前實體類所對應表的主鍵欄位
- *             inverseJoinColumn：中間表的外來鍵欄位關聯對方表的主鍵欄位
- **/
-
+ *         * [功能] N:N 替代料基本資訊
+ *         [核心變更]
+ *         1. mr_nb: 不再唯一，可重複建立不同 Scope 的規則
+ */
 @Entity
-@Table(name = "material_replacement")
+@Table(name = "material_replacement", indexes = {
+		@Index(name = "idx_mr_nb", columnList = "mr_nb"), // 加速主料號查詢
+})
+@Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class)
 public class MaterialReplacement {
 
 	public MaterialReplacement() {
-		// 共用型
+		// --- 共用型初始化 ---
 		this.syscdate = new Date();
 		this.syscuser = "system";
 		this.sysmdate = new Date();
@@ -92,21 +45,25 @@ public class MaterialReplacement {
 		this.sysstatus = 0;
 		this.syssort = 0;
 		this.sysnote = "";
-		// 主體型
 
-		this.mrclnote = "";
+		// --- 業務型初始化 ---
 		this.mrid = null;
-		this.mrname = "";
 		this.mrnb = "";
-		this.mrnnnote = "";
-		this.mrnote = "";
-		this.mrpnote = "";
+		this.mrname = "";
 		this.mrspecification = "";
+		this.mrnote = "";
+
+		// --- 舊欄位保留 ---
+		this.mrclnote = "";
+		this.mrnnnote = "";
+		this.mrpnote = "";
 		this.mrsubnote = "";
 		this.mrprove = "";
 	}
 
-	// 共用型
+	// ==============================================
+	// 系統共用欄位 (System Fields)
+	// ==============================================
 	@Column(name = "sys_c_date", nullable = false, columnDefinition = "TIMESTAMP default now()")
 	private Date syscdate;
 	@Column(name = "sys_c_user", nullable = false, columnDefinition = "varchar(50) default 'system'")
@@ -129,23 +86,41 @@ public class MaterialReplacement {
 	@Column(name = "sys_note", nullable = false, columnDefinition = "text default ''")
 	private String sysnote;
 
-	// 主體型
+	// 版本控制 (解決併發問題)
+	@Version
+	@Column(name = "sys_ver", nullable = false)
+	private Integer sysver = 0;
+
+	// ==============================================
+	// 業務主鍵 (Business ID)
+	// ==============================================
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_replacement_seq")
 	@SequenceGenerator(name = "material_replacement_seq", sequenceName = "material_replacement_seq", allocationSize = 1)
-	@Column(name = "mr_id")
+	@Column(name = "mr_id", nullable = false)
 	private Long mrid;
-	@Column(name = "mr_nb", nullable = false, unique = true, columnDefinition = "varchar(50) default ''")
+
+	// ==============================================
+	// 核心欄位：配方與搜尋 (Core Formula Fields)
+	// ==============================================
+
+	// 1. 搜尋索引：來源配方的第一個料號 (Primary Source P/N)
+	// 注意：這裡移除了 unique=true
+	@Column(name = "mr_nb", nullable = false, columnDefinition = "varchar(50) default ''")
 	private String mrnb;
+
+	// ==============================================
+	// 舊欄位與描述性欄位 (Legacy / Descriptive)
+	// ==============================================
 	@Column(name = "mr_name", nullable = false, columnDefinition = "text default ''")
 	private String mrname;
 	@Column(name = "mr_specification", nullable = false, columnDefinition = "text default ''")
 	private String mrspecification;
 	@Column(name = "mr_note", nullable = false, columnDefinition = "text default ''")
 	private String mrnote;
+
 	@Column(name = "mr_sub_note", nullable = false, columnDefinition = "text default ''")
 	private String mrsubnote;
-
 	@Column(name = "mr_nn_note", nullable = false, columnDefinition = "text default ''")
 	private String mrnnnote;
 	@Column(name = "mr_cl_note", nullable = false, columnDefinition = "text default ''")
@@ -154,6 +129,42 @@ public class MaterialReplacement {
 	private String mrpnote;
 	@Column(name = "mr_prove", nullable = false, columnDefinition = "text default ''")
 	private String mrprove;
+
+	// ==============================================
+	// Getters and Setters
+	// ==============================================
+
+	public Long getMrid() {
+		return mrid;
+	}
+
+	public void setMrid(Long mrid) {
+		this.mrid = mrid;
+	}
+
+	public String getMrnb() {
+		return mrnb;
+	}
+
+	public void setMrnb(String mrnb) {
+		this.mrnb = mrnb;
+	}
+
+	public Integer getSysver() {
+		return sysver;
+	}
+
+	public void setSysver(Integer sysver) {
+		this.sysver = sysver;
+	}
+
+	public Integer getSysstatus() {
+		return sysstatus;
+	}
+
+	public void setSysstatus(Integer sysstatus) {
+		this.sysstatus = sysstatus;
+	}
 
 	public Date getSyscdate() {
 		return syscdate;
@@ -187,6 +198,31 @@ public class MaterialReplacement {
 		this.sysmuser = sysmuser;
 	}
 
+	public String getMrname() {
+		return mrname;
+	}
+
+	public void setMrname(String mrname) {
+		this.mrname = mrname;
+	}
+
+	public String getMrspecification() {
+		return mrspecification;
+	}
+
+	public void setMrspecification(String mrspecification) {
+		this.mrspecification = mrspecification;
+	}
+
+	public String getMrnote() {
+		return mrnote;
+	}
+
+	public void setMrnote(String mrnote) {
+		this.mrnote = mrnote;
+	}
+
+	// 其餘未列出的 Getter/Setter 請保留或由 IDE 生成 (例如 sysodate, sysouser 等)
 	public Date getSysodate() {
 		return sysodate;
 	}
@@ -211,14 +247,6 @@ public class MaterialReplacement {
 		this.sysheader = sysheader;
 	}
 
-	public Integer getSysstatus() {
-		return sysstatus;
-	}
-
-	public void setSysstatus(Integer sysstatus) {
-		this.sysstatus = sysstatus;
-	}
-
 	public Integer getSyssort() {
 		return syssort;
 	}
@@ -233,46 +261,6 @@ public class MaterialReplacement {
 
 	public void setSysnote(String sysnote) {
 		this.sysnote = sysnote;
-	}
-
-	public Long getMrid() {
-		return mrid;
-	}
-
-	public void setMrid(Long mrid) {
-		this.mrid = mrid;
-	}
-
-	public String getMrnb() {
-		return mrnb;
-	}
-
-	public void setMrnb(String mrnb) {
-		this.mrnb = mrnb;
-	}
-
-	public String getMrname() {
-		return mrname;
-	}
-
-	public void setMrname(String mrname) {
-		this.mrname = mrname;
-	}
-
-	public String getMrspecification() {
-		return mrspecification;
-	}
-
-	public void setMrspecification(String mrspecification) {
-		this.mrspecification = mrspecification;
-	}
-
-	public String getMrnote() {
-		return mrnote;
-	}
-
-	public void setMrnote(String mrnote) {
-		this.mrnote = mrnote;
 	}
 
 	public String getMrsubnote() {
@@ -314,4 +302,5 @@ public class MaterialReplacement {
 	public void setMrprove(String mrprove) {
 		this.mrprove = mrprove;
 	}
+
 }

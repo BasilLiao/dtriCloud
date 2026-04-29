@@ -54,6 +54,9 @@ public class PgsqlConfig {
 
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.hbm2ddl.auto", "update");
+		properties.setProperty("hibernate.jdbc.batch_size", "1000"); // 配合 Sequence
+		properties.setProperty("hibernate.order_inserts", "true");
+		properties.setProperty("hibernate.order_updates", "true");
 		em.setJpaProperties(properties);
 
 		return em;//
@@ -62,7 +65,8 @@ public class PgsqlConfig {
 	@Primary
 	@Bean(name = "pgsqlTransactionManager")
 	@ConfigurationProperties("spring.jpa")
-	public PlatformTransactionManager transactionManager(@Qualifier("pgsqlEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+	public PlatformTransactionManager transactionManager(
+			@Qualifier("pgsqlEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
 
 		return new JpaTransactionManager(entityManagerFactory);
 	}

@@ -10,6 +10,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -43,7 +44,13 @@ import jakarta.persistence.Table;
  *
  */
 @Entity
-@Table(name = "basic_bom_ingredients")
+@Table(name = "basic_bom_ingredients", indexes = {
+		// 優化 BOM 遞迴展開查詢效能（analyzeBom / getReport API）
+		// idx_bbi_sn : 用於 WHERE bbi_sn IN (:bomList) 及遞迴 JOIN ON b.bbi_sn = bt.item_no
+		// idx_bbi_i_sn : 用於 all_parents CTE 的 DISTINCT bbi_sn 掃描加速
+		@Index(name = "idx_bbi_sn", columnList = "bbi_sn"),
+		@Index(name = "idx_bbi_i_sn", columnList = "bbi_i_sn")
+})
 @EntityListeners(AuditingEntityListener.class)
 public class BasicBomIngredients {
 	public BasicBomIngredients() {

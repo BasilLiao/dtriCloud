@@ -1,12 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>dtri.com.tw</groupId>
-    <artifactId>dtriCloud</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>service-material-12080</artifactId>
-  <name>service-warehouse-12080</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dtri.com.tw</groupId>
+		<artifactId>dtriCloud</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>service-material-12080</artifactId>
+	<name>service-material-12080</name>
 	<dependencies>
 		<!-- Spring Boot Web -->
 		<dependency>
@@ -20,7 +22,8 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		<!--引入Eureka Client的依賴，將服務註冊到Eureka Server -->
+		<!--引入Eureka
+		Client的依賴，將服務註冊到Eureka Server -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
@@ -30,12 +33,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<!--logback 日誌 -->
+		<!--logback
+		日誌 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
-		<!--junit 測試 -->
+		<!--junit
+		測試 -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -47,9 +52,9 @@
 		</dependency>
 		<!--system-entity-module-->
 		<dependency>
-		  <groupId>dtri.com.tw</groupId>
-		  <artifactId>system-entity-module</artifactId>
-		  <version>0.0.1-SNAPSHOT</version>
+			<groupId>dtri.com.tw</groupId>
+			<artifactId>system-entity-module</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!--資料庫運用-->
 		<dependency>
@@ -61,13 +66,19 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- 若 Entity 有用 Lombok 才需要 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 	<build>
-  <plugins>
-    <plugin>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-maven-plugin</artifactId>
-    </plugin>
-  </plugins>
-</build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>

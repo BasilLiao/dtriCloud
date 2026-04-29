@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import dtri.com.tw.mssql.dto.MaterialQtyDto;
 import dtri.com.tw.mssql.entity.Copth;
 
 public interface CopthDao extends JpaRepository<Copth, Long> {
@@ -95,4 +97,57 @@ public interface CopthDao extends JpaRepository<Copth, Long> {
 			+ "ORDER BY (COPTH.TH001+ '-' + TRIM(COPTH.TH002) +'-'+ COPTH.TH003) ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Copth> findAllByCopth(List<String> TH001TH002TH003);
+
+	/**
+	 * 查詢特定銷貨單之銷售總量統計 (A232)
+	 * <p>
+	 * 核心邏輯 (Core Logic):
+	 * 1. <b>資料來源</b>：以銷貨單頭 (COPTG) 關聯 銷貨單身 (COPTH) 為主。
+	 * 2. <b>篩選條件 (Filters)</b>：
+	 * - <b>單別鎖定</b>：僅計算單別為 'A232' 之銷貨紀錄。
+	 * - <b>有效性</b>：數量 (TH008) 必須大於 0。
+	 * - <b>時間區間</b>：限定過去 6 個月內 (不含當月) 之資料。
+	 * 3. <b>統計方式</b>：依照物料品號 (MB001) 進行匯總 (SUM)，若無對應資料不會回傳。
+	 * </p>
+	 *
+	 * @return List<MaterialQtyDto> 包含品號 (MB001) 與 銷貨總量 (qty) 的 DTO 列表
+	 * @author Allen
+	 */
+	@Query(value = """
+			SELECT
+			    INVMB.MB001,                                 -- 品號
+			    -- 為了配合 DTO 為 qty
+			    COALESCE(SUM(COPTH.TH008), 0) AS qty
+
+			FROM DTR_TW.dbo.COPTG AS COPTG                   -- 銷貨單頭
+
+			LEFT JOIN DTR_TW.dbo.COPTH AS COPTH              -- 銷貨單身
+			    ON (COPTG.TG001 + '-' + TRIM(COPTG.TG002)) = (COPTH.TH001 + '-' + TRIM(COPTH.TH002))
+
+			LEFT JOIN DTR_TW.dbo.INVMB AS INVMB              -- 庫存品號資料
+			    ON COPTH.TH004 = INVMB.MB001
+
+			LEFT JOIN DTR_TW.dbo.CMSMC AS CMSMC              -- 基本資料
+			    ON INVMB.MB017 = CMSMC.MC001
+
+			LEFT JOIN DTR_TW.dbo.PURMA AS PURMA              -- 廠商資料
+			    ON PURMA.MA001 = INVMB.MB032
+
+			WHERE
+			    COPTH.TH008 > 0
+			    AND (COPTH.TH001 = 'A232')                  -- 國外銷貨單
+
+			    AND COPTG.TG042 >= CONVERT(varchar(8), DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 6, 0), 112)
+			    AND COPTG.TG042 <= CONVERT(varchar(8), EOMONTH(GETDATE(), -1), 112)
+
+			    -- 料號篩選 (優化效能：使用 CHARINDEX 並保留 INVMB 關聯)
+			    AND (:materialNos IS NULL OR CHARINDEX(',' + TRIM(INVMB.MB001) + ',', :materialNos) > 0)
+
+			GROUP BY
+			    INVMB.MB001
+
+			ORDER BY
+			    INVMB.MB001 ASC
+			""", nativeQuery = true)
+	List<MaterialQtyDto> findCopth008Qty(@Param("materialNos") String materialNos);
 }

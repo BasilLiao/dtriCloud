@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -24,6 +25,7 @@ import jakarta.persistence.Transient;
  * 
  */
 @Entity
+@Table(name = "warehouse_work_statistics_front")
 public class WarehouseWorkStatisticsFront {
 	public WarehouseWorkStatisticsFront() {
 		// 共用型

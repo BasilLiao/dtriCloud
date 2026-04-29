@@ -1,86 +1,85 @@
 <style>
-/*Table 寬度滾動*/
-#compare_c .table-responsive {
-	display: block;
-	width: 100%;
-	overflow-x: auto;
-}
+	/*Table 寬度滾動*/
+	#compare_c .table-responsive {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+	}
 
-/*Table 自動隱藏*/
-#compare_c .table-responsive th, #compare_c .table-responsive td {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
+	/*Table 自動隱藏*/
+	#compare_c .table-responsive th,
+	#compare_c .table-responsive td {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
 
-/*Table 表格固定*/
-#compare_c .fixedC1 {
-	left: 0px;
-	position: sticky;
-}
+	/*Table 表格固定*/
+	#compare_c .fixedC1 {
+		left: 0px;
+		position: sticky;
+	}
 
-/*Table 每隔表格內_框線*/
-#compare_c .table-bordered td, #compare_c .table-bordered th {
-	border: 1px solid #1b76fd;
-	padding: 2px;
-}
+	/*Table 每隔表格內_框線*/
+	#compare_c .table-bordered td,
+	#compare_c .table-bordered th {
+		border: 1px solid #1b76fd;
+		padding: 2px;
+	}
 
-/*Table 表格外框線*/
-#compare_c #cCompareData table {
-	min-height: 480px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
+	/*Table 表格外框線*/
+	#compare_c #cCompareData table {
+		min-height: 480px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
 
-/*Table 表格外框線*/
-#compare_c #cCompareDetail table {
-	min-height: 480px;
-	max-height: 480px;
-	border-collapse: separate;
-	border-spacing: 0px;
-}
+	/*Table 表格外框線*/
+	#compare_c #cCompareDetail table {
+		min-height: 480px;
+		max-height: 480px;
+		border-collapse: separate;
+		border-spacing: 0px;
+	}
 
-/*Table 表格內 背景色*/
-#compare_c .table-white {
-	--bs-table-bg: #fff;
-}
+	/*Table 表格內 背景色*/
+	#compare_c .table-white {
+		--bs-table-bg: #fff;
+	}
 
-/*標題色彩*/
-#compare_c .title_color {
-	background-color: #cfe2ff;
-}
+	/*標題色彩*/
+	#compare_c .title_color {
+		background-color: #cfe2ff;
+	}
 
-/*直立式呈現邊字*/
-#compare_c .wlr {
-	writing-mode: vertical-lr;
-	width: 20px;
-}
+	/*直立式呈現邊字*/
+	#compare_c .wlr {
+		writing-mode: vertical-lr;
+		width: 20px;
+	}
 
-/*checkbox_24*/
-#compare_c .checkbox_24 {
-	width: 24px;
-	height: 24px;
-}
+	/*checkbox_24*/
+	#compare_c .checkbox_24 {
+		width: 24px;
+		height: 24px;
+	}
 
-#compare_c .fixedCt {
-	position: sticky;
-	top: 0px;
-	z-index: 5;
-}
+	#compare_c .fixedCt {
+		position: sticky;
+		top: 0px;
+		z-index: 5;
+	}
 </style>
 <div id="compare_c">
 	<!-- 控制面板 -->
 	<div id="cCcontroller" class="col-12 p-1">
-		<div
-			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
-				data-bs-toggle="collapse" data-bs-target="#update_c_controller_open"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-primary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#update_c_controller_open" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div class="row m-0 collapse show" id="update_c_controller_open">
 			<b class="p-0 m-0 lh-1 wlr bg-primary text-white"> Console </b>
-			<div
-				class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
+			<div class="col border border-primary row m-0 p-0 shadow-sm justify-content-between">
 				<div class="col-md-4 p-1">
 					<div class=" border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Check
@@ -109,11 +108,9 @@
 	</div>
 	<!-- 比對結果 -->
 	<div id="cCompareData" class="col-12 m-0 p-1">
-		<div
-			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
-				data-bs-toggle="collapse" data-bs-target="#cCompareDataOpen"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-info text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#cCompareDataOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="cCompareDataOpen" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-info text-white"> Compare Data </b>
@@ -141,11 +138,9 @@
 	</div>
 	<!-- 比對結果 -->
 	<div id="cCompareDetail" class="col-12 m-0 p-1">
-		<div
-			class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
-			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square"
-				data-bs-toggle="collapse" data-bs-target="#cCompareDetailOpen"
-				aria-expanded="false" style="width: 22px; height: 24px;"></i>
+		<div class="col-12 p-0 m-0 lh-1 text-start rounded-top bg-secondary text-white">
+			<i class="btn btn-outline-white p-0 pr-1 pl-1 bi bi-dash-square" data-bs-toggle="collapse"
+				data-bs-target="#cCompareDetailOpen" aria-expanded="false" style="width: 22px; height: 24px;"></i>
 		</div>
 		<div id="cCompareDetailOpen" class="row m-0 collapse show">
 			<b class="p-0 m-0 lh-1 wlr bg-secondary text-white"> Compare
@@ -227,7 +222,9 @@
 						}
 						//如果有翻譯
 						if (resultThead[k].cellLanguage != '') {
-							let cellName = JSON.parse(resultThead[k].cellLanguage)[$('#menu_login_language').text()];
+							let lang = JSON.parse(resultThead[k].cellLanguage || '{}');
+							let currentLang = $('#menu_login_language').text() || 'zh-TW';
+							let cellName = lang[currentLang] || lang[currentLang.replace('-', '_')] || lang['zh_TW'] || lang['zh-TW'] || "";
 							exCDataT.text(cellName == "" ? resultThead[k].cellName : cellName);
 							exCDataT.css('minWidth', resultThead[k].width + "px");
 							exCDataV.css('minWidth', resultThead[k].width + "px");
@@ -268,7 +265,9 @@
 						}
 						//如果有翻譯
 						if (resultDetailThead[k].cellLanguage != '') {
-							let cellName = JSON.parse(resultDetailThead[k].cellLanguage)[$('#menu_login_language').text()];
+							let lang = JSON.parse(resultDetailThead[k].cellLanguage || '{}');
+							let currentLang = $('#menu_login_language').text() || 'zh-TW';
+							let cellName = lang[currentLang] || lang[currentLang.replace('-', '_')] || lang['zh_TW'] || lang['zh-TW'] || "";
 							exCDetailT.text(cellName == "" ? resultDetailThead[k].cellName : cellName);
 							exCDetailT.css('minWidth', resultDetailThead[k].width + "px");
 							exCDetailV.css('minWidth', resultDetailThead[k].width + "px");
@@ -320,167 +319,167 @@
 					console.log("Start Comparing by Index...");
 
 					// 0. 定義範圍：排除樣板表
-				    let $tables = $('#cCompareDetailOpen table').not('#cCompareDetailList'); 
-				    
-				    if ($tables.length < 2) {
-				        console.log("表格數量不足，無法比對");
-				        return;
-				    }
+					let $tables = $('#cCompareDetailOpen table').not('#cCompareDetailList');
 
-				    // Step 0. 清除之前的黃色標記
-				    $tables.find('.bg-warning').removeClass('bg-warning');
+					if ($tables.length < 2) {
+						console.log("表格數量不足，無法比對");
+						return;
+					}
 
-				    // ==========================================
-				    // Step 1. 先排序 (Sort)
-				    // ==========================================
-				    // 為了確保「蘋果」對「蘋果」，我們先把所有表格依據第一欄文字排序
-				    function sortTableByFirstColumn($table) {
-				        let $tbody = $table.find('tbody');
-				        let $rows = $tbody.find('tr.cDetailRVL').toArray();
+					// Step 0. 清除之前的黃色標記
+					$tables.find('.bg-warning').removeClass('bg-warning');
 
-				        $rows.sort(function(a, b) {
-				            // 抓取第一欄可見文字作為 Key
-				            let textA = $(a).find('td:not(.d-none)').eq(0).text().trim();
-				            let textB = $(b).find('td:not(.d-none)').eq(0).text().trim();
-				            return textA.localeCompare(textB, "zh-Hant"); 
-				        });
+					// ==========================================
+					// Step 1. 先排序 (Sort)
+					// ==========================================
+					// 為了確保「蘋果」對「蘋果」，我們先把所有表格依據第一欄文字排序
+					function sortTableByFirstColumn($table) {
+						let $tbody = $table.find('tbody');
+						let $rows = $tbody.find('tr.cDetailRVL').toArray();
 
-				        $.each($rows, function(index, row) {
-				            $tbody.append(row);
-				        });
-				    }
+						$rows.sort(function (a, b) {
+							// 抓取第一欄可見文字作為 Key
+							let textA = $(a).find('td:not(.d-none)').eq(0).text().trim();
+							let textB = $(b).find('td:not(.d-none)').eq(0).text().trim();
+							return textA.localeCompare(textB, "zh-Hant");
+						});
 
-				    $tables.each(function() {
-				        sortTableByFirstColumn($(this));
-				    });
+						$.each($rows, function (index, row) {
+							$tbody.append(row);
+						});
+					}
 
-				    // ==========================================
-				    // Step 2. 開始比對
-				    // ==========================================
-				    let $baseTable = $tables.eq(0); // A表 (基底)
-				    let $targetTables = $tables.slice(1); // B, C, D, E... (其他表)
+					$tables.each(function () {
+						sortTableByFirstColumn($(this));
+					});
 
-				    // -------------------------------------------------
-				    // 邏輯 A：以 A 表為基準，檢查其他表
-				    // 1. 其他表內容不同 -> 標記其他表
-				    // 2. 其他表缺資料 -> 標記 A 表
-				    // -------------------------------------------------
-				    $baseTable.find('tbody tr.cDetailRVL').each(function() {
-				        let $baseRow = $(this);
-				        // 取得這一列的「識別名稱」 (例如: 測試項目A)
-				        let rowKey = $baseRow.find('td:not(.d-none)').eq(0).text().trim();
-				        
-				        let isMissingInSomeTarget = false; // 旗標：是否有某張表缺了這一行
+					// ==========================================
+					// Step 2. 開始比對
+					// ==========================================
+					let $baseTable = $tables.eq(0); // A表 (基底)
+					let $targetTables = $tables.slice(1); // B, C, D, E... (其他表)
 
-				        $targetTables.each(function() {
-				            let $targetTable = $(this);
-				            
-				            // 在這張對照表中，尋找有沒有名稱一樣的行
-				            // 使用 filter 精確比對，避免 "Test" 對到 "Test2"
-				            let $targetRow = $targetTable.find('tbody tr.cDetailRVL').filter(function() {
-				                return $(this).find('td:not(.d-none)').eq(0).text().trim() === rowKey;
-				            });
+					// -------------------------------------------------
+					// 邏輯 A：以 A 表為基準，檢查其他表
+					// 1. 其他表內容不同 -> 標記其他表
+					// 2. 其他表缺資料 -> 標記 A 表
+					// -------------------------------------------------
+					$baseTable.find('tbody tr.cDetailRVL').each(function () {
+						let $baseRow = $(this);
+						// 取得這一列的「識別名稱」 (例如: 測試項目A)
+						let rowKey = $baseRow.find('td:not(.d-none)').eq(0).text().trim();
 
-				            if ($targetRow.length === 0) {
-				                // [狀況 2]: 對照表沒有這一行 -> 標記 "Missing"
-				                isMissingInSomeTarget = true;
-				            } else {
-				                // [狀況 1]: 對照表有這一行 -> 比對欄位內容
-				                $baseRow.find('td').each(function(colIndex) {
-				                    let $baseCell = $(this);
-				                    if ($baseCell.hasClass('d-none')) return; // 跳過隱藏欄位
+						let isMissingInSomeTarget = false; // 旗標：是否有某張表缺了這一行
 
-				                    let baseText = $baseCell.text().trim();
-				                    let $targetCell = $targetRow.find('td').eq(colIndex);
-				                    let targetText = $targetCell.text().trim();
+						$targetTables.each(function () {
+							let $targetTable = $(this);
 
-				                    if (baseText !== targetText) {
-				                        // 內容不同 -> 標記「其他表」
-				                        $targetCell.addClass('bg-warning');
-				                    }
-				                });
-				            }
-				        });
+							// 在這張對照表中，尋找有沒有名稱一樣的行
+							// 使用 filter 精確比對，避免 "Test" 對到 "Test2"
+							let $targetRow = $targetTable.find('tbody tr.cDetailRVL').filter(function () {
+								return $(this).find('td:not(.d-none)').eq(0).text().trim() === rowKey;
+							});
 
-				        // 如果跑完一輪發現有任何一張表缺了這行 -> 標記「A表」
-				        if (isMissingInSomeTarget) {
-				            $baseRow.find('td').addClass('bg-warning');
-				        }
-				    });
+							if ($targetRow.length === 0) {
+								// [狀況 2]: 對照表沒有這一行 -> 標記 "Missing"
+								isMissingInSomeTarget = true;
+							} else {
+								// [狀況 1]: 對照表有這一行 -> 比對欄位內容
+								$baseRow.find('td').each(function (colIndex) {
+									let $baseCell = $(this);
+									if ($baseCell.hasClass('d-none')) return; // 跳過隱藏欄位
 
-				    // -------------------------------------------------
-				    // 邏輯 B：檢查其他表是否有多餘的資料
-				    // (A表沒有，但 B/C 表有 -> 標記 B/C 表)
-				    // -------------------------------------------------
-				    $targetTables.each(function() {
-				        let $targetTable = $(this);
+									let baseText = $baseCell.text().trim();
+									let $targetCell = $targetRow.find('td').eq(colIndex);
+									let targetText = $targetCell.text().trim();
 
-				        $targetTable.find('tbody tr.cDetailRVL').each(function() {
-				            let $targetRow = $(this);
-				            let targetKey = $targetRow.find('td:not(.d-none)').eq(0).text().trim();
+									if (baseText !== targetText) {
+										// 內容不同 -> 標記「其他表」
+										$targetCell.addClass('bg-warning');
+									}
+								});
+							}
+						});
 
-				            // 去 A 表找找看有沒有這個 Key
-				            let $baseRow = $baseTable.find('tbody tr.cDetailRVL').filter(function() {
-				                return $(this).find('td:not(.d-none)').eq(0).text().trim() === targetKey;
-				            });
+						// 如果跑完一輪發現有任何一張表缺了這行 -> 標記「A表」
+						if (isMissingInSomeTarget) {
+							$baseRow.find('td').addClass('bg-warning');
+						}
+					});
 
-				            if ($baseRow.length === 0) {
-				                // A 表沒有這一行 -> 代表這是其他表多餘的 -> 標記「其他表」
-				                $targetRow.find('td').addClass('bg-warning');
-				            }
-				        });
-				    });
-				 // ==========================================
-				    // Step 3. 統計差異結果 (新增統計列)
-				    // ==========================================
-				    $tables.each(function() {
-				        let $table = $(this);
-				        let $thead = $table.find('thead');
-				        let $tbody = $table.find('tbody');
+					// -------------------------------------------------
+					// 邏輯 B：檢查其他表是否有多餘的資料
+					// (A表沒有，但 B/C 表有 -> 標記 B/C 表)
+					// -------------------------------------------------
+					$targetTables.each(function () {
+						let $targetTable = $(this);
 
-				        // 1. 取得總筆數 (該表目前的資料行數)
-				        let totalRows = $tbody.find('tr.cDetailRVL').length;
+						$targetTable.find('tbody tr.cDetailRVL').each(function () {
+							let $targetRow = $(this);
+							let targetKey = $targetRow.find('td:not(.d-none)').eq(0).text().trim();
 
-				        // 2. 建立新的一列 tr
-				        let $statsRow = $('<tr class="diff-stats-row table-secondary"></tr>'); // 灰色底區隔
+							// 去 A 表找找看有沒有這個 Key
+							let $baseRow = $baseTable.find('tbody tr.cDetailRVL').filter(function () {
+								return $(this).find('td:not(.d-none)').eq(0).text().trim() === targetKey;
+							});
 
-				        // 3. 依據表頭欄位數量，逐欄計算
-				        // 抓取第一列 header 來確認有多少欄位
-				        let $headerCells = $thead.find('tr:first th'); 
+							if ($baseRow.length === 0) {
+								// A 表沒有這一行 -> 代表這是其他表多餘的 -> 標記「其他表」
+								$targetRow.find('td').addClass('bg-warning');
+							}
+						});
+					});
+					// ==========================================
+					// Step 3. 統計差異結果 (新增統計列)
+					// ==========================================
+					$tables.each(function () {
+						let $table = $(this);
+						let $thead = $table.find('thead');
+						let $tbody = $table.find('tbody');
+
+						// 1. 取得總筆數 (該表目前的資料行數)
+						let totalRows = $tbody.find('tr.cDetailRVL').length;
+
+						// 2. 建立新的一列 tr
+						let $statsRow = $('<tr class="diff-stats-row table-secondary"></tr>'); // 灰色底區隔
+
+						// 3. 依據表頭欄位數量，逐欄計算
+						// 抓取第一列 header 來確認有多少欄位
+						let $headerCells = $thead.find('tr:first th');
 						let fixedC1 = 0;
-				        $headerCells.each(function(colIndex) {
-				            let $th = $(this);
-				            
-				            // 判斷是否為隱藏欄位 (保持結構一致)
-				            let isHidden = $th.hasClass('d-none');
-				            
-				            if (isHidden) {
-				                $statsRow.append('<th class="d-none"></th>');
-				            } else {
-				                // 計算該欄位有多少個 bg-warning
-				                // filter 邏輯：在所有 tr 中，找出第 colIndex 個 td，並檢查是否有 bg-warning
-				                let diffCount = $tbody.find('tr.cDetailRVL').filter(function() {
-				                    return $(this).find('td').eq(colIndex).hasClass('bg-warning');
-				                }).length;
+						$headerCells.each(function (colIndex) {
+							let $th = $(this);
 
-				                // 設定顯示樣式 (有差異紅字，無差異綠字)
-				                let textClass = diffCount > 0 ? 'text-danger fw-bold' : 'text-success';
-				                let displayText = diffCount + ' / ' + totalRows;
+							// 判斷是否為隱藏欄位 (保持結構一致)
+							let isHidden = $th.hasClass('d-none');
 
-				                // 產生統計格
-				                if(fixedC1 ===0){
-				                	fixedC1+=1;
-				                	$statsRow.append('<th class="' + textClass + ' fixedC1 text-center">' + displayText + '</th>');
-				                }else{
-				                	$statsRow.append('<th class="' + textClass + ' text-center">' + displayText + '</th>');
-				                }
-				                
-				            }
-				        });
+							if (isHidden) {
+								$statsRow.append('<th class="d-none"></th>');
+							} else {
+								// 計算該欄位有多少個 bg-warning
+								// filter 邏輯：在所有 tr 中，找出第 colIndex 個 td，並檢查是否有 bg-warning
+								let diffCount = $tbody.find('tr.cDetailRVL').filter(function () {
+									return $(this).find('td').eq(colIndex).hasClass('bg-warning');
+								}).length;
 
-				        // 4. 將統計列插入到 thead 的最後面
-				        $thead.append($statsRow);
-				    });
+								// 設定顯示樣式 (有差異紅字，無差異綠字)
+								let textClass = diffCount > 0 ? 'text-danger fw-bold' : 'text-success';
+								let displayText = diffCount + ' / ' + totalRows;
+
+								// 產生統計格
+								if (fixedC1 === 0) {
+									fixedC1 += 1;
+									$statsRow.append('<th class="' + textClass + ' fixedC1 text-center">' + displayText + '</th>');
+								} else {
+									$statsRow.append('<th class="' + textClass + ' text-center">' + displayText + '</th>');
+								}
+
+							}
+						});
+
+						// 4. 將統計列插入到 thead 的最後面
+						$thead.append($statsRow);
+					});
 				});
 
 				//compareClearColor_btn
@@ -499,8 +498,8 @@
 					$('.cDetailRVL').remove();
 					$('.cDetailOs').remove();
 					$('.cDetailRVLT').remove();
-					
-				
+
+
 					$('#cCompareDataList tbody td').removeClass('bg-warning');
 					$('#cCompareDetailList tbody td').removeClass('bg-warning');
 					compare.data.datas = [];
@@ -526,13 +525,13 @@
 						let iKey = "";
 						let gKey = "";
 						compare.data.datas.push(dataOne);
-						
+
 						//每個欄位 >對應< 資料
 						Object.keys(dataOne).forEach(function (k) {
 							//是否IKEY?
-							if (entityIKey == k) {iKey = dataOne[k];}
+							if (entityIKey == k) { iKey = dataOne[k]; }
 							//是否GKEY?
-							if (entityGKey == k) {gKey = dataOne[k];}
+							if (entityGKey == k) { gKey = dataOne[k]; }
 							//是否時間格式?
 							let value = dataOne[k];
 							if (dateTime.indexOf(k) >= 0) {
@@ -555,84 +554,84 @@
 				// Detail cCompareDetailList
 				if (details.length > 0) {
 
-				    // 定義容器與樣板來源，避免迴圈內重複尋找
-				    let $container = $('#cCompareDetailOpen div'); 
-				    let $templateTable = $('#cCompareDetailList'); 
-				    
-				    // 用來存放目前正在操作的那個 Table 物件
-				    let $currentTable = null; 
-				    let gKeySame = "";
+					// 定義容器與樣板來源，避免迴圈內重複尋找
+					let $container = $('#cCompareDetailOpen div');
+					let $templateTable = $('#cCompareDetailList');
 
-				    for (let d = 0; d < details.length; d++) {
-				        let detailOne = details[d];
-				        let iKey = "";
-				        let gKey = "";
-				        
-				        // 取得 gKey (依照您的邏輯)
-				        Object.keys(detailOne).forEach(function(k) {
-				             if (entityGKey == k) { gKey = detailOne[k]; }
-				        });
+					// 用來存放目前正在操作的那個 Table 物件
+					let $currentTable = null;
+					let gKeySame = "";
 
-				        // ==========================================
-				        // 邏輯修正 1: 判斷是否需要建立新表格
-				        // ==========================================
-				        if (gKeySame !== gKey) {
-				            gKeySame = gKey;
+					for (let d = 0; d < details.length; d++) {
+						let detailOne = details[d];
+						let iKey = "";
+						let gKey = "";
 
-				            // 複製樣板 Table
-				            $currentTable = $templateTable.clone();
-				            
-				            // 修正 2: 移除 ID 避免重複，並顯示出來
-				            $currentTable.removeAttr("id"); 
-				            $currentTable.removeClass("d-none"); // 確保表格是顯示的
-				            $currentTable.addClass("cDetailRVLT");
+						// 取得 gKey (依照您的邏輯)
+						Object.keys(detailOne).forEach(function (k) {
+							if (entityGKey == k) { gKey = detailOne[k]; }
+						});
 
-				            // 修正 3: 將新表格「附加」到容器的最後面 (Append)
-				            // 這樣新的群組就會依序往下長
-				            $container.append($currentTable);
-				        }
+						// ==========================================
+						// 邏輯修正 1: 判斷是否需要建立新表格
+						// ==========================================
+						if (gKeySame !== gKey) {
+							gKeySame = gKey;
 
-				        // ==========================================
-				        // 產生 Row 資料 (您的原本邏輯)
-				        // ==========================================
-				        // 注意：這裡改成從 $currentTable (新表格) 裡面去複製樣板 Row
-				        // 這樣可以確保樣式與結構跟著該表格走
-				        let exCDataVL = $currentTable.find('.exCDetailVL').clone();
-				        
-				        exCDataVL.removeClass('d-none');
-				        exCDataVL.removeClass('exCDetailVL'); // 移除樣板標記 class
-				        exCDataVL.addClass('cDetailRVL');
-				        exCDataVL.attr('id', '');
-				        
-				        compare.data.details.push(detailOne);
+							// 複製樣板 Table
+							$currentTable = $templateTable.clone();
 
-				        // 填入資料 (保留您的原始邏輯)
-				        Object.keys(detailOne).forEach(function (k) {
-				            if (entityIKey == k) {iKey = detailOne[k];}
-				            // if (entityGKey == k) {gKey = detailOne[k];} // 上面已經取過了
-				            let value = detailOne[k];
-				            if (dateTime.indexOf(k) >= 0) {
-				                let dF = new Date(detailOne[k]);
-				                value = dF.getFullYear() + "-" +
-				                    ((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-" +
-				                    (dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " " +
-				                    (dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":" +
-				                    (dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":" +
-				                    (dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
-				            }
-				            exCDataVL.find("." + k).text(value);
-				        });
+							// 修正 2: 移除 ID 避免重複，並顯示出來
+							$currentTable.removeAttr("id");
+							$currentTable.removeClass("d-none"); // 確保表格是顯示的
+							$currentTable.addClass("cDetailRVLT");
 
-				        exCDataVL.find('input').attr('title', iKey + "_" + gKey);
-				        exCDataVL.addClass('compareDatasNb_' + iKey + "_" + gKey);
+							// 修正 3: 將新表格「附加」到容器的最後面 (Append)
+							// 這樣新的群組就會依序往下長
+							$container.append($currentTable);
+						}
 
-				        // ==========================================
-				        // 邏輯修正 4: 插入 Row 的位置
-				        // ==========================================
-				        // 使用 appendTo 確保資料依序排列 (1, 2, 3...)
-				        // 插入到目前表格 ($currentTable) 的 tbody 中
-				        exCDataVL.appendTo($currentTable.find('tbody'));
-				    }
+						// ==========================================
+						// 產生 Row 資料 (您的原本邏輯)
+						// ==========================================
+						// 注意：這裡改成從 $currentTable (新表格) 裡面去複製樣板 Row
+						// 這樣可以確保樣式與結構跟著該表格走
+						let exCDataVL = $currentTable.find('.exCDetailVL').clone();
+
+						exCDataVL.removeClass('d-none');
+						exCDataVL.removeClass('exCDetailVL'); // 移除樣板標記 class
+						exCDataVL.addClass('cDetailRVL');
+						exCDataVL.attr('id', '');
+
+						compare.data.details.push(detailOne);
+
+						// 填入資料 (保留您的原始邏輯)
+						Object.keys(detailOne).forEach(function (k) {
+							if (entityIKey == k) { iKey = detailOne[k]; }
+							// if (entityGKey == k) {gKey = detailOne[k];} // 上面已經取過了
+							let value = detailOne[k];
+							if (dateTime.indexOf(k) >= 0) {
+								let dF = new Date(detailOne[k]);
+								value = dF.getFullYear() + "-" +
+									((dF.getMonth() + 1) < 10 ? "0" + (dF.getMonth() + 1) : (dF.getMonth() + 1)) + "-" +
+									(dF.getDate() < 10 ? "0" + (dF.getDate()) : dF.getDate()) + " " +
+									(dF.getHours() < 10 ? "0" + dF.getHours() : dF.getHours()) + ":" +
+									(dF.getMinutes() < 10 ? "0" + dF.getMinutes() : dF.getMinutes()) + ":" +
+									(dF.getSeconds() < 10 ? "0" + dF.getSeconds() : dF.getSeconds());
+							}
+							exCDataVL.find("." + k).text(value);
+						});
+
+						exCDataVL.find('input').attr('title', iKey + "_" + gKey);
+						exCDataVL.addClass('compareDatasNb_' + iKey + "_" + gKey);
+
+						// ==========================================
+						// 邏輯修正 4: 插入 Row 的位置
+						// ==========================================
+						// 使用 appendTo 確保資料依序排列 (1, 2, 3...)
+						// 插入到目前表格 ($currentTable) 的 tbody 中
+						exCDataVL.appendTo($currentTable.find('tbody'));
+					}
 				}
 			},
 			destroy() {

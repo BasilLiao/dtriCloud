@@ -1,10 +1,13 @@
 package dtri.com.tw.mssql.dao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import dtri.com.tw.mssql.dto.MaterialQtyDto;
 import dtri.com.tw.mssql.entity.Invtb;
 
 public interface InvtbDao extends JpaRepository<Invtb, Long> {
@@ -46,5 +49,58 @@ public interface InvtbDao extends JpaRepository<Invtb, Long> {
 			+ "	INVMC.MC003 ASC "// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Invtb> findAllByMoctb();
+
+	/**
+	 * 查詢 A111 庫存異動/調撥統計
+	 * <p>
+	 * 核心邏輯 ：
+	 * 1. <b>資料範圍</b>：鎖定單別 'A111' 之庫存異動單據。
+	 * 2. <b>狀態過濾</b>：
+	 * - 單身確認碼 (TB018) 需為 'Y'。
+	 * - 單頭過帳碼 (TA016) 需為 '3' (代表已確認過帳)。
+	 * 3. <b>時間區間</b>：僅計算過去 6 個月內之異動紀錄。
+	 * </p>
+	 * * @return List<MaterialQtyDto> 包含品號與異動總量(qty)的列表
+	 * 
+	 * @author Allen
+	 */
+	@Query(value = """
+            SELECT
+                INVMB.MB001,                                 -- 品號
+                INVMB.MB002,                                 -- 品名
+
+                -- 配合 DTO 為 qty
+                COALESCE(SUM(INVTB.TB007), 0) AS qty
+
+            FROM DTR_TW.dbo.INVTA AS INVTA                   -- 異動單頭
+
+            LEFT JOIN DTR_TW.dbo.INVTB AS INVTB              -- 異動單身
+                ON (INVTA.TA001 + '-' + TRIM(INVTA.TA002)) = (INVTB.TB001 + '-' + TRIM(INVTB.TB002))
+
+            LEFT JOIN DTR_TW.dbo.INVMB AS INVMB              -- 品號資料
+                ON INVTB.TB004 = INVMB.MB001
+
+            WHERE
+                INVTB.TB001 IS NOT NULL
+                AND INVTB.TB007 != 0
+                AND INVTB.TB001 = 'A111'
+
+                AND INVTA.TA014 >= CONVERT(varchar(8), DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 6, 0), 112)
+                AND INVTA.TA014 <= CONVERT(varchar(8), EOMONTH(GETDATE(), -1), 112)
+
+                AND INVTB.TB018 = 'Y'                        -- 確認碼
+                AND INVTA.TA016 = '3'
+
+                -- 料號篩選 (優化效能：使用 CHARINDEX 並保留 INVMB 關聯)
+                AND (:materialNos IS NULL OR CHARINDEX(',' + TRIM(INVMB.MB001) + ',', :materialNos) > 0)
+
+            GROUP BY
+                INVMB.MB001,
+                INVMB.MB002
+
+            ORDER BY
+                INVMB.MB001 ASC
+            """, nativeQuery = true)
+    List<MaterialQtyDto> getImvtb007QtyList(@Param("materialNos") String materialNos);
 
 }

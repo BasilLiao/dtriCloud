@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
-public class DocumentTool {
+public class DocumentToolService {
 
 	// 1. 🚀 PDF 轉圖片 (解決 vLLM 不支援 document 標籤的問題)
 	public static List<byte[]> pdfToImages(File file) throws IOException {

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -46,6 +47,7 @@ import jakarta.persistence.Transient;
  *      was_f_u_checkin : 集結?<br>
  */
 @Entity
+@Table(name = "warehouse_assignment_detail_front")
 public class WarehouseAssignmentDetailFront {
 	public WarehouseAssignmentDetailFront() {
 		// 共用型

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -33,6 +34,7 @@ import jakarta.persistence.Transient;
  *      mas_e_date : 預計領料日 <br>
  */
 @Entity
+@Table(name = "manufacture_action_front")
 public class ManufactureActionFront {
 	public ManufactureActionFront() {
 		// 共用型

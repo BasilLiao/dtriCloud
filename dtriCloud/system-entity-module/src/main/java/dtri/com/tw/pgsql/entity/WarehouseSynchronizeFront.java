@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -30,6 +31,7 @@ import jakarta.persistence.Transient;
  */
 
 @Entity
+@Table(name = "warehouse_synchronize_front")
 public class WarehouseSynchronizeFront {
 	public WarehouseSynchronizeFront() {
 		// 共用型

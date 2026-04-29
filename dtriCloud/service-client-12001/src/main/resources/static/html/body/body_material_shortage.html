@@ -1,0 +1,1958 @@
+<style>
+	.nav-item .active {
+		box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+	}
+
+	.history-item {
+		transition: background-color 0.2s;
+	}
+
+	.history-item:hover {
+		background-color: #f8f9fa;
+	}
+
+	/* 模擬數值欄位：加粗變色 */
+	.cell-sim-val {
+		color: #0d6efd;
+		/* 藍色 */
+		font-weight: bold;
+		text-align: right;
+	}
+</style>
+
+<div class="text-center text-ms col-md pt-4 mt-4" id="body_material_shortage">
+	<div class="p-1">
+		<ul class="nav nav-tabs lh-1 shadow-sm justify-content-center" id="myTab" role="tablist">
+			<!-- <li class="nav-item"><button id="home_title" class="nav-link p-1" data-bs-toggle="tab"
+					data-bs-target="#home_tab" type="button">Home</button></li> -->
+			<li class="nav-item">
+				<button id="search_title" class="nav-link p-1 active" data-bs-toggle="tab" data-bs-target="#search_tab"
+					type="button">
+					Search
+				</button>
+			</li>
+			<!-- <li class="nav-item"><button id="modify_title" class="nav-link p-1" data-bs-toggle="tab"
+					data-bs-target="#modify_tab" type="button">Execution</button></li> -->
+		</ul>
+		<div class="tab-content border border-gray rounded-bottom bg-white" id="myTabContent">
+			<div class="tab-pane fade" id="home_tab" role="tabpanel">Loading...</div>
+			<div class="tab-pane fade show active" id="search_tab" role="tabpanel">
+				Loading...
+			</div>
+			<div class="tab-pane fade" id="modify_tab" role="tabpanel">
+				Loading...
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	//  1. Modal HTML
+	function getSpecificModalHTML() {
+		return `
+    <div class="modal fade" id="ruleSelectionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-primary text-white py-2">
+                    <h6 class="modal-title fw-bold">${body_index.gl("title_alt_selection")}</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-secondary small">${body_index.gl("label_for_part_no")} <strong id="modal_part_no" class="text-dark"></strong></div>
+                        <div class="form-check form-switch small mb-0 ms-2 me-auto">
+                            <input class="form-check-input" type="checkbox" id="include_transit_qty" checked onchange="shortageLogic.checkStock()">
+                            <label class="form-check-label text-secondary fw-bold" for="include_transit_qty" style="cursor:pointer;">${body_index.gl("label_include_transit")}</label>
+                        </div>
+                        <div class="badge bg-warning text-dark">${body_index.gl("label_shortage_qty")} <span id="modal_shortage_qty">0</span></div>
+                    </div>
+                    <div id="rule_list_container" class="list-group mb-3"></div>
+                    <div class="bg-light p-2 rounded border mb-3">
+                        <label class="form-label fw-bold text-dark small mb-1">${body_index.gl("label_exec_qty")}</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" id="modal_exec_qty" class="form-control fw-bold text-primary" placeholder="${body_index.gl("placeholder_input_qty")}">
+                            <button class="btn btn-outline-secondary" type="button" onclick="shortageLogic.resetQty()">${body_index.gl("btn_fill_max")}</button>
+                        </div>
+
+						<div id="shortage_warning" class="text-danger fw-bold small mt-1" style="min-height: 1.5em;"></div>
+						<div id="jit_loading" class="text-primary small mt-1" style="display:none;"><i class="spinner-border spinner-border-sm me-1"></i> ${body_index.gl("msg_querying_stock")}</div>
+                    </div>
+                    <div id="history_section" style="display:none;">
+                        <h6 class="small fw-bold text-secondary border-bottom pb-1">${body_index.gl("title_alt_history")}</h6>
+                        <div id="history_list_container" class="list-group list-group-flush small" style="max-height: 150px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer py-1">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">${body_index.gl("btn_close")}</button>
+                    <button type="button" class="btn btn-sm btn-success fw-bold" onclick="shortageLogic.executeCommit()">${body_index.gl("btn_confirm_exec")}</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+	}
+
+	function getWarehouseModalHTML() {
+		return `
+    <div class="modal fade" id="warehouseSelectionModal" tabindex="-1" aria-labelledby="warehouseSelectionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                <div class="modal-content text-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="warehouseSelectionModalLabel">${body_index.gl("title_recalculate")}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <!-- 倉別選擇區 -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">${body_index.gl("label_select_warehouses")}</label>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="select_all_warehouses" checked onchange="shortageLogic.executeCheckboxSelectAll(this.checked)">
+                                    <label class="form-check-label fw-bold" for="select_all_warehouses" style="cursor:pointer;">${body_index.gl("filter_all")}</label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-3 row-cols-md-4 g-2" id="dynamicWarehouseCheckboxes">
+                                <!-- 動態產生的倉別將會放在這裡 -->
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">${body_index.gl("label_select_order_types")}</label>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="select_all_doctypes" checked onchange="shortageLogic.executeDocTypeCheckboxesSelectAll(this.checked)">
+                                    <label class="form-check-label fw-bold" for="select_all_doctypes" style="cursor:pointer;">${body_index.gl("filter_all")}</label>
+                                </div>
+                            </div>
+                            <div class="row row-cols-3 row-cols-md-4 g-2" id="dynamicDocTypeCheckboxes">
+                                <!-- 動態產生的單別將會放在這裡 -->
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">${body_index.gl("label_filter_part_no")}</label>
+                            <textarea class="form-control" id="filter_material_nos" rows="3" placeholder="${body_index.gl("placeholder_part_no")}"></textarea>
+                            <div class="form-text small text-muted">${body_index.gl("help_recalculate")}</div>
+                        </div>
+                    </div>
+                <div class="modal-footer py-1">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">${body_index.gl("btn_close")}</button>
+                    <button type="button" class="btn btn-sm btn-warning fw-bold text-dark" onclick="body_index.methods.executeWarehouseRecalculate()"><i class="bi bi-play-fill"></i> ${body_index.gl("btn_search_exec")}</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+	}
+
+	//  2. 業務邏輯 (支援 N對N 與 全域庫存連動)
+	var shortageLogic = {
+		currentRow: null,
+		currentRules: null,
+
+		// 記錄每一行被執行的替代紀錄 (Key: rowId, Value: Array of records)
+		localHistoryMap: {},
+		recordCounter: 0,
+
+		//  全域庫存佔用表 (Key: 料號, Value: 被佔用的總數量)
+		//  全域庫存佔用表 (Key: 料號, Value: 被佔用的總數量)
+		inventoryAllocatedMap: {},
+
+		// 快速查找表 (Key: mb001, Value: Row Data) - 提升效能用
+		fastLookupMap: {},
+
+		//  替代操作計數器（真正的執行次數）
+		substitutionCount: 0,
+
+		//  顯示已執行替代的清單 (Modal)
+		showCommittedModal: function () {
+			var mainGrid = search_excel.data.grid;
+			if (!mainGrid) return;
+
+			// 1. 篩選資料: 找出所有「與替代案相關」的料號
+			// 包含: 主料號 (Main), 被扣庫存的料號 (Targets), 連動的料號 (Partners)
+			var relatedPartNos = new Set();
+			var historyMap = shortageLogic.localHistoryMap || {};
+
+			Object.keys(historyMap).forEach(function (rowId) {
+				var records = historyMap[rowId];
+				if (records && records.length > 0) {
+					// 1.1 找出主料號 (透過 rowId 反查)
+					var mainRow = mainGrid.getRow(rowId); // 注意: 這裡 rowId 是 _grid_id
+					if (mainRow) {
+						var rData = mainRow.getData();
+						relatedPartNos.add(rData.mb001);
+					} else {
+						// Fallback: 如果 getRow 失敗 (例如過濾中)，試著遍歷 allData 找
+						var found = search_excel.data.grid.getData().find(function (d) {
+							return String(d._grid_id) === String(rowId);
+						});
+						if (found) relatedPartNos.add(found.mb001);
+					}
+
+					// 1.2 找出相關料號
+					records.forEach(function (rec) {
+						// Targets
+						if (rec.targets) {
+							rec.targets.forEach(function (t) {
+								relatedPartNos.add(t.pn);
+							});
+						}
+						// Partners
+						if (rec.partners) {
+							rec.partners.forEach(function (p) {
+								relatedPartNos.add(p.pn);
+							});
+						}
+					});
+				}
+			});
+
+			if (relatedPartNos.size === 0) {
+				nav_alert.methods.alertshow("info", body_index.gl("msg_no_history"));
+				return;
+			}
+
+			// 2. 抓取這些料號的所有資料列
+			var allData = mainGrid.getData();
+			var committedData = allData.filter(function (r) {
+				return relatedPartNos.has(r.mb001);
+			});
+
+			// 排序: 料號 -> 日期
+			committedData.sort(function (a, b) {
+				if (a.mb001 === b.mb001) {
+					return a.tk002 > b.tk002 ? 1 : -1;
+				}
+				return a.mb001 > b.mb001 ? 1 : -1;
+			});
+
+			// 2. 抓取目前可見的欄位 (複製設定)
+			var columns = [];
+			mainGrid.getColumns().forEach(function (col) {
+				if (col.isVisible() && col.getField() !== "hasreplacement") {
+					var def = col.getDefinition();
+					// 使用 Object.assign 淺拷貝，確保 cssClass, formatter, accessor 等都保留
+					var newDef = Object.assign({}, def);
+					delete newDef.frozen;
+					// 如果原本有 rowSelection formatter，也不要複製
+					if (newDef.formatter === "rowSelection") return;
+
+					columns.push(newDef);
+				}
+			});
+
+			// 3. 建立 Modal HTML (如果不存在)
+			var modalId = "committedListModal";
+			if ($("#" + modalId).length === 0) {
+				var modalHtml = `
+				<div class="modal fade" id="${modalId}" tabindex="-1">
+					<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+						<div class="modal-content shadow-lg border-0">
+							<div class="modal-header bg-gradient bg-info text-white py-2">
+								<h6 class="modal-title fw-bold"><i class="bi bi-list-check"></i> ${body_index.gl("title_committed_list")} <span class="badge bg-white text-info ms-2" id="committed_count">0</span></h6>
+								<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+							</div>
+							<div class="modal-body p-0 bg-light">
+								<div id="committed_grid" style="width:100%; height: 500px;"></div>
+							</div>
+							<div class="modal-footer py-1 bg-white">
+								<button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">${body_index.gl("btn_close")}</button>
+							</div>
+						</div>
+					</div>
+				</div>`;
+				$("body").append(modalHtml);
+			}
+
+			// 4. 顯示 Modal 並渲染表格
+			var modalInstance = new bootstrap.Modal(document.getElementById(modalId));
+			modalInstance.show();
+
+			document.getElementById(modalId).addEventListener(
+				"shown.bs.modal",
+				function () {
+					// 更新數量顯示（顯示真正的執行次數，不是資料筆數）
+					// console.log(' Modal shown.bs.modal: substitutionCount =', shortageLogic.substitutionCount);
+					// console.log(' Modal shown.bs.modal: relatedPartNos.size =', relatedPartNos.size);
+					// console.log('Modal shown.bs.modal: committedData.length =', committedData.length);
+
+					//  使用原生 JS 更新，確保 DOM 正確更新
+					var countBadge = document.querySelector(
+						"#" + modalId + " #committed_count",
+					);
+					if (countBadge) {
+						countBadge.textContent = shortageLogic.substitutionCount;
+						// console.log(' DOM Updated: committed_count =', countBadge.textContent);
+					} else {
+						console.error(" Cannot find #committed_count element!");
+					}
+					if (shortageLogic.committedGrid) {
+						shortageLogic.committedGrid.destroy();
+					}
+
+					shortageLogic.committedGrid = new Tabulator("#committed_grid", {
+						data: committedData,
+						layout: "fitColumns", // 改為自動適應寬度
+						height: "500px",
+						columns: columns,
+						placeholder: "No Data Available",
+					});
+					setTimeout(() => {
+						shortageLogic.committedGrid.redraw(true);
+					}, 200);
+				},
+				{ once: true },
+			);
+		},
+
+		openRuleModal: function (e, cell) {
+			if (e.target && e.target.closest(".btn-cancel-mini")) return;
+
+			var rowData = cell.getData();
+			var partNo = rowData.mb001;
+			var shortageQty = rowData.syssy003 || 0; // 修正：應抓取未領量(需求)
+			if (shortageQty < 0) shortageQty = 0; // 負值歸零
+
+			// (已移除原本對 syssy003 <= 0 的擋下邏輯，尊崇使用者操作自由)
+
+			// 讀取 Excel 裡面的替代規則
+			var ruleLibrary = {};
+			if (
+				typeof search_excel !== "undefined" &&
+				search_excel.data &&
+				search_excel.data.fullOtherData
+			) {
+				ruleLibrary = search_excel.data.fullOtherData.replacementRules || {};
+			}
+			var rules = ruleLibrary[partNo];
+			if (!rules || rules.length === 0) {
+				nav_alert.methods.alertshow(
+					"warning",
+					body_index.gl("msg_no_alt_rule"),
+				);
+				return;
+			}
+
+			this.currentRow = rowData;
+			this.currentRules = rules;
+
+			//  Scope Filtering (Scope 2: Product, Scope 1: Customer)
+			// rowData.tk003 = Product No, rowData.tc004 = Customer Code
+			var currentProduct = (rowData.tk003 || "").trim();
+			var currentCustomer = (rowData.tc004 || "").trim();
+			var currentCustomerName = (rowData.copma002 || currentCustomer).trim(); // 顯示用
+
+			var validRules = rules.filter(function (rule) {
+				if (rule.scopetype === 2) {
+					// 指定產品
+					return rule.scopeval && rule.scopeval.trim() === currentProduct;
+				}
+				if (rule.scopetype === 1) {
+					// 指定客戶
+					// 核心邏輯：比對代號 (Code)
+					return rule.scopeval && rule.scopeval.trim() === currentCustomer;
+				}
+				return true; // 通用規則
+			});
+
+			if (validRules.length === 0) {
+				nav_alert.methods.alertshow(
+					"warning",
+					body_index.gl("msg_alt_rule_scope_mismatch"),
+				);
+				return;
+			}
+
+			$("#modal_part_no").text(`${partNo} (${validRules.length} matches)`);
+			$("#modal_shortage_qty").text(shortageQty);
+			$("#modal_exec_qty").val(shortageQty);
+
+			var $list = $("#rule_list_container").empty();
+			validRules.forEach(function (rule, index) {
+				// 顯示優化：客戶規則顯示「名稱」，產品規則顯示「代號」
+				var badge =
+					rule.scopetype === 2
+						? `<span class="badge bg-danger ms-auto">${body_index.gl("label_limit_product")}: ${rule.scopeval}</span>`
+						: rule.scopetype === 1
+							? `<span class="badge bg-primary ms-auto">${body_index.gl("label_limit_customer")}: ${currentCustomerName}</span>`
+							: `<span class="badge bg-secondary ms-auto">${body_index.gl("label_universal")}</span>`;
+
+				// 顯示消耗品 (Targets)
+				var targetsDesc = (rule.targets || [])
+					.map(function (t) {
+						return `<span class="text-danger fw-bold">${t.pn}</span> <span class="text-muted small">(1:${t.ratio})</span> <span class="target-stock-info" data-pn="${t.pn}"></span>`;
+					})
+					.join(" + ");
+
+				// 顯示隊友 (Partners) - 如果有的話
+				var partnersDesc = "";
+				if (rule.partners && rule.partners.length > 0) {
+					partnersDesc =
+						" | " +
+						body_index.gl("label_link") +
+						": " +
+						rule.partners
+							.map(function (p) {
+								return `<span class="text-primary fw-bold">${p.pn}</span> <span class="text-muted small">(1:${p.ratio})</span>`;
+							})
+							.join(" + ");
+				}
+
+				var checked = index === 0 ? "checked" : "";
+
+				// 將資料埋入 HTML data 屬性
+				var targetsJson = JSON.stringify(rule.targets || []);
+				var partnersJson = JSON.stringify(rule.partners || []);
+
+				var html = `<label class="list-group-item d-flex gap-2 align-items-center" style="cursor:pointer;">
+                    <input class="form-check-input flex-shrink-0" type="radio" name="ruleSelect" value="${index}" ${checked} 
+                           data-name="${rule.rulename}" 
+                           data-targets='${targetsJson}' 
+                           data-partners='${partnersJson}'>
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between"><span class="fw-bold">${rule.rulename}</span>${badge}</div>
+                        <div class="small text-muted mt-1">${body_index.gl("label_consume")}: ${targetsDesc} ${partnersDesc}</div>
+                    </div>
+                </label>`;
+				$list.append(html);
+			});
+
+			this.renderHistory(rowData._grid_id);
+
+			var modalEl = document.getElementById("ruleSelectionModal");
+			var modal = new bootstrap.Modal(modalEl, {
+				backdrop: "static",
+				keyboard: false,
+			});
+			modal.show();
+
+			modalEl.addEventListener(
+				"shown.bs.modal",
+				function () {
+					document.getElementById("modal_exec_qty").focus();
+					// 綁定動態檢查事件 (加入 Debounce 防抖，提升效能)
+					var debounceTimer;
+					$("#modal_exec_qty")
+						.off("input")
+						.on("input", function () {
+							clearTimeout(debounceTimer);
+							debounceTimer = setTimeout(function () {
+								shortageLogic.checkStock();
+							}, 300); // 延遲 300ms
+						});
+					$("input[name='ruleSelect']")
+						.off("change")
+						.on("change", function () {
+							shortageLogic.checkStock();
+							shortageLogic.resetQty();
+						});
+				},
+				{ once: true },
+			);
+		},
+
+		checkStock: function () {
+			var $selected = $("input[name='ruleSelect']:checked");
+			var targetsData = $selected.data("targets") || [];
+			var partnersData = $selected.data("partners") || [];
+			var inputQty = parseFloat($("#modal_exec_qty").val()) || 0;
+			var includeTransit = $("#include_transit_qty").is(":checked"); // 取得 Toggle 狀態
+			var $warning = $("#shortage_warning").empty();
+
+			if (inputQty <= 0) return;
+
+			var insufficientParts = [];
+
+			// 2.1 檢查消耗品 (Targets)
+			targetsData.forEach(function (target) {
+				var subPartNo = target.pn;
+				var ratio = target.ratio || 1;
+				var needQty = inputQty * ratio;
+				var targetRow = shortageLogic.fastLookupMap[subPartNo]; // ✅ 改用 O(1) 查找
+
+				if (!targetRow) {
+					insufficientParts.push(
+						`${subPartNo} (${body_index.gl("msg_missing_in_list")})`,
+					);
+					$(`.target-stock-info[data-pn='${subPartNo}']`).html(
+						`<span class="badge bg-warning text-dark ms-1"><i class="spinner-border spinner-border-sm" style="width: 10px; height: 10px;"></i> ${body_index.gl("msg_loading")}</span>`,
+					);
+				} else {
+					// 庫存計算 = 根據開關決定是否加總 syssy005 (待驗) - allocated (已分配)
+					var globalAllocated =
+						shortageLogic.inventoryAllocatedMap[subPartNo] || 0;
+					var inv_val = parseFloat(targetRow.invmbmc007) || 0;
+					var syssy005_val = parseFloat(targetRow.syssy005) || 0;
+
+					var currentStock = includeTransit ? inv_val + syssy005_val : inv_val;
+					var available = currentStock - globalAllocated;
+
+					if (available < needQty) {
+						insufficientParts.push(
+							`${subPartNo} (${body_index.gl("col_wh_stock")}: ${available} / ${body_index.gl("label_shortage_qty")}: ${needQty})`,
+						);
+					}
+
+					//  動態更新標籤上的庫存顯示與詳細資訊 Tooltip
+					var infoHtml = ` <span class="badge ${available >= needQty ? "bg-success" : "bg-danger"} ms-1">${body_index.gl("val_allocated").split("/")[0]}:${available}</span>`;
+					if (targetRow.inventorydetail) {
+						infoHtml += ` <i class="bi bi-info-circle-fill text-info ms-1" style="cursor:help; font-size: 1.1em;" title="${targetRow.inventorydetail}"></i>`;
+					}
+					$(`.target-stock-info[data-pn='${subPartNo}']`).html(infoHtml);
+				}
+			});
+
+			if (insufficientParts.length > 0) {
+				$warning.html(
+					`${body_index.gl("msg_stock_insufficient")} ${insufficientParts.join(", ")}`,
+				);
+
+				// JIT: 檢查是否有「不在清單中」的料號，有的話發起補查
+				var missingPns = targetsData
+					.filter((t) => !shortageLogic.fastLookupMap[t.pn])
+					.map((t) => t.pn);
+				if (missingPns.length > 0) {
+					shortageLogic.fetchMissingInventory(missingPns);
+				}
+			}
+		},
+
+		// JIT: 補查不在清單中的庫存
+		fetchMissingInventory: function (pns) {
+			if (!pns || pns.length === 0) return;
+
+			// 避免重複查詢
+			if (window._jit_searching) return;
+			window._jit_searching = true;
+			$("#jit_loading").show();
+
+			// 取得目前選中的倉別
+			const selectedWarehouses = [];
+			const checkboxes = document.querySelectorAll(
+				'#dynamicWarehouseCheckboxes input[type="checkbox"]:checked',
+			);
+			checkboxes.forEach((cb) => selectedWarehouses.push(cb.value));
+
+			console.log("[JIT Frontend] Sending PNs:", pns);
+			console.log("[JIT Frontend] Sending Warehouses:", selectedWarehouses);
+
+			var req_data = {
+				searchSet: JSON.stringify({
+					mb001s: pns,
+					warehouses: selectedWarehouses,
+				}),
+			};
+
+			req_data.entityDetailIKeyGKey = "getItemStock"; // 指令標記
+			var sendData = JSON.stringify(req_data)
+				.replaceAll("!", "")
+				.replaceAll("=", "")
+				.replaceAll("\\t", "");
+
+			$.ajax({
+				url: "ajax/" + $("#nav_functional_unit").attr("title") + ".basil",
+				type: "POST",
+				contentType: "application/json;charset=UTF-8",
+				dataType: "json",
+				data: sendData,
+				success: function (res) {
+					window._jit_searching = false;
+					$("#jit_loading").hide();
+					const mainAlertM = nav_alert.methods;
+					if (res.infoColor === "success" || res.infoColor === "primary") {
+						// JIT is background fetch, proceed quietly
+					} else if (res.infoColor === "warning") {
+						mainAlertM.alertshow("warning", res.info);
+						return;
+					} else {
+						mainAlertM.alertshow("danger", "[777] The command was executed [ERROR]!!");
+						return;
+					}
+					if (res && res.entityDetailJson) {
+						var items = JSON.parse(res.entityDetailJson);
+						console.log("[JIT Debug] Received items:", items);
+						items.forEach(function (item) {
+							// 補入快取表
+							shortageLogic.fastLookupMap[item.mb001] = {
+								mb001: item.mb001,
+								mb002: item.mb002,
+								mb003: item.mb003,
+								invmbmc007: item.invmbmc007,
+								syssy005: item.syssy005,
+								inventorydetail: item.inventorydetail, // 中文分倉明細
+								_grid_id: "jit_" + item.mb001, // 虛擬 ID
+							};
+						});
+						// 重新檢查一次紅字
+						shortageLogic.checkStock();
+					}
+				},
+				error: function (xhr, status, error) {
+					window._jit_searching = false;
+					$("#jit_loading").hide();
+					console.error("JIT fetchMissingInventory error", error);
+					const mainAlertM = nav_alert.methods;
+					if (xhr.status === 200) {
+						mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+						window.location.replace("login.basil");
+					} else if (xhr.status === 404) {
+						mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+					} else if (xhr.status === 403) {
+						mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+					} else {
+						mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+					}
+				},
+			});
+		},
+
+		renderHistory: function (rowId) {
+			var history = this.localHistoryMap[rowId] || [];
+			var $histContainer = $("#history_list_container").empty();
+			var $histSection = $("#history_section");
+
+			if (history.length > 0) {
+				$histSection.show();
+				history.forEach(function (rec) {
+					var html = `
+                    <div class="list-group-item d-flex justify-content-between align-items-center history-item px-2 py-1">
+                        <span><i class="bi bi-arrow-return-right text-muted"></i> ${rec.rulename ? rec.rulename + ":" : ""} ${body_index.gl("btn_execute")} <b>${rec.qty}</b></span>
+                        <button class="btn btn-sm text-danger p-0" title="${body_index.gl("title_delete_record")}" onclick="shortageLogic.deleteRecord(${rowId}, ${rec.recordId})">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>`;
+					$histContainer.append(html);
+				});
+			} else {
+				$histSection.hide();
+			}
+		},
+
+		resetQty: function () {
+			// 1. 取得目前選中的規則
+			var $selected = $("input[name='ruleSelect']:checked");
+			if ($selected.length === 0) return;
+
+			// 2. 取得這條規則需要的「消耗品清單 (Targets)」
+			// 只需要檢查 Targets (因為是要扣它們的庫存)，不需要檢查 Partners
+			var targetsData = $selected.data("targets") || [];
+
+			var gridData = search_excel.data.grid.getData();
+
+			// 3. 設定初始最大值為無限大
+			// 這樣才能透過 Math.min 慢慢縮小範圍
+			var maxExecQty = Infinity;
+			var hasTarget = false; // 標記是否有消耗品
+
+			var _this = this;
+
+			// 4. 針對每一個消耗品 (Target) 進行「短板檢查」
+			targetsData.forEach(function (target) {
+				hasTarget = true;
+				var pn = target.pn;
+				var ratio = target.ratio || 1; // 消耗比例 (例如 1個A 要換 2個B，ratio就是2)
+
+				// 找出該 Target 料號的資料列
+				var row = shortageLogic.fastLookupMap[pn];
+
+				if (!row) {
+					// 如果清單裡連這個料號都找不到，代表無法計算庫存
+					// 直接歸零，因為缺零件根本做不出來
+					maxExecQty = 0;
+					return;
+				}
+
+				// 計算「可用淨庫存」
+				// 根據開關決定是否包含待驗量，並扣除全域已暫用量
+				var includeTransit = $("#include_transit_qty").is(":checked");
+				var globalAllocated = _this.inventoryAllocatedMap[pn] || 0;
+				var currentStock = includeTransit
+					? (parseFloat(row.invmbmc007) || 0) + (parseFloat(row.syssy005) || 0)
+					: parseFloat(row.invmbmc007) || 0;
+				var availableStock = currentStock - globalAllocated;
+
+				// 防呆：如果庫存已經是負的，就當作 0
+				if (availableStock < 0) availableStock = 0;
+
+				// 計算「這個零件能支撐幾套」
+				// 例如：可用 100，比例 2 -> Math.floor(100 / 2) = 50 套
+				var maxForThisPart = Math.floor(availableStock / ratio);
+
+				// 【核心邏輯】取最小值
+				if (maxForThisPart < maxExecQty) {
+					maxExecQty = maxForThisPart;
+				}
+			});
+
+			// 5. 特殊情況處理
+			// 如果這條規則沒有 Target (例如單純改帳，不扣料)，或者 max 還是無限大
+			if (!hasTarget || maxExecQty === Infinity) {
+				// 如果沒 Target，理論上限制就是「缺欠量」本身，或是無限
+				// 這裡先設為 0 以防萬一
+				maxExecQty = 0;
+			}
+
+			// 6. 最終決定填入多少
+			// 邏輯：取「庫存極限」 (拿掉所有限制，庫存能支撐多少就給多少)
+			// 使用者可以輸入超過需求量的數值，但在 refreshGrid 計算時，已經有邏輯去 Cap 它了
+
+			$("#modal_exec_qty").val(maxExecQty);
+		},
+
+		//  核心修正：執行替代 (嚴格檢查)
+		executeCommit: function () {
+			var $selected = $("input[name='ruleSelect']:checked");
+			var selectedIndex = $selected.val();
+			var ruleName = $selected.data("name") || "未命名規則";
+
+			var targetsData = $selected.data("targets") || []; // 消耗 (C, D)
+			var partnersData = $selected.data("partners") || []; // 隊友 (B)
+
+			var inputQty = parseFloat($("#modal_exec_qty").val());
+
+			if (selectedIndex === undefined) return;
+			if (isNaN(inputQty) || inputQty === 0) {
+				nav_alert.methods.alertshow("danger", body_index.gl("msg_invalid_qty"));
+				return;
+			}
+
+			var rowData = this.currentRow;
+			var rowId = rowData._grid_id;
+
+			// 1. 負數檢查 (退回邏輯)
+			if (inputQty < 0) {
+				var history = this.localHistoryMap[rowId] || [];
+				var currentRuleBalance = 0;
+				history.forEach(function (rec) {
+					if (rec.rulename === ruleName) {
+						currentRuleBalance += rec.qty;
+					}
+				});
+				if (
+					currentRuleBalance === 0 ||
+					Math.abs(inputQty) > currentRuleBalance
+				) {
+					nav_alert.methods.alertshow(
+						"danger",
+						body_index.gl("msg_balance_insufficient"),
+					);
+					return;
+				}
+			}
+
+			//  2. 正數檢查：嚴格確認所有相關料件  是否存在且庫存足夠
+			if (inputQty > 0) {
+				var insufficientParts = [];
+
+				// 2.1 檢查消耗品 (Targets)
+				targetsData.forEach(function (target) {
+					var subPartNo = target.pn;
+					var ratio = target.ratio || 1;
+					var needQty = inputQty * ratio;
+
+					var targetRow = shortageLogic.fastLookupMap[subPartNo];
+
+					if (!targetRow) {
+						// 修正點：如果找不到該料號，直接報錯！
+						insufficientParts.push(
+							`${subPartNo} (${body_index.gl("msg_missing_in_list")})`,
+						);
+					} else {
+						// 如果找得到，才檢查庫存 (包含考慮已分配額度)
+						var includeTransit = $("#include_transit_qty").is(":checked");
+						var inv_val = parseFloat(targetRow.invmbmc007) || 0;
+						var syssy005_val = parseFloat(targetRow.syssy005) || 0;
+						var baseStock = includeTransit ? inv_val + syssy005_val : inv_val;
+
+						var currentSimVal =
+							targetRow.simval !== undefined ? targetRow.simval : baseStock;
+						var globalAllocated =
+							shortageLogic.inventoryAllocatedMap[subPartNo] || 0;
+						var finalAvailable = currentSimVal - globalAllocated;
+
+						if (finalAvailable < needQty) {
+							insufficientParts.push(
+								`${subPartNo} (${body_index.gl("msg_stock_insufficient_detail").replace("X", finalAvailable).replace("Y", needQty)})`,
+							);
+						}
+					}
+				});
+
+				// 2.2 檢查隊友  - 雖然是被動解決，但也必須存在於清單中才能連動
+				partnersData.forEach(function (partner) {
+					var partnerPn = partner.pn;
+					var partnerRow = shortageLogic.fastLookupMap[partnerPn];
+
+					if (!partnerRow) {
+						// 雖然只是連動，但如果不存在就無法做事，警告一下
+						// 但 User 說「不要彈窗」，且下方紅字已在 checkStock 中顯示
+						// 這裡就做一個 silent check 或者 log
+						console.warn(`${partnerPn} 連動料號未在清單中`);
+					}
+				});
+
+				// (移除彈窗確認邏輯，改為依賴 checkStock 的即時顯示)
+			}
+
+			//  3. 通過檢查，開始寫入主料號 (A)
+			if (!this.localHistoryMap[rowId]) this.localHistoryMap[rowId] = [];
+			this.recordCounter++;
+
+			this.localHistoryMap[rowId].push({
+				recordId: this.recordCounter,
+				qty: inputQty,
+				rulename: ruleName,
+				targets: targetsData,
+				partners: partnersData,
+			});
+
+			var _this = this;
+			var gridData = search_excel.data.grid.getData();
+
+			//  4. 處理隊友 (B)
+			partnersData.forEach(function (partner) {
+				var partnerPn = partner.pn;
+				var partnerRatio = partner.ratio || 1;
+				var solvedQty = inputQty * partnerRatio;
+
+				// var partnerRow = gridData.find(r => r.mb001 === partnerPn);
+				var partnerRow = shortageLogic.fastLookupMap[partnerPn];
+				if (partnerRow) {
+					if (!_this.localHistoryMap[partnerRow._grid_id])
+						_this.localHistoryMap[partnerRow._grid_id] = [];
+					_this.localHistoryMap[partnerRow._grid_id].push({
+						recordId: _this.recordCounter,
+						qty: solvedQty,
+						ruleName: ruleName + " (連動)",
+						isPassive: true,
+					});
+					_this.refreshGrid(partnerPn);
+				}
+			});
+
+			//  5. 扣除全域庫存 (C & D)
+			targetsData.forEach(function (target) {
+				var subPartNo = target.pn;
+				var ratio = target.ratio || 1;
+				var usageQty = inputQty * ratio;
+
+				if (!_this.inventoryAllocatedMap[subPartNo])
+					_this.inventoryAllocatedMap[subPartNo] = 0;
+				_this.inventoryAllocatedMap[subPartNo] += usageQty;
+
+				_this.refreshGrid(subPartNo);
+			});
+
+			// 6. 刷新 A
+			this.refreshGrid(rowData.mb001);
+			this.renderHistory(rowData._grid_id);
+
+			// 7. 替代次數 +1
+			this.substitutionCount++;
+			console.log(
+				"✅ executeCommit: substitutionCount =",
+				this.substitutionCount,
+			);
+		},
+
+		//  刪除時連動歸還 (Rollback)
+		deleteRecord: function (rowId, recId) {
+			if (!confirm(body_index.gl("msg_confirm_delete"))) return;
+
+			var history = this.localHistoryMap[rowId] || [];
+			var targetRecord = history.find((r) => r.recordId === recId);
+
+			if (targetRecord) {
+				var _this = this;
+				var gridData = search_excel.data.grid.getData();
+
+				// 1. 歸還庫存 (C & D)
+				if (targetRecord.targets) {
+					targetRecord.targets.forEach(function (target) {
+						var subPartNo = target.pn;
+						var ratio = target.ratio || 1;
+						var usageQty = targetRecord.qty * ratio;
+
+						if (_this.inventoryAllocatedMap[subPartNo] !== undefined) {
+							_this.inventoryAllocatedMap[subPartNo] -= usageQty;
+						}
+						_this.refreshGrid(subPartNo);
+					});
+				}
+
+				// 2. 刪除隊友連動紀錄 (B)
+				if (targetRecord.partners) {
+					targetRecord.partners.forEach(function (partner) {
+						// var partnerRow = gridData.find(r => r.mb001 === partner.pn);
+						var partnerRow = shortageLogic.fastLookupMap[partner.pn];
+
+						if (partnerRow) {
+							var pHist = _this.localHistoryMap[partnerRow._grid_id] || [];
+							_this.localHistoryMap[partnerRow._grid_id] = pHist.filter(
+								(r) => r.recordId !== recId,
+							);
+							_this.refreshGrid(partner.pn);
+						}
+					});
+				}
+
+				// 3. 刪除自己 (A)
+				this.localHistoryMap[rowId] = history.filter(
+					(r) => r.recordId !== recId,
+				);
+
+				this.renderHistory(rowId);
+				if (this.currentRow) this.refreshGrid(this.currentRow.mb001);
+
+				//  替代次數 -1
+				this.substitutionCount = Math.max(0, this.substitutionCount - 1);
+				console.log(
+					"❌ deleteRecord: substitutionCount =",
+					this.substitutionCount,
+				);
+			}
+		},
+
+		// 刷新邏輯加入全域扣除
+		refreshGrid: function (targetPartNo) {
+			if (!targetPartNo) return;
+
+			var grid = search_excel.data.grid;
+			if (!grid) return;
+
+			var allRows = grid.getData();
+			var targetRows = allRows.filter(function (r) {
+				return r.mb001 === targetPartNo;
+			});
+
+			targetRows.sort(function (a, b) {
+				if (a.tk002 === b.tk002) return a._grid_id - b._grid_id;
+				return a.tk002 > b.tk002 ? 1 : -1;
+			});
+
+			//  取得該料號目前被「全域」佔用了多少 (作為替代料被拿走的部分)
+			var globalAllocated = this.inventoryAllocatedMap[targetPartNo] || 0;
+
+			// 初始庫存 = (實體倉inv + 虛擬倉syssy007[原本的值]) - 被拿去當替代料的量
+			// 注意：必須用 _org_syssy00X (原始值) 來算，否則每次 refreshGrid 若讀到被改過的會導致無限疊加
+
+			// 006: 庫存餘量 (Inventory Balance)
+			// 007: 可用餘量 (Available Balance)
+
+			// 修正演算法：雙軌邏輯 (Split Logic)
+			// syssy006 (庫存餘量): 蓄水池邏輯  -> 有需求才省下
+			// syssy007 (可用餘量): 立即生效邏輯 -> 投入替代即增加可用
+
+			var runningSavings006 = 0; // 累計省下的庫存 (for syssy006)
+			var runningSavings007 = 0; // 累計增加的可用 (for syssy007)
+			var currentPool = 0; // 蓄水池 (for syssy006 用)
+
+			var updates = [];
+
+			for (var i = 0; i < targetRows.length; i++) {
+				var row = targetRows[i];
+
+				// 1. 本單據投入的替代量 (Input)
+				var history = this.localHistoryMap[row._grid_id] || [];
+				var totalInput = 0;
+				history.forEach(function (rec) {
+					totalInput += rec.qty;
+				});
+
+				// 2. 更新 logic variables
+				// syssy007: 直接加上投入量 (Immediate)
+				runningSavings007 += totalInput;
+
+				// syssy006: 先進 Pool
+				currentPool += totalInput;
+
+				// 3. 計算本單需求 (Demand)
+				var demand = parseFloat(row.syssy003) || 0;
+				if (demand < 0) demand = 0;
+
+				// 4. syssy006: 嘗試從 Pool 滿足需求 (Usage)
+				var usedFromPool = 0;
+				if (demand > 0 && currentPool > 0) {
+					usedFromPool = Math.min(demand, currentPool);
+					currentPool -= usedFromPool;
+					runningSavings006 += usedFromPool; // 這一刻，庫存才真的被省下來
+				}
+
+				// 5. 淨變動計算
+				var netChange006 = runningSavings006 - globalAllocated;
+				var netChange007 = runningSavings007 - globalAllocated; // syssy007 也許也應該扣 global? 應視 definition.
+				// 假設 syssy007 (Available) = Inventory + Incoming - Alloc?
+				// User 說 syssy007 原本是對的 -> 即直接累加 Input.
+				// Wait, globalAllocated 是 "被拿去救別人的量".
+				// 所以 syssy007 也應該扣 globalAllocated (因為我也可能救別人).
+				// 是的，netChange 邏輯適用於雙方.
+
+				// 6. 計算模擬值
+				var orgSy006 =
+					row._org_syssy006 !== undefined
+						? parseFloat(row._org_syssy006)
+						: parseFloat(row.syssy006 || 0);
+				var orgSy007 =
+					row._org_syssy007 !== undefined
+						? parseFloat(row._org_syssy007)
+						: parseFloat(row.syssy007 || 0);
+
+				var newSy006 = orgSy006 + netChange006;
+				var newSy007 = orgSy007 + netChange007;
+
+				// 7. 建議文字 (Restore V1 style)
+				// 7. 建議文字
+				var simadvice = "";
+				if (totalInput > 0) {
+					simadvice = `${body_index.gl("val_alt_qty", "替代量")}: ${totalInput}`;
+				} else {
+					if (newSy007 >= 0) {
+						simadvice = body_index.gl("val_stock_sufficient", "庫存足夠");
+					} else {
+						simadvice = `${body_index.gl("val_stock_shortage", "庫存缺料")}: ${Math.abs(newSy007)}`;
+					}
+				}
+
+				if (globalAllocated > 0) {
+					simadvice += ` (${body_index.gl("val_allocated", "已分配")}: ${globalAllocated})`;
+				}
+
+				updates.push({
+					_grid_id: row._grid_id,
+					syssy006: newSy006, // 更新庫存餘量 (Deferred)
+					syssy007: newSy007, // 更新可用餘量 (Immediate)
+					simadvice: simadvice,
+					committedqty: totalInput,
+				});
+			}
+
+			if (updates.length > 0) {
+				grid.updateData(updates);
+			}
+			var col = grid.getColumn("hasreplacement");
+			if (col) {
+				updates.forEach(function (update) {
+					try {
+						var row = grid.getRow(update._grid_id);
+						if (row) {
+							var cell = row.getCell("hasreplacement");
+							if (cell) {
+								cell.setValue(cell.getValue());
+							}
+						}
+					} catch (e) {
+						console.warn("更新 cell 失敗:", e);
+					}
+				});
+			}
+		},
+
+		executeCheckboxSelectAll: function (selectAll) {
+			const checkboxes = document.querySelectorAll(
+				"#dynamicWarehouseCheckboxes input[type='checkbox']",
+			);
+			checkboxes.forEach((cb) => {
+				cb.checked = selectAll;
+				// Dispatch change event to trigger the custom styling logic
+				cb.dispatchEvent(new Event("change"));
+			});
+		},
+
+		executeDocTypeCheckboxesSelectAll: function (selectAll) {
+			const checkboxes = document.querySelectorAll(
+				"#dynamicDocTypeCheckboxes input[type='checkbox']",
+			);
+			checkboxes.forEach((cb) => {
+				// 「製令單」為必選，不允許透過全選/全不選改動其狀態
+				if (cb.value !== "製令單") {
+					cb.checked = selectAll;
+					cb.dispatchEvent(new Event("change"));
+				}
+			});
+		},
+
+		renderWarehouseCheckboxes: function () {
+			const container = document.getElementById("dynamicWarehouseCheckboxes");
+			if (!container) return;
+			container.innerHTML = "";
+
+			// 寫死的 18 個有效倉別清單
+			const activeWarehouses = [
+				{ alias: "A0001", name: "成品倉" },
+				{ alias: "A0002", name: "原物料倉" },
+				{ alias: "A00021", name: "ORACLE倉" },
+				{ alias: "A0003", name: "現場倉" },
+				{ alias: "A0005", name: "BSC倉" },
+				{ alias: "A0009", name: "備品倉" },
+				{ alias: "A0015", name: "SKD" },
+				{ alias: "A0019", name: "託外-國智" },
+				{ alias: "A0027", name: "託外-宸言" },
+				{ alias: "A0029", name: "託外-詰泰" },
+				{ alias: "A0030", name: "託外-上田" },
+				{ alias: "A0032", name: "託外-欣瑞" },
+				{ alias: "A0041", name: "線邊倉" },
+				{ alias: "A10011", name: "待轉賣倉" },
+				{ alias: "A2001", name: "RMA保留倉" },
+				{ alias: "B0001", name: "PULMONX倉" },
+				{ alias: "B0002", name: "PARSONS倉" },
+				{ alias: "D0045", name: "LICENSE倉" },
+			];
+
+			activeWarehouses.forEach((wh) => {
+				const colDiv = document.createElement("div");
+				colDiv.className = "col mb-1";
+
+				const checkDiv = document.createElement("div");
+				checkDiv.className =
+					"form-check shadow-sm w-100 h-100 p-0 m-0 position-relative";
+				// Using inline CSS for card-like transition effects
+				checkDiv.style.cssText =
+					"border: 1px solid #dee2e6; border-radius: 8px; background: #ffffff; transition: all 0.2s ease-in-out; display: flex; flex-direction: column; justify-content: center;";
+
+				const input = document.createElement("input");
+				input.className =
+					"form-check-input position-absolute top-50 end-0 translate-middle-y me-2"; // 放置在右側垂直置中
+				input.type = "checkbox";
+				input.value = wh.alias;
+				input.id = "wh_" + wh.alias;
+				input.checked = true; // 預設全勾選
+				input.style.cursor = "pointer";
+				input.style.zIndex = "2";
+
+				const label = document.createElement("label");
+				label.className = "form-check-label d-block p-2 w-100 h-100 pe-4"; // 預留右側空間
+				label.setAttribute("for", input.id);
+				label.style.cursor = "pointer";
+				label.innerHTML = `
+					<div class="text-primary fw-bold mb-1" style="font-size:16px;">${wh.name}</div>
+					<div class="text-secondary" style="font-size:12px; font-family: monospace;"><i class="bi bi-box-seam me-1"></i>${wh.alias}</div>
+				`;
+
+				// Enhanced visual feedback for selection state
+				input.addEventListener("change", function (e) {
+					if (e.target.checked) {
+						checkDiv.style.borderColor = "#0d6efd";
+						checkDiv.style.backgroundColor = "#f8fbff";
+					} else {
+						checkDiv.style.borderColor = "#dee2e6";
+						checkDiv.style.backgroundColor = "#ffffff";
+					}
+				});
+
+				// Initialize the visual state
+				if (input.checked) {
+					checkDiv.style.borderColor = "#0d6efd";
+					checkDiv.style.backgroundColor = "#f8fbff";
+				}
+
+				checkDiv.appendChild(input);
+				checkDiv.appendChild(label);
+				colDiv.appendChild(checkDiv);
+				container.appendChild(colDiv);
+			});
+		},
+
+		renderDocTypeCheckboxes: function () {
+			const container = document.getElementById("dynamicDocTypeCheckboxes");
+			if (!container) return;
+			container.innerHTML = "";
+
+			const activeDocTypes = [
+				{ alias: "製令單", name: body_index.gl("order_type_m") || "製令單" },
+				{
+					alias: "製令單(退)",
+					name: body_index.gl("order_type_m_ret") || "製令單(退)",
+				},
+				{
+					alias: "內製令單",
+					name: body_index.gl("order_type_im") || "內製令單",
+				},
+				{ alias: "採購單", name: body_index.gl("order_type_p") || "採購單" },
+				{ alias: "進貨單", name: body_index.gl("order_type_ir") || "進貨單" },
+				{ alias: "請購單", name: body_index.gl("order_type_pr") || "請購單" },
+				{ alias: "客訂單", name: body_index.gl("order_type_co") || "客訂單" },
+			];
+
+			activeDocTypes.forEach((dt) => {
+				const colDiv = document.createElement("div");
+				colDiv.className = "col mb-1";
+
+				const checkDiv = document.createElement("div");
+				checkDiv.className =
+					"form-check shadow-sm w-100 h-100 p-0 m-0 position-relative";
+				checkDiv.style.cssText =
+					"border: 1px solid #dee2e6; border-radius: 8px; background: #ffffff; transition: all 0.2s ease-in-out; display: flex; flex-direction: column; justify-content: center;";
+
+				const input = document.createElement("input");
+				input.className =
+					"form-check-input position-absolute top-50 end-0 translate-middle-y me-2";
+				input.type = "checkbox";
+				input.value = dt.alias;
+				input.id = "dt_" + dt.alias.replace(/[()]/g, "");
+				input.checked = true; // 預設全勾選
+				input.style.cursor = dt.alias === "製令單" ? "not-allowed" : "pointer";
+				input.style.zIndex = "2";
+				if (dt.alias === "製令單") input.disabled = true; // 強制必選
+
+				const label = document.createElement("label");
+				label.className = "form-check-label d-block p-2 w-100 h-100 pe-4";
+				label.setAttribute("for", input.id);
+				label.style.cursor = dt.alias === "製令單" ? "default" : "pointer";
+				label.innerHTML = `
+					<div class="${dt.alias === "製令單" ? "text-primary" : "text-secondary"} fw-bold mb-1" style="font-size:18px;">
+						<i class="bi bi-file-earmark-text me-1"></i>${dt.alias === "製令單" ? dt.name + " " + body_index.gl("label_required") : dt.name}
+					</div>
+					<div class="mt-1" onclick="event.stopPropagation();">
+						<input type="text" class="form-control form-control-sm doc-exclude-input" 
+							placeholder="${body_index.gl("placeholder_exclude_doc")}" 
+							data-doctype="${dt.alias}" 
+							style="font-size:14px; z-index: 10; position: relative;">
+					</div>
+				`;
+
+				input.addEventListener("change", function (e) {
+					if (e.target.checked) {
+						checkDiv.style.borderColor = "#0d6efd";
+						checkDiv.style.backgroundColor = "#f8fbff";
+					} else {
+						checkDiv.style.borderColor = "#dee2e6";
+						checkDiv.style.backgroundColor = "#ffffff";
+					}
+				});
+
+				if (input.checked) {
+					checkDiv.style.borderColor = "#0d6efd";
+					checkDiv.style.backgroundColor = "#f8fbff";
+				}
+
+				checkDiv.appendChild(input);
+				checkDiv.appendChild(label);
+				colDiv.appendChild(checkDiv);
+				container.appendChild(colDiv);
+			});
+		},
+	};
+	window.shortageLogic = shortageLogic;
+
+	//  3. 主頁面控制器
+	var body_index = {
+		originalSearchSend: null,
+
+		gl: function (key, defVal) {
+			let uiLang = {};
+			try {
+				let searchSet = JSON.parse(main.resq_data.searchSet || "{}");
+				uiLang = searchSet.uiLang || {};
+			} catch (e) { }
+
+			let val = uiLang[key] || defVal || key;
+			if (typeof val === "string" && val.includes("{") && val.includes("}")) {
+				try {
+					let obj = JSON.parse(val);
+					let currentLang = (
+						$("#menu_login_language").text() || "zh-TW"
+					).trim();
+					// 支援橫線與底線的相容比對
+					return (
+						obj[currentLang] ||
+						obj[currentLang.replace("-", "_")] ||
+						obj[currentLang.replace("_", "-")] ||
+						obj["zh-TW"] ||
+						defVal ||
+						key
+					);
+				} catch (e) {
+					return val;
+				}
+			}
+			return val;
+		},
+
+		safeRemoveModal: function (modalId) {
+			var modalEl = document.getElementById(modalId);
+			if (modalEl) {
+				try {
+					var modalInstance = bootstrap.Modal.getInstance(modalEl);
+					if (modalInstance) modalInstance.dispose();
+				} catch (e) { }
+				modalEl.remove();
+			}
+			document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
+			document.body.classList.remove("modal-open");
+			document.body.style.overflow = "";
+			document.body.style.paddingRight = "";
+		},
+
+		methods: {
+			create: function () {
+				// 重置
+				["ruleSelectionModal", "warehouseSelectionModal"].forEach(
+					function (id) {
+						body_index.safeRemoveModal(id);
+					},
+				);
+
+				$("body").append(getSpecificModalHTML());
+				$("body").append(getWarehouseModalHTML());
+
+				// 焦點管理
+				var modalEl = document.getElementById("ruleSelectionModal");
+				if (modalEl) {
+					modalEl.addEventListener("hide.bs.modal", function () {
+						if (document.activeElement) document.activeElement.blur();
+					});
+					modalEl.addEventListener("hidden.bs.modal", function () {
+						var mainEl = document.getElementById("body_material_shortage");
+						if (mainEl) {
+							mainEl.setAttribute("tabindex", "-1");
+							mainEl.focus();
+							mainEl.removeAttribute("tabindex");
+						}
+					});
+				}
+
+				var shortageConfig = {
+					hasCheckbox: false,  // 勾選框開關
+					title: body_index.gl("mod_material_shortage"),
+					customInputs: [],
+					// ====================================================
+					// Excel 匯出設定 (傳給 search_excel 模板的 excelConfig)
+					// shortageFields: 哪些欄位 < 0 要標紅字 (支援多欄位)
+					// reportTitle:   Excel 報表的標題與 sheet 名稱
+					// ====================================================
+					excelConfig: {
+						reportTitle:
+							body_index.gl("mod_material_shortage_report") ||
+							body_index.gl("mod_material_shortage"),
+						shortageFields: ["syssy006", "syssy007"],
+					},
+					filters: {
+						title: body_index.gl("filter_doc_type"),
+						field: "tk000",
+						mandatory: "製令單",
+						options: [
+							{
+								label: body_index.gl("order_type_m", "製令單"),
+								val: "製令單",
+								checked: true,
+								disabled: true,
+							},
+							{
+								label: body_index.gl("order_type_m_ret", "製令單(退)"),
+								val: "製令單(退)",
+								checked: false,
+							},
+							{
+								label: body_index.gl("order_type_im", "內製令單"),
+								val: "內製令單",
+								checked: false,
+							},
+							{
+								label: body_index.gl("order_type_p", "採購單"),
+								val: "採購單",
+								checked: false,
+							},
+							{
+								label: body_index.gl("order_type_ir", "進貨單"),
+								val: "進貨單",
+								checked: false,
+							},
+							{
+								label: body_index.gl("order_type_pr", "請購單"),
+								val: "請購單",
+								checked: false,
+							},
+							{
+								label: body_index.gl("order_type_co", "客訂單"),
+								val: "客訂單",
+								checked: false,
+							},
+						],
+					},
+					buttons: [
+						{
+							label: body_index.gl("btn_recalculate", "Recalculate"),
+							icon: "bi-funnel",
+							class:
+								"btn-warning text-dark shadow-sm fw-bold d-inline-flex align-items-center text-nowrap me-2",
+							action: "body_index.methods.openWarehouseModal()",
+						},
+						{
+							label: body_index.gl("btn_alt_list", "Alt. List"),
+							icon: "bi-list-check",
+							class:
+								"btn-info text-white shadow-sm fw-bold d-inline-flex align-items-center text-nowrap me-2",
+							action: "shortageLogic.showCommittedModal()",
+						},
+					],
+
+					onDataLoaded: function (dataList) {
+						console.log(`資料載入完成: ${dataList.length} 筆`);
+
+						// 備份原始餘額 (syssy006 & syssy007)，確保運算基準不跑掉
+						dataList.forEach(function (r) {
+							if (r._org_syssy006 === undefined) r._org_syssy006 = r.syssy006;
+							if (r._org_syssy007 === undefined) r._org_syssy007 = r.syssy007;
+						});
+
+						shortageLogic.localHistoryMap = {};
+						shortageLogic.recordCounter = 0;
+						shortageLogic.inventoryAllocatedMap = {}; // 重置全域庫存表
+						shortageLogic.substitutionCount = 0; // 重置替代次數
+						//  Performance Optimization: 建立快速查找表
+						shortageLogic.fastLookupMap = {};
+						dataList.forEach(function (r) {
+							if (r.mb001 && !shortageLogic.fastLookupMap[r.mb001]) {
+								shortageLogic.fastLookupMap[r.mb001] = r;
+							}
+						});
+
+						setTimeout(function () {
+							if (search_excel && search_excel.data && search_excel.data.grid) {
+								console.log("刷新表格");
+								search_excel.data.grid.redraw(true);
+							}
+						}, 100);
+					},
+
+					columnOverrides: {
+						hasreplacement: {
+							title: body_index.gl("hasreplacement"),
+							field: "hasreplacement", //  1. 關鍵：一定要明確指定欄位名稱！
+							width: 160,
+
+							//  2. 設定下拉選單
+							headerFilter: "list",
+							headerFilterParams: {
+								values: {
+									"": body_index.gl("filter_all"), // 空字串代表不過濾
+									true: body_index.gl("filter_has_rule"),
+									false: body_index.gl("filter_no_rule"),
+								},
+							},
+
+							//  3. 強制轉換型別比較 (解決 boolean vs string 的問題)
+							headerFilterFunc: function (
+								headerValue,
+								rowValue,
+								rowData,
+								filterParams,
+							) {
+								// 如果選 "顯示全部"，就回傳 true (全部顯示)
+								if (headerValue === "") return true;
+
+								// 將 row 裡的 true/false 轉成字串來比較，這樣就萬無一失了！
+								return String(rowValue) === String(headerValue);
+							},
+
+							formatter: function (cell) {
+								var row = cell.getData();
+								var committed = row.committedqty || 0;
+								var hasRule = row.hasreplacement;
+
+								// 防呆邏輯：沒規則且沒執行過 -> 顯示 -無-
+								if (!hasRule && committed === 0) {
+									return (
+										'<span class="text-muted small" style="opacity:0.5;">- ' +
+										body_index.gl("val_none") +
+										" -</span>"
+									);
+								}
+
+								var btnText =
+									committed > 0
+										? body_index.gl("btn_modify")
+										: body_index.gl("btn_execute");
+								var btnClass = committed > 0 ? "btn-primary" : "btn-success";
+
+								var html = `<div class="d-flex gap-1 align-items-center">
+                                <button class="btn btn-sm ${btnClass} py-0 px-2 btn-main-action shadow-sm" 
+                                        style="font-size:12px;" 
+                                        title="${body_index.gl("title_click_exec")}">
+                                    ${btnText}
+                                </button>`;
+
+								if (committed > 0) {
+									html += `<span class="badge bg-danger rounded-pill btn-cancel-mini" 
+                                        style="cursor:pointer;" title="${body_index.gl("title_view_executed").replace("${committed}", committed)}" 
+                                        onclick="shortageLogic.openRuleModal(event, this.closest('.tabulator-cell'))">
+                                    ${committed}
+                                </span>`;
+								}
+								html += `</div>`;
+								return html;
+							},
+							cellClick: function (e, cell) {
+								var row = cell.getData();
+								if (
+									!row.hasreplacement &&
+									(!row.committedqty || row.committedqty === 0)
+								)
+									return;
+								shortageLogic.openRuleModal(e, cell);
+							},
+						},
+						simadvice: {
+							title: body_index.gl("simadvice", "模擬建議"),
+							width: 250,
+							headerFilter: "input"
+						},
+						syssy006: {
+							cssClass: "cell-sim-val",
+							formatter: function (cell) {
+								var val = cell.getValue() || 0;
+								return parseFloat(val) < 0
+									? `<span class="text-danger">${val}</span>`
+									: val;
+							},
+						},
+						syssy007: {
+							cssClass: "cell-sim-val",
+							formatter: function (cell) {
+								var val = cell.getValue() || 0;
+								return parseFloat(val) < 0
+									? `<span class="text-danger">${val}</span>`
+									: val;
+							},
+						},
+					},
+				};
+
+				$("#body_material_shortage #home_tab").load("./html/model/home.html");
+				$("#body_material_shortage #search_tab").load(
+					"./html/model/search_excel.html",
+					function () {
+						if (typeof search_excel !== "undefined") {
+							setTimeout(function () {
+								var $searchBtn = $("#se_left_zone button").first();
+								$searchBtn
+									.removeClass("btn-primary")
+									.addClass("btn-danger text-white");
+								$searchBtn.html(
+									'<i class="bi bi-eraser-fill"></i> ' +
+									body_index.gl("btn_reset", "Reset"),
+								);
+
+								body_index.originalSearchSend = search_excel.methods.searchSend;
+
+								search_excel.methods.searchSend = function () {
+									console.log(" UI 重置");
+									var grid = search_excel.data.grid;
+									if (!grid) return;
+									$(".excel-search-val").val("").trigger("change");
+									$(".tk-filter").each(function () {
+										if (!$(this).prop("disabled"))
+											$(this).prop("checked", false);
+									});
+									var columns = grid.getColumns();
+									columns.forEach(function (col) {
+										col.show();
+									});
+									$("#col_selector_ul input[type='checkbox']").prop(
+										"checked",
+										true,
+									);
+									grid.clearFilter();
+									$("#excel_total_count").text(grid.getDataCount("active"));
+									setTimeout(function () {
+										if (search_excel.methods.saveToDatabase)
+											search_excel.methods.saveToDatabase();
+									}, 100);
+								};
+
+								search_excel.methods.create(shortageConfig);
+							}, 50);
+						}
+					},
+				);
+			},
+
+			destroy: function () {
+				if (body_index.originalSearchSend) {
+					search_excel.methods.searchSend = body_index.originalSearchSend;
+					body_index.originalSearchSend = null;
+				}
+				["ruleSelectionModal", "warehouseSelectionModal"].forEach(
+					function (id) {
+						body_index.safeRemoveModal(id);
+					},
+				);
+				console.log("body_material_shortage 銷毀完成");
+			},
+
+			openWarehouseModal: function () {
+				shortageLogic.renderWarehouseCheckboxes(); // 寫死 18 個有效倉別
+				shortageLogic.renderDocTypeCheckboxes(); // 單別
+				var modalEl = document.getElementById("warehouseSelectionModal");
+				var modal = new bootstrap.Modal(modalEl, {
+					backdrop: "static",
+					keyboard: false,
+				});
+				modal.show();
+			},
+
+			executeWarehouseRecalculate: function () {
+				// 收集選中的倉別
+				const selectedWarehouses = [];
+				const checkboxes = document.querySelectorAll(
+					'#dynamicWarehouseCheckboxes input[type="checkbox"]:checked',
+				);
+				checkboxes.forEach((cb) => selectedWarehouses.push(cb.value));
+
+				// 收集選中的單別與排除規則
+				const selectedDocTypes = [];
+				const excludePatterns = {};
+				const docCheckboxes = document.querySelectorAll(
+					'#dynamicDocTypeCheckboxes input[type="checkbox"]:checked',
+				);
+				docCheckboxes.forEach((cb) => {
+					selectedDocTypes.push(cb.value);
+
+					// 找對應的排除輸入框
+					const docType = cb.value;
+					const inputEl = document.querySelector(
+						`.doc-exclude-input[data-doctype="${docType}"]`,
+					);
+					if (inputEl && inputEl.value.trim() !== "") {
+						// 支援逗號分隔
+						const patterns = inputEl.value
+							.split(",")
+							.map((s) => s.trim())
+							.filter((s) => s !== "");
+						if (patterns.length > 0) {
+							excludePatterns[docType] = patterns;
+						}
+					}
+				});
+
+				if (selectedWarehouses.length === 0) {
+					nav_alert.methods.alertshow(
+						"warning",
+						body_index.gl("msg_select_warehouse_req"),
+					);
+					return;
+				}
+				if (selectedDocTypes.length === 0) {
+					nav_alert.methods.alertshow(
+						"warning",
+						body_index.gl("msg_select_doctype_req"),
+					);
+					return;
+				}
+
+				// 收集料號篩選 (多選)
+				const materialNosRaw = document.getElementById("filter_material_nos")
+					? document.getElementById("filter_material_nos").value
+					: "";
+				const materialNos = materialNosRaw
+					.split(/[\n,]+/)
+					.map((s) => s.trim())
+					.filter((s) => s !== "")
+					.join(",");
+
+				console.log(
+					"發送即時試算請求，指定倉別:",
+					selectedWarehouses,
+					"單別:",
+					selectedDocTypes,
+					"排除單號:",
+					excludePatterns,
+					"料號:",
+					materialNos,
+				);
+
+				var reqObj = {
+					warehouses: selectedWarehouses,
+					includeTypes: selectedDocTypes,
+					excludePatterns: excludePatterns,
+					materialNos: materialNos,
+				};
+				// 封裝查詢條件，將物件放進 entityJson
+				var entityJsonStr = JSON.stringify(reqObj);
+
+				if (window.main) {
+					// 修正：動態調高 z-index 以便蓋過 Modal，並在 callBackSuccess 中還原
+					$("#nav_loading, #loading").css("z-index", "2000");
+					// 為了避免被任何 Modal 的 Backdrop 給蓋住或影響
+					// 我們直接在 body 最後面插入一個獨立的、擁有最高 z-index 的 Progress Bar 容器
+					if ($("#custom_global_progress_wrapper").length === 0) {
+						var progressBarHtml = `
+							<div id="custom_global_progress_wrapper" style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 500px; padding: 10px 20px; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 30px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.7); z-index: 9999; display: none;">
+								<div class="d-flex align-items-center">
+									<div class="flex-grow-1 me-3">
+										<div class="progress shadow-sm" style="height: 12px; background-color: rgba(0, 0, 0, 0.1); border-radius: 6px; overflow: hidden;">
+											<div id="custom_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+												 role="progressbar" style="width: 0%; transition: width 0.1s linear; background: linear-gradient(45deg, #10b981, #34d399);" 
+												 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+										</div>
+									</div>
+									<div class="text-nowrap" style="font-size: 13px; font-weight: 700; color: #2c3e50;">
+										<span id="custom_dl_progress">${body_index.gl("msg_loading")}</span>
+										<span id="custom_progress_percent" class="ms-1">0%</span>
+									</div>
+								</div>
+							</div>`;
+						$("body").append(progressBarHtml);
+					}
+
+					// 顯示進度條與全域 loading 黑底
+					$("#custom_global_progress_wrapper").fadeIn(200);
+					$("#custom_dl_progress").text("Running MRP......");
+
+					// 避免畫面上有兩個載入動畫
+					var $loadingDiv = $("#loading .mt-5.pt-5.text-center");
+					if (!window._backupLoadingHTML) {
+						window._backupLoadingHTML = $loadingDiv.html();
+					}
+					$loadingDiv.html(""); // 清空預設的圈圈，只留黑底
+					$("#loading").removeClass("d-none");
+
+					// 將需要的參數整理成給後端的格式 (模擬 main.html 處理)
+					var req_data = {
+						entityJson: entityJsonStr,
+						callBackFunction: "body_index_onRecalculateSuccess",
+					};
+					// 這裡的重要處理：為了符合後端 PackageBean 去除怪異符號 (跟 main.html 一樣)
+					var sendData = JSON.stringify(req_data)
+						.replaceAll("!", "")
+						.replaceAll("=", "")
+						.replaceAll("\\t", "");
+
+					// 模擬一個緩慢上升的進度 (因為資料庫試算約需 2~3 秒)
+					var artificialProgress = 0;
+					var fakeProgressInterval = setInterval(function () {
+						if (artificialProgress < 40) {
+							// 前段模擬試算進度
+							artificialProgress += 5;
+							$("#custom_progress_bar").css("width", artificialProgress + "%");
+							$("#custom_progress_percent").text(artificialProgress + "%");
+						} else {
+							clearInterval(fakeProgressInterval);
+						}
+					}, 400);
+
+					// 使用原生 jQuery AJAX，確保帶上 Session Cookie
+					$.ajax({
+						url:
+							"ajax/" + $("#nav_functional_unit").attr("title") + ".basil.RC",
+						type: "POST",
+						contentType: "application/json;charset=UTF-8",
+						dataType: "json",
+						data: sendData,
+						timeout: 180000,
+						xhr: function () {
+							var xhr = new window.XMLHttpRequest();
+							// 監聽真實下載進度
+							xhr.addEventListener(
+								"progress",
+								function (evt) {
+									if (evt.lengthComputable) {
+										var percentComplete = Math.round(
+											(evt.loaded / evt.total) * 100,
+										);
+										// 進度條從 40% 開始算起 (前 40% 為後端試算模擬)
+										var realProgress = 40 + Math.round(percentComplete * 0.6);
+										$("#custom_progress_bar").css("width", realProgress + "%");
+										$("#custom_progress_percent").text(realProgress + "%");
+										var loadedKB = (evt.loaded / 1024).toFixed(1);
+										var totalKB = (evt.total / 1024).toFixed(1);
+										$("#custom_dl_progress").text(
+											"Loading... " + loadedKB + " KB / " + totalKB + " KB",
+										);
+									} else {
+										var loadedMB = (evt.loaded / 1024 / 1024).toFixed(2);
+										$("#custom_dl_progress").text(
+											"Data Fetched: " + loadedMB + " MB",
+										);
+										if (artificialProgress < 95) artificialProgress += 2; // GZIP情況下，只要有封包就推進
+										$("#custom_progress_bar").css(
+											"width",
+											artificialProgress + "%",
+										);
+										$("#custom_progress_percent").text(
+											artificialProgress + "%",
+										);
+									}
+								},
+								false,
+							);
+							return xhr;
+						},
+						success: function (event) {
+							clearInterval(fakeProgressInterval);
+							$("#custom_progress_bar").css("width", "100%");
+							$("#custom_progress_percent").text("100%");
+
+							var mainAlertM = nav_alert.methods;
+							if (event["infoColor"] === "success") {
+								mainAlertM.alertshow(event["infoColor"], event["info"]);
+							} else if (event["infoColor"] === "warning") {
+								mainAlertM.alertshow(event["infoColor"], event["info"]);
+								$("#loading").addClass("d-none");
+								$loadingDiv.html(window._backupLoadingHTML);
+								$("#nav_loading, #loading").css("z-index", "");
+								$("#custom_global_progress_wrapper").fadeOut(200);
+								return;
+							} else {
+								mainAlertM.alertshow("danger", "[777] The command was executed [ERROR]!!");
+								$("#loading").addClass("d-none");
+								$loadingDiv.html(window._backupLoadingHTML);
+								$("#nav_loading, #loading").css("z-index", "");
+								$("#custom_global_progress_wrapper").fadeOut(200);
+								return;
+							}
+
+							// 將資料存入全域變數，供 callback 使用
+							main.resq_data = event;
+
+							if (
+								event["callBackFunction"] === "body_index_onRecalculateSuccess"
+							) {
+								$("#custom_dl_progress").text(body_index.gl("msg_finalizing"));
+
+								// 使用 setTimeout 讓瀏覽器重新渲染上方文字
+								setTimeout(function () {
+									try {
+										window.body_index_onRecalculateSuccess();
+									} finally {
+										$("#loading").addClass("d-none");
+										$loadingDiv.html(window._backupLoadingHTML);
+										$("#nav_loading, #loading").css("z-index", "");
+										$("#custom_global_progress_wrapper").fadeOut(200);
+									}
+								}, 50);
+							} else {
+								$("#loading").addClass("d-none");
+								$loadingDiv.html(window._backupLoadingHTML);
+								$("#nav_loading, #loading").css("z-index", "");
+								$("#custom_global_progress_wrapper").fadeOut(200);
+							}
+						},
+						error: function (xhr, status, error) {
+							clearInterval(fakeProgressInterval);
+							const mainAlertM = nav_alert.methods;
+							if (xhr.status === 200) {
+								mainAlertM.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+								window.location.replace("login.basil");
+							} else if (xhr.status === 404) {
+								mainAlertM.alertshow("warning", "[404] The command failed [Warning]!!");
+							} else if (xhr.status === 403) {
+								mainAlertM.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+							} else {
+								mainAlertM.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+							}
+							$("#loading").addClass("d-none");
+							$loadingDiv.html(window._backupLoadingHTML);
+							$("#nav_loading, #loading").css("z-index", "");
+							$("#custom_global_progress_wrapper").fadeOut(200);
+						},
+					});
+				}
+			},
+		},
+	};
+
+	// Global callback endpoint to receive Gateway response
+	window.body_index_onRecalculateSuccess = function () {
+		// 還原 z-index
+		$("#nav_loading, #loading").css("z-index", "");
+		var entityJsonStr = main.resq_data.entityJson;
+		if (entityJsonStr) {
+			console.log("接收到 API 回傳新試算資料");
+			var rawData = JSON.parse(entityJsonStr);
+			var dataList = [];
+
+			// 自動偵測矩陣格式
+			if (rawData.c && rawData.d) {
+				var cols = rawData.c;
+				for (var i = 0; i < rawData.d.length; i++) {
+					var rowData = rawData.d[i];
+					var obj = {};
+					for (var j = 0; j < cols.length; j++) {
+						obj[cols[j]] = rowData[j];
+					}
+					dataList.push(obj);
+				}
+			} else {
+				dataList = rawData;
+			}
+
+			// 1. 保留原本從 /search 拿到的 替代料規則
+			var backupRules = null;
+			try {
+				if (
+					search_excel.data.fullOtherData &&
+					search_excel.data.fullOtherData.replacementRules
+				) {
+					backupRules = search_excel.data.fullOtherData.replacementRules;
+				}
+			} catch (e) { }
+
+			// 2. Process data format exactly like onDataLoaded + searchReturn
+			dataList.forEach(function (row, index) {
+				// 必須像 searchReturn 一樣賦予 index
+				row._grid_id = index;
+
+				// 統一清除空白字元，與一般搜尋的 DTO 格式對齊 (解決比對不到替代規則的問題)
+				if (typeof row.mb001 === "string") row.mb001 = row.mb001.trim();
+				if (typeof row.tk003 === "string") row.tk003 = row.tk003.trim();
+				if (typeof row.tc004 === "string") row.tc004 = row.tc004.trim();
+
+				// 刪除可能在 JS 端產生的 simadvice 避免殘留
+				delete row.simval;
+				delete row.simadvice;
+
+				// 回填 RC 後端沒給的預設值，讓 Tabulator 可以正常 render 按鈕
+				row.committedqty = 0;
+				row.hasreplacement = false;
+
+				// 如果有備份的規則，透過 ruleMap 自動補齊 hasreplacement 狀態
+				if (backupRules && row.mb001 && backupRules[row.mb001]) {
+					row.hasreplacement = true;
+				}
+			});
+
+			if (search_excel && search_excel.data && search_excel.data.grid) {
+				// 3. 更新介面筆數
+				$("#excel_total_count").text(dataList.length);
+
+				// 4. 清空舊資料
+				search_excel.data.grid.clearData();
+
+				// 5. 載入新資料，並強制觸發類似 onLoad 的生命週期
+				search_excel.data.grid.setData(dataList).then(function () {
+					// 觸發業務邏輯，重新建立 fastLookupMap, 備份 _org_syssy006, 清空 localHistoryMap 等等
+					if (
+						search_excel.data.config &&
+						typeof search_excel.data.config.onDataLoaded === "function"
+					) {
+						setTimeout(function () {
+							search_excel.data.config.onDataLoaded(dataList);
+							nav_alert.methods.alertshow(
+								"success",
+								body_index.gl("msg_recalc_success"),
+							);
+						}, 50);
+					} else {
+						nav_alert.methods.alertshow(
+							"success",
+							body_index.gl("msg_recalc_success"),
+						);
+					}
+				});
+			}
+
+			// Hide Modal
+			var modalEl = document.getElementById("warehouseSelectionModal");
+			if (modalEl) {
+				var modalInstance =
+					bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+				if (modalInstance) {
+					modalInstance.hide();
+					// 強制移除背景黑底(以防萬一)
+					$(".modal-backdrop").remove();
+					$("body").removeClass("modal-open").css("overflow", "");
+				}
+			}
+		} else {
+			console.warn("未收到 entityJson 回傳資料");
+		}
+	};
+</script>

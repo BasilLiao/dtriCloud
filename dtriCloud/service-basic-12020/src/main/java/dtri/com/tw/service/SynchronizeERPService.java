@@ -305,7 +305,6 @@ public class SynchronizeERPService {
 			List<String> batchList = removeCommandMapList.subList(i, Math.min(i + batchSize, totalSize));
 			// 執行 JPA 查詢
 			List<Mocta> removeCheck = moctaDao.findAllByMocta(batchList);
-
 			// 處理結果
 			removeCheck.forEach(r -> {
 				String nKey = r.getTa001_ta002() + "-" + r.getMb001();
@@ -405,9 +404,9 @@ public class SynchronizeERPService {
 		// 入料
 		erpInMaps.forEach((key, v) -> {
 			// 測試用
-//			if (key.equals("A345-2512160001-0001")) {
-//				System.out.println(new Date() + ":" + key);
-//			}
+			// if (key.equals("A345-2512160001-0001")) {
+			// System.out.println(new Date() + ":" + key);
+			// }
 			if (v.isNewone()) {
 				BasicIncomingList n = new BasicIncomingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -669,10 +668,10 @@ public class SynchronizeERPService {
 			// 取得當前批次
 			List<String> batchList = removeShMapList.subList(i, Math.min(i + batchSize, totalShSize));
 			// 測試用
-//			boolean exists = batchList.stream().anyMatch("A542-260204001-0004"::equals);
-//			if (exists) {
-//			    System.out.println("Stream 比對成功");
-//			}
+			// boolean exists = batchList.stream().anyMatch("A542-260204001-0004"::equals);
+			// if (exists) {
+			// System.out.println("Stream 比對成功");
+			// }
 
 			// 執行 JPA 查詢
 			List<Mocte> removeShCheck = mocteDao.findAllByMocte60(batchList);
@@ -681,9 +680,9 @@ public class SynchronizeERPService {
 				// 移除標記
 				String nKey = r.getTa026_ta027_ta028().replaceAll("\\s", "");
 				// 測試用
-//				if ("A542-260204001-0004".equals(nKey)) {
-//					System.out.println("A542-260204001-0004");
-//				}
+				// if ("A542-260204001-0004".equals(nKey)) {
+				// System.out.println("A542-260204001-0004");
+				// }
 				// 已經完成->標記更新 / 完工時間
 				if (removeShMap.containsKey(nKey)) {
 					BasicShippingList o = removeShMap.get(nKey);
@@ -1244,9 +1243,9 @@ public class SynchronizeERPService {
 			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試
-//			if("A581-260102055-0001".equals(oKey)) {
-//				System.out.println(oKey);
-//			}
+			// if("A581-260102055-0001".equals(oKey)) {
+			// System.out.println(oKey);
+			// }
 
 			// 同一筆資料?
 			if (erpInMaps.containsKey(oKey)) {
@@ -1793,7 +1792,7 @@ public class SynchronizeERPService {
 
 	// ============ 借出歸還A151/借入歸還單A161 ============
 	public void erpSynchronizeInvth() throws Exception {
-		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
+		logger.info("===erpSynchronizeInvth: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invth> erpEntitys = invthDao.findAllByInvth();
 		Map<String, Invth> erpInMaps = new HashMap<>();
@@ -1835,9 +1834,9 @@ public class SynchronizeERPService {
 			// 基本資料準備:檢碼(單類別+單序號+物料號+單項目號)
 			String oKey = o.getBilclass() + "-" + o.getBilsn() + "-" + o.getBilnb();
 			// 測試用
-//			if(oKey.equals("A151-250604002-0001")) {
-//				System.out.println(oKey);
-//			}
+			// if(oKey.equals("A151-250604002-0001")) {
+			// System.out.println(oKey);
+			// }
 			String bilfuser = o.getBilfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 同一筆資料?
@@ -2015,7 +2014,7 @@ public class SynchronizeERPService {
 
 	// ============ A111 費用領料單/ A112 費用退料單/A115/ A119 料號調整單/ A121 倉庫調撥單 ============
 	public void erpSynchronizeInvta() throws Exception {
-		logger.info("===erpSynchronizeInvtg: 時間:{}", dateFormat.format(new Date()));
+		logger.info("===erpSynchronizeInvta: 時間:{}", dateFormat.format(new Date()));
 		// Step0.資料準備
 		ArrayList<Invta> erpEntitys = invtaDao.findAllByInvta();
 		Map<String, Invta> erpInMaps = new HashMap<>();
@@ -2044,9 +2043,9 @@ public class SynchronizeERPService {
 			nKey = nKey.replaceAll("\\s", "");
 			m.setNewone(true);
 			// 測試用
-//			if (nKey.contains("A115")) {
-//				System.out.println(nKey);
-//			}
+			// if (nKey.contains("A115")) {
+			// System.out.println(nKey);
+			// }
 			// 單據性質別:
 			if (m.getTb001_tb002_tb003().contains("A111")) {
 				m.setTk000("領料類");
@@ -2174,9 +2173,9 @@ public class SynchronizeERPService {
 		// 入料
 		erpInMaps.forEach((key, v) -> {
 			// 測試用
-//			if(key.indexOf("A121-231122005-0001")>=0) {
-//				System.out.println(key);
-//			}
+			// if(key.indexOf("A121-231122005-0001")>=0) {
+			// System.out.println(key);
+			// }
 			if (v.isNewone() && v.getTk000().equals("入料類")) {
 				BasicIncomingList n = new BasicIncomingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -2190,9 +2189,9 @@ public class SynchronizeERPService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-//			if (key.indexOf("A121-231113022-0001") >= 0) {
-//				System.out.println(key);
-//			}
+			// if (key.indexOf("A121-231113022-0001") >= 0) {
+			// System.out.println(key);
+			// }
 			if (v.isNewone() && v.getTk000().equals("領料類")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -2379,9 +2378,9 @@ public class SynchronizeERPService {
 			String bslfuser = o.getBslfuser();
 			oKey = oKey.replaceAll("\\s", "");
 			// 測試用
-//			if (oKey.indexOf("-240507024") >= 0) {
-//				System.out.println(oKey);
-//			}
+			// if (oKey.indexOf("-240507024") >= 0) {
+			// System.out.println(oKey);
+			// }
 			// 同一筆資料?
 			if (erpShMaps.containsKey(oKey)) {
 				String nChecksum = erpShMaps.get(oKey).toString().replaceAll("\\s", "");
@@ -2839,9 +2838,9 @@ public class SynchronizeERPService {
 		// 領料
 		erpShMaps.forEach((key, v) -> {
 			// 測試用
-//				if(key.indexOf("A232-251030002")>=0) {
-//					System.out.println(key);
-//				}
+			// if(key.indexOf("A232-251030002")>=0) {
+			// System.out.println(key);
+			// }
 			if (v.isNewone() && v.getTk000().equals("領料類") && v.getTh020().equals("N")) {
 				BasicShippingList n = new BasicShippingList();
 				String checkSum = v.toString().replaceAll("\\s", "");
@@ -2913,9 +2912,9 @@ public class SynchronizeERPService {
 			m.setMc002(m.getMc002().trim());
 			m.setNewone(true);
 			// 測試用
-//			if (m.getMb001().equals("81-105-382138")) {
-//				System.out.println(m.getMb001() + ":" + m.getMc002());
-//			}
+			// if (m.getMb001().equals("81-105-382138")) {
+			// System.out.println(m.getMb001() + ":" + m.getMc002());
+			// }
 			// ERP 倉別異常Null
 			if (m.getMc002().equals("")) {
 				m.setMc002(m.getMb017());// --倉別代號
@@ -3009,9 +3008,9 @@ public class SynchronizeERPService {
 			// 同一筆?
 			if (erpItemMaps.containsKey(aKey)) {
 				// 測試用
-//				if (aKey.equals("A0002_25-540-080026")) {
-//					System.out.println(aKey);
-//				}
+				// if (aKey.equals("A0002_25-540-080026")) {
+				// System.out.println(aKey);
+				// }
 				erpItemMaps.get(aKey).setNewone(false);// 標記:不是新的
 				Invtb areaNew = erpItemMaps.get(aKey);
 				String checkSumNew = areaNew.toString().replaceAll("\\s", "");
@@ -3080,9 +3079,9 @@ public class SynchronizeERPService {
 		// Step4-2. [物料位置] 全新資料?
 		erpItemMaps.forEach((key, v) -> {
 			// 測試用
-//			if (key.equals("A0002_81-105-361134")) {
-//				System.out.println(key);
-//			}
+			// if (key.equals("A0002_81-105-361134")) {
+			// System.out.println(key);
+			// }
 			if (v.isNewone()) {
 				// 可能重複?
 				if (areaSameMap.containsKey(v.getMc002() + "_" + v.getMb001())) {

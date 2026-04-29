@@ -2,6 +2,7 @@ package dtri.com.tw.pgsql.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -70,6 +71,7 @@ import jakarta.persistence.Transient;
  **/
 
 @Entity
+@Table(name = "bom_product_management_detail_front")
 public class BomProductManagementDetailFront {
 
 	public BomProductManagementDetailFront() {

@@ -154,13 +154,16 @@
 									<td style="max-width: 200px" id="modify_c_ex_in"><input
 										class="col-12 m-0 p-1 border border-dark form-control"
 										type="number" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_date"><input disabled="disabled"
+									<td style="max-width: 200px" id="modify_c_ex_date"><input
+										disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_date"
 										type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_datetime"><input disabled="disabled"
+									<td style="max-width: 200px" id="modify_c_ex_datetime"><input
+										disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_datetime"
 										type="text" value="" placeholder="Ex:"></td>
-									<td style="max-width: 200px" id="modify_c_ex_t"><input disabled="disabled"
+									<td style="max-width: 200px" id="modify_c_ex_t"><input
+										disabled="disabled"
 										class="col-12 m-0 p-1 border border-dark form-control datetimepicker_time"
 										type="text" value="" placeholder="Ex:"></td>
 									<td style="max-width: 200px" id="modify_c_ex_icb"><input
@@ -334,7 +337,7 @@
 				<div class="col-6 col-lg-3 p-1">
 					<div class="border border-secondary rounded">
 						<div class="title_color fw-bolder rounded-top">Excel
-							import(Only Create)</div>
+							import(Create/Modify*)</div>
 						<div class="row m-0">
 							<button id="btn_inp_excel_ex" type="button"
 								class="lh-1 col p-1 m-1 btn btn-sm btn-outline-dark">
@@ -1053,116 +1056,171 @@
 				//上傳檔案Ex?
 				$(document).off("click", "#btn_inp_excel_ex");
 				$(document).on("click", "#btn_inp_excel_ex", function (event) {
-					let inputExcelEx = $('#modifyThAll table thead tr').clone();
-					let tbody = $('#modifyThAll table tbody tr').first().clone();
-					// 把裡面的每個 <td> 內容改成它的 class
-					tbody.find("td").each(function () {
-					    let cls = $(this).find('input, select, textarea');// 找到 input
-					    cls.removeClass("col-12 m-0 p-1 border border-dark m_fixed form-control entityVal form-check-input checkbox_33 datetimepicker_date form-select form-textarea");// 移除不需要的 class
-					   	let clsText = cls.attr("class") || "";
-					    $(this).text(clsText); // 用 class 名稱取代原本的值
-					});
-					inputExcelEx.find(".f_c_1,.f_c_2").remove();
-					tbody.find(".f_c_1,.f_c_2").remove();
-					
-					// 建立新的 table，把 thead 與 tbody 接在一起
-					let newTable = $("<table></table>")
-					    .append(tbody) // 先放 tbody
-					    .append(inputExcelEx);// 再放 thead
-					
-					let options = {
-						workbook: {
-							views: [{
-								x: 0, y: 0, width: 10000, height: 20000,
-								firstSheet: 0, activeTab: 1, visibility: 'visible'
-							}]
-						},
-						widthRatio: 0.55,//寬度比例
-						plugins: [
-							{
-								workbookCreated({workbook, tables}) {
-									console.log(tables);
-								}, worksheetCreated({workbook, tables, worksheet, table}) {
-									console.log(tables);
-								}, workcellCreated({workbook, tables, worksheet, table, workcell, cell, cellStyle, colRange, rowRange}) {
-									console.log(tables);
-								}, worksheetCompleted({workbook, tables, worksheet, table}) {
-									console.log(tables);
-								}
-							},
-						]
-					}
-					const table2Excel = new Table2Excel(newTable, options);//id or class or table
-					table2Excel.export($('#nav_functional_unit').text() + "_Ex", 'xlsx');//檔案名稱+副檔名
+				    let modify_c_state_title = $('#modify_c_state').attr('title');
+				    
+				    // 建立一個標準結構的虛擬 Table
+				    let newTable = $("<table></table>");
+				    let newThead = $("<thead></thead>");
+				    let newTbody = $("<tbody></tbody>");
+
+				    // --- 第一列：系統欄位 (對應原本 tbody 的 class 文字) ---
+				    let trSystem = $("<tr></tr>");
+				    // --- 第二列：中文顯示名稱 (對應原本 thead 的文字) ---
+				    let trDisplay = $("<tr></tr>");
+
+				    // 取得原始 thead 的 th 來循環 (排除控制項)
+				    $('#modifyThAll table thead tr th').each(function () {
+				        let th = $(this);
+				        if (th.hasClass('f_c_1') || th.hasClass('f_c_2')) return;
+
+				        // 1. 抓取系統名稱：從樣版 row (modifyThvEx) 找到對應 index 的 input class
+				        let targetCell = $('#modifyThv .modifyThvEx td, #modifyThv .modifyThvEx th').eq(th.index());
+				        let input = targetCell.find('input, select, textarea');
+				        let systemName = input.attr('name') || input.attr('title') || ""; 
+				        
+				        trSystem.append($("<td></td>").text(systemName));
+				        
+				        // 2. 顯示名稱：直接取標題
+				        trDisplay.append($("<td></td>").text(th.text().trim()));
+				    });
+
+				    // 仿照你原本成功的順序：tbody 放系統欄位，thead 放中文名稱
+				    newTbody.append(trSystem);
+				    newThead.append(trDisplay);
+
+				    // --- 第三列以後：如果是修改模式，抓取資料 ---
+				    if (modify_c_state_title === "AU_PUT") {
+				        $("#modifyThv .modifyThvM").each(function () {
+				            let trData = $("<tr></tr>");
+				            $(this).find('td, th').each(function () {
+				                let cell = $(this);
+				                if (cell.hasClass('f_c_1') || cell.hasClass('f_c_2')) return;
+
+				                let val = "";
+				                let input = cell.find('.entityVal');
+				                if (input.length > 0) {
+				                    val = input.is(':checkbox') ? input.prop('checked') : input.val();
+				                }
+				                trData.append($("<td></td>").text(val));
+				            });
+				            newTbody.append(trData);
+				        });
+				    }
+
+				    newTable.append(newThead).append(newTbody);
+
+				    // 使用你原本運作正常的 options 設定
+				    let options = {
+				        workbook: {
+				            views: [{
+				                x: 0, y: 0, width: 10000, height: 20000,
+				                firstSheet: 0, activeTab: 1, visibility: 'visible'
+				            }]
+				        },
+				        widthRatio: 0.55,
+				        plugins: []
+				    };
+
+				    const table2Excel = new Table2Excel(newTable, options);
+				    let fileName = $('#nav_functional_unit').text() + (modify_c_state_title === "AU_PUT" ? "_Update" : "_Ex");
+				    table2Excel.export(fileName, 'xlsx');
 				});
-				//上傳檔案?
+
+				// 修改匯入 Excel 邏輯 (增加星號比對 & 略過 disabled 欄位)
 				$(document).off("change", "#btn_inp_excel .form-control-file");
 				$(document).on("change", "#btn_inp_excel .form-control-file", function (event) {
-					console.log("form-control-file");
-					let target = $(event.target);
-					//沒檔案?
-					if (!this.files || !this.files[0] || target.attr("accept") != ".xlsx") {
-						target.val("");
-						return;
-					}
-					//取得狀態(生管/物控/倉儲.....)
-				
-					//分析完成->比對資料寫入
-					let jsonResult = modify.methods.inputExcel(this.files[0]);
-					let modify_c_state = $('#modify_c_state').attr('title');
-					jsonResult.then((res) => {
-						console.log(res['inputExcel']);
-						//每個Excel欄位
-						res['inputExcel'].forEach(function (t,index) {
-							if (index === 0) return; // 跳過第一筆 & 略過標題
-							//開始比對欄位判斷
-							if(modify_c_state==='AC_POST'){
-								//新增?->觸發新增->填入對應資料(必須是沒有Class:m_fixed)
-								$("#modifyThAll .modifyThvEx .bi-plus-square").trigger('click');
-								let modifyThv_tr = $($("#modifyThv tr")[index]);
-								Object.entries(t).forEach(([key, val]) => {
-									val = val.trim();
-								    console.log("key:", key, "val:", val);
-								    if(modifyThv_tr.find("."+key).hasClass('m_fixed') || modifyThv_tr.find("."+key).parent().hasClass('d-none')){							    	
-										//不可寫入
-								    }else{
-								    	let target = modifyThv_tr.find("." + key);
-								    	//可寫入
-								    	if(target.is("input")){
-								    		//這是 input 欄位
-										    target.val(val);
-								    	}else if (target.is("textarea")) {
-								    		//這是 textarea 欄位
-								    		target.val(val);
-								    	}else if(target.is("select")){
-									    	//這是 select 欄位
-								    		// 1. 先比對 value
-										    if (target.find("option[value='" + val + "']").length > 0) {
-										        target.val(val);
-										        matched = true;
-										    } 
-										    // 2. 如果沒有 value，改比對文字
-										    else {
-										        target.find("option").each(function () {
-										        	  let text = $(this).text().trim();
-										              // ✅ 模糊比對，類似 SQL LIKE '%val%'
-										              if (text.includes(val)) {
-										                  target.val($(this).val());
-										                  matched = true;
-										                  return false; // 找到後跳出迴圈
-										              }
-										        });
-										    }
-								    	}
-								    }
-								});
-							}else if(modify_c_state==='AU_PUT'){
-								//修改?->暫無動作
-								
-							}							
-							console.log(t);		
-						});
-					});
+				    let target = $(event.target);
+				    if (!this.files || !this.files[0]) return;
+
+				    let modify_c_state = $('#modify_c_state').attr('title');
+				    let reader = new FileReader();
+				    reader.readAsBinaryString(this.files[0]);
+
+				    reader.onload = function (e) {
+				        let data = e.target.result;
+				        let workbook = XLSX.read(data, { type: "binary" });
+				        let firstSheetName = workbook.SheetNames[0];
+				        let worksheet = workbook.Sheets[firstSheetName];
+				        
+				        let sheetArray = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+				        if (sheetArray.length < 3) { alert("Excel 結構錯誤"); return; }
+
+				        let displayNames = sheetArray[0]; // 第一列：顯示名稱 (找星號)
+				        let systemNames = sheetArray[1];  // 第二列：系統屬性 (找 Class/Name)
+				        let dataRows = sheetArray.slice(2); 
+
+				        if (modify_c_state === 'AU_PUT') {
+				            // --- 修改模式 ---
+				            let keyIndexes = [];
+				            displayNames.forEach((name, index) => {
+				                if (name && name.toString().includes('*')) keyIndexes.push(index);
+				            });
+
+				            if (keyIndexes.length === 0) {
+				                alert("修改模式匯入失敗：請在 Excel 第一列比對基準欄位名稱後加上星號(*)");
+				                return;
+				            }
+
+				            dataRows.forEach(row => {
+				                let rowsInPage = $("#modifyThv .modifyThvM");
+				                let matchedRow = null;
+
+				                // 比對星號欄位
+				                rowsInPage.each(function() {
+				                    let isMatch = true;
+				                    let currentRow = $(this);
+				                    keyIndexes.forEach(idx => {
+				                        let colName = systemNames[idx];
+				                        let excelVal = (row[idx] || "").toString().trim();
+				                        let pageVal = currentRow.find("." + colName).val() || "";
+				                        if (excelVal !== pageVal.toString().trim()) isMatch = false;
+				                    });
+				                    if (isMatch) { matchedRow = currentRow; return false; }
+				                });
+
+				                // 比對成功後寫入資料
+				                if (matchedRow) {
+				                    systemNames.forEach((colName, idx) => {
+				                        if (!colName || keyIndexes.includes(idx)) return;
+				                        
+				                        let targetInput = matchedRow.find("." + colName);
+				                        
+				                        // --- 核心修改：判斷是否為 disabled，若是則略過 ---
+				                        if (targetInput.length > 0 && 
+				                            !targetInput.is(':disabled') && 
+				                            !targetInput.hasClass('m_fixed') && 
+				                            !targetInput.parent().hasClass('d-none')) {
+				                            
+				                            let newVal = row[idx] === undefined ? "" : row[idx];
+				                            if (targetInput.is(':checkbox')) {
+				                                targetInput.prop('checked', newVal.toString().toLowerCase() === 'true' || newVal === 1);
+				                            } else {
+												//必須要有值
+												if(newVal!==""){
+					                                targetInput.val(newVal);											
+												}
+				                            }
+				                        }
+				                    });
+				                }
+				            });
+				            alert("修改比對匯入完成 (已自動略過唯讀欄位)");
+
+				        } else if (modify_c_state === 'AC_POST') {
+				            // 新增模式 (原有邏輯)
+				            dataRows.forEach(row => {
+				                $("#modifyThAll .modifyThvEx .bi-plus-square").trigger('click');
+				                let lastTr = $("#modifyThv tr").last();
+				                systemNames.forEach((colName, idx) => {
+				                    let target = lastTr.find("." + colName);
+				                    if (target.length > 0 && !target.is(':disabled') && !target.hasClass('m_fixed')) {
+				                        target.val(row[idx] || "");
+				                    }
+				                });
+				            });
+				        }
+				        target.val(""); // 清空檔案選擇
+				    };
 				});
 				//清除預設
 				$("#modify_c_date_clearAll").trigger('click');

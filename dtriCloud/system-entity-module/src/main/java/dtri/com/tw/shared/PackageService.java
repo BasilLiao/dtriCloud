@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,6 +21,8 @@ import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 
 @Service
 public class PackageService {
+
+	private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new AfterburnerModule());
 
 	/**
 	 * 抓取涵蓋父類別-繼承物件Entity
@@ -74,7 +77,6 @@ public class PackageService {
 	// JSON to Bean(單一包裝)
 	public <T> T jsonToBean(String packageJson, Class<T> valueType)
 			throws JsonMappingException, JsonProcessingException, Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
 		T packageBean = objectMapper.readValue(packageJson, valueType);
 		return packageBean;
 	}
@@ -82,16 +84,76 @@ public class PackageService {
 	// JSON to Beans(複數包裝)
 	public <T> ArrayList<T> jsonToBean(String packageJson, TypeReference<ArrayList<T>> typeReference)
 			throws JsonMappingException, JsonProcessingException, Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
 		ArrayList<T> packageBean = objectMapper.readValue(packageJson, typeReference);
 		return packageBean;
 	}
 
 	// (PackageBean/Object)Bean to JSON
 	public String beanToJson(Object packageBean) throws JsonProcessingException, Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
 		String packageJson = objectMapper.writeValueAsString(packageBean);
 		return packageJson;
+	}
+
+	// 用於快取不同已解析的類別與它們對應的有效欄位 (加上 JsonIgnore 與 static 檢查)
+	private static final java.util.concurrent.ConcurrentHashMap<Class<?>, java.util.List<Field>> fieldCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+	// (List<T>)List to Matrix JSON (減少重複Key體積)
+	public <T> String beanToMatrixJson(java.util.List<T> list) throws Exception {
+		if (list == null || list.isEmpty()) {
+			return "{\"c\":[],\"d\":[]}";
+		}
+
+		// 為了避免共用 Instance 衝突，此處 new 一個新的
+		ObjectMapper localMapper = new ObjectMapper().registerModule(new AfterburnerModule());
+
+		Class<?> clazz = list.get(0).getClass(); // 取第一個元素的型別
+
+		// 1. 取得或產生快取的欄位資訊 (包含父類別，並過濾掉 @JsonIgnore 及 static)
+		java.util.List<Field> validFields = fieldCache.computeIfAbsent(clazz, k -> {
+			java.util.List<Field> fields = new java.util.ArrayList<>();
+			for (Class<?> c = k; c != null && c != Object.class; c = c.getSuperclass()) {
+				for (Field f : c.getDeclaredFields()) {
+					if (java.lang.reflect.Modifier.isStatic(f.getModifiers()))
+						continue; // 略過靜態欄位
+					if (!f.isAnnotationPresent(com.fasterxml.jackson.annotation.JsonIgnore.class)) {
+						f.setAccessible(true); // 提升反射效能並允許存取 private
+						fields.add(f);
+					}
+				}
+			}
+			return fields;
+		});
+
+		if (validFields.isEmpty()) {
+			return "{\"c\":[],\"d\":[]}";
+		}
+
+		// 2. 建立 columns (c) 陣列
+		java.util.List<String> columns = new java.util.ArrayList<>(validFields.size());
+		for (Field f : validFields) {
+			String columnName = f.getName();
+			if (f.isAnnotationPresent(com.fasterxml.jackson.annotation.JsonProperty.class)) {
+				columnName = f.getAnnotation(com.fasterxml.jackson.annotation.JsonProperty.class).value();
+			}
+			columns.add(columnName);
+		}
+
+		Map<String, Object> matrix = new java.util.HashMap<>();
+		matrix.put("c", columns);
+
+		// 3. 建立 data (d) 陣列
+		java.util.List<java.util.List<Object>> data = new java.util.ArrayList<>(list.size());
+		for (T item : list) {
+			java.util.List<Object> row = new java.util.ArrayList<>(validFields.size());
+			for (Field f : validFields) {
+				row.add(f.get(item));
+			}
+			data.add(row);
+		}
+		matrix.put("d", data);
+
+		// 最後轉換 Map 回 JSON 字串
+		return localMapper.writeValueAsString(matrix);
 	}
 
 	/**

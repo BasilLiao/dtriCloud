@@ -2,7 +2,6 @@ package dtri.com.tw.service;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -213,68 +212,92 @@ public class SystemLanguageCellServiceAc {
 		// Step3.一般資料->寫入
 		//
 		MultiLangTranslateService mts = new MultiLangTranslateService();
-
 		ArrayList<SystemLanguageCell> saveDatas = new ArrayList<>();
+
+		// 1. 收集需要翻譯的單元
+		List<SystemLanguageCell> needsTranslateList = new ArrayList<>();
+		List<String> rawTexts = new ArrayList<>();
+
 		entityDatas.forEach(x -> {
-			// 排除 沒有ID
 			if (x.getSlid() != null) {
-				SystemLanguageCell entityDataOld = languageDao.findAllBySlid(x.getSlid()).get(0);
-				entityDataOld.setSysmdate(new Date());
-				entityDataOld.setSysmuser(packageBean.getUserAccount());
-				entityDataOld.setSysnote(x.getSysnote());
-				entityDataOld.setSysstatus(x.getSysstatus());
-				entityDataOld.setSyssort(x.getSyssort());
-				// 語言
-				// 1. 取得原始資料字串 (假設來源是 x.getLanguageJson())
-				String originalJsonStr = entityDataOld.getSllanguage();
-				JsonObject language;
-				// 2. 判斷是否為有效 JSON，不是則新建
-				try {
-					language = JsonParser.parseString(originalJsonStr).getAsJsonObject();
-				} catch (Exception e) {
-					language = new JsonObject();
+				SystemLanguageCell old = languageDao.findAllBySlid(x.getSlid()).get(0);
+
+				// 判斷是否需要翻譯 (zh-TW 有變動)
+				JsonObject oldLang = packageService.StringToJson(old.getSllanguage());
+				String oldZhTW = oldLang.has("zh-TW") ? oldLang.get("zh-TW").getAsString() : "";
+
+				if (x.getSl_zhTW() != null && !x.getSl_zhTW().isEmpty() && !x.getSl_zhTW().equals(oldZhTW)) {
+					needsTranslateList.add(x); // 記錄這筆 entity 待更新
+					rawTexts.add(x.getSl_zhTW()); // 收集原始文字
+				} else {
+					// 不需要翻譯的直接更新其他欄位並加入 saveDatas (這裡邏輯可自行優化)
+					updateEntityFields(old, x);
+					saveDatas.add(old);
 				}
-				// 3. 檢查 zh-TW 是否有變動
-				String newZhTW = x.getSl_zhTW();
-				String oldZhTW = language.has("zh-TW") ? language.get("zh-TW").getAsString() : "";
-				// 預設寫入
-				language.addProperty("zh-TW", x.getSl_zhTW());
-				language.addProperty("zh-CN", x.getSl_zhCN());
-				language.addProperty("en-US", x.getSl_enUS());
-				language.addProperty("vi-VN", x.getSl_viVN());
-
-				// 如果 zh-TW 有值，且與舊值不同，才執行翻譯
-				if (newZhTW != null && !newZhTW.isEmpty() && !newZhTW.equals(oldZhTW)) {
-					language.addProperty("zh-TW", newZhTW);
-					language.addProperty("zh-CN", mts.translateTo(newZhTW, "zh-CN"));
-					language.addProperty("en-US", mts.translateTo(newZhTW, "en"));
-					language.addProperty("vi-VN", mts.translateTo(newZhTW, "vi"));
-				}
-
-				entityDataOld.setSllanguage(language.toString());
-
-				// 修改
-				entityDataOld.setSlcmdefval(x.getSlcmdefval());
-				entityDataOld.setSlcmfixed(x.getSlcmfixed());
-				entityDataOld.setSlcmmust(x.getSlcmmust());
-				entityDataOld.setSlcmplaceholder(x.getSlcmplaceholder());
-				entityDataOld.setSlcmselect(x.getSlcmselect());
-				entityDataOld.setSlcmshow(x.getSlcmshow());
-				entityDataOld.setSlcmtype(x.getSlcmtype());
-				// 查詢
-				entityDataOld.setSlclass(x.getSlclass());
-				entityDataOld.setSlcshow(x.getSlcshow());
-				entityDataOld.setSlcwidth(x.getSlcwidth());
-				entityDataOld.setSlspcontrol(x.getSlspcontrol());
-				entityDataOld.setSltarget(x.getSltarget());
-
-				saveDatas.add(entityDataOld);
 			}
 		});
-		// =======================資料儲存=======================
-		// 資料Data
+
+		// 2. 分批處理 (每 100 筆一次)
+		int batchSize = 100;
+		for (int i = 0; i < rawTexts.size(); i += batchSize) {
+			int end = Math.min(i + batchSize, rawTexts.size());
+			List<String> subTexts = rawTexts.subList(i, end);
+			List<SystemLanguageCell> subEntities = needsTranslateList.subList(i, end);
+
+			JsonObject translatedBatch = mts.translateBatch(subTexts);
+
+			if (translatedBatch != null && !translatedBatch.has("error")) {
+				JsonArray cnArr = translatedBatch.getAsJsonArray("zh-CN");
+				JsonArray enArr = translatedBatch.getAsJsonArray("en");
+				JsonArray viArr = translatedBatch.getAsJsonArray("vi");
+
+				for (int j = 0; j < subEntities.size(); j++) {
+					SystemLanguageCell x = subEntities.get(j);
+					SystemLanguageCell old = languageDao.findAllBySlid(x.getSlid()).get(0);
+
+					updateEntityFields(old, x);
+					JsonObject language = new JsonObject();
+					language.addProperty("zh-TW", subTexts.get(j));
+					language.addProperty("zh-CN", cnArr.get(j).getAsString());
+					language.addProperty("en-US", enArr.get(j).getAsString());
+					language.addProperty("vi-VN", viArr.get(j).getAsString());
+					old.setSllanguage(language.toString());
+
+					saveDatas.add(old);
+				}
+			}
+		}
+
 		languageDao.saveAll(saveDatas);
 		return packageBean;
+	}
+
+	/** 抽取共用的欄位更新邏輯，確保所有 UI 控制欄位都被正確更新 */
+	private void updateEntityFields(SystemLanguageCell old, SystemLanguageCell x) {
+		// 1. 系統基礎資訊更新
+		old.setSysmdate(new Date()); // 更新修改時間
+		old.setSysmuser(x.getSysmuser()); // 更新修改用戶
+		old.setSysnote(x.getSysnote()); // 更新備註
+		old.setSysstatus(x.getSysstatus()); // 更新狀態 (正常/禁用等)
+		old.setSyssort(x.getSyssort()); // 更新排序權重
+
+		// 2. 修改模式 (slcm) 相關欄位補齊
+		old.setSlcmdefval(x.getSlcmdefval()); // 預設值
+		old.setSlcmfixed(x.getSlcmfixed()); // 是否固定 (0:可改, 1:固定)
+		old.setSlcmmust(x.getSlcmmust()); // 是否必填 (0:不必填, 1:必填)
+		old.setSlcmplaceholder(x.getSlcmplaceholder()); // 輸入提示文字
+		old.setSlcmselect(x.getSlcmselect()); // 下拉選單 JSON (如 ["A_val1", "B_val2"])
+		old.setSlcmshow(x.getSlcmshow()); // 修改頁面是否顯示 (0:隱藏, 1:顯示)
+		old.setSlcmtype(x.getSlcmtype()); // 欄位類型 (text, number, select, date 等)
+
+		// 3. 查詢模式 (slc) 相關欄位補齊
+		old.setSlcshow(x.getSlcshow()); // 查詢清單是否顯示 (0:隱藏, 1:顯示)
+		old.setSlcwidth(x.getSlcwidth()); // 查詢清單欄位寬度 (px)
+		old.setSlclass(x.getSlclass()); // 類別 (1:Menu, 2:Table Cell, 3:Message)
+
+		// 4. 對應定位資訊 (通常不建議修改 sltarget 和 slspcontrol，但若 UI 允許則更新)
+		old.setSlspcontrol(x.getSlspcontrol()); // 對應的 Controller/Entity 名稱
+		old.setSltarget(x.getSltarget()); // 對應的變數名稱 (ID)
 	}
 
 	/** 新增資料 */
@@ -690,29 +713,45 @@ public class SystemLanguageCellServiceAc {
 	}
 
 	public class MultiLangTranslateService {
-		private static final String GAS_URL = "https://script.google.com/macros/s/AKfycbzsP1e13YFwL11ZkED2Yrba9nyQGSha_YcjyXLpSiUhLGAoVDKdXPLlb-x72WIIPajLyQ/exec";
+	    // 貼上您從「網頁應用程式」取得的最新 exec 網址
+	    private static final String GAS_URL = "https://script.google.com/macros/s/AKfycbzsP1e13YFwL11ZkED2Yrba9nyQGSha_YcjyXLpSiUhLGAoVDKdXPLlb-x72WIIPajLyQ/exec";
 
-		/**
-		 * @param text     要翻譯的文字
-		 * @param langCode 目標語言 (zh-TW, zh-CN, en, vi)
-		 */
-		public String translateTo(String text, String langCode) {
-			try {
-				String encodedText = URLEncoder.encode(text, "UTF-8");
-				String finalUrl = GAS_URL + "?text=" + encodedText + "&target=" + langCode;
+	    /**
+	     * 批量翻譯方法
+	     * @param texts 要翻譯的文字清單 (建議每次 100 筆)
+	     * @return 包含翻譯結果的 JsonObject
+	     */
+	    public JsonObject translateBatch(List<String> texts) {
+	        try {
+	            // Step A: 準備 JSON Payload
+	            // 格式為: {"texts": ["單字1", "單字2", ...]}
+	            JsonObject payload = new JsonObject();
+	            JsonArray jsonTexts = new JsonArray();
+	            texts.forEach(jsonTexts::add);
+	            payload.add("texts", jsonTexts);
 
-				HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS) // 重要：GAS 必有重定向
-						.build();
+	            // Step B: 建立 HttpClient 並設定自動跟隨轉址 (GAS 必備)
+	            HttpClient client = HttpClient.newBuilder()
+	                    .followRedirects(HttpClient.Redirect.ALWAYS) 
+	                    .build();
 
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(finalUrl)).GET().build();
+	            // Step C: 建立 POST 請求
+	            HttpRequest request = HttpRequest.newBuilder()
+	                    .uri(URI.create(GAS_URL))
+	                    .header("Content-Type", "application/json") // 務必告知格式為 JSON
+	                    .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+	                    .build();
 
-				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-				String body = response.body();
-				return body;
-			} catch (Exception e) {
-				System.out.println("Translation Error: " + e.getMessage());
-				return "";
-			}
-		}
+	            // Step D: 發送請求並接收回傳
+	            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+	            
+	            // 將回傳的 JSON 字串轉回 JsonObject
+	            return JsonParser.parseString(response.body()).getAsJsonObject();
+	            
+	        } catch (Exception e) {
+	            System.err.println("Translation API POST Error: " + e.getMessage());
+	            return null;
+	        }
+	    }
 	}
 }

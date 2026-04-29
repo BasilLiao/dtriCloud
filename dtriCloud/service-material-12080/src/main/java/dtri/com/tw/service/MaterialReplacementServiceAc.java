@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -24,9 +25,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dtri.com.tw.pgsql.dao.MaterialReplacementDao;
+import dtri.com.tw.pgsql.dao.MaterialReplacementGroupDao;
+import dtri.com.tw.pgsql.dao.MaterialShortageDao;
+import dtri.com.tw.pgsql.dao.BasicShippingListDao;
 import dtri.com.tw.pgsql.dao.SystemLanguageCellDao;
 import dtri.com.tw.pgsql.dao.WarehouseMaterialDao;
+import dtri.com.tw.pgsql.dto.MaterialShortageDto;
+import dtri.com.tw.pgsql.dto.WarehouseMaterialDto;
 import dtri.com.tw.pgsql.entity.MaterialReplacement;
+import dtri.com.tw.pgsql.entity.MaterialReplacementGroup;
+import dtri.com.tw.pgsql.entity.MaterialReplacementItem;
 import dtri.com.tw.pgsql.entity.SystemLanguageCell;
 import dtri.com.tw.pgsql.entity.WarehouseMaterial;
 import dtri.com.tw.shared.CloudExceptionService;
@@ -40,25 +48,320 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
+/** 功能模組: 通用-替代料關聯 */
 @Service
 public class MaterialReplacementServiceAc {
 
 	@Autowired
 	private PackageService packageService;
-
 	@Autowired
 	private SystemLanguageCellDao languageDao;
-
 	@Autowired
 	private MaterialReplacementDao materialReplacementDao;
 
 	@Autowired
-	private WarehouseMaterialDao materialDao;
+	private WarehouseMaterialDao warehouseMaterialDao;
+
+	@Autowired
+	private MaterialReplacementGroupDao materialReplacementGroupDao;
+
+	@Autowired
+	private MaterialShortageDao shortageDao;
+
+	@Autowired
+	private BasicShippingListDao shippingDao;
 
 	@Autowired
 	private EntityManager em;
 
-	/** 取得資料 */
+	@Transactional(readOnly = true)
+	public PackageBean getData(PackageBean packageBean) throws Exception {
+		// 1. 分頁設定
+		JsonObject pageSetJson = JsonParser.parseString(packageBean.getSearchPageSet()).getAsJsonObject();
+		int total = pageSetJson.get("total").getAsInt();
+		int batch = pageSetJson.get("batch").getAsInt();
+		// 依照建立時間排序，新的在上面
+		PageRequest pageable = PageRequest.of(batch, total, Sort.by(Direction.DESC, "syscdate"));
+
+		// ================= Query 模式 (執行搜尋) =================
+		// 這裡不再包含重型字典預載，秒開！
+		JsonObject searchData = JsonParser.parseString(packageBean.getEntityJson()).getAsJsonObject();
+
+		Integer statusParam = 0;
+		if (searchData.has("sysstatus") && !searchData.get("sysstatus").getAsString().equals("null")) {
+			statusParam = searchData.get("sysstatus").getAsInt();
+		} else if (searchData.has("sysstatus") && searchData.get("sysstatus").getAsString().equals("null")) {
+			statusParam = null;
+		}
+
+		Integer scopeTypeParam = null;
+		if (searchData.has("scopetype") && !searchData.get("scopetype").getAsString().isEmpty()) {
+			scopeTypeParam = searchData.get("scopetype").getAsInt();
+		}
+
+		String scopeValParam = null;
+		if (searchData.has("scopeval") && !searchData.get("scopeval").getAsString().isEmpty()) {
+			scopeValParam = searchData.get("scopeval").getAsString();
+		}
+
+		String keywordParam = null;
+		if (searchData.has("mrgnb") && !searchData.get("mrgnb").getAsString().isEmpty()) {
+			keywordParam = searchData.get("mrgnb").getAsString();
+		} else if (searchData.has("mrnb") && !searchData.get("mrnb").getAsString().isEmpty()) {
+			// [修正] 增加支援前端專用 mrnb 參數搜尋
+			keywordParam = searchData.get("mrnb").getAsString();
+		}
+
+		Integer finalStatusParam = statusParam;
+		Integer finalScopeTypeParam = scopeTypeParam;
+		String finalScopeValParam = scopeValParam;
+		String finalKeywordParam = keywordParam;
+
+		Page<MaterialReplacementGroup> entityPage = materialReplacementGroupDao.findAll((root, query, cb) -> {
+			query.distinct(true);
+			List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+			if (finalStatusParam != null) {
+				predicates.add(cb.equal(root.get("sysstatus"), finalStatusParam));
+			}
+			if (finalScopeTypeParam != null) {
+				predicates.add(cb.equal(root.get("scopetype"), finalScopeTypeParam));
+			}
+			if (finalScopeValParam != null && !finalScopeValParam.trim().isEmpty()) {
+				predicates.add(cb.like(root.get("scopeval"), "%" + finalScopeValParam.trim() + "%"));
+			}
+
+			if (finalKeywordParam != null && !finalKeywordParam.trim().isEmpty()) {
+				String[] kws = finalKeywordParam.split("[,\\s]+");
+				List<jakarta.persistence.criteria.Predicate> orPreds = new ArrayList<>();
+				jakarta.persistence.criteria.Join<Object, Object> itemsJoin = root.join("items", jakarta.persistence.criteria.JoinType.LEFT);
+				
+				for (String kw : kws) {
+					if (kw.trim().isEmpty()) continue;
+					String pattern = "%" + kw.trim() + "%";
+					orPreds.add(cb.like(root.get("mrgnb"), pattern));
+					orPreds.add(cb.like(itemsJoin.get("mrnb"), pattern));
+				}
+				if (!orPreds.isEmpty()) {
+					predicates.add(cb.or(orPreds.toArray(new jakarta.persistence.criteria.Predicate[0])));
+				}
+			}
+
+			return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+		}, pageable);
+
+		ArrayList<MaterialReplacementGroup> entities = new ArrayList<>(entityPage.getContent());
+
+		String entityJson = packageService.beanToJson(entities);
+		packageBean.setEntityJson(entityJson);
+		packageBean.setEntityDetailJson("[]");
+		packageBean.setSearchPageSet(Math.toIntExact(entityPage.getTotalElements()), entityPage.getNumber());
+
+		// 只有在「非第一頁」時才檢查空結果
+		if (entities.isEmpty() && entityPage.getNumber() != 0) {
+			throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1000, Lan.zh_TW, null);
+		}
+
+		String entityFormatJson = packageService.beanToJson(new MaterialReplacementGroup());
+		packageBean.setEntityFormatJson(entityFormatJson);
+		packageBean.setEntityIKeyGKey("mrgid");
+
+		// [新增] 為了消除前端繪製延遲，這裡直接在極速的 getData 查詢中一併給予表頭結構與語系
+		JsonObject searchSetJsonAll = new JsonObject();
+		Map<String, SystemLanguageCell> mapLanguages = new HashMap<>();
+		ArrayList<SystemLanguageCell> languages = languageDao.findAllByLanguageCellSame("MaterialReplacementGroup", null, 2);
+		languages.forEach(x -> mapLanguages.put(x.getSltarget(), x));
+
+		JsonObject resultDataTJsons = packageService.resultSet(MaterialReplacementGroup.class.getDeclaredFields(),
+				new ArrayList<>(), mapLanguages);
+		searchSetJsonAll.add("resultThead", resultDataTJsons);
+
+		JsonObject uiLang = new JsonObject();
+		ArrayList<SystemLanguageCell> uiLangs = new ArrayList<>();
+		uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialReplacement", null, 1));
+		uiLangs.addAll(languages);
+		uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialReplacementItem", null, 2));
+		uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialFront", null, 1));
+		uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialFront", null, 2));
+		uiLangs.forEach(x -> {
+			if (x.getSllanguage() != null && !x.getSllanguage().isEmpty()) {
+				uiLang.addProperty(x.getSltarget(), x.getSllanguage());
+			}
+		});
+
+		searchSetJsonAll.add("uiLang", uiLang);
+		packageBean.setSearchSet(searchSetJsonAll.toString());
+
+		return packageBean;
+	}
+
+	/** [新增] 非同步預載字典資料 (物料/客戶/產品) */
+	@Transactional(readOnly = true)
+	public PackageBean getPreloadData(PackageBean packageBean) throws Exception {
+		JsonObject searchSetJsonAll = new JsonObject();
+
+		// 2. 預載物料清單 (6.6w 筆)
+		List<WarehouseMaterialDto> allMaterials = warehouseMaterialDao.findAllActiveMaterials();
+		JsonArray materialJsonArray = new JsonArray();
+		for (WarehouseMaterialDto m : allMaterials) {
+			JsonObject obj = new JsonObject();
+			String pn = m.getWmpnb();
+			String name = m.getWmname();
+			obj.addProperty("pn", pn);
+			obj.addProperty("name", name);
+			// 搜尋字串轉小寫優化
+			String searchStr = (pn == null ? "" : pn) + " " + (name == null ? "" : name);
+			obj.addProperty("s", searchStr.toLowerCase());
+			materialJsonArray.add(obj);
+		}
+		searchSetJsonAll.add("preloadMaterials", materialJsonArray);
+
+		// 3. 預載客戶清單
+		List<MaterialShortageDto> allCustomers = shortageDao.findDistinctCustomers();
+		List<MaterialShortageDto> shippingCustomers = shippingDao.findDistinctCustomers();
+		Map<String, MaterialShortageDto> customerMap = new HashMap<>();
+		// 優先放入 Shipping 的客戶名單
+		for (MaterialShortageDto c : shippingCustomers) {
+			if (c.getTc004() != null) customerMap.put(c.getTc004(), c);
+		}
+		// 再放入 Shortage (ERP 同步) 的客戶名單，若重複則覆蓋 (以保持 ERP 更新度)
+		for (MaterialShortageDto c : allCustomers) {
+			if (c.getTc004() != null) customerMap.put(c.getTc004(), c);
+		}
+
+		JsonArray customerJsonArray = new JsonArray();
+		for (MaterialShortageDto c : customerMap.values()) {
+			JsonObject obj = new JsonObject();
+			String code = c.getTc004();
+			String name = c.getCopma002();
+			obj.addProperty("code", code);
+			obj.addProperty("name", name);
+			String searchStr = (code == null ? "" : code) + " " + (name == null ? "" : name);
+			obj.addProperty("s", searchStr.toLowerCase());
+			customerJsonArray.add(obj);
+		}
+		searchSetJsonAll.add("preloadCustomers", customerJsonArray);
+
+		// 4. 預載產品清單
+		List<MaterialShortageDto> allProducts = shortageDao.findDistinctProducts();
+		List<MaterialShortageDto> shippingProducts = shippingDao.findDistinctProducts();
+		Map<String, MaterialShortageDto> productMap = new HashMap<>();
+		for (MaterialShortageDto p : shippingProducts) {
+			if (p.getTk003() != null) productMap.put(p.getTk003(), p);
+		}
+		for (MaterialShortageDto p : allProducts) {
+			if (p.getTk003() != null) productMap.put(p.getTk003(), p);
+		}
+
+		JsonArray productJsonArray = new JsonArray();
+		for (MaterialShortageDto p : productMap.values()) {
+			JsonObject obj = new JsonObject();
+			String code = p.getTk003();
+			obj.addProperty("code", code);
+			obj.addProperty("s", code != null ? code.toLowerCase() : "");
+			productJsonArray.add(obj);
+		}
+		searchSetJsonAll.add("preloadProducts", productJsonArray);
+
+		packageBean.setSearchSet(searchSetJsonAll.toString());
+		packageBean.setEntityJson("[]");
+		packageBean.setEntityDetailJson("[]");
+		return packageBean;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public PackageBean doSave(PackageBean packageBean) throws Exception {
+		// 1. 解包前端傳來的 JSON 陣列
+		JsonArray listJson = JsonParser.parseString(packageBean.getEntityJson()).getAsJsonArray();
+		ArrayList<MaterialReplacementGroup> savedGroups = new ArrayList<>();
+
+		// 2. 取得當前操作者
+		String currentUser = packageBean.getUserAccount() != null ? packageBean.getUserAccount() : "system";
+
+		for (int i = 0; i < listJson.size(); i++) {
+			JsonObject obj = listJson.get(i).getAsJsonObject();
+
+			// --- A. 欄位驗證 ---
+			String mrgnb = obj.has("mrgnb") && !obj.get("mrgnb").isJsonNull() ? obj.get("mrgnb").getAsString() : "";
+			if (mrgnb.isEmpty()) {
+				// [修正] 改用 W1003 (資料缺少)，並傳入 String[] 陣列來替換 ${0}
+				// 結果訊息會變成: "[W1003] 資料缺少 : 規則名稱 !!"
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+						new String[] { "規則名稱" });
+			}
+
+			// --- B. 判斷 新增/修改 ---
+			MaterialReplacementGroup groupEntity;
+			Long mrgId = (obj.has("mrgid") && !obj.get("mrgid").isJsonNull()
+					&& !obj.get("mrgid").getAsString().isEmpty())
+							? obj.get("mrgid").getAsLong()
+							: null;
+
+			if (mrgId != null) {
+				// [Update]
+				groupEntity = materialReplacementGroupDao.findById(mrgId).orElse(null);
+				if (groupEntity == null) {
+					// [修正] W1000 (查無資料) 不需要參數，所以傳 null
+					throw new CloudExceptionService(packageBean, ErColor.danger, ErCode.W1000, Lan.zh_TW, null);
+				}
+				groupEntity.setSysmdate(new Date());
+				groupEntity.setSysmuser(currentUser);
+			} else {
+				// [Insert]
+				groupEntity = new MaterialReplacementGroup();
+				groupEntity.setSyscdate(new Date());
+				groupEntity.setSyscuser(currentUser);
+				groupEntity.setSysmdate(new Date());
+				groupEntity.setSysmuser(currentUser);
+			}
+
+			// --- C. 寫入主檔 ---
+			groupEntity.setMrgnb(mrgnb);
+			groupEntity.setScopetype(obj.has("scopetype") ? obj.get("scopetype").getAsInt() : 0);
+			groupEntity.setScopeval(
+					obj.has("scopeval") && !obj.get("scopeval").isJsonNull() ? obj.get("scopeval").getAsString()
+							: null);
+			groupEntity.setPolicy(obj.has("policy") ? obj.get("policy").getAsString() : "EQUIVALENT");
+			groupEntity.setSysnote(
+					obj.has("sysnote") && !obj.get("sysnote").isJsonNull() ? obj.get("sysnote").getAsString() : "");
+			groupEntity.setSysstatus(obj.has("sysstatus") ? obj.get("sysstatus").getAsInt() : 0);
+
+			// --- D. 處理明細 ---
+			groupEntity.getItems().clear();
+
+			if (obj.has("items")) {
+				JsonArray itemsJson = obj.get("items").getAsJsonArray();
+				for (int j = 0; j < itemsJson.size(); j++) {
+					JsonObject itemObj = itemsJson.get(j).getAsJsonObject();
+
+					MaterialReplacementItem newItem = new MaterialReplacementItem();
+					newItem.setMrnb(itemObj.get("mrnb").getAsString());
+					newItem.setQty(itemObj.get("qty").getAsDouble());
+					newItem.setRole(itemObj.get("role").getAsString());
+
+					newItem.setSyscdate(new Date());
+					newItem.setSyscuser(currentUser);
+
+					groupEntity.addItem(newItem);
+				}
+			}
+
+			if (groupEntity.getItems().isEmpty()) {
+				// [修正] 改用 W1003 (資料缺少)，並傳入 String[]
+				// 結果訊息會變成: "[W1003] 資料缺少 : 明細資料 !!"
+				throw new CloudExceptionService(packageBean, ErColor.warning, ErCode.W1003, Lan.zh_TW,
+						new String[] { "明細資料" });
+			}
+
+			// --- E. 存檔 ---
+			savedGroups.add(materialReplacementGroupDao.save(groupEntity));
+		}
+
+		packageBean.setEntityJson("{}");
+		// 回傳最新結果
+		return getData(packageBean);
+	}
+
 	public PackageBean getSearch(PackageBean packageBean) throws Exception {
 		// ========================分頁設置========================
 		// Step1.批次分頁
@@ -131,6 +434,22 @@ public class MaterialReplacementServiceAc {
 			searchSetJsonAll.add("searchSet", searchJsons);
 			searchSetJsonAll.add("resultThead", resultDataTJsons);
 			searchSetJsonAll.add("resultDetailThead", resultDetailTJsons);
+
+			// [新增] 多語系 UI 標籤，用於自定義分頁與按鈕
+			JsonObject uiLang = new JsonObject();
+			ArrayList<SystemLanguageCell> uiLangs = new ArrayList<>();
+			uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialReplacement", null, 1));
+			uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialReplacementGroup", null, 2));
+			uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialReplacementItem", null, 2));
+			uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialFront", null, 1));
+			uiLangs.addAll(languageDao.findAllByLanguageCellSame("MaterialFront", null, 2));
+			uiLangs.forEach(x -> {
+				if (x.getSllanguage() != null && !x.getSllanguage().isEmpty()) {
+					uiLang.addProperty(x.getSltarget(), x.getSllanguage());
+				}
+			});
+			searchSetJsonAll.add("uiLang", uiLang);
+
 			packageBean.setSearchSet(searchSetJsonAll.toString());
 		} else {
 			// Step4-1. 取得資料(一般/細節)
@@ -143,7 +462,8 @@ public class MaterialReplacementServiceAc {
 			// 輔助查詢
 			ArrayList<MaterialReplacement> entitys = materialReplacementDao.findAllBySearch(searchData.getMrnb(),
 					searchData.getMrnote(), searchData.getMrsubnote(), pageable);
-			ArrayList<WarehouseMaterial> materials = materialDao.findAllBySearch(searchData.getMrnb(), null, null,
+			ArrayList<WarehouseMaterial> materials = warehouseMaterialDao.findAllBySearch(searchData.getMrnb(), null,
+					null,
 					pageableW);
 			AtomicLong keyId = new AtomicLong(100000000L);
 			// 區分 是否只查物料號?
@@ -404,30 +724,30 @@ public class MaterialReplacementServiceAc {
 			String valueType = x.getAsString().split("<_>")[3];
 
 			switch (where) {
-			case "AllSame":
-				nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "NotSame":
-				nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "Like":
-				nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "NotLike":
-				nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
-				sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
-				break;
-			case "MoreThan":
-				nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
-			case "LessThan":
-				nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
-				sqlQuery.put(cellName, value + "<_>" + valueType);
-				break;
+				case "AllSame":
+					nativeQuery += "(e." + cellName + " = :" + cellName + ") AND ";
+					sqlQuery.put(cellName, value + "<_>" + valueType);
+					break;
+				case "NotSame":
+					nativeQuery += "(e." + cellName + " != :" + cellName + ") AND ";
+					sqlQuery.put(cellName, value + "<_>" + valueType);
+					break;
+				case "Like":
+					nativeQuery += "(e." + cellName + " LIKE :" + cellName + ") AND ";
+					sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
+					break;
+				case "NotLike":
+					nativeQuery += "(e." + cellName + "NOT LIKE :" + cellName + ") AND ";
+					sqlQuery.put(cellName, "%" + value + "%<_>" + valueType);
+					break;
+				case "MoreThan":
+					nativeQuery += "(e." + cellName + " >= :" + cellName + ") AND ";
+					sqlQuery.put(cellName, value + "<_>" + valueType);
+					break;
+				case "LessThan":
+					nativeQuery += "(e." + cellName + " <= :" + cellName + ") AND ";
+					sqlQuery.put(cellName, value + "<_>" + valueType);
+					break;
 			}
 		}
 

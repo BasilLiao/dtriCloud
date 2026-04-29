@@ -16,8 +16,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-//	@Autowired
-//	JwtAuthenticationFilter jwtAuthenticationFilter;
+	// @Autowired
+	// JwtAuthenticationFilter jwtAuthenticationFilter;
 	@Autowired
 	CutomerUserDetailsService customerUserDetailsService;
 
@@ -93,9 +93,11 @@ public class WebSecurityConfig {
 	private static final String schedule_spn = "/ajax/schedule_production_notes.basil";
 	// 物控
 	private static final String material_rep = "/ajax/material_replacement.basil";
-	// 採購
-	private static final String pcb_cs = "/ajax/pcb_config_settings.basil";
-
+	private static final String material_sho = "/ajax/material_shortage.basil";
+	private static final String material_mus = "/ajax/mus_user_search.basil";
+	private static final String material_pro = "/ajax/material_process.basil";
+	private static final String material_vir = "/ajax/material_virtual_project.basil";
+	private static final String material_eol = "/ajax/material_eol.basil";
 	// BIOS
 	private static final String bios_not = "/ajax/bios_notification.basil";
 	private static final String bios_ver = "/ajax/bios_version.basil";
@@ -104,6 +106,8 @@ public class WebSecurityConfig {
 
 	// AI
 	private static final String ai_chat = "/ajax/ai_chat.basil";
+	// PCB
+	private static final String pcb_cs = "/ajax/pcb_config_settings.basil";
 
 	/**
 	 * 這個method可以設定那些路由要經過身分權限的審核，或是login、logout路由特別設定等地方，因此這邊也是設定身分權限的關鍵地方。<br>
@@ -122,6 +126,7 @@ public class WebSecurityConfig {
 		// thirdparty && img 資料夾靜態資料可 直接 存取 (預設皆有 訪問權限 資料可[匿名]存取)
 		http.authorizeHttpRequests()
 				.requestMatchers(HttpMethod.GET, "/cert-install.basil", "/thirdparty/**", "/files/**", "/img/**",
+						"/js/**", "/wasm/**",
 						"/login.basil", "/login.html")
 				.permitAll()
 				// ----請求-index-(訪問)----
@@ -457,7 +462,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, schedule_spn + ".DD").hasAuthority(actionRole(schedule_spn, "DD"))// (標記移除)
 
 				// 物控
-				// ----請求-material_replacement-(訪問) ----
+				// ----請求-schedule_production_notes-(訪問) ----
 				.requestMatchers(HttpMethod.POST, material_rep).hasAuthority(actionRole(material_rep, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, material_rep + ".AR").hasAuthority(actionRole(material_rep, "AR"))// (查詢)
 				.requestMatchers(HttpMethod.POST, material_rep + ".ARR").hasAuthority(actionRole(material_rep, "AR"))// (報告查詢)
@@ -466,7 +471,27 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".AD").hasAuthority(actionRole(material_rep, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, material_rep + ".DD").hasAuthority(actionRole(material_rep, "DD"))// (標記移除)
 
-				// 採購
+				.requestMatchers(HttpMethod.POST, material_sho).hasAuthority(actionRole(material_sho, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, material_sho + ".AR").hasAuthority(actionRole(material_sho, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, material_sho).hasAuthority(actionRole(material_mus, ""))// 記憶
+				.requestMatchers(HttpMethod.POST, material_pro).hasAuthority(actionRole(material_pro, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, material_pro + ".AR").hasAuthority(actionRole(material_pro, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, material_pro + ".AC").hasAuthority(actionRole(material_pro, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, material_pro + ".AU").hasAuthority(actionRole(material_pro, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, material_pro + ".AD").hasAuthority(actionRole(material_pro, "AD"))// (移除)
+				.requestMatchers(HttpMethod.POST, material_vir).hasAuthority(actionRole(material_vir, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, material_vir + ".AR").hasAuthority(actionRole(material_vir, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, material_vir + ".AC").hasAuthority(actionRole(material_vir, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, material_vir + ".AU").hasAuthority(actionRole(material_vir, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, material_vir + ".AD").hasAuthority(actionRole(material_vir, "AD"))// (移除)
+				.requestMatchers(HttpMethod.POST, material_eol).hasAuthority(actionRole(material_eol, ""))// (轉跳)
+				.requestMatchers(HttpMethod.POST, material_eol + ".AR").hasAuthority(actionRole(material_eol, "AR"))// (查詢)
+				.requestMatchers(HttpMethod.POST, material_eol + ".ARR").hasAuthority(actionRole(material_eol, "AR"))// (報告查詢)
+				.requestMatchers(HttpMethod.POST, material_eol + ".AC").hasAuthority(actionRole(material_eol, "AC"))// (新增)
+				.requestMatchers(HttpMethod.PUT, material_eol + ".AU").hasAuthority(actionRole(material_eol, "AU"))// (修改)
+				.requestMatchers(HttpMethod.DELETE, material_eol + ".AD").hasAuthority(actionRole(material_eol, "AD"))// (移除)
+				.requestMatchers(HttpMethod.DELETE, material_eol + ".DD").hasAuthority(actionRole(material_eol, "DD"))// (標記移除)
+
 				// ----請求-pcb_config_settings(暫時掛載在採購內)-(訪問) ----
 				.requestMatchers(HttpMethod.POST, pcb_cs).hasAuthority(actionRole(pcb_cs, ""))// (轉跳)
 				.requestMatchers(HttpMethod.POST, pcb_cs + ".AR").hasAuthority(actionRole(pcb_cs, "AR"))// (查詢)
@@ -475,8 +500,6 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.PUT, pcb_cs + ".AU").hasAuthority(actionRole(pcb_cs, "AU"))// (修改)
 				.requestMatchers(HttpMethod.DELETE, pcb_cs + ".AD").hasAuthority(actionRole(pcb_cs, "AD"))// (移除)
 				.requestMatchers(HttpMethod.DELETE, pcb_cs + ".DD").hasAuthority(actionRole(pcb_cs, "DD"))// (標記移除)
-				
-				
 
 				// -客製化
 				// ----請求-manufacture_action-(訪問) ----
@@ -615,44 +638,44 @@ public class WebSecurityConfig {
 		String hasAuthority = cell_role + "_000000000001";// def:訪問
 		// CRUD
 		switch (action_do) {
-		case "S6":
-			hasAuthority = cell_role + "_100000000000"; // 特殊6(S6)
-			break;
-		case "S5":
-			hasAuthority = cell_role + "_010000000000"; // 特殊5(S5)
-			break;
-		case "S4":
-			hasAuthority = cell_role + "_001000000000"; // 特殊4(S4)
-			break;
-		case "S3":
-			hasAuthority = cell_role + "_000100000000"; // 特殊3(S3)
-			break;
-		case "S2":
-			hasAuthority = cell_role + "_000010000000"; // 特殊2(S2)
-			break;
-		case "S1":
-			hasAuthority = cell_role + "_000001000000"; // 特殊1(S1)
-			break;
-		case "DD":
-			hasAuthority = cell_role + "_000000100000"; // 完全移除(DD)
-			break;
-		case "AD":
-			hasAuthority = cell_role + "_000000010000"; // 作廢(AD)
-			break;
-		case "AC":
-			hasAuthority = cell_role + "_000000001000"; // 新增(AC)
-			break;
-		case "AU":
-			hasAuthority = cell_role + "_000000000100"; // 修改(AU)
-			break;
-		case "AR":
-			hasAuthority = cell_role + "_000000000010"; // 查詢(AR)
-			break;
-		case "AA":
-			hasAuthority = cell_role + "_000000000001"; // 訪問(AA)
-			break;
-		default:
-			break;
+			case "S6":
+				hasAuthority = cell_role + "_100000000000"; // 特殊6(S6)
+				break;
+			case "S5":
+				hasAuthority = cell_role + "_010000000000"; // 特殊5(S5)
+				break;
+			case "S4":
+				hasAuthority = cell_role + "_001000000000"; // 特殊4(S4)
+				break;
+			case "S3":
+				hasAuthority = cell_role + "_000100000000"; // 特殊3(S3)
+				break;
+			case "S2":
+				hasAuthority = cell_role + "_000010000000"; // 特殊2(S2)
+				break;
+			case "S1":
+				hasAuthority = cell_role + "_000001000000"; // 特殊1(S1)
+				break;
+			case "DD":
+				hasAuthority = cell_role + "_000000100000"; // 完全移除(DD)
+				break;
+			case "AD":
+				hasAuthority = cell_role + "_000000010000"; // 作廢(AD)
+				break;
+			case "AC":
+				hasAuthority = cell_role + "_000000001000"; // 新增(AC)
+				break;
+			case "AU":
+				hasAuthority = cell_role + "_000000000100"; // 修改(AU)
+				break;
+			case "AR":
+				hasAuthority = cell_role + "_000000000010"; // 查詢(AR)
+				break;
+			case "AA":
+				hasAuthority = cell_role + "_000000000001"; // 訪問(AA)
+				break;
+			default:
+				break;
 		}
 		System.out.println(cell_who + " " + hasAuthority);
 		return hasAuthority;

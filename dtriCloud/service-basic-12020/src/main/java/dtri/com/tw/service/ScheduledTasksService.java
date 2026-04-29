@@ -44,6 +44,9 @@ public class ScheduledTasksService {
 	@Value("${catalina.home}")
 	private String apache_path;
 
+	@Value("#{ '${app.sync.erp.enabled:true}'.trim().toLowerCase() != 'false' }")
+	private boolean isSyncEnabled;
+
 	@Autowired
 	SynchronizeERPService synchronizeERPService;
 
@@ -59,10 +62,17 @@ public class ScheduledTasksService {
 	@Autowired
 	BasicNotificationMailService mailService;
 
+	@Autowired
+	private MaterialShortageDataService materialShortageDataService;
+
 	// fixedDelay = 60000 表示當前方法執行完畢 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
 	@Scheduled(fixedDelay = 120000)
 	@Async
 	public void fixDelay_SynchronizeERPAutoService() {
+
+		if (!isSyncEnabled) {
+			return;
+		}
 		logger.info("===ERP_fixedRate: 時間:{}", dateFormat.format(new Date()));
 		// ============ 物料+儲位同步 ============
 
@@ -287,6 +297,37 @@ public class ScheduledTasksService {
 		}
 	}
 
+	private static boolean etlMateriaShortageRun = true;
+
+	public synchronized static boolean isEtlMaterialShortageRun() {
+		return etlMateriaShortageRun;
+	}
+
+	@Scheduled(fixedDelay = 180000, initialDelay = 10000)
+	public void etlMaterialShortage() {
+
+		if (!isSyncEnabled || !isEtlMaterialShortageRun()) {
+			return;
+		}
+		try {
+
+			long startTime = System.currentTimeMillis();
+			System.out.println(">>> [排程啟動] 開始執行 ERP -> Cloud 資料同步任務...");
+
+			etlMateriaShortageRun = false; // 鎖
+
+			materialShortageDataService.action();
+			long endTime = System.currentTimeMillis();
+			System.out.println(">>> [排程結束] 同步成功，耗時: " + (endTime - startTime) + "ms");
+		} catch (Exception e) {
+			System.err.println(">>> [排程失敗] 同步過程中發生異常: " + e.getMessage());
+			logger.warn("===>>> [System or User]" + CloudExceptionService.eStktToSg(e));
+			e.printStackTrace();
+		} finally {
+			etlMateriaShortageRun = true; // 解鎖
+		}
+	}
+
 	/** 同步中? **/
 	public synchronized static boolean isFixDelay_ERPSynchronizeServiceRun() {
 		return fixDelay_ERPSynchronizeServiceRun;
@@ -332,22 +373,22 @@ public class ScheduledTasksService {
 		}
 	}
 
-//	// fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
-//	@Scheduled(fixedRate = 60000)
-//	public void testFixedRate() {
-//		logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
-//	}
-//
-//	// initialDelay = 180000 表示延遲 180000 (3秒) 執行第一次任務, 然後每 5000ms(5 秒) 再次呼叫該方法
-//	@Scheduled(initialDelay = 180000, fixedRate = 5000)
-//	public void testInitialDelay() {
-//		logger.info("===initialDelay: 時間:{}", dateFormat.format(new Date()));
-//	}
-//
-//	// cron接受cron表示式，根據cron表示式確定定時規則
-//	@Scheduled(cron = "0 0/1 * * * ?")
-//	public void testCron() {
-//		logger.info("===cron: 時間:{}", dateFormat.format(new Date()));
-//	}
+	// // fixedRate = 60000 表示當前方法開始執行 60000ms(1分鐘) 後，Spring scheduling會再次呼叫該方法
+	// @Scheduled(fixedRate = 60000)
+	// public void testFixedRate() {
+	// logger.info("===fixedRate: 時間:{}", dateFormat.format(new Date()));
+	// }
+	//
+	// // initialDelay = 180000 表示延遲 180000 (3秒) 執行第一次任務, 然後每 5000ms(5 秒) 再次呼叫該方法
+	// @Scheduled(initialDelay = 180000, fixedRate = 5000)
+	// public void testInitialDelay() {
+	// logger.info("===initialDelay: 時間:{}", dateFormat.format(new Date()));
+	// }
+	//
+	// // cron接受cron表示式，根據cron表示式確定定時規則
+	// @Scheduled(cron = "0 0/1 * * * ?")
+	// public void testCron() {
+	// logger.info("===cron: 時間:{}", dateFormat.format(new Date()));
+	// }
 
 }

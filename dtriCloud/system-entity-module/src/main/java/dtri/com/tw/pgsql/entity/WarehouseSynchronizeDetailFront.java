@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
@@ -41,6 +42,7 @@ import jakarta.persistence.Transient;
  *      wss_pn_erp_qty : 領退料(帳務)數量<br>
  */
 @Entity
+@Table(name = "warehouse_synchronize_detail_front")
 public class WarehouseSynchronizeDetailFront {
 	public WarehouseSynchronizeDetailFront() {
 		// 共用型

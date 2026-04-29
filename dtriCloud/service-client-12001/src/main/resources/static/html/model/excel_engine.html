@@ -1,0 +1,255 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
+<script type="text/javascript">
+    /**
+     * Excel 匯出引擎
+     * 功能: 提供全域統一的報表樣式 (Tabulator版 跟 通用版)
+     */
+    var excel_engine = {
+        methods: {
+            /**
+             * 從 Tabulator Grid 匯出
+             * @param {Tabulator} grid - Tabulator 實例
+             * @param {Object} config - 匯出配置 { reportTitle, shortageField, highlights }
+             */
+            async exportFromGrid(grid, config) {
+                if (!grid) return;
+                if (typeof ExcelJS === 'undefined') {
+                    console.error("ExcelJS is not loaded!");
+                    return;
+                }
+                const excelConfig = config || {};
+                const reportTitle = excelConfig.reportTitle || "報表匯出";
+
+                // 1. 取得目前畫面上有顯示且帶有資料欄位 (Field) 的定義
+                const columns = grid.getColumns().filter(c => c.isVisible() && c.getField());
+                const colDefs = columns.map(c => c.getDefinition());
+
+                // 2. 初始化 ExcelJS
+                const workbook = new ExcelJS.Workbook();
+                const sheet = workbook.addWorksheet("報表資料");
+
+                // 3. 填入表頭
+                sheet.addRow(colDefs.map(c => c.title));
+
+                // 4. 取得目前篩選/排序後的有效資料並以遞迴方式填入 (支援樹狀結構)
+                const rows = grid.getRows("active");
+                const treeColField = grid.options.dataTreeElementColumn || (columns.length > 0 ? columns[0].getField() : "");
+
+                const addRowRecursive = (row, level = 0) => {
+                    const rowData = [];
+                    columns.forEach(col => {
+                        const cell = row.getCell(col);
+                        let val = cell ? cell.getValue() : "";
+
+                        // 支援 Tabulator 的 accessorDownload 來轉換匯出文字
+                        const colDef = col.getDefinition();
+                        if (colDef && colDef.accessorDownload && typeof colDef.accessorDownload === 'function') {
+                            val = colDef.accessorDownload(val, row.getData(), "download", {}, col, row);
+                        }
+
+                        if (val === null || val === undefined) val = "";
+
+                        // 如果是樹狀結構的關鍵欄位，加上縮排
+                        if (grid.options.dataTree && col.getField() === treeColField && level > 0) {
+                            val = "  ".repeat(level) + "┕ " + val;
+                        }
+
+                        rowData.push(val);
+                    });
+                    sheet.addRow(rowData);
+
+                    // 遞迴處理子節點 (不論是否展開)
+                    if (grid.options.dataTree) {
+                        const children = row.getTreeChildren();
+                        if (children && children.length > 0) {
+                            children.forEach(child => addRowRecursive(child, level + 1));
+                        }
+                    }
+                };
+
+                rows.forEach(row => {
+                    // 如果有樹狀結構，只從頂層開始遞迴 (避免重複抓取)
+                    if (grid.options.dataTree) {
+                        if (!row.getTreeParent()) {
+                            addRowRecursive(row);
+                        }
+                    } else {
+                        addRowRecursive(row);
+                    }
+                });
+
+                // 5. 調用核心樣式處理
+                this._processWorkbook(workbook, colDefs, excelConfig);
+
+                // 6. 下載
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                const fileName = reportTitle.endsWith(".xlsx") ? reportTitle : `${reportTitle}.xlsx`;
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            /**
+             * 從純資料匯出 (萬用型)
+             * @param {Array} dataList - JSON 資料陣列
+             * @param {Array} colHeaders - 欄位定義 [{title: "顯示名稱", field: "對應欄位"}]
+             * @param {Object} config - 匯出配置
+             */
+            async exportFromData(dataList, colHeaders, config) {
+                if (typeof ExcelJS === 'undefined') {
+                    console.error("ExcelJS is not loaded!");
+                    return;
+                }
+                const excelConfig = config || {};
+                const reportTitle = excelConfig.reportTitle || "資料匯出";
+
+                const workbook = new ExcelJS.Workbook();
+                const sheet = workbook.addWorksheet("Sheet1");
+
+                // 準備格式: 將資料與標頭塞入 sheet
+                sheet.addRow(colHeaders.map(c => c.title));
+                dataList.forEach(row => {
+                    sheet.addRow(colHeaders.map(c => row[c.field]));
+                });
+
+                // 調用核心樣式處理
+                this._processWorkbook(workbook, colHeaders, excelConfig);
+
+                // 下載
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                const fileName = `${reportTitle.replace(".xlsx", "")}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            /**
+             * 內部核心: 處理專業樣式 (私有)
+             */
+            _processWorkbook(workbook, columns, config) {
+                const reportTitle = (config.reportTitle || "報表").replace(".xlsx", "");
+                const shortageField = config.shortageField;
+                const shortageFields = config.shortageFields || [];
+                if (shortageField && !shortageFields.includes(shortageField)) {
+                    shortageFields.push(shortageField);
+                }
+                const highlights = config.highlights || [];
+                const worksheet = workbook.worksheets[0];
+
+                // 1. 插入標題與 Metadata (凍結前3行)
+                worksheet.insertRow(1, [reportTitle]);
+                const titleRow = worksheet.getRow(1);
+                titleRow.font = { name: '微軟正黑體', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+                titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF217346' } };
+                titleRow.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
+                worksheet.mergeCells(1, 1, 1, columns.length || 5);
+                titleRow.height = 30;
+
+                const buildInfo = $('#nav_login_time').text() || new Date().toLocaleString();
+                const userName = $('#menu_login_name').text() || "System";
+                worksheet.insertRow(2, [`製表時間: ${buildInfo}  製表人: ${userName}`]);
+                const metaRow = worksheet.getRow(2);
+                metaRow.font = { name: '微軟正黑體', size: 10, italic: true };
+                worksheet.mergeCells(2, 1, 2, columns.length || 5);
+                metaRow.height = 20;
+
+                // 2. 表頭樣式 (原本的第1行變成現在的第3行)
+                const headerRowNumber = 3;
+                const headerRow = worksheet.getRow(headerRowNumber);
+                headerRow.font = { name: '微軟正黑體', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
+                headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF217346' } };
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                headerRow.height = 25;
+
+                let shortageColumnIndices = [];
+                let highlightMap = {};
+
+                headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    const colDef = columns[colNumber - 1];
+                    if (colDef) {
+                        const titleLen = cell.value ? cell.value.toString().length : 5;
+                        worksheet.getColumn(colNumber).width = Math.max(15, titleLen * 2.5);
+                        if (shortageFields.includes(colDef.field)) shortageColumnIndices.push(colNumber);
+                        highlights.forEach(hl => {
+                            if (hl.field === colDef.field) {
+                                if (!highlightMap[colNumber]) highlightMap[colNumber] = [];
+                                highlightMap[colNumber].push(hl);
+                            }
+                        });
+                    }
+                });
+
+                // 3. 資料列樣式
+                worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+                    if (rowNumber > headerRowNumber) {
+                        row.font = { name: '微軟正黑體', size: 11 };
+                        row.alignment = { vertical: 'middle' };
+                        if (rowNumber % 2 === 0) {
+                            row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9F9F9' } };
+                        }
+
+                        // 缺料標紅
+                        shortageColumnIndices.forEach(idx => {
+                            const valCell = row.getCell(idx);
+                            const val = Number(valCell.value);
+                            if (!isNaN(val) && val < 0) {
+                                valCell.font = { name: '微軟正黑體', size: 11, bold: true, color: { argb: 'FFFF0000' } };
+                            }
+                        });
+
+                        // 自訂高亮
+                        Object.keys(highlightMap).forEach(colIdx => {
+                            const stringColIdx = colIdx;
+                            const numColIdx = Number(colIdx);
+                            const rules = highlightMap[colIdx];
+                            const valCell = row.getCell(numColIdx);
+                            const val = valCell.value;
+                            rules.forEach(rule => {
+                                let match = false;
+                                if (rule.operator === '<') match = (Number(val) < rule.value);
+                                if (rule.operator === '>') match = (Number(val) > rule.value);
+                                if (rule.operator === '==') match = (val == rule.value);
+                                if (match && rule.color) {
+                                    valCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + rule.color.replace('#', '') } };
+                                    if (rule.fontColor) valCell.font = { name: '微軟正黑體', bold: true, color: { argb: 'FF' + rule.fontColor.replace('#', '') } };
+                                }
+                            });
+                        });
+                    }
+
+                    // 邊框 (全欄位，只對資料列套用，避免合併儲存格標題列衝突)
+                    if (rowNumber >= headerRowNumber) {
+                        for (let c = 1; c <= columns.length; c++) {
+                            const cell = row.getCell(c);
+                            cell.border = {
+                                top: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+                                left: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+                                bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+                                right: { style: 'thin', color: { argb: 'FFDDDDDD' } }
+                            };
+                        }
+                    }
+                });
+
+                // 4. 凍結與自篩
+                worksheet.views = [{ state: 'frozen', ySplit: 3 }];
+                worksheet.autoFilter = {
+                    from: { row: headerRowNumber, column: 1 },
+                    to: { row: headerRowNumber, column: columns.length || 5 }
+                };
+
+                return workbook;
+            }
+        }
+    };
+</script>

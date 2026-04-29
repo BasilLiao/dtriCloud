@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import dtri.com.tw.mssql.dto.ValidatedPurthDto;
 import dtri.com.tw.mssql.entity.Purth;
 
 public interface PurthDao extends JpaRepository<Purth, Long> {
@@ -52,7 +54,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	AND (PURTH.TH030 LIKE 'N' OR PURTH.TH030 LIKE 'Y' ) "// 已結項目 與 未結項目
 			+ "	AND PURTH.TH007 > 0 "// 數量大於0
 			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
-			+ "	AND (PURTH.TH014 >= CONVERT(VARCHAR(8), GETDATE()-10, 112)) "// 今天
+			+ "	AND (PURTH.TH014 >= CONVERT(VARCHAR(8), GETDATE()-10, 112)) "// 遠端優化：改採驗收日期 TH014
 			+ "ORDER BY "//
 			+ "	PURTH.TH001+'-'+PURTH.TH002+'-'+PURTH.TH003 ASC ,"// --進貨單號
 			+ "	INVMB.MB001 ASC,"// --物料
@@ -102,7 +104,7 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	AND (PURTH.TH030 != 'V' ) "// 已結項目 與 未結項目
 			+ "	AND (PURTH.TH007 > 0 ) "// 數量大於0
 			+ " AND (PURTH.TH001 ='A341' OR PURTH.TH001 ='A342' OR PURTH.TH001 ='A343' OR PURTH.TH001 ='A345' ) "// 單據
-			+ "	AND (PURTH.TH014 >= CONVERT(VARCHAR(8), GETDATE()-60, 112)) "// 今天
+			+ "	AND (PURTH.TH014 >= CONVERT(VARCHAR(8), GETDATE()-60, 112)) "// 遠端優化：改採驗收日期 TH014
 			+ " AND (CONCAT(PURTH.TH001, '-', TRIM(PURTH.TH002), '-', PURTH.TH003) IN (:TH001TH002TH003)) "// 比對製令單+序號?
 			+ "ORDER BY "//
 			+ "	PURTH.TH001+'-'+PURTH.TH002+'-'+PURTH.TH003 ASC ,"// --進貨單號
@@ -110,5 +112,57 @@ public interface PurthDao extends JpaRepository<Purth, Long> {
 			+ "	PURTH.TH014 ASC "// --時間
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Purth> findAllByPurth60(List<String> TH001TH002TH003);
+
+	/**
+	 * 查詢進貨單明細列表 (待驗收清單)
+	 * <p>
+	 * 核心邏輯 (Core Logic)：
+	 * 1. <b>資料範圍</b>：查詢已建立進貨單，但尚未完成驗收程序的項目。
+	 * 2. <b>狀態過濾</b>：
+	 * - 排除已結案/已取消 (TH028 != '3')。
+	 * - 鎖定「未驗收 (N)」狀態 (TH030 LIKE 'N')。
+	 * 3. <b>有效性</b>：數量 (TH007) 必須大於 0。
+	 * </p>
+	 * * @return List 包含進貨單號、待驗數量與供應商資訊的列表
+	 * 
+	 * @author Allen
+	 */
+	@Query(value = """
+			SELECT
+			   ISNULL(RTRIM(LTRIM(TH.TH001)), '') + '-' + ISNULL(RTRIM(LTRIM(TH.TH002)), '') AS TH001_TH002,
+
+			    TH.TH003 AS TH003,      --進貨單號
+			    TH.TH007 AS TH007,      --序號
+			    TH.TH014 AS TH014,      --驗收時間
+
+			    MB.MB001 AS MB001,      --品號
+			    MB.MB002 AS MB002,      --品名
+			    MB.MB003 AS MB003,      --規格
+			    MB.MB017 AS MB017,      --倉別代號
+			    MB.MB032 AS MB032,      --供應商代號
+			    MB.MB036 AS MB036,      --固定前置天數
+			    MB.MB039 AS MB039,      --最低補量
+			    MB.MB040 AS MB040,  	--補貨倍量
+
+			    MC.MC002 AS MC002,      --倉別名稱
+			    COALESCE(MA.MA002, '') AS MA002, --供應商名稱
+			    '進貨單' AS TK000        --單別
+
+			FROM PURTH AS TH
+			LEFT JOIN INVMB AS MB ON TH.TH004 = MB.MB001
+			LEFT JOIN CMSMC AS MC ON MB.MB017 = MC.MC001
+			LEFT JOIN PURMA AS MA ON MA.MA001 = MB.MB032
+
+			WHERE
+			    TH.TH028 != '3'
+			    AND TH.TH030 LIKE 'N'
+			    AND TH.TH007 > 0
+			    AND (:materialNos IS NULL OR CHARINDEX(',' + TRIM(MB.MB001) + ',', :materialNos) > 0)
+			ORDER BY
+			    MB.MB001 ASC,
+			    TH.TH014 ASC,
+			    TH.TH001, TH.TH002, TH.TH003 ASC
+			""", nativeQuery = true)
+	List<ValidatedPurthDto> findAllByValidatedPurth(@Param("materialNos") String materialNos);
 
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,24 @@ public class BasicNotificationMailService {
 	private JavaMailSender mailSender;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	// 除非明確設定為 false，否則預設為 true (包含設定為空、空格、或不存在時)
+	@Value("#{ !'${app.mail.enabled:true}'.trim().equalsIgnoreCase('false') }")
+	private boolean target;
+
 	// 寄信
 	public boolean sendEmail(String[] toUser, String[] toCcUser, String subject, String bodyHtml, String bnmattname,
 			byte[] bnmattcontent) {
 		boolean sendOK = true;
+		if (!target) {
+			return target;
+		}
 		try {
 			// 簡單版mail
-//			SimpleMailMessage message = new SimpleMailMessage();
-//			message.setTo(to);
-//			message.setSubject(subject);
-//			message.setText(bodyHtml);
-//			mailSender.send(message);
+			// SimpleMailMessage message = new SimpleMailMessage();
+			// message.setTo(to);
+			// message.setSubject(subject);
+			// message.setText(bodyHtml);
+			// mailSender.send(message);
 			if (toUser.length == 0) {
 				// 沒有任何有效 TO 位址，直接返回失敗並記錄
 				logger.warn("Skip sending mail: no valid TO recipients. subject={}", subject);
@@ -103,6 +111,10 @@ public class BasicNotificationMailService {
 
 	// 檢查信件
 	public void readySendCheckEmail() {
+
+		if (!target) {
+			return;
+		}
 		// 尚未寄信件
 		ArrayList<BasicNotificationMail> mails = notificationMailDao.findAllByCheck(null, null, null, null, false, null,
 				null);

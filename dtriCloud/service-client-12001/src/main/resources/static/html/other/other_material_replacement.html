@@ -1,0 +1,970 @@
+<style>
+    /* --- 原本的表格樣式 --- */
+    #mr_table th {
+        background-color: #f8f9fa;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    #mr_table td {
+        vertical-align: middle;
+        padding: 12px 8px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .formula-pill {
+        display: inline-flex;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 50rem;
+        padding: 4px 10px;
+        font-size: 13px;
+        margin: 2px;
+        color: #333;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .formula-pill.is-target {
+        border-color: #198754;
+        background-color: #f0fdf4;
+        color: #155724;
+    }
+
+    .qty-tag {
+        background: #e9ecef;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 0 6px;
+        margin-left: 6px;
+        border-radius: 4px;
+        color: #666;
+    }
+
+    /* --- 内容欄位垂直對照佈局 (極簡化) --- */
+    .replacement-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 180px;
+        align-items: center;
+    }
+
+    .replacement-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+        justify-content: center;
+        padding: 2px;
+    }
+
+    .replacement-row.src-row,
+    .replacement-row.tgt-row {
+        background-color: transparent;
+        border: none;
+    }
+
+    .replacement-arrow {
+        text-align: center;
+        font-size: 14px;
+        color: #0d6efd;
+        line-height: 1;
+        opacity: 0.5;
+    }
+
+    .item-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 6px;
+        border: 1px dashed #e9ecef;
+        background: #fff;
+        margin-bottom: 6px;
+        border-radius: 6px;
+    }
+
+    .item-row:hover {
+        border-color: #adb5bd;
+        background: #f8f9fa;
+    }
+
+    /* ---自動完成選單樣式 --- */
+    .position-relative {
+        position: relative !important;
+    }
+
+    .suggestion-box {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 4px 4px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        z-index: 1050;
+        display: none;
+    }
+
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f3f5;
+        font-size: 13px;
+        color: #495057;
+        text-align: left;
+    }
+
+    .suggestion-item:hover {
+        background-color: #e9ecef;
+        color: #0d6efd;
+    }
+
+    .suggestion-item strong {
+        color: #0d6efd;
+    }
+</style>
+
+<div id="other_content_area" class="p-3">
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body d-flex justify-content-between align-items-center p-3">
+            <h5 class="m-0 text-primary fw-bold"><i class="bi bi-shuffle me-2"></i><span
+                    id="title_substitution_rules">Substitution Rules</span></h5>
+            <div class="d-flex gap-2">
+                <select class="form-select" id="search_status" style="width: 150px;"
+                    onchange="other.methods.searchSend(0)">
+                    <option value="0">🟢 Enable</option>
+                    <option value="null">🕵️ All</option>
+                </select>
+                <div class="input-group" style="width: 300px;">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 ps-0" id="quick_filter"
+                        placeholder="Search Rule or Part No...." onchange="other.methods.searchSend(0)">
+                    <button class="btn btn-primary" onclick="other.methods.searchSend(0)">Select</button>
+                </div>
+                <button class="btn btn-success text-white" onclick="other.methods.openAdd()" id="btn_create"><i
+                        class="bi bi-plus-lg me-1"></i> Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm d-flex flex-column" style="min-height: 600px;">
+        <div class="table-responsive rounded flex-grow-1">
+            <table class="table table-hover mb-0" id="mr_table">
+                <thead>
+                    <tr id="mr_thead_tr">
+                        <!-- 全動態表頭將從 JS 產生 -->
+                    </tr>
+                </thead>
+                <tbody id="mr_tbody">
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">系統準備中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white border-top-0 py-3 mt-auto">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0" id="mr_pagination"></ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mr_edit_modal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white py-2">
+                    <h6 class="modal-title fw-bold" data-lang="title_substitution_rules">編輯配方規則</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <input type="hidden" id="editmrgid">
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body py-2">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-3">
+                                    <label class="small text-muted fw-bold" data-lang="mrgnb">規則名稱 (必填)</label>
+                                    <input type="text" class="form-control form-control-sm" id="editmrgnb"
+                                        data-lang-placeholder="mrgnb">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted fw-bold" data-lang="scopetype">適用範圍</label>
+                                    <select class="form-select form-select-sm" id="editscopetype"
+                                        onchange="other.methods.scopeChange()">
+                                        <option value="0" data-lang="scope_0">🌍 通用規則</option>
+                                        <option value="1" data-lang="scope_1">🏢 指定客戶</option>
+                                        <option value="2" data-lang="scope_2">📦 指定產品</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 position-relative">
+                                    <label class="small text-muted fw-bold" data-lang="scopeval">範圍代碼</label>
+                                    <input type="text" class="form-control form-control-sm scope-val-search"
+                                        id="editscopeval" disabled autocomplete="off"
+                                        data-lang-placeholder="scopeval">
+                                    <div class="suggestion-box"></div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted fw-bold" data-lang="policy">替代策略</label>
+                                    <select class="form-select form-select-sm" id="editpolicy">
+                                        <option value="EQUIVALENT" data-lang="msg_policy_eq">🟢 雙向替代 (Equivalent)
+                                        </option>
+                                        <option value="RUN_DOWN" data-lang="msg_policy_rd">🔴 單向取代 (Run-down)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted fw-bold" data-lang="sysnote">備註</label>
+                                    <input type="text" class="form-control form-control-sm" id="editsysnote"
+                                        data-lang-placeholder="sysnote">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white d-flex justify-content-between py-2 border-bottom-0">
+                                    <span class="fw-bold text-primary" data-lang="msg_source">Original</span>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" data-lang="btn_add"
+                                        onclick="other.methods.addItemRow('source')">add</button>
+                                </div>
+                                <div class="card-body bg-light p-2" id="source_container"
+                                    style="height: 300px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white d-flex justify-content-between py-2 border-bottom-0">
+                                    <span class="fw-bold text-success" data-lang="msg_target">Replacement</span>
+                                    <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-lang="btn_add"
+                                        onclick="other.methods.addItemRow('target')">add</button>
+                                </div>
+                                <div class="card-body bg-light p-2" id="target_container"
+                                    style="height: 300px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white py-2">
+                    <button type="button" class="btn btn-light btn-sm px-4" data-bs-dismiss="modal"
+                        data-lang="btn_close">cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm px-4" onclick="other.methods.saveConfirm()"
+                        data-lang="btn_save">save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    other = {
+        data: {
+            entityJsons: [],
+            checkTimer: null,
+            url: $('#nav_functional_unit').attr('title') + ".basil.",
+            lastJsonStr: "",
+            pageSize: 10,
+
+            // 1. 用來存所有料號的快取陣列 (後端傳來的會存在這)
+            cachedMaterials: [],
+            cachedCustomers: [],
+            cachedProducts: [], // [新增]
+            isPreloaded: false, // [新增] 紀錄預載狀態，防止0資料造成Loading死結
+
+            lang: {
+                "scope_0": "通用", "scope_1": "客戶", "scope_2": "產品",
+                "status_0": "Enable", "status_1": "Disable",
+                "btn_edit": "Edit",
+                "msg_no_data": "No Data",
+                "msg_loading": "Loading..."
+            }
+        },
+        methods: {
+            // --- 1. 初始化 ---
+            create: function () {
+                console.log("🚀 create: 頁面啟動");
+                let m = other.methods;
+                if (main.web_user) other.data.userAccount = main.web_user.name;
+
+                m.searchSend(0);    // 立即載入表格清單
+                m.preloadSend();    // 背景載入字典，回調會呼叫 buildDynamicTable
+                // 啟動自動搜尋功能
+                other.methods.initAutoSearch();
+            },
+
+            // 更新固定表頭語系 (依據資料庫結果全動態產出)
+            buildDynamicTable: function () {
+                let m = other.methods;
+                let searchSetObj = (typeof main.resq_data.searchSet === 'string') ? JSON.parse(main.resq_data.searchSet) : main.resq_data.searchSet;
+
+                // [新增] 合併後端專屬於 Group 的字典資料
+                if (searchSetObj.uiLang) {
+                    other.data.lang = Object.assign(other.data.lang, searchSetObj.uiLang);
+                }
+
+                let resultThead = searchSetObj.resultThead || {};
+                let orderedThead = main.methods.orderedSort(resultThead);
+                other.data.orderedColumns = orderedThead;
+
+                let sysLang = $('#menu_login_language').text() || 'zh-TW';
+                let theadHtml = `<th style="width: 50px;">#</th>`;
+
+                Object.keys(orderedThead).forEach(k => {
+                    let cell = orderedThead[k];
+                    if (cell.show == 1) {
+                        let cellName = cell.cellName;
+                        if (cell.cellLanguage) {
+                            try { cellName = JSON.parse(cell.cellLanguage)[sysLang] || cell.cellName; } catch (e) { }
+                        }
+                        let widthStyle = cell.width && cell.width > 0 ? `width: ${cell.width}px;` : 'min-width: 100px;';
+                        theadHtml += `<th style="${widthStyle}">${cellName}</th>`;
+                    }
+                });
+
+                theadHtml += `<th style="width: 80px;">${m.gl('btn_edit') || '操作'}</th>`;
+                $("#mr_thead_tr").html(theadHtml);
+
+                // 自動翻譯 Modal 內的文字 (無損覆蓋)
+                m.translateModal();
+                m.initLabels();
+            },
+
+            // 翻譯外層卡片的動態標籤與 Placeholder
+            initLabels: function () {
+                let m = other.methods;
+                if (m.gl("title_substitution_rules") !== "title_substitution_rules") {
+                    $("#title_substitution_rules").text(m.gl("title_substitution_rules"));
+                }
+                if (m.gl("btn_create") !== "btn_create") {
+                    $("#btn_create").html('<i class="bi bi-plus-lg me-1"></i> ' + m.gl("btn_create"));
+                }
+                if (m.gl("placeholder_part_no") !== "placeholder_part_no") {
+                    $("#quick_filter").attr("placeholder", m.gl("placeholder_part_no"));
+                }
+            },
+
+            // 智慧翻譯 Modal (有設定字典才覆蓋，沒有則保留原本 HTML 預設中文)
+            translateModal: function () {
+                let m = other.methods;
+                // 1. 翻譯標籤文字
+                $('#mr_edit_modal [data-lang]').each(function () {
+                    let key = $(this).attr('data-lang');
+                    let translated = m.gl(key);
+                    if (translated !== key) $(this).text(translated);
+                });
+                // 2. 翻譯輸入框提示文字 (Placeholder)
+                $('#mr_edit_modal [data-lang-placeholder]').each(function () {
+                    let key = $(this).attr('data-lang-placeholder');
+                    let translated = m.gl(key);
+                    if (translated !== key) $(this).attr('placeholder', translated);
+                });
+            },
+
+
+
+            // 嘗試快取物料清單 (獨立函式)
+            tryCacheMaterials: function () {
+                if (other.data.cachedMaterials.length > 0 && other.data.cachedCustomers.length > 0 && other.data.cachedProducts.length > 0) return;
+
+                if (main.resq_data && main.resq_data.searchSet) {
+                    // 修正點：使用 setTimeout 延後解析重度 JSON，讓頁面先順暢開啟
+                    setTimeout(() => {
+                        try {
+                            console.time("CacheParse");
+                            let searchSetObj = (typeof main.resq_data.searchSet === 'string')
+                                ? JSON.parse(main.resq_data.searchSet)
+                                : main.resq_data.searchSet;
+
+                            // 檢查有沒有 preloadMaterials
+                            if (searchSetObj.preloadMaterials && searchSetObj.preloadMaterials.length > 0) {
+                                other.data.cachedMaterials = searchSetObj.preloadMaterials;
+                                console.log("📦 [Async] 成功快取物料清單，共 " + other.data.cachedMaterials.length + " 筆");
+                            }
+
+                            // 檢查有沒有 preloadCustomers
+                            if (searchSetObj.preloadCustomers && searchSetObj.preloadCustomers.length > 0) {
+                                other.data.cachedCustomers = JSON.parse(JSON.stringify(searchSetObj.preloadCustomers));
+                                console.log("📦 [Async] 成功快取客戶清單，共 " + other.data.cachedCustomers.length + " 筆");
+                            }
+
+                            // [新增] 快取產品
+                            if (searchSetObj.preloadProducts && searchSetObj.preloadProducts.length > 0) {
+                                other.data.cachedProducts = JSON.parse(JSON.stringify(searchSetObj.preloadProducts));
+                                console.log("📦 [Async] 成功快取產品清單，共 " + other.data.cachedProducts.length + " 筆");
+                            }
+
+                            // [關鍵修正] 標記預載已經完成 (不論陣列元素是不是0)
+                            other.data.isPreloaded = true;
+
+                            console.timeEnd("CacheParse");
+                        } catch (e) {
+                            console.error("快取解析失敗", e);
+                            other.data.isPreloaded = true; // 發生例外也放行
+                        }
+                    }, 100); // 延後 0.1 秒即可感受到明顯順暢度提升
+                }
+            },
+
+            // [Helper] 取翻譯 (自動解析 JSON 字串)
+            gl: function (key) {
+                let val = other.data.lang[key];
+                if (!val) return key;
+                try {
+                    let obj = JSON.parse(val);
+                    let sysLang = $('#menu_login_language').text() || 'zh-TW';
+                    let result = obj[sysLang] || obj['zh-TW'];
+                    // [修正] 如果資料庫雖然有建檔，但是裡面是空字串 ""，就當作沒設定，不要把 key 名稱給露出來
+                    return (result && result.trim() !== "") ? result : key;
+                } catch (e) {
+                    return val;
+                }
+            },
+
+            // --- 2. 主動觸發：搜尋結果回調 (由 main.html 的 other_search case 調用) ---
+            otherReturn: function () {
+                // 攔截回傳的 searchSet，立即畫出表格與標題 (不需再等幾萬筆的預載資料)
+                if (main.resq_data.searchSet) {
+                    let searchSetObj = (typeof main.resq_data.searchSet === 'string')
+                        ? JSON.parse(main.resq_data.searchSet)
+                        : main.resq_data.searchSet;
+                    if (searchSetObj.resultThead) {
+                        other.methods.buildDynamicTable();
+                    }
+                }
+
+                let raw = main.resq_data.entityJson;
+                if (!raw || raw === '' || raw === '{}') return;
+                let list = [];
+                try { list = (typeof raw === 'string') ? JSON.parse(raw) : raw; } catch (e) { list = []; }
+                if (!Array.isArray(list)) list = [];
+
+                other.data.entityJsons = list;
+                other.methods.renderTable();
+
+                let pageSet = main.resq_data.searchPageSet;
+                if (typeof pageSet === 'string') { try { pageSet = JSON.parse(pageSet); } catch (e) { } }
+                if (pageSet) other.methods.renderPagination(pageSet.total, pageSet.batch);
+            },
+
+            // --- 2b. 字典預載回調 (由 main.html 的 other_other case 調用) ---
+            otherOtherReturn: function () {
+                // 背景載入完成，單純更新快取字典，不再觸發表格重繪，讓畫面完全不會閃爍
+                other.methods.tryCacheMaterials();
+            },
+
+            // --- 3. 發送搜尋請求 ---
+            searchSend: function (batch) {
+                console.log("searchSend: 查詢第 " + batch + " 頁");
+                other.data.lastJsonStr = "";
+                $("#mr_tbody").html(`<tr><td colspan="8" class="text-center py-5 text-muted"><div class="spinner-border text-primary spinner-border-sm"></div> ${other.methods.gl('msg_loading')}</td></tr>`);
+
+                let searchPayload = { mrgnb: $("#quick_filter").val() || "", sysstatus: $("#search_status").val() };
+                let req = {
+                    url: other.data.url + "AR",
+                    type: "POST",
+                    data: {
+                        entityJson: JSON.stringify(searchPayload),
+                        searchPageSet: JSON.stringify({ batch: batch, total: other.data.pageSize }),
+                        callBackFunction: "other_search",
+                        searchSet: "{}"
+                    }
+                };
+                // loading=true (主要搜尋，顯示 Loading 畫面)
+                main.methods.ajaxSend(req, true);
+            },
+
+            // --- 3.5 [新增] 背景預載字典請求 ---
+            preloadSend: function () {
+                console.log("preloadSend: 背景請求字典資料...");
+                let req = {
+                    url: other.data.url + "AR",
+                    type: "POST",
+                    data: {
+                        entityJson: "[]",
+                        searchPageSet: JSON.stringify({ batch: 0, total: 0 }),
+                        callBackFunction: "other_preload",
+                        searchSet: "{}"
+                    }
+                };
+                // [關鍵] loading=false，讓字典靜靜地在背景載入，不干擾使用者
+                main.methods.ajaxSend(req, false);
+            },
+
+            // --- 4. 渲染表格 ---
+            renderTable: function () {
+                let m = other.methods;
+                let list = other.data.entityJsons;
+                let $tbody = $("#mr_tbody");
+                $tbody.empty();
+
+                let colCount = $("#mr_thead_tr th").length || 10;
+                if (list.length === 0) {
+                    $tbody.html(`<tr><td colspan="${colCount}" class="text-center py-5 text-muted">${m.gl('msg_no_data')}</td></tr>`);
+                    return;
+                }
+
+                let orderedThead = other.data.orderedColumns || {};
+
+                let html = list.map((row, index) => {
+                    if (!row) return "";
+
+                    let rowHtml = `<tr><td class="text-center text-muted">${index + 1}</td>`;
+
+                    // 完全依照字典表的欄位順序跑迴圈印出 td
+                    Object.keys(orderedThead).forEach(k => {
+                        let cell = orderedThead[k];
+                        let fieldName = k.split("_")[1];
+
+                        if (cell.show == 1) {
+                            let val = row[fieldName];
+
+                            // === 業務邏輯特殊攔截與渲染 ===
+                            if (fieldName === 'scopetype') {
+                                let scopeText = m.gl('scope_' + val);
+                                let scopeBadge = val == 1 ? `<span class="badge bg-info text-dark">${scopeText}</span>` :
+                                    val == 2 ? `<span class="badge bg-warning text-dark">${scopeText}</span>` : `<span class="badge bg-secondary">${scopeText}</span>`;
+                                if (row.scopeval) scopeBadge += `<br><small class="text-muted">${row.scopeval}</small>`;
+                                rowHtml += `<td class="text-center">${scopeBadge}</td>`;
+                            }
+                            else if (fieldName === 'scopeval') {
+                                rowHtml += `<td class="text-center">${val || '-'}</td>`;
+                            }
+                            else if (fieldName === 'items') {
+                                let sourceItems = [], targetItems = [];
+                                if (val && Array.isArray(val)) {
+                                    val.forEach(item => { if (item.role === 'SOURCE') sourceItems.push(item); else if (item.role === 'TARGET') targetItems.push(item); });
+                                }
+                                let srcHtml = sourceItems.map(i => `<div class="formula-pill">${i.mrnb}<span class="qty-tag">x${i.qty}</span></div>`).join("") || `<span class="text-muted small">-</span>`;
+                                let tgtHtml = targetItems.map(i => `<div class="formula-pill is-target">${i.mrnb}<span class="qty-tag">x${i.qty}</span></div>`).join("") || `<span class="text-muted small">-</span>`;
+
+                                rowHtml += `<td>
+                                    <div class="replacement-cell">
+                                        <div class="replacement-row src-row">${srcHtml}</div>
+                                        <div class="replacement-arrow">&#8595;</div>
+                                        <div class="replacement-row tgt-row">${tgtHtml}</div>
+                                    </div>
+                                </td>`;
+                            }
+                            else if (fieldName === 'policy') {
+                                let lEq = m.gl('msg_policy_eq'); lEq = (lEq === 'msg_policy_eq') ? '雙向' : lEq;
+                                let lRd = m.gl('msg_policy_rd'); lRd = (lRd === 'msg_policy_rd') ? '單向' : lRd;
+                                let policyStr = (val === 'EQUIVALENT') ? `<span class="badge bg-success">${lEq}</span>` : `<span class="badge bg-warning text-dark">${lRd}</span>`;
+                                rowHtml += `<td>${policyStr}</td>`;
+                            }
+                            else if (fieldName === 'sysstatus') {
+                                let isChecked = (val === 0) ? 'checked' : '';
+                                rowHtml += `<td>
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" style="cursor:pointer;" ${isChecked} onchange="other.methods.toggleStatus(${index}, this)">
+                                    </div></td>`;
+                            }
+                            else if (fieldName === 'mrgnb') {
+                                rowHtml += `<td class="fw-bold text-primary">${val || '(未命名)'}</td>`;
+                            }
+                            else if (fieldName === 'sysnote') {
+                                let noteHtml = `<div class="text-truncate text-muted small" style="max-width: 150px;" title="${val || ''}">${val || '-'}</div>`;
+                                rowHtml += `<td>${noteHtml}</td>`;
+                            }
+                            else {
+                                // === 動態長出的未知新欄位 ===
+                                rowHtml += `<td>${val === null || val === undefined ? '' : val}</td>`;
+                            }
+                        }
+                    });
+
+                    // 操作按鈕永遠在最後
+                    rowHtml += `<td class="text-center">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="other.methods.openEdit(${index})"><i class="bi bi-pencil-square"></i> ${m.gl('btn_edit')}</button>
+                        </td>
+                    </tr>`;
+
+                    return rowHtml;
+                }).join("");
+                $tbody.html(html);
+            },
+
+            // --- 5. 分頁 ---
+            renderPagination: function (totalItems, currentPage) {
+                let $ul = $("#mr_pagination");
+                $ul.empty();
+                let pageSize = other.data.pageSize;
+                let totalPages = Math.ceil(totalItems / pageSize);
+                if (totalPages <= 1) return;
+
+                let prevClass = (currentPage === 0) ? "disabled" : "";
+                $ul.append(`<li class="page-item ${prevClass}"><button class="page-link" onclick="other.methods.searchSend(${currentPage - 1})">&laquo;</button></li>`);
+                let startPage = Math.max(0, currentPage - 2);
+                let endPage = Math.min(totalPages - 1, currentPage + 2);
+                for (let i = startPage; i <= endPage; i++) {
+                    let activeClass = (i === currentPage) ? "active" : "";
+                    $ul.append(`<li class="page-item ${activeClass}"><button class="page-link" onclick="other.methods.searchSend(${i})">${i + 1}</button></li>`);
+                }
+                let nextClass = (currentPage >= totalPages - 1) ? "disabled" : "";
+                $ul.append(`<li class="page-item ${nextClass}"><button class="page-link" onclick="other.methods.searchSend(${currentPage + 1})">&raquo;</button></li>`);
+            },
+
+            // --- 6. 視窗操作 ---
+            openAdd: function () {
+                $("#editmrgid").val(""); $("#editmrgnb").val("");
+                $("#editscopetype").val("0").change(); $("#editscopeval").val("");
+                $("#editpolicy").val("EQUIVALENT"); $("#editsysnote").val("");
+                $("#source_container").empty(); $("#target_container").empty();
+                other.methods.addItemRow('source'); other.methods.addItemRow('target');
+                $("#mr_edit_modal").modal("show");
+            },
+            openEdit: function (index) {
+                let row = other.data.entityJsons[index];
+                if (!row) return;
+                $("#editmrgid").val(row.mrgid); $("#editmrgnb").val(row.mrgnb);
+                $("#editscopetype").val(row.scopetype); $("#editscopeval").val(row.scopeval || "");
+                $("#editpolicy").val(row.policy); $("#editsysnote").val(row.sysnote || "");
+                other.methods.scopeChange();
+                $("#source_container").empty(); $("#target_container").empty();
+                if (row.items && Array.isArray(row.items)) {
+                    row.items.forEach(item => {
+                        let type = (item.role === 'SOURCE') ? 'source' : 'target';
+                        other.methods.addItemRow(type, item.mrnb, item.qty);
+                    });
+                }
+                $("#mr_edit_modal").modal("show");
+            },
+            scopeChange: function () {
+                let m = other.methods;
+                let type = $("#editscopetype").val();
+                let $input = $("#editscopeval");
+                if (type == "0") {
+                    $input.val("").prop("disabled", true).attr("placeholder", "-");
+                } else if (type == "1") {
+                    $input.prop("disabled", false).attr("placeholder", m.gl('msg_sh_customer'));
+                } else if (type == "2") {
+                    $input.prop("disabled", false).attr("placeholder", m.gl('msg_sh_product'));
+                }
+            },
+
+            //  增加 input 容器與選單 div
+            addItemRow: function (type, pn = "", qty = "1") {
+                let m = other.methods;
+                let html = `
+                <div class="item-row">
+                    <div class="position-relative" style="flex:1;">
+                        <input type="text" class="form-control form-control-sm ${type}-pn border-0 bg-transparent auto-search" 
+                               placeholder="${m.gl('placeholder_part_no') || '輸入料號...'}" value="${pn}" autocomplete="off">
+                        <div class="suggestion-box"></div>
+                    </div>
+                    <div class="vr"></div>
+                    <input type="number" class="form-control form-control-sm ${type}-qty border-0 bg-transparent text-center" 
+                           value="${qty}" style="width:60px;" placeholder="${m.gl('placeholder_input_qty') || '數量'}">
+                    <button class="btn btn-sm btn-link text-danger p-0" onclick="$(this).closest('.item-row').remove()">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>`;
+                $("#" + type + "_container").append(html);
+            },
+
+            // --- 7. [前端自動搜尋邏輯] ---
+            initAutoSearch: function () {
+                // A. 監聽打字
+                $(document).on('keyup focus', '.auto-search', function () {
+                    let $input = $(this);
+                    let keyword = $input.val().trim().toLowerCase(); // 轉小寫
+                    let $box = $input.siblings('.suggestion-box');
+
+                    if (keyword.length < 1) { $box.hide(); return; }
+
+                    if ($input.data('timer')) clearTimeout($input.data('timer'));
+                    $input.data('timer', setTimeout(function () {
+                        other.methods.runSearchLocal(keyword, $box, $input);
+                    }, 200));
+                });
+
+                // A-2. 監聽 範圍代碼 搜尋 (Scope=1 客戶, Scope=2 產品)
+                $(document).on('keyup focus', '.scope-val-search', function () {
+                    let type = $("#editscopetype").val();
+                    let $input = $(this);
+                    let keyword = $input.val().trim().toLowerCase();
+                    let $box = $input.siblings('.suggestion-box');
+
+                    if (type == "0") return; // 通用
+                    if (keyword.length < 1) { $box.hide(); return; }
+
+                    if ($input.data('timer')) clearTimeout($input.data('timer'));
+                    $input.data('timer', setTimeout(function () {
+                        if (type == "1") {
+                            other.methods.runSearchCustomer(keyword, $box, $input);
+                        } else if (type == "2") {
+                            other.methods.runSearchProduct(keyword, $box, $input);
+                        }
+                    }, 200));
+                });
+
+                // B. 監聽選單點擊
+                $(document).on('click', '.suggestion-item', function () {
+                    let val = $(this).data('val');
+                    let $box = $(this).parent();
+                    let $input = $box.siblings('input');
+                    $input.val(val); $box.hide();
+                });
+
+                // C. 點擊外部關閉選單
+                $(document).on('click', function (e) {
+                    if (!$(e.target).closest('.position-relative').length) { $('.suggestion-box').hide(); }
+                });
+            },
+
+            // 本地搜尋
+            runSearchLocal: function (keyword, $box, $input) {
+                if (!other.data.isPreloaded) {
+                    // 如果還沒載入完，才顯示讀取中
+                    $box.html('<div class="p-2 text-muted small"><span class="spinner-border spinner-border-sm"></span> 讀取中...</div>').show();
+                    return;
+                }
+
+                // item.s 是後端預先組好的 "pn name" 小寫字串
+                let results = other.data.cachedMaterials.filter(item => {
+                    return item.s.indexOf(keyword) > -1;
+                });
+
+                results.sort((a, b) => {
+                    // 取得關鍵字在字串出現的位置 (越小代表越靠前)
+                    let idxA = a.s.indexOf(keyword);
+                    let idxB = b.s.indexOf(keyword);
+
+                    // 規則 A: 位置越靠前 (index 越小) 的排前面
+                    if (idxA !== idxB) {
+                        return idxA - idxB;
+                    }
+                    // 規則 B: 如果位置一樣 (例如都由開頭匹配)，則照料號字母順序排
+                    return a.pn.localeCompare(b.pn);
+                });
+                //  截斷 (Slice) - 只顯示前 20 筆
+                let displayList = results.slice(0, 20);
+
+                $box.empty();
+                if (displayList.length === 0) {
+                    $box.html('<div class="p-2 text-muted small">No Data</div>');
+                } else {
+                    let html = displayList.map(item => `
+                        <div class="suggestion-item" data-val="${item.pn}">
+                            <strong>${item.pn}</strong> 
+                            <span class="text-muted small"> ${item.name || ''}</span>
+                        </div>
+                    `).join("");
+                    if (results.length > 50) {
+                        html += `<div class="p-2 text-center text-muted small bg-light border-top"> ${results.length - 50} More...</div>`;
+                    }
+                    $box.html(html);
+                }
+                $box.show();
+            },
+
+            // 客戶搜尋
+            runSearchCustomer: function (keyword, $box, $input) {
+                if (!other.data.isPreloaded) {
+                    $box.html('<div class="p-2 text-muted small"><span class="spinner-border spinner-border-sm"></span> loading...</div>').show();
+                    return;
+                }
+
+                let results = other.data.cachedCustomers.filter(item => {
+                    return item.s.indexOf(keyword) > -1;
+                });
+
+                // 排序: 匹配位置優先 -> 代號順序
+                results.sort((a, b) => {
+                    let idxA = a.s.indexOf(keyword);
+                    let idxB = b.s.indexOf(keyword);
+                    if (idxA !== idxB) return idxA - idxB;
+                    return a.code.localeCompare(b.code);
+                });
+
+                let displayList = results.slice(0, 20);
+                $box.empty();
+
+                if (displayList.length === 0) {
+                    $box.html('<div class="p-2 text-muted small">No Data</div>');
+                } else {
+                    let html = displayList.map(item => `
+                        <div class="suggestion-item" data-val="${item.code}">
+                            <strong>${item.code}</strong> 
+                            <span class="text-muted small"> ${item.name || ''}</span>
+                        </div>
+                    `).join("");
+                    if (results.length > 20) {
+                        html += `<div class="p-2 text-center text-muted small bg-light border-top"> ${results.length - 20} More...</div>`;
+                    }
+                    $box.html(html);
+                }
+                $box.show();
+            },
+
+            // 產品搜尋 (Scope=2)
+            runSearchProduct: function (keyword, $box, $input) {
+                if (!other.data.isPreloaded) {
+                    $box.html('<div class="p-2 text-muted small"><span class="spinner-border spinner-border-sm"></span> loading...</div>').show();
+                    return;
+                }
+
+                let results = other.data.cachedProducts.filter(item => {
+                    return item.s.indexOf(keyword) > -1;
+                });
+
+                results.sort((a, b) => {
+                    let idxA = a.s.indexOf(keyword);
+                    let idxB = b.s.indexOf(keyword);
+                    if (idxA !== idxB) return idxA - idxB;
+                    return a.code.localeCompare(b.code);
+                });
+
+                let displayList = results.slice(0, 20);
+                $box.empty();
+
+                if (displayList.length === 0) {
+                    $box.html('<div class="p-2 text-muted small">No Data</div>');
+                } else {
+                    let html = displayList.map(item => `
+                        <div class="suggestion-item" data-val="${item.code}">
+                            <strong>${item.code}</strong> 
+                        </div>
+                    `).join("");
+                    if (results.length > 20) {
+                        html += `<div class="p-2 text-center text-muted small bg-light border-top">+ ${results.length - 20} more...</div>`;
+                    }
+                    $box.html(html);
+                }
+                $box.show();
+            },
+
+            // 靜默儲存狀態 (不刷新列表)
+            toggleStatus: function (index, checkbox) {
+                let row = other.data.entityJsons[index];
+                if (!row) return;
+
+                let newStatus = checkbox.checked ? 0 : 1;
+                let oldStatus = row.sysstatus;
+
+                // 1. 本地更新 (樂觀 UI)
+                row.sysstatus = newStatus;
+                console.log(`狀態切換: ${oldStatus} -> ${newStatus}`);
+
+                // 2. 準備 Entity
+                let entity = {
+                    mrgid: row.mrgid,
+                    mrgnb: row.mrgnb,
+                    scopetype: row.scopetype,
+                    scopeval: row.scopeval,
+                    policy: row.policy,
+                    sysnote: row.sysnote,
+                    sysstatus: newStatus,
+                    items: row.items
+                };
+
+                // 3. 準備傳送資料 (比照 main.methods 的資料結構)
+                let payload = {
+                    entityJson: JSON.stringify([entity]),
+                    searchPageSet: JSON.stringify({ batch: 0, total: 10 }),
+                    callBackFunction: "other_search" // 必須指定為 other_search，後端 Controller 才會路由到 doSave
+                };
+
+                // 4. 發送請求
+                $.ajax({
+                    url: "ajax/" + other.data.url + "AC",
+
+                    type: "POST",
+
+                    // 比照 main 的 Content-Type
+                    contentType: "application/json;charset=UTF-8",
+                    dataType: 'json',
+
+                    // 比照 main 把資料轉成 JSON 字串
+                    data: JSON.stringify(payload),
+
+                    success: function (response) {
+                        let res = typeof response === 'string' ? JSON.parse(response) : response;
+                        if (res.infoColor === "success") {
+                            nav_alert.methods.alertshow(res.infoColor, res.info);
+                        } else if (res.infoColor === "warning") {
+                            nav_alert.methods.alertshow("warning", res.info);
+                            checkbox.checked = !checkbox.checked;
+                            row.sysstatus = oldStatus;
+                            return;
+                        } else {
+                            nav_alert.methods.alertshow("danger", "[777] The command was executed [ERROR]!!");
+                            checkbox.checked = !checkbox.checked;
+                            row.sysstatus = oldStatus;
+                            return;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        if (xhr.status === 200) {
+                            nav_alert.methods.alertshow("warning", "[200] You have not logged in [ERROR]!!");
+                            window.location.replace("login.basil");
+                        } else if (xhr.status === 404) {
+                            nav_alert.methods.alertshow("warning", "[404] The command failed [Warning]!!");
+                        } else if (xhr.status === 403) {
+                            nav_alert.methods.alertshow("warning", "[403] The command has been rejected (您可能沒有權限!!) [Warning]!!");
+                        } else {
+                            nav_alert.methods.alertshow("danger", "[999] The command error [ERROR]!!" + status);
+                        }
+
+                        checkbox.checked = !checkbox.checked;
+                        row.sysstatus = oldStatus;
+                    }
+                });
+            },
+            // --- 8. 存檔 ---
+            saveConfirm: function () {
+                let mrgNb = $("#editmrgnb").val().trim();
+                if (!mrgNb) {
+                    nav_alert.methods.alertshow("warning", "Please input Rule Name.");
+                    return;
+                }
+                let items = [];
+                $("#source_container .item-row").each(function () {
+                    let p = $(this).find(".source-pn").val().trim();
+                    let q = parseFloat($(this).find(".source-qty").val()) || 0;
+                    if (p && q > 0) items.push({ mrnb: p, qty: q, role: 'SOURCE' });
+                });
+                $("#target_container .item-row").each(function () {
+                    let p = $(this).find(".target-pn").val().trim();
+                    let q = parseFloat($(this).find(".target-qty").val()) || 0;
+                    if (p && q > 0) items.push({ mrnb: p, qty: q, role: 'TARGET' });
+                });
+                if (items.length < 2) {
+                    nav_alert.methods.alertshow("warning", "Please add at least one Original and one Replacement item.");
+                    return;
+                }
+                let entity = {
+                    mrgid: $("#editmrgid").val() || null,
+                    mrgnb: mrgNb,
+                    scopetype: parseInt($("#editscopetype").val()),
+                    scopeval: $("#editscopeval").val(),
+                    policy: $("#editpolicy").val(),
+                    sysnote: $("#editsysnote").val(),
+                    sysstatus: 0,
+                    items: items
+                };
+                let req = {
+                    url: other.data.url + "AC",
+                    type: "POST",
+                    data: {
+                        entityJson: JSON.stringify([entity]),
+                        searchPageSet: JSON.stringify({ batch: 0, total: other.data.pageSize }),
+                        callBackFunction: "other_search"
+                    }
+                };
+                main.methods.ajaxSend(req, true);
+                setTimeout(function () { $("#mr_edit_modal").modal("hide"); }, 800);
+            },
+            destroy: function () { }
+        }
+    };
+    // [修正] 提供一個全域函數讓 main.html 的 default switch 能呼叫到預載回調
+    window.other_preload = function () {
+        other.methods.otherOtherReturn();
+    };
+</script>

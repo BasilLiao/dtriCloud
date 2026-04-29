@@ -36,5 +36,55 @@ public interface MaterialServiceFeign {
 	@RequestMapping(value = { "/materialReplacement/setDetele" }, method = RequestMethod.POST)
 	PackageBean setMaterialReplacementDetele(@RequestBody String jsonPackageBean);
 
-	
+	@RequestMapping(value = { "/materialShortage/getSearch" }, method = RequestMethod.POST)
+	PackageBean getMaterialShortageSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialShortage/getItemStock" }, method = RequestMethod.POST)
+	PackageBean getMaterialShortageItemStock(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialEol/getSearch" }, method = RequestMethod.POST)
+	PackageBean getMaterialEolSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialEol/getReport" }, method = RequestMethod.POST)
+	PackageBean getMaterialEolReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialEol/getInitSearchData" }, method = RequestMethod.POST)
+	PackageBean getMaterialEolInitSearchData(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/musUserSearch/setMusUserSearch" }, method = RequestMethod.POST)
+	PackageBean setMusUserSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialProcess/getSearch" }, method = RequestMethod.POST)
+	PackageBean getMaterialProcessSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialProcess/setModify" }, method = RequestMethod.POST)
+	PackageBean setMaterialProcessModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialProcess/setDelete" }, method = RequestMethod.POST)
+	PackageBean setMaterialProcessDelete(@RequestBody String jsonPackageBean);
+
+	// ================================虛擬專案:產品系列主建================================
+	@RequestMapping(value = { "/materialVirtualProject/getSearch" }, method = RequestMethod.POST)
+	PackageBean getMaterialVirtualProjectSearch(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/setModify" }, method = RequestMethod.POST)
+	PackageBean setMaterialVirtualProjectModify(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/setAdd" }, method = RequestMethod.POST)
+	PackageBean setMaterialVirtualProjectAdd(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/setDelete" }, method = RequestMethod.POST)
+	PackageBean setMaterialVirtualProjectDelete(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/getReport" }, method = RequestMethod.POST)
+	PackageBean getMaterialVirtualProjectReport(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/simulate" }, method = RequestMethod.POST)
+	PackageBean simulateMaterialVirtualProject(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/otherProjects" }, method = RequestMethod.POST)
+	PackageBean getMaterialVirtualProjectOtherProjects(@RequestBody String jsonPackageBean);
+
+	@RequestMapping(value = { "/materialVirtualProject/getInitSearchData" }, method = RequestMethod.POST)
+	PackageBean getMaterialVirtualProjectInitSearchData(@RequestBody String jsonPackageBean);
 }

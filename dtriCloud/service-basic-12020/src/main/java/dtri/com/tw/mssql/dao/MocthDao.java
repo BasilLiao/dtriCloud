@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import dtri.com.tw.mssql.entity.Mocth;
 
@@ -114,5 +115,58 @@ public interface MocthDao extends JpaRepository<Mocth, Long> {
 			+ "	(MOCTI.TI001+'-'+TRIM(MOCTI.TI002)+'-'+MOCTI.TI003)   ASC"// --單號+序號
 			, nativeQuery = true) // coalesce 回傳非NULL值
 	ArrayList<Mocth> findAllByMocth80(List<String> TI001TI002TI003);
+
+	/**
+	 * 查詢託外進貨單明細列表 (待驗收清單)
+	 * <p>
+	 * 核心邏輯 (Core Logic)：
+	 * 1. <b>資料範圍</b>：查詢已建立託外進貨單，但尚未完成驗收程序的項目。
+	 * 2. <b>狀態過濾</b>：
+	 * - 鎖定「未驗收 (1)」狀態 (TI035 = '1')。
+	 * - 排除已作廢 (TI037 != 'V')。
+	 * 3. <b>單別過濾</b>：限定 'A591'。
+	 * 4. <b>有效性</b>：數量 (TI007) 必須大於 0。
+	 * </p>
+	 * * @return List 包含託外進貨單號、待驗數量與廠商資訊的列表
+	 * 
+	 * @author Allen
+	 */
+	@Query(value = """
+			SELECT
+			   ISNULL(RTRIM(LTRIM(TI.TI001)), '') + '-' + ISNULL(RTRIM(LTRIM(TI.TI002)), '') AS TI001_TI002,
+			    TI.TI003 AS TI003,      --單號序號
+			    TI.TI007 AS TI007,      --數量
+			    TI.TI014 AS TI014,      --驗收時間 (對應 PURTH 的 TH014)
+
+			    MB.MB001 AS MB001,      --品號
+			    MB.MB002 AS MB002,      --品名
+			    MB.MB003 AS MB003,      --規格
+			    MB.MB017 AS MB017,      --倉別代號
+			    MB.MB032 AS MB032,      --供應商代號
+			    MB.MB036 AS MB036,      --固定前置天數
+			    MB.MB039 AS MB039,      --最低補量
+			    MB.MB040 AS MB040,  	--補貨倍量
+
+			    MC.MC002 AS MC002,      --倉別名稱
+			    COALESCE(MA.MA002, '') AS MA002, --供應商名稱
+			    '託外進貨單' AS TK000        --單別
+
+			FROM DTR_TW.dbo.MOCTI AS TI
+			LEFT JOIN DTR_TW.dbo.INVMB AS MB ON TI.TI004 = MB.MB001
+			LEFT JOIN DTR_TW.dbo.CMSMC AS MC ON MB.MB017 = MC.MC001
+			LEFT JOIN DTR_TW.dbo.PURMA AS MA ON MA.MA001 = MB.MB032
+
+			WHERE
+			    TI.TI001 = 'A591'
+			    AND TI.TI035 = '1'
+			    AND TI.TI037 != 'V'
+			    AND TI.TI007 > 0
+			    AND (:materialNos IS NULL OR CHARINDEX(',' + TRIM(MB.MB001) + ',', :materialNos) > 0)
+			ORDER BY
+			    MB.MB001 ASC,
+			    TI.TI014 ASC,
+			    TI.TI001, TI.TI002, TI.TI003 ASC
+			""", nativeQuery = true)
+	List<dtri.com.tw.mssql.dto.ValidatedMoctiDto> findAllByValidatedMocti(@Param("materialNos") String materialNos);
 
 }

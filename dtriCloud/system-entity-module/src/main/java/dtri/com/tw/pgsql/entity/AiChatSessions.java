@@ -44,6 +44,7 @@ public class AiChatSessions extends BaseEntity {
 		this.setAcstitle(""); // 初始標題為空
 		this.setAcsuaccount(""); // 預設使用者 帳號
 		this.setAcsbtype("GENERAL");
+		this.setAcsrid(0L); // 🚀 初始化 Record ID 為 0
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class AiChatSessions extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "acs_id", nullable = false)
-	private Long acsid; 
+	private Long acsid;
 
 	/**
 	 * 關聯系統使用者帳號 (User Account) 作用：區分這段對話是哪位生管人員。使用帳號字串(如: basil_lin)
@@ -77,12 +78,12 @@ public class AiChatSessions extends BaseEntity {
 	/**
 	 * 一對多關聯：一個會話包含多則訊息。 mappedBy: 指向 AiChatMessages 中的 'acmsessions' 變數。
 	 * CascadeType.ALL: 刪除 Session 時，會自動刪除底下所有的對話訊息（連動刪除）。 OrderBy("acmcat ASC"):
-	 * 確保從此 List 拿出的訊息是按時間先後順序排列，方便直接渲染 UI。
-	 * JsonManagedReference 放在父層（Session），表示這是「正向」序列化的部分。
+	 * 確保從此 List 拿出的訊息是按時間先後順序排列，方便直接渲染 UI。 JsonManagedReference
+	 * 放在父層（Session），表示這是「正向」序列化的部分。
 	 */
 	@OneToMany(mappedBy = "acmsessions", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@OrderBy("acmcat ASC")
-	@JsonManagedReference 
+	@JsonManagedReference
 	private List<AiChatMessages> aichatmessages;
 	/**
 	 * 會話業務類型 (Session Business Type) 作用：區分詢問的專業領域，例如：PMC(生管), MC(物控), PUR(採購)。
@@ -103,4 +104,10 @@ public class AiChatSessions extends BaseEntity {
 	@Temporal(TemporalType.TIMESTAMP) // 確保包含時分秒
 	private Date acscat = new Date(); // 預設值改為 new Date()
 
+	/**
+	 * 🚀 錄製專案關聯 ID (Ai Record ID) 作用：如果這段對話是從 Record List 的 +New 建立的，則紀錄對應的專案 ID。
+	 * 預設為 0 代表一般對話，非錄製模式。
+	 */
+	@Column(name = "acs_r_id", nullable = false, columnDefinition = "bigint default 0")
+	private Long acsrid;
 }

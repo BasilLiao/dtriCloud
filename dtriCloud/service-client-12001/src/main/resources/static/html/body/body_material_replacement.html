@@ -106,15 +106,18 @@
 				//$("#body_material_replacement #report_title").addClass("disabled");
 				$("#body_material_replacement #print_title").addClass("disabled");
 				//$("#body_material_replacement #compare_title").addClass("disabled");
-				$("#body_material_replacement #other_title").addClass("disabled");
+				// $("#body_material_replacement #other_title").addClass("show");
+				$("#body_material_replacement #other_title").addClass("active");
+				$("#body_material_replacement #other_tab").addClass("show");
+				$("#body_material_replacement #other_tab").addClass("active");
 				//模板-預設分頁 active
-				$("#body_material_replacement #search_title").addClass("active");
-				$("#body_material_replacement #search_tab").addClass("show");
-				$("#body_material_replacement #search_tab").addClass("active");
+				// $("#body_material_replacement #search_title").addClass("active");
+				// $("#body_material_replacement #search_tab").addClass("show");
+				// $("#body_material_replacement #search_tab").addClass("active");
 
-				//Step2.模板
-				$("#body_material_replacement #home_tab").load("./html/model/home.html", function () { });
-				//查詢-模板
+				// //Step2.模板
+				// $("#body_material_replacement #home_tab").load("./html/model/home.html", function () { });
+				// //查詢-模板
 				$("#body_material_replacement #search_tab").load("./html/model/search.html", function () {
 					search.methods.create();
 					main.methods.reWindowsSize();
@@ -127,18 +130,18 @@
 				//$("#body_material_replacement #print_tab").load("./html/model/print.html", function(){
 				//	print.methods.create();
 				//});
-				//報告-模板
+				// 報告-模板
 				$("#body_material_replacement #report_tab").load("./html/model/report.html", function () {
 					report.methods.create();
 				});
-				//比對-模板
+				// //比對-模板
 				$("#body_material_replacement #compare_tab").load("./html/model/compare.html", function () {
 					compare.methods.create();
 				});
-				//其他-模板
-				//$("#body_material_replacement #other_tab").load("./html/other/other.html", function(){
-				//	
-				//});
+				//其他-模板C:\Users\allen\Desktop\cloud\DtriCloud\dtriCloud\service-client-12001\src\main\resources\static\html\other\other_material_replacement.html
+				$("#body_material_replacement #other_tab").load("./html/other/other_material_replacement.html", function () {
+					other.methods.create();
+				});
 			},
 
 			destroy() {

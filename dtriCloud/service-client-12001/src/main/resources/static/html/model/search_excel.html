@@ -1,0 +1,537 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- 專業級 Excel 匯出引擎載入區 -->
+<div id="excel_engine_load" class="d-none"></div>
+
+<style>
+    #search_c_item,
+    #search_c_controller,
+    #search_cr_open {
+        position: relative !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 4px !important;
+    }
+
+
+
+    .excel-engine-border {
+        width: 100%;
+        border: 2px solid #0d6efd;
+        border-radius: 5px;
+        background-color: #fff;
+        overflow: hidden;
+    }
+
+    .tabulator {
+        font-size: 13px;
+        border: none !important;
+    }
+
+    .tabulator-header {
+        background-color: #f8f9fa !important;
+        font-weight: bold;
+    }
+
+    .col-config-panel {
+        max-height: 400px;
+        overflow-y: auto;
+        width: 250px;
+    }
+
+    .cell-sim-val {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+
+    .btn-excel-gradient {
+        background: linear-gradient(135deg, #42b883 0%, #217346 100%);
+        color: white;
+        border: none;
+        padding: 5px 16px;
+        font-size: 13px;
+        font-weight: bold;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-excel-gradient:hover {
+        background: linear-gradient(135deg, #4cd496 0%, #298c55 100%);
+        color: white;
+        box-shadow: 0 3px 8px rgba(66, 184, 131, 0.4) !important;
+    }
+
+    .btn-excel-pro {
+        background-color: #217346;
+        color: #fff;
+        border: none;
+        padding: 5px 15px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .btn-excel-pro:hover {
+        background-color: #1a5c38;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(33, 115, 70, 0.3) !important;
+    }
+
+    .btn-excel-pro i {
+        font-size: 14px;
+        margin-right: 5px;
+    }
+
+    /* 已經統一移至 main.html 全域設定 */
+</style>
+
+<div id="search_excel_root" class="row p-0 m-0">
+    <div id="search_dcr" style="display: none; height: 0px;"></div>
+    <div id="footer_page" style="display: none; height: 0px;"></div>
+    <div id="modify_c_batch_revision_data" style="display: none; height: 0px;"></div>
+    <div id="modify_c_batch_revision_detail" style="display: none; height: 0px;"></div>
+    <div id="modify_c_controller" style="display: none; height: 0px;"></div>
+
+    <div id="search_c_item">
+        <div id="dynamic_inputs" class="row m-0 border rounded bg-white p-2 shadow-sm"></div>
+    </div>
+    <div id="search_c_controller" class="mt-1">
+        <div class="d-flex justify-content-between align-items-center bg-light p-2 border rounded shadow-sm">
+            <div id="se_left_zone" class="d-flex align-items-center">
+                <button class="btn btn-sm btn-primary px-3 fw-bold" onclick="search_excel.methods.searchSend(0)">
+                    <i class="bi bi-search"></i> 重新查詢
+                </button>
+            </div>
+            <div id="se_right_zone" class="d-flex align-items-center">
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle shadow-sm" type="button"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        <i class="bi bi-layout-three-columns"></i> Columns
+                    </button>
+                    <ul class="dropdown-menu shadow col-config-panel" id="col_selector_ul">
+                        <li>
+                            <h6 class="dropdown-header">Column Settings</h6>
+                        </li>
+                    </ul>
+                </div>
+                <button class="btn btn-excel-pro shadow-sm ms-2" onclick="search_excel.methods.exportExcel()">
+                    <i class="bi bi-file-earmark-excel-fill me-1"></i> Export
+                </button>
+                <div class="input-group input-group-sm ms-2">
+                    <span class="input-group-text bg-white" style="font-size: 11px;">
+                        Total: <b id="excel_total_count" class="px-1">0</b>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="search_cr_open" class="mt-1">
+        <div class="excel-engine-border">
+            <div id="real_tabulator_grid"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 1. 定義通用 Excel 物件 (純 JS 版 + 效能監控)
+    search_excel = {
+        data: {
+            grid: null, config: null, entityFormatJson: {}, saveTimer: null,
+            fullOtherData: {}, headerFilterCache: {}, sortTimer: null
+        },
+        methods: {
+            // --- 初始化 ---
+            create: function (config) {
+                //  Excel 匯出引擎 (中轉模板)
+                $("#excel_engine_load").load("./html/model/excel_engine.html", function () {
+                    console.log("Excel Export Engine Loaded.");
+                });
+                console.time("⏱️ [Init] 總初始化時間"); // 計時開始：Create
+
+                if (typeof Tabulator === 'undefined') {
+                    setTimeout(() => { this.create(config); }, 100);
+                    return;
+                }
+                search_excel.data.config = config;
+                let res = (window.main && main.resq_data) ? main.resq_data : {};
+
+                try {
+                    search_excel.data.fullOtherData = JSON.parse(res.otherSet || '{}');
+                } catch (e) { search_excel.data.fullOtherData = {}; }
+
+                console.time("1. 解析 Config JSON");
+                let searchSet = (typeof res.searchSet === 'string') ? JSON.parse(res.searchSet || '{}') : (res.searchSet || {});
+                search_excel.data.entityFormatJson = (typeof res.entityFormatJson === 'string') ? JSON.parse(res.entityFormatJson || '{}') : (res.entityFormatJson || {});
+                console.timeEnd("1. 解析 Config JSON");
+
+                console.time("2. 渲染搜尋工具列 (DOM)");
+                this.renderTools(config, searchSet.searchSet);
+                console.timeEnd("2. 渲染搜尋工具列 (DOM)");
+
+                console.time("3. 初始化 Tabulator 物件");
+                this.initGrid(searchSet.resultThead);
+                console.timeEnd("3. 初始化 Tabulator 物件");
+
+                setTimeout(() => {
+                    console.time("4. 還原使用者設定");
+                    this.restoreFromMainPage();
+                    console.timeEnd("4. 還原使用者設定");
+                }, 300);
+
+                console.timeEnd("⏱️ [Init] 總初始化時間"); // 計時結束：Create
+            },
+
+            estimateHeaderWidth: function (text) {
+                if (!text) return 0;
+                let width = 0;
+                for (let i = 0; i < text.length; i++) {
+                    // Unicode > 255 視為中日韓文字 (CJK)
+                    width += (text.charCodeAt(i) > 255) ? 15 : 9;
+                }
+                // 增加 40px 作為 Tabulator 排序箭頭與 Header Filter 的內置空間
+                return width + 40;
+            },
+
+            // ✅ 銷毀方法
+            destroy: function () {
+                if (search_excel.data.saveTimer) { clearTimeout(search_excel.data.saveTimer); search_excel.data.saveTimer = null; }
+                if (search_excel.data.grid) { try { search_excel.data.grid.destroy(); } catch (e) { } search_excel.data.grid = null; }
+                search_excel.data.config = null;
+                search_excel.data.fullOtherData = {};
+            },
+
+            restoreFromMainPage: function () {
+                let savedDataString = search_excel.data.fullOtherData.userMemory;
+                if (!savedDataString) return;
+                try {
+                    let prefs = JSON.parse(savedDataString);
+                    if (prefs.inputs) {
+                        Object.keys(prefs.inputs).forEach(id => {
+                            let safeId = id.replace(/\./g, '\\.');
+                            let $el = $(`#${safeId}`);
+                            if ($el.length) $el.val(prefs.inputs[id]);
+                        });
+                    }
+                    if (prefs.checkboxes) {
+                        $(".tk-filter").prop("checked", false);
+                        prefs.checkboxes.forEach(val => {
+                            $(`.tk-filter[value="${val}"]`).prop("checked", true);
+                        });
+                    }
+
+                    // 優化重點：批量處理欄位隱藏，防止多次重繪
+                    if (prefs.hiddenColumns && search_excel.data.grid) {
+                        search_excel.data.grid.blockRedraw(); //  暫停繪製
+
+                        prefs.hiddenColumns.forEach(field => {
+                            search_excel.data.grid.hideColumn(field);
+                        });
+
+                        search_excel.data.grid.restoreRedraw(); // ▶️ 恢復繪製 (只畫一次)
+
+                        // 這裡不需要再 call redraw(true) 了，restoreRedraw 會自動處理
+                        this.refreshColumnMenu();
+                    }
+                    this.applyFilter();
+                } catch (e) { }
+            },
+
+            initGrid: function (theadRaw) {
+                // ✅ 【參數化控制】透過 config.hasCheckbox 決定是否顯示勾選欄位
+                // 預設為 true，保持向下相容；不需要勾選框的頁面在 config 加上 hasCheckbox: false 即可
+                let showCheckbox = (search_excel.data.config && search_excel.data.config.hasCheckbox !== false);
+                let columnDefs = [];
+                if (showCheckbox) {
+                    columnDefs.push({
+                        formatter: "rowSelection",
+                        titleFormatter: "rowSelection",
+                        width: 45,          // 給足寬度，避免被切掉
+                        minWidth: 45,       // 保護寬度不被擠壓
+                        frozen: true,
+                        resizable: false,   // 禁止使用者拖動縮小
+                        headerSort: false,  // 勾選欄不需要排序
+                        hozAlign: "center",
+                        headerHozAlign: "center"
+                    });
+                }
+                let sortedThead = (window.main && main.methods) ? main.methods.orderedSort(theadRaw || {}) : (theadRaw || {});
+                let colCount = 0;
+
+                let overrides = search_excel.data.config.columnOverrides || {};
+
+                Object.keys(sortedThead).forEach(key => {
+                    let col = sortedThead[key];
+                    if (col.show == 1) {
+                        colCount++;
+                        let colTitle = col.cellName;
+                        try {
+                            let lang = JSON.parse(col.cellLanguage || '{}');
+                            let currentLang = $('#menu_login_language').text() || 'zh-TW';
+                            // 支援多種 Key 格式 (zh_TW vs zh-TW)
+                            colTitle = lang[currentLang] || lang[currentLang.replace('-', '_')] || lang['zh_TW'] || lang['zh-TW'] || col.cellName;
+                        } catch (e) { }
+
+                        // 動態計算建議寬度
+                        let minEstimatedWidth = search_excel.methods.estimateHeaderWidth(colTitle);
+                        let finalWidth = Math.max(col.width || 120, minEstimatedWidth);
+
+                        // 1. 建立基本設定
+                        let def = {
+                            title: colTitle,
+                            field: col.cellName,
+                            headerTooltip: col.headerNote || "",
+                            frozen: colCount <= 4,
+                            width: finalWidth,
+                            headerFilter: "input", // 預設值
+                            headerFilterLiveFilter: true, // 強制開啟即時過濾觸發
+                            // 支援多關鍵字 (空白或逗號分隔) OR 邏輯
+                            headerFilterFunc: function (headerValue, rowValue, rowData, filterParams) {
+                                if (!headerValue) return true;
+                                let searchStrs = String(headerValue).trim().toUpperCase().split(/[,\s]+/).filter(s => s.length > 0);
+                                if (searchStrs.length === 0) return true;
+                                let cellStr = String(rowValue || "").toUpperCase();
+                                return searchStrs.some(s => cellStr.includes(s));
+                            },
+                            //  [解決方案] 閉包綁定欄位名稱
+                            sorter: (function (field) {
+                                return function (a, b, aRow, bRow, column, dir, sorterParams) {
+                                    let s = search_excel.data.headerFilterCache[field];
+                                    if (s) {
+                                        let as = String(a || "").toUpperCase();
+                                        let bs = String(b || "").toUpperCase();
+                                        let aScore = as.startsWith(s) ? 2 : (as.includes(s) ? 1 : 0);
+                                        let bScore = bs.startsWith(s) ? 2 : (bs.includes(s) ? 1 : 0);
+                                        if (aScore !== bScore) {
+                                            let res = aScore > bScore ? -1 : 1;
+                                            return (dir === "asc") ? res : -res;
+                                        }
+                                    }
+                                    return String(a || "").localeCompare(String(b || ""));
+                                };
+                            })(col.cellName)
+                        };
+
+                        //  2. [關鍵修改] 暴力合併！
+                        // 如果 overrides 有設定 (例如 headerFilter: "list")，直接覆蓋上面的預設值
+                        if (overrides[col.cellName]) {
+                            Object.assign(def, overrides[col.cellName]);
+                        }
+
+                        columnDefs.push(def);
+                    }
+                });
+
+                search_excel.data.grid = new Tabulator("#real_tabulator_grid", {
+                    height: "calc(100vh - 155px)", layout: "fitDataFill", index: "_grid_id", virtualDom: true, columns: columnDefs
+                });
+
+                //  [唯一監聽器] 使用 jQuery 直接監聽 DOM (最穩定做法，防止事件衝突)
+                $(document).off("input", ".tabulator-header-filter input").on("input", ".tabulator-header-filter input", function (e) {
+                    let $input = $(this);
+                    let field = $input.closest(".tabulator-col").attr("tabulator-field");
+                    let val = $input.val();
+                    let s = String(val || "").trim().toUpperCase();
+
+                    if (!field) return; // 確保欄位名稱存在
+
+                    if (s) {
+                        search_excel.data.headerFilterCache[field] = s;
+                    } else {
+                        delete search_excel.data.headerFilterCache[field];
+                    }
+
+                });
+
+                search_excel.data.grid.on("tableBuilt", () => {
+                    console.log("Tabulator Table Built (表格結構建立完成)");
+                    this.searchReturn();
+                    if (window.main && main.methods.reWindowsSize) main.methods.reWindowsSize();
+                    this.refreshColumnMenu();
+                });
+            },
+
+            renderTools: function (config, javaSearchSet) {
+                $("#se_left_zone").find(".form-check").remove();
+                let $box = $("#dynamic_inputs").empty();
+                if (javaSearchSet) {
+                    javaSearchSet.forEach(item => {
+                        if (!item.show) return;
+                        let labelText = item.searchName;
+                        try { let lang = JSON.parse(item.searchLanguage || '{}'); labelText = lang.zh_TW || item.searchName; } catch (e) { }
+                        $box.append(`<div class="${item.width ? item.width.replace("_", "-") : "col-md-2"} p-1"><div class="bg-light border rounded p-1" style="font-size:10px;"><div class="fw-bold text-secondary text-truncate">${labelText}</div><input type="text" class="form-control form-control-sm excel-search-val" id="${item.searchName}" oninput="search_excel.methods.handleUserAction()"></div></div>`);
+                    });
+                }
+                if (config.customInputs) {
+                    config.customInputs.forEach(item => {
+                        let inputHtml = item.type === 'select' ? `<select class="form-select form-select-sm excel-search-val" id="${item.id}" onchange="search_excel.methods.handleUserAction()"><option value="">(全部)</option>${(item.options || []).map(o => `<option value="${o.val}">${o.label}</option>`).join('')}</select>` : `<input type="text" class="form-control form-control-sm excel-search-val" id="${item.id}" oninput="search_excel.methods.handleUserAction()">`;
+                        $box.append(`<div class="col-md-2 p-1"><div class="bg-warning bg-opacity-10 border border-warning rounded p-1" style="font-size:10px;"><div class="fw-bold text-dark text-truncate"><i class="bi bi-star-fill text-warning"></i> ${item.name}</div><div class="pt-1">${inputHtml}</div></div></div>`);
+                    });
+                }
+                if (config.filters) {
+                    let opts = config.filters.options.map((opt, i) => `<div class="d-inline-flex align-items-center mb-0 ms-3" style="font-size:16px;"><input class="form-check-input tk-filter m-0" type="checkbox" value="${opt.val}" id="tk_${i}" style="transform: scale(1.2); cursor:pointer;" onchange="search_excel.methods.handleUserAction()"><label class="form-check-label ms-2 mb-0" for="tk_${i}" style="cursor:pointer; line-height: 1.2;">${opt.label}</label></div>`).join('');
+                    $("#se_left_zone").append(opts);
+                }
+                if (config.buttons) {
+                    let btns = config.buttons.map(btn => `<button class="btn btn-sm ${btn.class} ms-1" onclick="${btn.action}"><i class="bi ${btn.icon}"></i> <b>${btn.label}</b></button>`).join('');
+                    $("#se_right_zone").prepend(btns);
+                }
+            },
+
+            refreshColumnMenu: function () {
+                if (!search_excel.data.grid) return;
+                let $menu = $("#col_selector_ul");
+                if ($menu.length === 0) return;
+                $menu.find("li:not(:first)").remove();
+                search_excel.data.grid.getColumns().forEach(column => {
+                    let field = column.getField();
+                    let title = column.getDefinition().title;
+                    if (!field) return;
+                    $menu.append(`<li class="px-3 py-1"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="m_${field}" ${column.isVisible() ? 'checked' : ''} onchange="search_excel.methods.toggleColumn('${field}')"><label class="form-check-label" style="font-size:12px;" for="m_${field}">${title}</label></div></li>`);
+                });
+            },
+
+            toggleColumn: function (field) {
+                search_excel.data.grid.toggleColumn(field);
+                setTimeout(() => { search_excel.data.grid.redraw(true); }, 10);
+                this.handleUserAction();
+            },
+
+            handleUserAction: function () {
+                this.applyFilter();
+                clearTimeout(search_excel.data.saveTimer);
+                search_excel.data.saveTimer = setTimeout(() => { this.saveToDatabase(); }, 800);
+            },
+
+            saveToDatabase: function () {
+                let prefs = { inputs: {}, checkboxes: [], hiddenColumns: [] };
+                $(".excel-search-val").each(function () { prefs.inputs[this.id] = $(this).val(); });
+                $(".tk-filter:checked").each(function () { prefs.checkboxes.push($(this).val()); });
+                if (search_excel.data.grid) {
+                    search_excel.data.grid.getColumns().forEach(col => { if (!col.isVisible() && col.getField()) prefs.hiddenColumns.push(col.getField()); });
+                }
+                if (window.main) {
+                    main.methods.ajaxSend({
+                        data: { entityJson: JSON.stringify({ mus_search: JSON.stringify(prefs) }), entityIKeyGKey: main.resq_data.user_id, callBackFunction: "search_excel_none" },
+                        url: "mus_user_search.basil", type: "POST"
+                    }, false);
+                }
+            },
+
+            applyFilter: function () {
+                if (!search_excel.data.grid || !search_excel.data.config) return;
+                let config = search_excel.data.config;
+                let selectedCheckboxes = [];
+                $(".tk-filter:checked").each(function () { selectedCheckboxes.push($(this).val()); });
+                search_excel.data.grid.setFilter(function (data) {
+                    let c1 = true;
+                    if (config.filters) { let rowVal = data[config.filters.field] || ""; c1 = selectedCheckboxes.length === 0 || selectedCheckboxes.some(s => rowVal.includes(s)); }
+                    let c2 = true;
+                    $(".excel-search-val").each(function () {
+                        let inputVal = $(this).val();
+                        if (inputVal) {
+                            let cellData = String(data[this.id] || "").toUpperCase().trim();
+                            let searchStrs = String(inputVal).toUpperCase().trim().split(/[,\s]+/).filter(k => k.length > 0);
+                            if (searchStrs.length > 0) {
+                                // OR 邏輯：只要包含其中一個字串就算符合
+                                if (!searchStrs.some(k => cellData.includes(k))) {
+                                    c2 = false;
+                                }
+                            }
+                        }
+                    });
+                    return c1 && c2;
+                });
+            },
+
+            //  優化檢測重點區域 
+            searchReturn: function () {
+                if (!search_excel.data.grid || !main.resq_data.entityDetailJson) return;
+
+                console.time("⏱️ [DataLoad] searchReturn 資料填充流程");
+
+                console.time("1. JSON Parse (資料解析)");
+                let rawData = JSON.parse(main.resq_data.entityDetailJson || "[]");
+                let dataList = [];
+                // 自動偵測：是否為矩陣壓縮格式 {"c": [...], "d": [...]}
+                if (rawData.c && rawData.d) {
+                    let cols = rawData.c;
+                    for (let i = 0; i < rawData.d.length; i++) {
+                        let rowData = rawData.d[i];
+                        let obj = {};
+                        for (let j = 0; j < cols.length; j++) {
+                            obj[cols[j]] = rowData[j];
+                        }
+                        dataList.push(obj);
+                    }
+                } else {
+                    dataList = rawData;
+                }
+                console.timeEnd("1. JSON Parse (資料解析)");
+
+                console.time("2. Data Clean (資料消毒)");
+                dataList.forEach((row, index) => {
+                    row._grid_id = index;
+                    delete row.simval;
+                    delete row.simadvice;
+                });
+                console.timeEnd("2. Data Clean (資料消毒)");
+
+                $("#excel_total_count").text(dataList.length);
+
+                console.time("3. Tabulator Clear (清空表格)");
+                search_excel.data.grid.clearData();
+                console.timeEnd("3. Tabulator Clear (清空表格)");
+
+                console.time("4. Tabulator SetData (渲染表格)");
+                // setData 是非同步的，我們用 Promise 監聽它的結束時間
+                search_excel.data.grid.setData(dataList).then(() => {
+                    console.timeEnd("4. Tabulator SetData (渲染表格)");
+                    console.timeEnd("⏱ [DataLoad] searchReturn 資料填充流程");
+
+                    // 觸發業務邏輯
+                    if (search_excel.data.config && typeof search_excel.data.config.onDataLoaded === 'function') {
+                        setTimeout(() => {
+                            console.time("5. 觸發 onDataLoaded (業務邏輯)");
+                            search_excel.data.config.onDataLoaded(dataList);
+                            console.timeEnd("5. 觸發 onDataLoaded (業務邏輯)");
+                        }, 50);
+                    }
+                });
+            },
+
+            searchSend: function (batch) {
+                if (search_excel.data.grid) {
+                    search_excel.data.grid.clearFilter(true);
+                }
+
+                if (window.main) {
+                    main.methods.ajaxSend({
+                        data: { entityJson: JSON.stringify(search_excel.data.entityFormatJson), searchPageSet: JSON.stringify({ total: 1000, batch: batch }), callBackFunction: "search_excel" },
+                        url: $('#nav_functional_unit').attr('title') + ".basil.AR", type: "POST"
+                    }, true);
+                }
+            },
+
+            search_excel_none: function () {
+                // 給 main.html 調度器 防止他一直跑錯誤!
+            },
+
+            exportExcel: async function () {
+                if (!search_excel.data.grid || typeof excel_engine === 'undefined') {
+                    if (window.nav_alert) nav_alert.methods.alertshow("warning", "Export engine is not ready. Please try again later.");
+                    return;
+                }
+
+                // 呼叫 中轉模板 (excel_engine.html) 匯出模組
+                const excelConfig = (search_excel.data.config && search_excel.data.config.excelConfig) || {};
+                excel_engine.methods.exportFromGrid(search_excel.data.grid, excelConfig);
+            }
+        }
+    };
+    window.search_excel_none = search_excel.methods.search_excel_none;
+</script>

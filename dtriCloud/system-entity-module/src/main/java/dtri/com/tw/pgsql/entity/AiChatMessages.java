@@ -1,7 +1,6 @@
 package dtri.com.tw.pgsql.entity;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +21,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -147,27 +145,27 @@ public class AiChatMessages extends BaseEntity {
 		attachment.setMessage(this);
 		this.attachments.add(attachment);
 	}
+
 	/**
-	 * 🚀 修正：語音二進位自動處理
-	 * 確保 Jackson 接收到前端 Base64 字串時能自動轉為 byte[]
+	 * 🚀 修正：語音二進位自動處理 確保 Jackson 接收到前端 Base64 字串時能自動轉為 byte[]
 	 */
 	public void setAcmvdata(Object value) {
-	    if (value == null || value.toString().isEmpty()) {
-	        this.acmvdata = null;
-	    } else if (value instanceof String) {
-	        try {
-	            String base64Str = (String) value;
-	            // 移除可能存在的標頭
-	            if (base64Str.contains(",")) {
-	                base64Str = base64Str.split(",")[1];
-	            }
-	            this.acmvdata = java.util.Base64.getDecoder().decode(base64Str);
-	        } catch (IllegalArgumentException e) {
-	            System.err.println("語音 Base64 解碼失敗: " + e.getMessage());
-	            this.acmvdata = null;
-	        }
-	    } else if (value instanceof byte[]) {
-	        this.acmvdata = (byte[]) value;
-	    }
+		if (value == null || value.toString().isEmpty()) {
+			this.acmvdata = null;
+		} else if (value instanceof String) {
+			try {
+				String base64Str = (String) value;
+				// 移除可能存在的標頭
+				if (base64Str.contains(",")) {
+					base64Str = base64Str.split(",")[1];
+				}
+				this.acmvdata = java.util.Base64.getDecoder().decode(base64Str);
+			} catch (IllegalArgumentException e) {
+				System.err.println("語音 Base64 解碼失敗: " + e.getMessage());
+				this.acmvdata = null;
+			}
+		} else if (value instanceof byte[]) {
+			this.acmvdata = (byte[]) value;
+		}
 	}
 }

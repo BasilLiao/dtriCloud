@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import dtri.com.tw.pgsql.entity.AiChatMessages;
+import dtri.com.tw.pgsql.entity.AiChatMessages.MessageRole;
+
 @Service
 public class AiDtrService {
 
@@ -51,6 +54,12 @@ public class AiDtrService {
 	private static final String BRAIN_MODEL = "google/gemma-3-12b-it";
 	private static final String VISION_MODEL = "google/gemma-3-12b-it";
 	private static final String WHISPER_MODEL = "large-v3";
+
+	// 🚀 新增：定義最大請求字元限制 (估計約 30k-50k Tokens)
+	// Gemma-3-12b 這種模型，Context Window 通常很大 (128K)，但為了節省頻寬與推理時間，我們可以設定一個安全的 字元上限（例如
+	// 100,000 字元）。
+	// 🚀 針對 32K 限制的字元守衛 (28672 tokens * 約 2.3 字元 ≈ 65000 字元)
+	private static final int MAX_REQUEST_CHARS = 65000;
 
 	// HTTP 用戶端 (設定 60 秒超時以應對大量數據推理)
 	private static final HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
@@ -113,71 +122,112 @@ public class AiDtrService {
 		}
 	}
 
-	// ==========================================
-	// 5. 全能：多模態處理核心 (圖片 + 文件 + 文字)
-	// ==========================================
 	/**
-	 * 5090 多模態處理核心：同時將「眼(圖)」與「書(檔)」餵給 AI * @param images 圖片路徑清單
+	 * 5090 多模態處理核心：支援自動歷史紀錄裁切 (FIFO 策略) * @param historyMessage 歷史對話清單
 	 * 
-	 * @param files  文件路徑清單 (PDF/Excel/Word)
-	 * @param prompt 使用者的指令
+	 * @param images 圖片路徑清單
+	 * @param files  文件路徑清單
+	 * @param prompt 使用者指令
 	 */
-	public String processMultimodal(List<String> images, List<String> files, String prompt) {
+	public String processMultimodal(List<AiChatMessages> historyMessage, List<String> images, List<String> files,
+			String prompt) {
 		try {
-			List<String> contentItems = new ArrayList<>();
+			// 🚀 1. 計算「當前這一回」的資料量 (圖片 Base64 + 文件數據 + 指令)
+			// 這是絕對不能被刪除的內容，所以我們優先計算它的權重。
+			long currentTurnSize = estimateCurrentTurnSize(prompt, images, files);
 
-			// 1. 原始指令
-			contentItems.add("{\"type\": \"text\", \"text\": \"%s\"}".formatted(escapeJson(prompt)));
+			// 🚀 2. 動態裁切歷史紀錄 (Token 管理)
+			// 如果 (歷史 + 當前) > 上限，則依序拋棄最舊的訊息。
+			List<AiChatMessages> trimmedHistory = trimHistory(historyMessage, currentTurnSize);
 
-			// 2. 處理檔案：將其轉為「圖片」與「JSON文字」
+			// 🚀 3. 建立對話陣列容器
+			List<String> messagesJsonParts = new ArrayList<>();
+
+			// 處理裁切後的歷史紀錄
+			if (trimmedHistory != null && !trimmedHistory.isEmpty()) {
+				for (int i = 0; i < trimmedHistory.size(); i++) {
+					AiChatMessages hm = trimmedHistory.get(i);
+
+					// 跳過重複訊息邏輯
+					if (i == trimmedHistory.size() - 1 && hm.getRole() == MessageRole.USER
+							&& hm.getAcmcontent().equals(prompt)) {
+						continue;
+					}
+
+					String roleStr = hm.getRole().name().toLowerCase();
+					String contentStr = hm.getAcmcontent();
+
+					// 🚀 注入 Snapshot 到 SYSTEM
+					if (hm.getRole() == MessageRole.SYSTEM) {
+						String latestSnapshot = hm.getAcmsessions().getAcsccontext();
+						contentStr = contentStr.replace("{{current_snapshot}}",
+								(latestSnapshot == null || latestSnapshot.isEmpty()) ? "{}" : latestSnapshot);
+						contentStr = contentStr.replace("{{user_input}}", prompt);
+					}
+
+					// 🚀【核心修正點】：統一格式
+					// 不論是 SYSTEM, USER 還是 ASSISTANT 的歷史紀錄，
+					// 通通包裝成 [{"type": "text", "text": "..."}] 的 JSON Array 格式。
+					// 這樣 vLLM 的 Jinja2 模板在處理多模態請求時，才不會因為「型別不一」而報錯。
+					String wrappedContent = "[{\"type\": \"text\", \"text\": \"%s\"}]"
+							.formatted(escapeJson(contentStr));
+
+					// 注意：content 欄位後方不加雙引號，因為 wrappedContent 本身就是 JSON 陣列
+					messagesJsonParts.add("{\"role\": \"%s\", \"content\": %s}".formatted(roleStr, wrappedContent));
+				}
+			}
+
+			// 🚀 4. 準備「當前這一次」的多模態 ContentItems
+			List<String> currentContentItems = new ArrayList<>();
+			currentContentItems.add("{\"type\": \"text\", \"text\": \"%s\"}".formatted(escapeJson(prompt)));
+
+			// B. 處理文件檔案 (PDF/Excel/Word)
 			for (String path : files) {
 				File f = new File(path);
 				String name = f.getName().toLowerCase();
-
 				if (name.endsWith(".pdf")) {
-					// A. PDF 轉成圖片 (給 AI 的眼睛看佈局)
-					List<byte[]> pdfPages = DocumentTool.pdfToImages(f);
+					List<byte[]> pdfPages = DocumentToolService.pdfToImages(f);
 					for (byte[] page : pdfPages) {
 						String b64 = Base64.getEncoder().encodeToString(page);
-						contentItems.add(
+						currentContentItems.add(
 								"{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,%s\"}}"
 										.formatted(b64));
 					}
-					// B. PDF 轉成 JSON (給 AI 的大腦算數值)
-					String pdfJson = DocumentTool.pdfToJson(f);
-					contentItems
-							.add("{\"type\": \"text\", \"text\": \"[PDF數據對齊]: %s\"}".formatted(escapeJson(pdfJson)));
-
+					currentContentItems.add("{\"type\": \"text\", \"text\": \"[PDF數據]: %s\"}"
+							.formatted(escapeJson(DocumentToolService.pdfToJson(f))));
 				} else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
-					// Excel 直接轉 JSON 文字效能最好
-					String excelJson = DocumentTool.excelToJson(f);
-					contentItems.add(
-							"{\"type\": \"text\", \"text\": \"[Excel報表數據]: %s\"}".formatted(escapeJson(excelJson)));
+					currentContentItems.add("{\"type\": \"text\", \"text\": \"[Excel數據]: %s\"}"
+							.formatted(escapeJson(DocumentToolService.excelToJson(f))));
 				} else if (name.endsWith(".docx") || name.endsWith(".doc")) {
-					// 🚀 修正：呼叫 Word 專用的解析工具，並更換變數名稱
-					String wordJson = DocumentTool.wordToJson(f); 
-					contentItems
-							.add("{\"type\": \"text\", \"text\": \"[Word報告數據]: %s\"}".formatted(escapeJson(wordJson)));
+					currentContentItems.add("{\"type\": \"text\", \"text\": \"[Word數據]: %s\"}"
+							.formatted(escapeJson(DocumentToolService.wordToJson(f))));
 				}
-
 			}
 
-			// 3. 處理原始上傳的照片 (影像強化)
+			// C. 處理圖片 (影像強化)
 			for (String path : images) {
 				byte[] img = enhanceForAi(path);
 				String b64 = Base64.getEncoder().encodeToString(img);
-				contentItems.add("{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,%s\"}}"
-						.formatted(b64));
+				currentContentItems
+						.add("{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/jpeg;base64,%s\"}}"
+								.formatted(b64));
 			}
 
-			// 4. 送出 JSON Payload 給 5090
-			String jsonPayload = "{\"model\":\"%s\",\"messages\":[{\"role\":\"user\",\"content\":[%s]}]}"
-					.formatted(VISION_MODEL, String.join(",", contentItems));
+			// 🚀 5. 組裝當前訊息與最終 Payload
+			String currentMsgJson = "{\"role\": \"user\", \"content\": [%s]}"
+					.formatted(String.join(",", currentContentItems));
+			messagesJsonParts.add(currentMsgJson);
+
+			String jsonPayload = "{\"model\":\"%s\", \"messages\": [%s], \"max_tokens\": 4096, \"temperature\": 0.2}"
+					.formatted(VISION_MODEL, String.join(",", messagesJsonParts));
+
+			log.info("[大腦] 歷史裁切後剩餘 {} 則。Payload 估計大小: {} 字元。發送請求...", trimmedHistory.size(), jsonPayload.length());
+
 			String response = postRequest(VISION_URL, jsonPayload);
 			Map<String, String> splitResult = splitAiResponse(response);
+
 			log.info("[大腦] 推理完成");
-			String finalResult = cleanJson(splitResult.get("answer"));
-			return finalResult;
+			return cleanJson(splitResult.get("answer"));
 
 		} catch (Exception e) {
 			log.error("[全能分析] 嚴重失敗: {}", e.getMessage());
@@ -233,7 +283,7 @@ public class AiDtrService {
 	public void downloadVoice(String text, String fileName, VoiceLang lang, String saveDir) {
 		try {
 			// 1. 文字預處理：透過 Gemma 3 優化播報節奏 (保留您原本強大的 cleanTextNoise)
-			String optimizedText = cleanTextNoise(text, lang);
+			String optimizedText = cleanTextNoise("", text, lang);
 
 			// 2. 編碼 URL 參數
 			String encodedText = URLEncoder.encode(optimizedText, StandardCharsets.UTF_8);
@@ -268,7 +318,7 @@ public class AiDtrService {
 	/**
 	 * 透過 Gemma 3 模型進行語音標準化處理 去除多餘的符號
 	 */
-	private String cleanTextNoise(String input, VoiceLang lang) {
+	private String cleanTextNoise(String history, String input, VoiceLang lang) {
 		if (input == null || input.isBlank()) {
 			return "";
 		}
@@ -534,6 +584,53 @@ public class AiDtrService {
 				log.warn("[系統] 無法刪除暫存檔: {}", e.getMessage());
 			}
 		}
+	}
+	// ==========================================
+	// 🛠️ 新增：Token/字元管理工具
+	// ==========================================
+
+	/**
+	 * 估算「當前這一回」的內容大小 (文字 + Base64 圖片 + 檔案資料)
+	 */
+	private long estimateCurrentTurnSize(String prompt, List<String> images, List<String> files) {
+		long size = (prompt != null) ? prompt.length() : 0;
+		// 圖片 Base64 非常大，每一張約增加 1.3 倍體積
+		for (String img : images)
+			size += (new File(img).length() * 1.35);
+		for (String file : files)
+			size += (new File(file).length()); // 文件數據簡化計算
+		return size;
+	}
+
+	/**
+	 * 核心裁切邏輯：確保 Index 0 的 SYSTEM 訊息不被移除
+	 */
+	private List<AiChatMessages> trimHistory(List<AiChatMessages> history, long currentTurnSize) {
+		if (history == null || history.isEmpty())
+			return new ArrayList<>();
+
+		List<AiChatMessages> trimmed = new ArrayList<>(history);
+		long totalSize = calculateHistorySize(trimmed) + currentTurnSize;
+
+		// 🚀 只要總量超過上限且還有對話可刪
+		while (totalSize > MAX_REQUEST_CHARS && trimmed.size() > 1) {
+			// 如果索引 0 是 SYSTEM 訊息，我們就刪除索引 1 (最舊的一則 User/Assistant 對話)
+			if (trimmed.get(0).getRole() == MessageRole.SYSTEM) {
+				AiChatMessages removed = trimmed.remove(1);
+				totalSize -= (removed.getAcmcontent() != null ? removed.getAcmcontent().length() : 0);
+				log.warn("[Token管理] 裁切最舊對話 (保留規則層): {}",
+						removed.getAcmcontent().substring(0, Math.min(5, removed.getAcmcontent().length())));
+			} else {
+				// 如果沒有 SYSTEM 訊息，正常從最前面刪
+				AiChatMessages removed = trimmed.remove(0);
+				totalSize -= (removed.getAcmcontent() != null ? removed.getAcmcontent().length() : 0);
+			}
+		}
+		return trimmed;
+	}
+
+	private long calculateHistorySize(List<AiChatMessages> history) {
+		return history.stream().mapToLong(m -> m.getAcmcontent() != null ? m.getAcmcontent().length() : 0).sum();
 	}
 
 }
